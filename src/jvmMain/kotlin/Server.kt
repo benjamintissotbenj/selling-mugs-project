@@ -10,12 +10,14 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.http.content.*
 import io.ktor.server.routing.*
+import org.litote.kmongo.coroutine.coroutine
+import org.litote.kmongo.eq
+import org.litote.kmongo.reactivestreams.KMongo
 
-val shoppingList = mutableListOf(
-        MugListItem("Small Mug ", 1),
-        MugListItem("Medium Mug", 2),
-        MugListItem("Large Mug", 3)
-)
+val client = KMongo.createClient().coroutine
+val database = client.getDatabase("mugList")
+val collection = database.getCollection<MugListItem>()
+
 fun main() {
     embeddedServer(Netty, 9090) {
         // Automatic content conversion from the requests, based on the headers (content-type and accept)
@@ -47,20 +49,11 @@ fun main() {
             static("/") {
                 resources("")
             }
-            route(MugListItem.path) {
-                get {
-                    call.respond(shoppingList)
-                }
-                post {
-                    shoppingList += call.receive<MugListItem>()
-                    call.respond(HttpStatusCode.OK)
-                }
-                delete("/{id}") {
-                    val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
-                    shoppingList.removeIf { it.id == id }
-                    call.respond(HttpStatusCode.OK)
-                }
-            }
+
+            mugListRouting(MugListItem.path)
+
+
+
         }
     }.start(wait = true)
 }
