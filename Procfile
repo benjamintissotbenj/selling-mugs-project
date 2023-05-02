@@ -1,1 +1,1 @@
-web: ./build/install/shoppinglist/bin/shoppinglist
+web: ./build/install/sellingmugs/bin/sellingmugs
