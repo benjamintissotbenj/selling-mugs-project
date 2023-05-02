@@ -3,6 +3,7 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.plugins.compression.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
@@ -13,8 +14,7 @@ import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
 
 val client = KMongo.createClient().coroutine
-val database = client.getDatabase("mugList")
-val collection = database.getCollection<Mug>()
+val database = client.getDatabase("debug")
 
 fun main() {
     embeddedServer(Netty, 9090) {
@@ -36,6 +36,9 @@ fun main() {
         install(Compression) {
             gzip()
         }
+
+        // Provides authentication
+        install(Authentication)
 
         routing {
             get("/") {
