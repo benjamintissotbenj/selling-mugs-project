@@ -14,7 +14,7 @@ import org.litote.kmongo.reactivestreams.KMongo
 
 val client = KMongo.createClient().coroutine
 val database = client.getDatabase("mugList")
-val collection = database.getCollection<MugListItem>()
+val collection = database.getCollection<Mug>()
 
 fun main() {
     embeddedServer(Netty, 9090) {

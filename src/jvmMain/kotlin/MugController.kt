@@ -7,17 +7,17 @@ import org.litote.kmongo.eq
 
 fun Route.mugRouting(){
 
-    route(MugListItem.path) {
+    route(Mug.path) {
         get {
             call.respond(collection.find().toList())
         }
         post {
-            collection.insertOne(call.receive<MugListItem>())
+            collection.insertOne(call.receive<Mug>().copy(genUuid().toString()))
             call.respond(HttpStatusCode.OK)
         }
         delete("/{id}") {
-            val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
-            collection.deleteOne(MugListItem::id eq id) //type safe
+            val id = call.parameters["id"] ?: error("Invalid delete request")
+            collection.deleteOne(Mug::id eq id) //type safe
             call.respond(HttpStatusCode.OK)
         }
     }
