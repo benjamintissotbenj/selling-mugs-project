@@ -7,13 +7,13 @@ import react.dom.html.ReactHTML.ul
 private val scope = MainScope()
 
 val App = FC<Props> {
-    var shoppingList by useState(emptyList<MugListItem>())
+    var mugList by useState(emptyList<MugListItem>())
 
     // At first initialisation, get the list
     // Alternative is useState when we want to persist something across re-renders
     useEffectOnce {
         scope.launch {
-            shoppingList = getMugList()
+            mugList = getMugList()
         }
     }
 
@@ -23,14 +23,14 @@ val App = FC<Props> {
     }
     // Creates a ulist component
     ul {
-        shoppingList.sortedByDescending(MugListItem::priority).forEach { item ->
+        mugList.sortedByDescending(MugListItem::priority).forEach { item ->
             li {
                 key = item.toString()
                 +"[${item.priority}] ${item.desc} "
                 onClick = {
                     scope.launch {
                         deleteMugListItem(item) // deletes from server
-                        shoppingList = getMugList() // updates client
+                        mugList = getMugList() // updates client
                     }
                 }
             }
@@ -42,7 +42,7 @@ val App = FC<Props> {
             val cartItem = MugListItem(input.replace("!", ""), input.count { it == '!' })
             scope.launch {
                 addMugListItem(cartItem)
-                shoppingList = getMugList() // updates the state (using "useState") so re-renders page
+                mugList = getMugList() // updates the state (using "useState") so re-renders page
             }
         }
     }

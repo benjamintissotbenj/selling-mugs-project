@@ -5,9 +5,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.litote.kmongo.eq
 
-fun Route.mugListRouting(path: String){
+fun Route.mugRouting(){
 
-    route(path) {
+    route(MugListItem.path) {
         get {
             call.respond(collection.find().toList())
         }

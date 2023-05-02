@@ -6,12 +6,10 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.compression.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
-import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.http.content.*
 import io.ktor.server.routing.*
 import org.litote.kmongo.coroutine.coroutine
-import org.litote.kmongo.eq
 import org.litote.kmongo.reactivestreams.KMongo
 
 val client = KMongo.createClient().coroutine
@@ -50,7 +48,19 @@ fun main() {
                 resources("")
             }
 
-            mugListRouting(MugListItem.path)
+            // Routing to my controllers
+
+            mugRouting()
+
+            homepageRouting()
+
+            loginRouting()
+
+            cartRouting()
+
+            checkoutRouting()
+
+            paymentRouting()
 
 
 
