@@ -11,17 +11,17 @@ val jsonClient = HttpClient {
     }
 }
 
-suspend fun getMugList(): List<MugListItem> {
-    return jsonClient.get(MugListItem.path).body()
+suspend fun getMugList(): List<Mug> {
+    return jsonClient.get(Mug.path).body()
 }
 
-suspend fun addMugListItem(mugListItem: MugListItem) {
-    jsonClient.post(MugListItem.path) {
+suspend fun addMugListItem(mugListItem: Mug) {
+    jsonClient.post(Mug.path) {
         contentType(ContentType.Application.Json)
         setBody(mugListItem)
     }
 }
 
-suspend fun deleteMugListItem(mugListItem: MugListItem) {
-    jsonClient.delete(MugListItem.path + "/${mugListItem.id}")
+suspend fun deleteMugListItem(mugListItem: Mug) {
+    jsonClient.delete(Mug.path + "/${mugListItem.id}")
 }
