@@ -1,17 +1,22 @@
+import ch.qos.logback.classic.LoggerContext
+import com.benjtissot.sellingmugs.controllers.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.engine.*
+import io.ktor.server.http.content.*
+import io.ktor.server.netty.*
 import io.ktor.server.plugins.compression.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.response.*
-import io.ktor.server.http.content.*
 import io.ktor.server.routing.*
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
+import org.slf4j.LoggerFactory
+import java.util.logging.Level
+
 
 val client = KMongo.createClient().coroutine
 val database = client.getDatabase("debug")
@@ -65,8 +70,12 @@ fun main() {
 
             paymentRouting()
 
+            val loggerContext: LoggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
+            val rootLogger = loggerContext.getLogger("org.mongodb.driver")
+            rootLogger.level = ch.qos.logback.classic.Level.OFF
 
-
+            val LOG = java.util.logging.Logger.getLogger(this.javaClass.name)
+            LOG.severe("MongoDB Driver Logs deactivated")
         }
     }.start(wait = true)
 }

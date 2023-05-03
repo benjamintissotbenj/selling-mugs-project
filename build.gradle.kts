@@ -27,6 +27,23 @@ kotlin {
     js {
         browser {
             binaries.executable()
+            webpackTask {
+                cssSupport {
+                    enabled = true
+                }
+            }
+            runTask {
+                cssSupport {
+                    enabled = true
+                }
+            }
+            testTask {
+                useKarma {
+                    webpackConfig.cssSupport {
+                        enabled = true
+                    }
+                }
+            }
         }
     }
     sourceSets {
@@ -67,10 +84,13 @@ kotlin {
                 implementation(project.dependencies.enforcedPlatform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:$kotlinWrappersVersion"))
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-react")
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-react-dom")
+                // Adding CSS Styling
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-emotion")
             }
         }
     }
 }
+
 
 application {
     mainClass.set("ServerKt")
@@ -97,6 +117,7 @@ tasks {
         }
     }
 }
+
 
 distributions {
     main {

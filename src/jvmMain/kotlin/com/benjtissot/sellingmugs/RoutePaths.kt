@@ -1,4 +1,4 @@
-
+package com.benjtissot.sellingmugs
 const val LOGIN_PATH = "/login"
 const val REGISTER_PATH = "/register"
 const val HOMEPAGE_PATH = "/home"

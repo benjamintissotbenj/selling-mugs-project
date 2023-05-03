@@ -1,3 +1,6 @@
+package com.benjtissot.sellingmugs.controllers
+
+import com.benjtissot.sellingmugs.HOMEPAGE_PATH
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*

@@ -1,6 +1,13 @@
+package com.benjtissot.sellingmugs
+
+import com.benjtissot.sellingmugs.components.inputComponent
+import com.benjtissot.sellingmugs.components.mugListComponent
+import com.benjtissot.sellingmugs.entities.Artwork
+import com.benjtissot.sellingmugs.entities.Mug
 import react.*
 import kotlinx.coroutines.*
-import react.dom.html.ReactHTML.div
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.consumeEach
 import react.dom.html.ReactHTML.h1
 import react.dom.html.ReactHTML.li
 import react.dom.html.ReactHTML.ul
@@ -41,13 +48,29 @@ val App = FC<Props> {
 
     // Creating a field to input a new element
     inputComponent {
-        onSubmit = { input ->
+        onSubmit = { mugName, artURL ->
+            val artwork = Artwork("", artURL)
+            val cartItem = Mug("", mugName, 8.99f, artwork)
 
-            val cartItem = Mug("", input,8.99f, "ARtId")
-            scope.launch {
+            // Using a channel to have a sequential execution
+            val channel = Channel<Job>(capacity = Channel.UNLIMITED).apply {
+                scope.launch {
+                    consumeEach { it.join() }
+                }
+            }
+            channel.trySend(scope.launch{
+                addArtwork(artwork)
+            })
+            channel.trySend(scope.launch{
                 addMugListItem(cartItem)
                 mugList = getMugList() // updates the state (using "useState") so re-renders page
-            }
+            })
+
+
         }
+    }
+
+    mugListComponent {
+        list = mugList
     }
 }

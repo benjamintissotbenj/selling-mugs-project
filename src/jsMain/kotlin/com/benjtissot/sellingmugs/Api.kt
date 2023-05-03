@@ -1,3 +1,7 @@
+package com.benjtissot.sellingmugs
+
+import com.benjtissot.sellingmugs.entities.Artwork
+import com.benjtissot.sellingmugs.entities.Mug
 import io.ktor.http.*
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -19,6 +23,13 @@ suspend fun addMugListItem(mugListItem: Mug) {
     jsonClient.post(Mug.path) {
         contentType(ContentType.Application.Json)
         setBody(mugListItem)
+    }
+}
+
+suspend fun addArtwork(artwork: Artwork) {
+    jsonClient.post(Artwork.path) {
+        contentType(ContentType.Application.Json)
+        setBody(artwork)
     }
 }
 
