@@ -1,20 +1,21 @@
 package com.benjtissot.sellingmugs
 
-import com.benjtissot.sellingmugs.components.inputComponent
-import com.benjtissot.sellingmugs.components.mugListComponent
+import com.benjtissot.sellingmugs.components.InputComponent
+import com.benjtissot.sellingmugs.components.MugListComponent
+import com.benjtissot.sellingmugs.components.NavigationBarComponent
 import com.benjtissot.sellingmugs.entities.Artwork
 import com.benjtissot.sellingmugs.entities.Mug
+import io.ktor.util.logging.*
 import react.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
-import react.dom.html.ReactHTML.h1
-import react.dom.html.ReactHTML.li
-import react.dom.html.ReactHTML.ul
+
 
 private val scope = MainScope()
 
 val App = FC<Props> {
+    val LOG = KtorSimpleLogger("App.kt")
     var mugList by useState(emptyList<Mug>())
 
     // At first initialisation, get the list
@@ -25,29 +26,23 @@ val App = FC<Props> {
         }
     }
 
-    // Creates a h1 component
-    h1 {
-        +"First steps of the Selling Mugs project"
-    }
-    // Creates a ulist component
-    ul {
-        mugList.sortedByDescending(Mug::price).forEach { item ->
-            li {
-                key = item.toString()
-                +"${item.name}, ${item.price} euros"
-                onClick = {
-                    scope.launch {
-                        deleteMugListItem(item) // deletes from server
-                        mugList = getMugList() // updates client
-                    }
-                }
+    NavigationBarComponent {}
+
+
+
+    MugListComponent {
+        list = mugList
+        onItemClick = {
+            scope.launch {
+                LOG.debug("Item ${it.name} clicked")
+                deleteMugListItem(it) // deletes from server
+                mugList = getMugList() // updates client
             }
         }
     }
 
-
     // Creating a field to input a new element
-    inputComponent {
+    InputComponent {
         onSubmit = { mugName, artURL ->
             val artwork = Artwork("", artURL)
             val cartItem = Mug("", mugName, 8.99f, artwork)
@@ -68,9 +63,5 @@ val App = FC<Props> {
 
 
         }
-    }
-
-    mugListComponent {
-        list = mugList
     }
 }

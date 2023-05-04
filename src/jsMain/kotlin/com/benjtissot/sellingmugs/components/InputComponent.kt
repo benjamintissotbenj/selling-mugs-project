@@ -13,7 +13,7 @@ external interface InputProps : Props {
     var onSubmit: (String, String) -> Unit
 }
 
-val inputComponent = FC<InputProps> { props ->
+val InputComponent = FC<InputProps> { props ->
     val (mugName, setMugName) = useState("")
     val (artURL, setArtURL) = useState("")
 

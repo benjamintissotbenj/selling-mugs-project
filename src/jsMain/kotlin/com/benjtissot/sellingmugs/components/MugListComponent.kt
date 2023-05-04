@@ -1,39 +1,47 @@
 package com.benjtissot.sellingmugs.components
 
 import com.benjtissot.sellingmugs.entities.Mug
-import com.benjtissot.sellingmugs.getMugList
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
+import csstype.*
 import react.FC
-import react.dom.html.ReactHTML.p
-import react.useEffectOnce
-import react.useState
 import emotion.react.css
-import csstype.Position
-import csstype.px
 import react.Props
 import react.dom.html.ReactHTML.div
-import react.dom.html.ReactHTML.ul
+import react.dom.html.ReactHTML.header
+import react.dom.html.ReactHTML.footer
+import react.dom.html.ReactHTML.img
+
+
 
 external interface MugListProps: Props {
     var list: List<Mug>
+    var onItemClick: (Mug) -> Unit
 }
 
-val mugListComponent = FC<MugListProps> {
+val MugListComponent = FC<MugListProps> {
         props ->
-        ul {
-            for (mug in props.list){
-                div {
-                    css {
-                        position = Position.relative
-
-                        top = 10.px
-                        right = 10.px
-                    }
-                    +"${mug.name} costs £${mug.price}"
-                }
+    header {
+        +"Header"
+    }
+    div {
+        css {
+            display = Display.flex
+            overflowX = Overflow.scroll
+            scrollBehavior = ScrollBehavior.smooth
+            paddingBlock = 1.rem
+            maxWidth = 100.rem
+        }
+        props.list.forEach { mugItm ->
+            MugItemComponent {
+                mug = mugItm
+                onItemClick = props.onItemClick
             }
         }
+
+    }
+
+    footer {
+        +"Footer"
+    }
 
 
 }
