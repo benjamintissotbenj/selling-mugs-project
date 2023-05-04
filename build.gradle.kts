@@ -86,6 +86,10 @@ kotlin {
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-react-dom")
                 // Adding CSS Styling
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-emotion")
+
+                // Getting Icons
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-mui-icons:5.11.11-pre.546")
+
             }
         }
     }
