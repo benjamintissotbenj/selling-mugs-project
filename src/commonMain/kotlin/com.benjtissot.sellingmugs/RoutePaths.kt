@@ -1,8 +1,11 @@
 package com.benjtissot.sellingmugs
-const val HOMEPAGE_PATH = "/home"
-const val HELLO_PATH = "/hello"
 const val LOGIN_PATH = "/login"
+const val SESSION_PATH = "/session"
+const val USER_PATH = "/user"
+const val CLICK_TYPE_PATH = "/click_type"
+const val CLICK_PATH = "/click"
 const val REGISTER_PATH = "/register"
+const val HOMEPAGE_PATH = "/home"
 const val CART_PATH = "/cart"
 const val CHECKOUT_PATH = "/checkout"
 const val PAYMENT_PATH = "/payment"
