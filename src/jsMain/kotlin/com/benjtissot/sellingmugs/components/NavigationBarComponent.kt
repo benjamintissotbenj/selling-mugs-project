@@ -1,4 +1,6 @@
 package com.benjtissot.sellingmugs.components
+import com.benjtissot.sellingmugs.HELLO_PATH
+import com.benjtissot.sellingmugs.HOMEPAGE_PATH
 import csstype.*
 import react.*
 import emotion.react.*
@@ -13,12 +15,13 @@ import react.dom.html.ReactHTML.h1
 import react.dom.html.ReactHTML.li
 import react.dom.html.ReactHTML.nav
 import react.dom.html.ReactHTML.ul
+import react.router.useNavigate
 
 external interface NavProps : Props {
-    var links: List<Pair<String, String>> // text and url pairs
 }
 
 val NavigationBarComponent = FC<NavProps> { props ->
+    val navigate = useNavigate()
     nav {
         css {
             backgroundColor = Color("#333")
@@ -68,7 +71,9 @@ val NavigationBarComponent = FC<NavProps> { props ->
                     size = Size.small
                     color = IconButtonColor.primary
                     Search()
-                    onClick = {  }
+                    onClick = {
+                        navigate.invoke(HELLO_PATH)
+                    }
                 }
             }
 
@@ -81,7 +86,10 @@ val NavigationBarComponent = FC<NavProps> { props ->
                     size = Size.small
                     color = IconButtonColor.primary
                     Home()
-                    onClick = {  }
+                    onClick = {
+                        navigate.invoke(HOMEPAGE_PATH)
+
+                    }
                 }
             }
         }

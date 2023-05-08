@@ -90,6 +90,9 @@ kotlin {
                 // Getting Icons
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-mui-icons:5.11.11-pre.546")
 
+                // Routing
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-react-router-dom:6.11.1-pre.547")
+
             }
         }
     }

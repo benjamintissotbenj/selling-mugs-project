@@ -55,6 +55,16 @@ fun main() {
             static("/") {
                 resources("")
             }
+            get("/hello") {
+                call.respondText(
+                    this::class.java.classLoader.getResource("index.html")!!.readText(),
+                    ContentType.Text.Html
+                )
+            }
+            static("/hello") {
+                resources("")
+            }
+
 
             // Routing to my controllers
 
