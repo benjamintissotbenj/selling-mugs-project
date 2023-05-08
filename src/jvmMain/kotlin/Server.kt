@@ -1,4 +1,5 @@
 import ch.qos.logback.classic.LoggerContext
+import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.HOMEPAGE_PATH
 import com.benjtissot.sellingmugs.controllers.*
 import com.benjtissot.sellingmugs.entities.Click
@@ -59,7 +60,9 @@ fun main() {
         routing {
             // When getting on the empty URL, create session and redirect to homepage
             get("/") {
-                call.sessions.set(Session(id = genUuid().toString(), null, arrayListOf<Click>()))
+                val initListOfClicks = arrayListOf<Click>()
+                initListOfClicks.add(Click("random", Const.ClickType.home))
+                call.sessions.set(Session(id = genUuid().toString(), null, initListOfClicks))
                 call.respondRedirect(HOMEPAGE_PATH)
             }
             static("/") {

@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 data class Session(
     @SerialName("_id") val id: String,
     var user: User?,
-    val clicks: ArrayList<Click>,
+    val clicks: List<Click>,
     //TODO: next specs we will be using in the NN
     ){
 
