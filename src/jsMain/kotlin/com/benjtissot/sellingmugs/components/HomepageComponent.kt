@@ -3,6 +3,8 @@ package com.benjtissot.sellingmugs.components
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.entities.Artwork
 import com.benjtissot.sellingmugs.entities.Mug
+import com.benjtissot.sellingmugs.entities.Session
+import com.benjtissot.sellingmugs.entities.User
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.channels.Channel
@@ -18,6 +20,7 @@ private val scope = MainScope()
 
 val HomepageComponent = FC<HomepageProps> { props ->
     var mugList by useState(emptyList<Mug>())
+    var session: Session? by useState(null)
 
     // At first initialisation, get the list
     // Alternative is useState when we want to persist something across re-renders
@@ -25,12 +28,18 @@ val HomepageComponent = FC<HomepageProps> { props ->
         scope.launch {
             mugList = getMugList()
         }
+        scope.launch {
+            session = getSession()
+        }
     }
 
-    NavigationBarComponent {}
+    NavigationBarComponent {
+        currentSession = session
+    }
 
     MugListComponent {
         list = mugList
+        title = "Best for you"
         onItemClick = {
             scope.launch {
                 deleteMugListItem(it) // deletes from server
@@ -62,4 +71,6 @@ val HomepageComponent = FC<HomepageProps> { props ->
 
         }
     }
+
+    FooterComponent {}
 }

@@ -2,6 +2,8 @@ package com.benjtissot.sellingmugs
 
 import com.benjtissot.sellingmugs.entities.Artwork
 import com.benjtissot.sellingmugs.entities.Mug
+import com.benjtissot.sellingmugs.entities.Session
+import com.benjtissot.sellingmugs.entities.User
 import io.ktor.http.*
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -15,6 +17,20 @@ val jsonClient = HttpClient {
     }
 }
 
+// Get session
+suspend fun getSession(): Session {
+    return jsonClient.get(Session.path).body()
+}
+
+suspend fun setUser(user: User) {
+    jsonClient.post(Session.path+User.path) {
+        contentType(ContentType.Application.Json)
+        setBody(user)
+    }
+}
+
+
+// MugList
 suspend fun getMugList(): List<Mug> {
     return jsonClient.get(Mug.path).body()
 }

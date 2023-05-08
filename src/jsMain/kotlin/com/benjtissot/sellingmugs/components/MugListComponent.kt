@@ -14,13 +14,14 @@ import react.dom.html.ReactHTML.img
 
 external interface MugListProps: Props {
     var list: List<Mug>
+    var title: String
     var onItemClick: (Mug) -> Unit
 }
 
 val MugListComponent = FC<MugListProps> {
         props ->
     header {
-        +"Header"
+        +props.title
     }
     div {
         css {
@@ -37,10 +38,6 @@ val MugListComponent = FC<MugListProps> {
             }
         }
 
-    }
-
-    footer {
-        +"Footer"
     }
 
 

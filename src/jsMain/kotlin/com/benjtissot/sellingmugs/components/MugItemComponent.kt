@@ -21,7 +21,7 @@ val MugItemComponent = FC<MugItemProps> {
         css {
             alignContent = AlignContent.center
             width = 10.rem
-            height = 16.rem
+            height = 10.rem
             padding = 1.rem
         }
 

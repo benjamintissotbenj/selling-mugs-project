@@ -1,27 +1,30 @@
 package com.benjtissot.sellingmugs.components
-import com.benjtissot.sellingmugs.HELLO_PATH
-import com.benjtissot.sellingmugs.HOMEPAGE_PATH
+import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.entities.Session
+import com.benjtissot.sellingmugs.entities.User
 import csstype.*
 import react.*
 import emotion.react.*
-import mui.icons.material.Home
-import mui.icons.material.Search
+import io.ktor.util.logging.*
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import mui.icons.material.*
 import mui.material.IconButton
 import mui.material.IconButtonColor
 import mui.material.Size
-import react.dom.html.ReactHTML.a
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.h1
-import react.dom.html.ReactHTML.li
 import react.dom.html.ReactHTML.nav
-import react.dom.html.ReactHTML.ul
 import react.router.useNavigate
 
+val LOG = KtorSimpleLogger("NavigationBarComponent.kt")
 external interface NavProps : Props {
+    var currentSession: Session?
 }
 
 val NavigationBarComponent = FC<NavProps> { props ->
     val navigate = useNavigate()
+    LOG.error("${props.currentSession}")
     nav {
         css {
             backgroundColor = Color("#333")
@@ -40,28 +43,17 @@ val NavigationBarComponent = FC<NavProps> { props ->
             }
             +"Selling Mugs Project"
         }
+
+        // End Icons
         div {
             css {
                 display = Display.flex
                 margin = 0.px
                 padding = 0.px
             }
-            for (i in 1..5) {
-                div {
-                    css {
-                        display = Display.flex
-                        textAlign = TextAlign.center
-                        color = NamedColor.white
-                        marginRight = 1.vw
-                        marginLeft = 1.vw
-                        fontSize = 2.vh
-                        maxHeight = 3.vh
-                    }
-                    +"Category $i"
 
-                }
-            }
 
+            // Search
             div {
                 css {
                     verticalAlign = VerticalAlign.middle
@@ -77,6 +69,7 @@ val NavigationBarComponent = FC<NavProps> { props ->
                 }
             }
 
+            // Homepage
             div {
                 css {
                     verticalAlign = VerticalAlign.middle
@@ -88,7 +81,59 @@ val NavigationBarComponent = FC<NavProps> { props ->
                     Home()
                     onClick = {
                         navigate.invoke(HOMEPAGE_PATH)
+                    }
+                }
+            }
 
+            // Login
+            LoginButton {user = props.currentSession?.user}
+        }
+    }
+}
+
+external interface LoginButtonProps : Props {
+    var user: User?
+}
+
+val LoginButton = FC<LoginButtonProps> { props ->
+
+    val navigate = useNavigate()
+    LOG.error("${props.user}")
+    div {
+        css {
+            verticalAlign = VerticalAlign.middle
+            marginRight = 2.vw
+        }
+        props.user?.also {
+            // If User is non null
+            IconButton {
+                div {
+                    css {
+                        marginRight = 1.vw
+                    }
+                    +props.user!!.getNameInitial()
+                }
+                size = Size.small
+                color = IconButtonColor.primary
+                PersonOutline()
+                onClick = {
+                    navigate.invoke(LOGIN_PATH)
+                }
+            }
+        } ?: run {
+            // If user is null
+            LOG.debug("User is null")
+            div {
+                IconButton {
+                    size = Size.small
+                    color = IconButtonColor.primary
+                    Person()
+                    onClick = {
+                        val user = User("123","Benjamin", "Tissot", "123", "123", Const.UserType.ADMIN, "23")
+                        MainScope().launch {
+                            setUser(user)
+                        }
+                        navigate.invoke(LOGIN_PATH)
                     }
                 }
             }

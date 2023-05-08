@@ -3,6 +3,8 @@ package com.benjtissot.sellingmugs
 import com.benjtissot.sellingmugs.components.*
 import com.benjtissot.sellingmugs.entities.Artwork
 import com.benjtissot.sellingmugs.entities.Mug
+import com.benjtissot.sellingmugs.entities.Session
+import com.benjtissot.sellingmugs.entities.User
 import io.ktor.util.logging.*
 import react.*
 import kotlinx.coroutines.*
@@ -20,15 +22,14 @@ private val scope = MainScope()
 
 val App = FC<Props> {
     val LOG = KtorSimpleLogger("App.kt")
-    var mugList by useState(emptyList<Mug>())
+    var sessionApp: Session? by useState(null)
 
 
     BrowserRouter {
         Routes {
             Route {
                 path = HOMEPAGE_PATH
-                element = createElement(HomepageComponent)
-
+                element = createElement(type = HomepageComponent)
             }
             Route {
                 path = HELLO_PATH
@@ -40,6 +41,8 @@ val App = FC<Props> {
 }
 
 val helloComponent = FC<Props> {
+
+    NavigationBarComponent {}
     div {
         +"Hello Component"
     }

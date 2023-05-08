@@ -1,5 +1,5 @@
 package com.benjtissot.sellingmugs
-const val HOMEPAGE_PATH = "/"
+const val HOMEPAGE_PATH = "/home"
 const val HELLO_PATH = "/hello"
 const val LOGIN_PATH = "/login"
 const val REGISTER_PATH = "/register"

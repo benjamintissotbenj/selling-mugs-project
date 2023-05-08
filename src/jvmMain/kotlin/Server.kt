@@ -1,5 +1,9 @@
 import ch.qos.logback.classic.LoggerContext
+import com.benjtissot.sellingmugs.HOMEPAGE_PATH
 import com.benjtissot.sellingmugs.controllers.*
+import com.benjtissot.sellingmugs.entities.Click
+import com.benjtissot.sellingmugs.entities.Session
+import com.benjtissot.sellingmugs.genUuid
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -12,6 +16,7 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.sessions.*
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
 import org.slf4j.LoggerFactory
@@ -45,16 +50,23 @@ fun main() {
         // Provides authentication
         install(Authentication)
 
+        // Handling session
+        install(Sessions){
+            cookie<Session>("session"){
+                cookie.maxAgeInSeconds = 600
+            }
+        }
+
         routing {
+            // When getting on the empty URL, create session and redirect to homepage
             get("/") {
-                call.respondText(
-                        this::class.java.classLoader.getResource("index.html")!!.readText(),
-                        ContentType.Text.Html
-                )
+                call.sessions.set(Session(id = genUuid().toString(), null, emptyList()))
+                call.respondRedirect(HOMEPAGE_PATH)
             }
             static("/") {
                 resources("")
             }
+
             get("/hello") {
                 call.respondText(
                     this::class.java.classLoader.getResource("index.html")!!.readText(),
@@ -69,6 +81,8 @@ fun main() {
             // Routing to my controllers
 
             mugRouting()
+
+            sessionRouting()
 
             homepageRouting()
 

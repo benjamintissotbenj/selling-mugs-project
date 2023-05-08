@@ -7,9 +7,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Session(
     @SerialName("_id") val id: String,
-    val userId: String,
-    val totalClicks: String,
-    val secondsSpent: Const.UserType,
+    var user: User?,
+    val clicks: List<Click>,
     //TODO: next specs we will be using in the NN
     ){
 

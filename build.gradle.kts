@@ -73,6 +73,8 @@ kotlin {
                 implementation("io.ktor:ktor-server-auth:$ktorVersion")
                 implementation("ch.qos.logback:logback-classic:$logbackVersion")
                 implementation("org.litote.kmongo:kmongo-coroutine-serialization:$kmongoVersion")
+                // Handling session
+                implementation("io.ktor:ktor-server-sessions:$ktorVersion")
             }
         }
 
