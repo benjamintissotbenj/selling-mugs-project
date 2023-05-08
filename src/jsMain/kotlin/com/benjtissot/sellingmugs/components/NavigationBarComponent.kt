@@ -18,6 +18,9 @@ import react.dom.html.ReactHTML.nav
 import react.router.useNavigate
 
 val LOG = KtorSimpleLogger("NavigationBarComponent.kt")
+
+private val scope = MainScope()
+
 external interface NavProps : Props {
     var currentSession: Session?
 }
@@ -64,6 +67,9 @@ val NavigationBarComponent = FC<NavProps> { props ->
                     color = IconButtonColor.primary
                     Search()
                     onClick = {
+                        scope.launch{
+                            recordClick(Const.ClickType.search.toString())
+                        }
                         navigate.invoke(HELLO_PATH)
                     }
                 }
@@ -80,6 +86,9 @@ val NavigationBarComponent = FC<NavProps> { props ->
                     color = IconButtonColor.primary
                     Home()
                     onClick = {
+                        scope.launch{
+                            recordClick(Const.ClickType.home.toString())
+                        }
                         navigate.invoke(HOMEPAGE_PATH)
                     }
                 }

@@ -1,9 +1,6 @@
 package com.benjtissot.sellingmugs
 
-import com.benjtissot.sellingmugs.entities.Artwork
-import com.benjtissot.sellingmugs.entities.Mug
-import com.benjtissot.sellingmugs.entities.Session
-import com.benjtissot.sellingmugs.entities.User
+import com.benjtissot.sellingmugs.entities.*
 import io.ktor.http.*
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -26,6 +23,12 @@ suspend fun setUser(user: User) {
     jsonClient.post(Session.path+User.path) {
         contentType(ContentType.Application.Json)
         setBody(user)
+    }
+}
+
+suspend fun recordClick(type: String) {
+    jsonClient.post(Session.path+Click.path+"/$type") {
+        contentType(ContentType.Application.Json)
     }
 }
 

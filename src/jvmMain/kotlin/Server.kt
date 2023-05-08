@@ -20,7 +20,6 @@ import io.ktor.server.sessions.*
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
 import org.slf4j.LoggerFactory
-import java.util.logging.Level
 
 
 val client = KMongo.createClient().coroutine
@@ -60,7 +59,7 @@ fun main() {
         routing {
             // When getting on the empty URL, create session and redirect to homepage
             get("/") {
-                call.sessions.set(Session(id = genUuid().toString(), null, emptyList()))
+                call.sessions.set(Session(id = genUuid().toString(), null, arrayListOf<Click>()))
                 call.respondRedirect(HOMEPAGE_PATH)
             }
             static("/") {

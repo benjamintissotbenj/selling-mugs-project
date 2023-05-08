@@ -1,6 +1,4 @@
 package com.benjtissot.sellingmugs.components
-import com.benjtissot.sellingmugs.HELLO_PATH
-import com.benjtissot.sellingmugs.HOMEPAGE_PATH
 import csstype.*
 import react.*
 import emotion.react.*

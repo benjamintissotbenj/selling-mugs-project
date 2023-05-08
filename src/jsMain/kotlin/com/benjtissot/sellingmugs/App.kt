@@ -16,9 +16,6 @@ import react.router.Routes
 import react.router.dom.BrowserRouter
 
 
-private val scope = MainScope()
-
-
 
 val App = FC<Props> {
     val LOG = KtorSimpleLogger("App.kt")
