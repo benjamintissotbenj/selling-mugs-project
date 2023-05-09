@@ -20,7 +20,7 @@ fun Route.userInfoRouting(){
     val LOG = Logger.getLogger(this.javaClass.name)
 
     route(USER_INFO_PATH) {
-        authenticate("auth-basic") {
+        //authenticate("auth-basic") {
             get {
                 call.respondText("Hello, ${call.principal<UserIdPrincipal>()?.name}!")
             }
@@ -30,7 +30,7 @@ fun Route.userInfoRouting(){
             delete() {
                 call.respond(HttpStatusCode.OK)
             }
-        }
+        //}
 
     }
 }

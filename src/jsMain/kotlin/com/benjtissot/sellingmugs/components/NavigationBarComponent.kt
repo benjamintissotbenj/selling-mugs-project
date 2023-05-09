@@ -29,7 +29,6 @@ external interface NavProps : Props {
 
 val NavigationBarComponent = FC<NavProps> { props ->
     val navigate = useNavigate()
-    LOG.error("${props.currentSession}")
     nav {
         css {
             backgroundColor = Color("#333")
@@ -129,7 +128,6 @@ external interface LoginButtonProps : Props {
 val LoginButton = FC<LoginButtonProps> { props ->
 
     val navigate = useNavigate()
-    LOG.error("${props.user}")
     div {
         css {
             verticalAlign = VerticalAlign.middle
