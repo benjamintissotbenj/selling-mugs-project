@@ -2,6 +2,8 @@ package com.benjtissot.sellingmugs.repositories
 
 import com.benjtissot.sellingmugs.entities.User
 import database
+import org.litote.kmongo.and
+import org.litote.kmongo.eq
 
 val userCollection = database.getCollection<User>()
 
@@ -24,6 +26,14 @@ class UserRepository {
                     userCollection.insertOne(user)
                 }
             }
+        }
+
+        /**
+         * @param user the [User] to be authenticated
+         * @return a [Boolean] determining if the user is authenticated
+         */
+        suspend fun authenticate(user: User) : Boolean {
+            return userCollection.findOne(and((User::email eq user.id), User::passwordHash eq user.passwordHash)) != null
         }
 
     }

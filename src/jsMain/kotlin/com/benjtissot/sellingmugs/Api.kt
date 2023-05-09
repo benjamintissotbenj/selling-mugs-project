@@ -1,10 +1,12 @@
 package com.benjtissot.sellingmugs
 
+import com.benjtissot.sellingmugs.Pages.LOG
 import com.benjtissot.sellingmugs.entities.*
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 
@@ -64,4 +66,25 @@ suspend fun deleteMugListItem(mugListItem: Mug) {
 suspend fun getUserInfo() : String {
     val httpResponse = jsonClient.get(USER_INFO_PATH)
     return httpResponse.body()
+}
+
+// get User Info
+
+suspend fun postDummyLogin() {
+    val user = User("123","Benjamin", "Tissot", "123", "123", Const.UserType.ADMIN, "23")
+    jsonClient.post(LOGIN_PATH) {
+        contentType(ContentType.Application.Json)
+        setBody(user)
+    }
+}
+suspend fun postDummyRegister(): HttpResponse {
+    val user = User("123","Benjamin", "Tissot", "123", "123", Const.UserType.ADMIN, "23")
+
+    LOG.debug("Posting dummy register")
+    val httpResponse = jsonClient.post(REGISTER_PATH) {
+        contentType(ContentType.Application.Json)
+        setBody(user)
+    }
+
+    return httpResponse
 }

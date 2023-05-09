@@ -1,15 +1,21 @@
 import ch.qos.logback.classic.LoggerContext
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
 import com.benjtissot.sellingmugs.AuthUtil.Companion.hashedUserTable
+import com.benjtissot.sellingmugs.ConfigConst
 import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.HOMEPAGE_PATH
 import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.controllers.*
 import com.benjtissot.sellingmugs.entities.Click
 import com.benjtissot.sellingmugs.entities.Session
+import com.typesafe.config.ConfigFactory
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
+import io.ktor.server.config.*
 import io.ktor.server.engine.*
 import io.ktor.server.http.content.*
 import io.ktor.server.netty.*
@@ -48,17 +54,12 @@ fun Application.module() {
         install(Compression) {
             gzip()
         }
+        val port = environment.config.propertyOrNull("ktor.deployment.port")?.getString() ?: "8080"
 
-        // Provides authentication
-        install(Authentication){
-            basic("auth-basic"){
-                // Configure basic authentication
-                realm = "Access to connected content"
-                validate { credentials ->
-                    hashedUserTable.authenticate(credentials)
-                }
-            }
-        }
+
+
+        // Provides authentication via JWT
+        installAuthentication()
 
         // Handling session
         install(Sessions){
@@ -101,10 +102,10 @@ fun Application.createRoutes(){
         mugRouting()
         userInfoRouting()
 
-        /*loginRouting()
+        loginRouting()
         cartRouting()
         checkoutRouting()
-        paymentRouting()*/
+        paymentRouting()
 
 
         // Deactivating MongoDb Driver logs
@@ -118,6 +119,50 @@ fun Application.createRoutes(){
 
     // Print out all the routes for debug
     allRoutes(routing).forEach { println(it) }
+}
+
+/**
+ * Method used to configure authentication method via JWT
+ */
+fun Application.installAuthentication(){
+
+    val secret = ConfigConst.SECRET
+    val issuer = ConfigConst.ISSUER
+    val audience = ConfigConst.AUDIENCE
+    val myRealm = ConfigConst.REALM
+
+    install(Authentication){
+        basic("auth-basic"){
+            // Configure basic authentication
+            realm = "Access to connected content"
+            validate { credentials ->
+                hashedUserTable.authenticate(credentials)
+            }
+        }
+
+        jwt("auth-jwt") {
+            realm = myRealm
+            verifier(
+                JWT
+                    .require(Algorithm.HMAC256(secret))
+                    .withAudience(audience)
+                    .withIssuer(issuer)
+                    .build())
+            // Checking the token credential
+            validate { credential ->
+                if (credential.payload.getClaim("username").asString() != "") {
+                    JWTPrincipal(credential.payload)
+                } else {
+                    null
+                }
+            }
+            // What to do if token is not valid
+            challenge { defaultScheme, realm ->
+                call.respond(HttpStatusCode.Unauthorized, "Token is not valid or has expired")
+            }
+        }
+
+    }
 }
 
 /**
