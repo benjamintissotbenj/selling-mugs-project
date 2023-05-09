@@ -27,6 +27,23 @@ kotlin {
     js {
         browser {
             binaries.executable()
+            webpackTask {
+                cssSupport {
+                    enabled = true
+                }
+            }
+            runTask {
+                cssSupport {
+                    enabled = true
+                }
+            }
+            testTask {
+                useKarma {
+                    webpackConfig.cssSupport {
+                        enabled = true
+                    }
+                }
+            }
         }
     }
     sourceSets {
@@ -56,6 +73,8 @@ kotlin {
                 implementation("io.ktor:ktor-server-auth:$ktorVersion")
                 implementation("ch.qos.logback:logback-classic:$logbackVersion")
                 implementation("org.litote.kmongo:kmongo-coroutine-serialization:$kmongoVersion")
+                // Handling session
+                implementation("io.ktor:ktor-server-sessions:$ktorVersion")
             }
         }
 
@@ -67,10 +86,20 @@ kotlin {
                 implementation(project.dependencies.enforcedPlatform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:$kotlinWrappersVersion"))
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-react")
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-react-dom")
+                // Adding CSS Styling
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-emotion")
+
+                // Getting Icons
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-mui-icons:5.11.11-pre.546")
+
+                // Routing
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-react-router-dom:6.11.1-pre.547")
+
             }
         }
     }
 }
+
 
 application {
     mainClass.set("ServerKt")
@@ -97,6 +126,7 @@ tasks {
         }
     }
 }
+
 
 distributions {
     main {
