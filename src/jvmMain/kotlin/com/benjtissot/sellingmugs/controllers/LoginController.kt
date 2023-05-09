@@ -9,8 +9,6 @@ import io.ktor.server.routing.*
 
 fun Route.loginRouting(){
 
-    // TODO: deal with this at some point
-
     route(LOGIN_PATH) {
         get {
             call.respond("Hello Login Controller")

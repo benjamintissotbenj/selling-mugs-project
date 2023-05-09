@@ -2,6 +2,7 @@ package com.benjtissot.sellingmugs
 
 // Object paths
 const val SESSION_PATH = "/session"
+const val CLICK_DATA_PATH = "/click_data"
 const val ARTWORK_PATH = "/artwork"
 const val USER_PATH = "/user"
 const val QUESTIONNAIRE_PATH = "/questionnaire"
@@ -10,6 +11,7 @@ const val TRANSACTION_PATH = "/transaction"
 const val CLICK_PATH = "/click"
 
 // Route Paths
+
 const val HOMEPAGE_PATH = "/home"
 const val HELLO_PATH = "/hello"
 const val LOGIN_PATH = "/login"

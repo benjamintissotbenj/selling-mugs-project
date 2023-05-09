@@ -22,7 +22,7 @@ val LOG = KtorSimpleLogger("NavigationBarComponent.kt")
 private val scope = MainScope()
 
 external interface NavProps : Props {
-    var currentSession: Session?
+    var currentSession: Session
 }
 
 val NavigationBarComponent = FC<NavProps> { props ->
@@ -68,7 +68,7 @@ val NavigationBarComponent = FC<NavProps> { props ->
                     Search()
                     onClick = {
                         scope.launch{
-                            recordClick(Const.ClickType.search.toString())
+                            recordClick(props.currentSession.clickDataId, Const.ClickType.search.toString())
                         }
                         navigate.invoke(HELLO_PATH)
                     }
@@ -87,7 +87,7 @@ val NavigationBarComponent = FC<NavProps> { props ->
                     Home()
                     onClick = {
                         scope.launch{
-                            recordClick(Const.ClickType.home.toString())
+                            recordClick(props.currentSession.clickDataId, Const.ClickType.home.toString())
                         }
                         navigate.invoke(HOMEPAGE_PATH)
                     }
@@ -95,7 +95,7 @@ val NavigationBarComponent = FC<NavProps> { props ->
             }
 
             // Login
-            LoginButton {user = props.currentSession?.user}
+            LoginButton {user = props.currentSession.user}
         }
     }
 }

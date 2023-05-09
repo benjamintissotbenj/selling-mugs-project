@@ -1,10 +1,10 @@
 import ch.qos.logback.classic.LoggerContext
 import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.HOMEPAGE_PATH
+import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.controllers.*
 import com.benjtissot.sellingmugs.entities.Click
 import com.benjtissot.sellingmugs.entities.Session
-import com.benjtissot.sellingmugs.genUuid
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -57,12 +57,11 @@ fun main() {
             }
         }
 
-        routing {
+        val routing = routing {
             // When getting on the empty URL, create session and redirect to homepage
             get("/") {
-                val initListOfClicks = arrayListOf<Click>()
-                initListOfClicks.add(Click("random", Const.ClickType.home))
-                call.sessions.set(Session(id = genUuid().toString(), null, initListOfClicks))
+                val newSession = SessionRepository.createSession()
+                call.sessions.set(newSession)
                 call.respondRedirect(HOMEPAGE_PATH)
             }
             static("/") {
@@ -86,6 +85,8 @@ fun main() {
 
             sessionRouting()
 
+            clickRouting()
+
             homepageRouting()
 
             loginRouting()
@@ -103,5 +104,13 @@ fun main() {
             val LOG = java.util.logging.Logger.getLogger(this.javaClass.name)
             LOG.severe("MongoDB Driver Logs deactivated")
         }
+
+        // Print out all the routes for debug
+        allRoutes(routing).forEach { println(it) }
+
     }.start(wait = true)
+}
+
+fun allRoutes(root: Route): List<Route> {
+    return listOf(root) + root.children.flatMap { allRoutes(it) }
 }

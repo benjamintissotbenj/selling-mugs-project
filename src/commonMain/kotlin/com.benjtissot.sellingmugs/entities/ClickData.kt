@@ -6,10 +6,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Session(
+data class ClickData(
     @SerialName("_id") val id: String,
-    var user: User?,
-    val clickDataId: String,
+    val clicks: ArrayList<Click>,
     ){
 
     companion object {

@@ -32,45 +32,46 @@ val HomepageComponent = FC<HomepageProps> { props ->
             session = getSession()
         }
     }
-
-    NavigationBarComponent {
-        currentSession = session
-    }
-
-    MugListComponent {
-        list = mugList
-        title = "Best for you"
-        onItemClick = {
-            scope.launch {
-                deleteMugListItem(it) // deletes from server
-                mugList = getMugList() // updates client
-            }
+    session?.also{
+        NavigationBarComponent {
+            currentSession = session!!
         }
-    }
 
-    // Creating a field to input a new element
-    InputComponent {
-        onSubmit = { mugName, artURL ->
-            val artwork = Artwork("", artURL)
-            val cartItem = Mug("", mugName, 8.99f, artwork)
-
-            // Using a channel to have a sequential execution
-            val channel = Channel<Job>(capacity = Channel.UNLIMITED).apply {
+        MugListComponent {
+            list = mugList
+            title = "Best for you"
+            onItemClick = {
                 scope.launch {
-                    consumeEach { it.join() }
+                    deleteMugListItem(it) // deletes from server
+                    mugList = getMugList() // updates client
                 }
             }
-            channel.trySend(scope.launch{
-                addArtwork(artwork)
-            })
-            channel.trySend(scope.launch{
-                addMugListItem(cartItem)
-                mugList = getMugList() // updates the state (using "useState") so re-renders page
-            })
-
-
         }
-    }
+
+        // Creating a field to input a new element
+        InputComponent {
+            onSubmit = { mugName, artURL ->
+                val artwork = Artwork("", artURL)
+                val cartItem = Mug("", mugName, 8.99f, artwork)
+
+                // Using a channel to have a sequential execution
+                val channel = Channel<Job>(capacity = Channel.UNLIMITED).apply {
+                    scope.launch {
+                        consumeEach { it.join() }
+                    }
+                }
+                channel.trySend(scope.launch{
+                    addArtwork(artwork)
+                })
+                channel.trySend(scope.launch{
+                    addMugListItem(cartItem)
+                    mugList = getMugList() // updates the state (using "useState") so re-renders page
+                })
+
+
+            }
+        }
+    } ?:
 
     FooterComponent {}
 }

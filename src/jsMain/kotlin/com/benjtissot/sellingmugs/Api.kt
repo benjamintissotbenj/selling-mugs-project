@@ -26,8 +26,9 @@ suspend fun setUser(user: User) {
     }
 }
 
-suspend fun recordClick(type: String) {
-    jsonClient.post(Session.path+Click.path+"/$type") {
+suspend fun recordClick(clickDataId: String, clickType: String) {
+
+    jsonClient.post(Click.path + "/$clickDataId/$clickType") {
         contentType(ContentType.Application.Json)
     }
 }
