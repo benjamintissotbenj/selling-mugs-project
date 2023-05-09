@@ -2,8 +2,8 @@ package com.benjtissot.sellingmugs.controllers
 
 import com.benjtissot.sellingmugs.entities.Artwork
 import com.benjtissot.sellingmugs.entities.Mug
-import database
 import com.benjtissot.sellingmugs.genUuid
+import database
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*

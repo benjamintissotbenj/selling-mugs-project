@@ -1,20 +1,16 @@
 package com.benjtissot.sellingmugs
 
-import com.benjtissot.sellingmugs.components.*
-import com.benjtissot.sellingmugs.entities.Artwork
-import com.benjtissot.sellingmugs.entities.Mug
+import com.benjtissot.sellingmugs.components.HomepageComponent
+import com.benjtissot.sellingmugs.components.NavigationBarComponent
 import com.benjtissot.sellingmugs.entities.Session
-import com.benjtissot.sellingmugs.entities.User
 import io.ktor.util.logging.*
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import react.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.consumeEach
 import react.dom.html.ReactHTML.div
 import react.router.Route
 import react.router.Routes
 import react.router.dom.BrowserRouter
-
 
 
 val App = FC<Props> {

@@ -1,15 +1,15 @@
 package com.benjtissot.sellingmugs.components
 
 import com.benjtissot.sellingmugs.entities.Mug
-import csstype.*
-import react.FC
+import csstype.Display
+import csstype.Overflow
+import csstype.ScrollBehavior
+import csstype.rem
 import emotion.react.css
+import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.header
-import react.dom.html.ReactHTML.footer
-import react.dom.html.ReactHTML.img
-
 
 
 external interface MugListProps: Props {

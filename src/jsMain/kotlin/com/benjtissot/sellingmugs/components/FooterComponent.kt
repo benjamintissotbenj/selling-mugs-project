@@ -1,19 +1,10 @@
 package com.benjtissot.sellingmugs.components
 import csstype.*
-import react.*
-import emotion.react.*
-import mui.icons.material.Home
-import mui.icons.material.Search
-import mui.material.IconButton
-import mui.material.IconButtonColor
-import mui.material.Size
-import react.dom.html.ReactHTML.a
-import react.dom.html.ReactHTML.div
-import react.dom.html.ReactHTML.footer
+import emotion.react.css
+import react.FC
+import react.Props
 import react.dom.html.ReactHTML.h1
-import react.dom.html.ReactHTML.li
 import react.dom.html.ReactHTML.nav
-import react.dom.html.ReactHTML.ul
 import react.router.useNavigate
 
 external interface FooterProps : Props {

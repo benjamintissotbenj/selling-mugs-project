@@ -1,13 +1,15 @@
 package com.benjtissot.sellingmugs.components
 
 import org.w3c.dom.HTMLFormElement
-import react.*
 import org.w3c.dom.HTMLInputElement
+import react.FC
+import react.Props
 import react.dom.events.ChangeEventHandler
 import react.dom.events.FormEventHandler
 import react.dom.html.InputType
 import react.dom.html.ReactHTML.form
 import react.dom.html.ReactHTML.input
+import react.useState
 
 external interface InputProps : Props {
     var onSubmit: (String, String) -> Unit

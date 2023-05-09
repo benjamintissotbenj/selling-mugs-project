@@ -1,17 +1,12 @@
 package com.benjtissot.sellingmugs.controllers
 
-import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.entities.Session
-import com.benjtissot.sellingmugs.entities.User
+import com.benjtissot.sellingmugs.CLICK_PATH
+import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.repositories.ClickDataRepository
-import com.benjtissot.sellingmugs.repositories.SessionRepository
-import com.benjtissot.sellingmugs.repositories.sessionCollection
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.server.sessions.*
 import java.util.logging.Logger
 
 fun Route.clickRouting(){

@@ -1,12 +1,12 @@
 package com.benjtissot.sellingmugs.components
 
 import com.benjtissot.sellingmugs.entities.Mug
-import csstype.*
-import react.FC
+import csstype.AlignContent
+import csstype.rem
 import emotion.react.css
+import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
-import react.dom.html.ReactHTML.footer
 import react.dom.html.ReactHTML.img
 
 

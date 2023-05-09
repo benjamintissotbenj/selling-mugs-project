@@ -1,11 +1,10 @@
 package com.benjtissot.sellingmugs.controllers
 
-import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.SESSION_PATH
+import com.benjtissot.sellingmugs.USER_PATH
 import com.benjtissot.sellingmugs.entities.Session
 import com.benjtissot.sellingmugs.entities.User
-import com.benjtissot.sellingmugs.repositories.ClickDataRepository
 import com.benjtissot.sellingmugs.repositories.SessionRepository
-import com.benjtissot.sellingmugs.repositories.sessionCollection
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*

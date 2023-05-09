@@ -4,14 +4,15 @@ import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.entities.Artwork
 import com.benjtissot.sellingmugs.entities.Mug
 import com.benjtissot.sellingmugs.entities.Session
-import com.benjtissot.sellingmugs.entities.User
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
-import react.*
-import react.router.useNavigate
+import react.FC
+import react.Props
+import react.useEffectOnce
+import react.useState
 
 external interface HomepageProps : Props {
 }

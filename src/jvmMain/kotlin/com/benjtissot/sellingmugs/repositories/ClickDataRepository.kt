@@ -3,10 +3,8 @@ package com.benjtissot.sellingmugs.repositories
 import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.entities.Click
 import com.benjtissot.sellingmugs.entities.ClickData
-import com.benjtissot.sellingmugs.entities.Session
 import com.benjtissot.sellingmugs.genUuid
 import database
-import kotlinx.serialization.internal.throwArrayMissingFieldException
 import org.litote.kmongo.eq
 
 val clickDataCollection = database.getCollection<ClickData>()
