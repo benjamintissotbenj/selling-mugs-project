@@ -7,10 +7,7 @@ import emotion.react.css
 import io.ktor.util.logging.*
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import mui.icons.material.Home
-import mui.icons.material.Person
-import mui.icons.material.PersonOutline
-import mui.icons.material.Search
+import mui.icons.material.*
 import mui.material.IconButton
 import mui.material.IconButtonColor
 import mui.material.Size
@@ -95,6 +92,22 @@ val NavigationBarComponent = FC<NavProps> { props ->
                             recordClick(props.currentSession.clickDataId, Const.ClickType.home.toString())
                         }
                         navigate.invoke(HOMEPAGE_PATH)
+                    }
+                }
+            }
+
+            // UserInfo
+            div {
+                css {
+                    verticalAlign = VerticalAlign.middle
+                    marginRight = 2.vw
+                }
+                IconButton {
+                    size = Size.small
+                    color = IconButtonColor.primary
+                    PersonSearch()
+                    onClick = {
+                        navigate.invoke(USER_INFO_PATH)
                     }
                 }
             }

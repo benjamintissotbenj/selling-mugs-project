@@ -1,6 +1,7 @@
 package com.benjtissot.sellingmugs
 
-import com.benjtissot.sellingmugs.components.HomepageComponent
+import com.benjtissot.sellingmugs.Pages.Homepage
+import com.benjtissot.sellingmugs.Pages.UserInfoPage
 import com.benjtissot.sellingmugs.components.NavigationBarComponent
 import com.benjtissot.sellingmugs.entities.Session
 import io.ktor.util.logging.*
@@ -22,11 +23,15 @@ val App = FC<Props> {
         Routes {
             Route {
                 path = HOMEPAGE_PATH
-                element = createElement(type = HomepageComponent)
+                element = createElement(type = Homepage)
             }
             Route {
                 path = HELLO_PATH
                 element = createElement(helloComponent)
+            }
+            Route {
+                path = USER_INFO_PATH
+                element = createElement(type = UserInfoPage)
             }
         }
     }

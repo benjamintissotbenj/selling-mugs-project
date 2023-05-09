@@ -1,6 +1,10 @@
-package com.benjtissot.sellingmugs.components
+package com.benjtissot.sellingmugs.Pages
 
 import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.components.FooterComponent
+import com.benjtissot.sellingmugs.components.InputComponent
+import com.benjtissot.sellingmugs.components.MugListComponent
+import com.benjtissot.sellingmugs.components.NavigationBarComponent
 import com.benjtissot.sellingmugs.entities.Artwork
 import com.benjtissot.sellingmugs.entities.Mug
 import com.benjtissot.sellingmugs.entities.Session
@@ -19,7 +23,7 @@ external interface HomepageProps : Props {
 
 private val scope = MainScope()
 
-val HomepageComponent = FC<HomepageProps> { props ->
+val Homepage = FC<HomepageProps> { props ->
     var mugList by useState(emptyList<Mug>())
     var session: Session? by useState(null)
 
