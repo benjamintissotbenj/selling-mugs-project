@@ -23,6 +23,7 @@ private val scope = MainScope()
 
 external interface NavProps : Props {
     var currentSession: Session
+    var updateSession: () -> Unit
 }
 
 val NavigationBarComponent = FC<NavProps> { props ->
@@ -95,13 +96,17 @@ val NavigationBarComponent = FC<NavProps> { props ->
             }
 
             // Login
-            LoginButton {user = props.currentSession.user}
+            LoginButton {
+                user = props.currentSession.user
+                updateSession = props.updateSession
+            }
         }
     }
 }
 
 external interface LoginButtonProps : Props {
     var user: User?
+    var updateSession: () -> Unit
 }
 
 val LoginButton = FC<LoginButtonProps> { props ->
@@ -126,7 +131,7 @@ val LoginButton = FC<LoginButtonProps> { props ->
                 color = IconButtonColor.primary
                 PersonOutline()
                 onClick = {
-                    navigate.invoke(LOGIN_PATH)
+                    navigate.invoke(HOMEPAGE_PATH)
                 }
             }
         } ?: run {
@@ -141,8 +146,9 @@ val LoginButton = FC<LoginButtonProps> { props ->
                         val user = User("123","Benjamin", "Tissot", "123", "123", Const.UserType.ADMIN, "23")
                         MainScope().launch {
                             setUser(user)
+                            props.updateSession()
                         }
-                        navigate.invoke(LOGIN_PATH)
+                        navigate.invoke(HOMEPAGE_PATH)
                     }
                 }
             }

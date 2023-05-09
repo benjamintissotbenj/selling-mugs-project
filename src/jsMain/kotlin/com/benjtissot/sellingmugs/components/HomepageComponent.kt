@@ -35,6 +35,11 @@ val HomepageComponent = FC<HomepageProps> { props ->
     session?.also{
         NavigationBarComponent {
             currentSession = session!!
+            updateSession = {
+                scope.launch {
+                    session = getSession()
+                }
+            }
         }
 
         MugListComponent {

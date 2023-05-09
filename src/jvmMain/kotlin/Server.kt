@@ -90,12 +90,12 @@ fun Application.createRoutes(){
         sessionRouting()
         clickRouting()
         homepageRouting()
+        mugRouting()
 
         /*loginRouting()
         cartRouting()
         checkoutRouting()
-        paymentRouting()
-        mugRouting()*/
+        paymentRouting()*/
 
         val loggerContext: LoggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
         val rootLogger = loggerContext.getLogger("org.mongodb.driver")

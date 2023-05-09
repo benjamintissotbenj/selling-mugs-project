@@ -40,17 +40,23 @@ val App = FC<Props> {
 val helloComponent = FC<Props> {
 
     var session: Session? by useState(null)
+    val scope = MainScope()
 
     // At first initialisation, get the list
     // Alternative is useState when we want to persist something across re-renders
     useEffectOnce {
-        MainScope().launch {
+        scope.launch {
             session = getSession()
         }
     }
     session?.also{
         NavigationBarComponent {
             currentSession = session!!
+            updateSession = {
+                scope.launch {
+                    session = getSession()
+                }
+            }
         }
         div {
             +"Hello Component"
