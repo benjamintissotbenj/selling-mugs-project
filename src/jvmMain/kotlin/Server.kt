@@ -57,60 +57,61 @@ fun main() {
             }
         }
 
-        val routing = routing {
-            // When getting on the empty URL, create session and redirect to homepage
-            get("/") {
-                val newSession = SessionRepository.createSession()
-                call.sessions.set(newSession)
-                call.respondRedirect(HOMEPAGE_PATH)
-            }
-            static("/") {
-                resources("")
-            }
-
-            get("/hello") {
-                call.respondText(
-                    this::class.java.classLoader.getResource("index.html")!!.readText(),
-                    ContentType.Text.Html
-                )
-            }
-            static("/hello") {
-                resources("")
-            }
-
-
-            // Routing to my controllers
-
-            mugRouting()
-
-            sessionRouting()
-
-            clickRouting()
-
-            homepageRouting()
-
-            loginRouting()
-
-            cartRouting()
-
-            checkoutRouting()
-
-            paymentRouting()
-
-            val loggerContext: LoggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
-            val rootLogger = loggerContext.getLogger("org.mongodb.driver")
-            rootLogger.level = ch.qos.logback.classic.Level.OFF
-
-            val LOG = java.util.logging.Logger.getLogger(this.javaClass.name)
-            LOG.severe("MongoDB Driver Logs deactivated")
-        }
-
-        // Print out all the routes for debug
-        allRoutes(routing).forEach { println(it) }
+        // Creates the routing for the application
+        createRoutes()
 
     }.start(wait = true)
 }
 
+fun Application.createRoutes(){
+    val routing = routing {
+        // When getting on the empty URL, create session and redirect to homepage
+        get("/") {
+//                val newSession = SessionRepository.createSession()
+//                call.sessions.set(newSession)
+            call.respondRedirect(HOMEPAGE_PATH)
+        }
+        static("/") {
+            resources("")
+        }
+
+        get("/hello") {
+            call.respondText(
+                this::class.java.classLoader.getResource("index.html")!!.readText(),
+                ContentType.Text.Html
+            )
+        }
+        static("/hello") {
+            resources("")
+        }
+
+        // Routing to my controllers
+
+        sessionRouting()
+        clickRouting()
+        homepageRouting()
+
+        /*loginRouting()
+        cartRouting()
+        checkoutRouting()
+        paymentRouting()
+        mugRouting()*/
+
+        val loggerContext: LoggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
+        val rootLogger = loggerContext.getLogger("org.mongodb.driver")
+        rootLogger.level = ch.qos.logback.classic.Level.OFF
+
+        val LOG = java.util.logging.Logger.getLogger(this.javaClass.name)
+        LOG.severe("MongoDB Driver Logs deactivated")
+    }
+
+    // Print out all the routes for debug
+    allRoutes(routing).forEach { println(it) }
+}
+
+/**
+ * Prints all the routes from the root
+ */
 fun allRoutes(root: Route): List<Route> {
     return listOf(root) + root.children.flatMap { allRoutes(it) }
 }

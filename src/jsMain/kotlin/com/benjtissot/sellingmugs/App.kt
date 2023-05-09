@@ -39,8 +39,21 @@ val App = FC<Props> {
 
 val helloComponent = FC<Props> {
 
-    NavigationBarComponent {}
-    div {
-        +"Hello Component"
+    var session: Session? by useState(null)
+
+    // At first initialisation, get the list
+    // Alternative is useState when we want to persist something across re-renders
+    useEffectOnce {
+        MainScope().launch {
+            session = getSession()
+        }
+    }
+    session?.also{
+        NavigationBarComponent {
+            currentSession = session!!
+        }
+        div {
+            +"Hello Component"
+        }
     }
 }

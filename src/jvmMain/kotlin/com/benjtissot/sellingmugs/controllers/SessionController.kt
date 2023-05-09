@@ -20,8 +20,11 @@ fun Route.sessionRouting(){
 
     route(SESSION_PATH) {
         get {
-            val userSession = call.sessions.get<Session>()
-            userSession?.let { call.respond(userSession)} ?: call.respond(HttpStatusCode.BadRequest)
+            val userSession = call.sessions.get<Session>() ?: SessionRepository.createSession()
+            userSession.also {
+                call.sessions.set(it)
+                call.respond(it)
+            }
         }
         post {
             call.respond(HttpStatusCode.OK)
