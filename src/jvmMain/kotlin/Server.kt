@@ -27,7 +27,8 @@ import org.slf4j.LoggerFactory
 val client = KMongo.createClient().coroutine
 val database = client.getDatabase("debug")
 
-fun main() {
+fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+fun Application.module() {
     embeddedServer(Netty, 9090) {
         // Automatic content conversion from the requests, based on the headers (content-type and accept)
         // Basically delegates json (de)serialisation to the KTOR framework

@@ -70,11 +70,16 @@ kotlin {
                 implementation("io.ktor:ktor-server-compression:$ktorVersion")
                 implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
                 implementation("io.ktor:ktor-server-netty:$ktorVersion")
-                implementation("io.ktor:ktor-server-auth:$ktorVersion")
                 implementation("ch.qos.logback:logback-classic:$logbackVersion")
                 implementation("org.litote.kmongo:kmongo-coroutine-serialization:$kmongoVersion")
                 // Handling session
                 implementation("io.ktor:ktor-server-sessions:$ktorVersion")
+                // Authentication
+                implementation("io.ktor:ktor-server-auth:$ktorVersion")
+                implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
+                // Ensuring configuration works
+                implementation("io.ktor:ktor-server-config-yaml-jvm:2.3.0")
+
             }
         }
 
@@ -102,7 +107,7 @@ kotlin {
 
 
 application {
-    mainClass.set("ServerKt")
+    mainClass.set("io.ktor.server.netty.EngineMain")
 }
 
 // include JS artifacts in any JAR we generate
