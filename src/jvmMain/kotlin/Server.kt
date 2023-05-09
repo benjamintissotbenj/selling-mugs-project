@@ -48,7 +48,19 @@ fun main() {
         }
 
         // Provides authentication
-        install(Authentication)
+        install(Authentication){
+            basic{
+                // Configure basic authentication
+                realm = "Access to connected content"
+                validate { credentials ->
+                    if (credentials.name == "jetbrains" && credentials.password == "foobar") {
+                        UserIdPrincipal(credentials.name)
+                    } else {
+                        null
+                    }
+                }
+            }
+        }
 
         // Handling session
         install(Sessions){
@@ -67,8 +79,6 @@ fun Application.createRoutes(){
     val routing = routing {
         // When getting on the empty URL, create session and redirect to homepage
         get("/") {
-//                val newSession = SessionRepository.createSession()
-//                call.sessions.set(newSession)
             call.respondRedirect(HOMEPAGE_PATH)
         }
         static("/") {
@@ -97,6 +107,8 @@ fun Application.createRoutes(){
         checkoutRouting()
         paymentRouting()*/
 
+
+        // Deactivating MongoDb Driver logs
         val loggerContext: LoggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
         val rootLogger = loggerContext.getLogger("org.mongodb.driver")
         rootLogger.level = ch.qos.logback.classic.Level.OFF
