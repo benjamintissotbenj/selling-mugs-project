@@ -46,7 +46,10 @@ val UserInfoPage = FC<UserInfoPageProps> { props ->
 
         div {
             +"User Info Page"
-            +"${session!!.user?.email}"
+            scope.launch{
+                +getUserInfo()
+            }
+
         }
 
     } ?:

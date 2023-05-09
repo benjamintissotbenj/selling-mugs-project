@@ -1,4 +1,5 @@
 import ch.qos.logback.classic.LoggerContext
+import com.benjtissot.sellingmugs.AuthUtil.Companion.hashedUserTable
 import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.HOMEPAGE_PATH
 import com.benjtissot.sellingmugs.repositories.SessionRepository
@@ -49,15 +50,11 @@ fun main() {
 
         // Provides authentication
         install(Authentication){
-            basic{
+            basic("auth-basic"){
                 // Configure basic authentication
                 realm = "Access to connected content"
                 validate { credentials ->
-                    if (credentials.name == "jetbrains" && credentials.password == "foobar") {
-                        UserIdPrincipal(credentials.name)
-                    } else {
-                        null
-                    }
+                    hashedUserTable.authenticate(credentials)
                 }
             }
         }
@@ -101,6 +98,7 @@ fun Application.createRoutes(){
         clickRouting()
         homepageRouting()
         mugRouting()
+        userInfoRouting()
 
         /*loginRouting()
         cartRouting()

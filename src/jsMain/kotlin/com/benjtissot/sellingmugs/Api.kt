@@ -53,6 +53,15 @@ suspend fun addArtwork(artwork: Artwork) {
     }
 }
 
+
 suspend fun deleteMugListItem(mugListItem: Mug) {
     jsonClient.delete(Mug.path + "/${mugListItem.id}")
+}
+
+
+// get User Info
+
+suspend fun getUserInfo() : String {
+    val httpResponse = jsonClient.get(USER_INFO_PATH)
+    return httpResponse.body()
 }
