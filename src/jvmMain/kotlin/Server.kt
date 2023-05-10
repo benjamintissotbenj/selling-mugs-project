@@ -1,14 +1,21 @@
 import ch.qos.logback.classic.LoggerContext
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
+import com.benjtissot.sellingmugs.AuthUtil.Companion.hashedUserTable
+import com.benjtissot.sellingmugs.ConfigConst
 import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.HOMEPAGE_PATH
 import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.controllers.*
 import com.benjtissot.sellingmugs.entities.Click
 import com.benjtissot.sellingmugs.entities.Session
+import com.typesafe.config.ConfigFactory
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
+import io.ktor.server.config.*
 import io.ktor.server.engine.*
 import io.ktor.server.http.content.*
 import io.ktor.server.netty.*
@@ -26,7 +33,8 @@ import org.slf4j.LoggerFactory
 val client = KMongo.createClient().coroutine
 val database = client.getDatabase("debug")
 
-fun main() {
+fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+fun Application.module() {
     embeddedServer(Netty, 9090) {
         // Automatic content conversion from the requests, based on the headers (content-type and accept)
         // Basically delegates json (de)serialisation to the KTOR framework
@@ -46,9 +54,12 @@ fun main() {
         install(Compression) {
             gzip()
         }
+        val port = environment.config.propertyOrNull("ktor.deployment.port")?.getString() ?: "8080"
 
-        // Provides authentication
-        install(Authentication)
+
+
+        // Provides authentication via JWT
+        installAuthentication()
 
         // Handling session
         install(Sessions){
@@ -67,8 +78,6 @@ fun Application.createRoutes(){
     val routing = routing {
         // When getting on the empty URL, create session and redirect to homepage
         get("/") {
-//                val newSession = SessionRepository.createSession()
-//                call.sessions.set(newSession)
             call.respondRedirect(HOMEPAGE_PATH)
         }
         static("/") {
@@ -91,12 +100,15 @@ fun Application.createRoutes(){
         clickRouting()
         homepageRouting()
         mugRouting()
+        userInfoRouting()
 
-        /*loginRouting()
+        loginRouting()
         cartRouting()
         checkoutRouting()
-        paymentRouting()*/
+        paymentRouting()
 
+
+        // Deactivating MongoDb Driver logs
         val loggerContext: LoggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
         val rootLogger = loggerContext.getLogger("org.mongodb.driver")
         rootLogger.level = ch.qos.logback.classic.Level.OFF
@@ -107,6 +119,54 @@ fun Application.createRoutes(){
 
     // Print out all the routes for debug
     allRoutes(routing).forEach { println(it) }
+}
+
+/**
+ * Method used to configure authentication method via JWT
+ */
+fun Application.installAuthentication(){
+
+    val LOG = java.util.logging.Logger.getLogger(this.javaClass.name)
+
+    val secret = ConfigConst.SECRET
+    val issuer = ConfigConst.ISSUER
+    val audience = ConfigConst.AUDIENCE
+    val myRealm = ConfigConst.REALM
+
+    install(Authentication){
+        basic("auth-basic"){
+            // Configure basic authentication
+            realm = "Access to connected content"
+            validate { credentials ->
+                hashedUserTable.authenticate(credentials)
+            }
+        }
+
+        jwt("auth-jwt") {
+            realm = myRealm
+            verifier(
+                JWT
+                    .require(Algorithm.HMAC256(secret))
+                    .withAudience(audience)
+                    .withIssuer(issuer)
+                    .build())
+            // Checking the token credential
+            validate { credential ->
+                LOG.info("validating credentials")
+                if (credential.payload.getClaim("email").asString() != "") {
+                    LOG.info("validating email ${credential.payload.getClaim("email")}")
+                    JWTPrincipal(credential.payload)
+                } else {
+                    null
+                }
+            }
+            // What to do if token is not valid
+            challenge { defaultScheme, realm ->
+                call.respond(HttpStatusCode.Unauthorized, "Token is not valid or has expired")
+            }
+        }
+
+    }
 }
 
 /**

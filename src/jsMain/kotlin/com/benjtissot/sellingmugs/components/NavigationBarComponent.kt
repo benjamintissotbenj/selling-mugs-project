@@ -7,10 +7,7 @@ import emotion.react.css
 import io.ktor.util.logging.*
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import mui.icons.material.Home
-import mui.icons.material.Person
-import mui.icons.material.PersonOutline
-import mui.icons.material.Search
+import mui.icons.material.*
 import mui.material.IconButton
 import mui.material.IconButtonColor
 import mui.material.Size
@@ -32,7 +29,6 @@ external interface NavProps : Props {
 
 val NavigationBarComponent = FC<NavProps> { props ->
     val navigate = useNavigate()
-    LOG.error("${props.currentSession}")
     nav {
         css {
             backgroundColor = Color("#333")
@@ -99,6 +95,22 @@ val NavigationBarComponent = FC<NavProps> { props ->
                 }
             }
 
+            // UserInfo
+            div {
+                css {
+                    verticalAlign = VerticalAlign.middle
+                    marginRight = 2.vw
+                }
+                IconButton {
+                    size = Size.small
+                    color = IconButtonColor.primary
+                    PersonSearch()
+                    onClick = {
+                        navigate.invoke(USER_INFO_PATH)
+                    }
+                }
+            }
+
             // Login
             LoginButton {
                 user = props.currentSession.user
@@ -116,13 +128,20 @@ external interface LoginButtonProps : Props {
 val LoginButton = FC<LoginButtonProps> { props ->
 
     val navigate = useNavigate()
-    LOG.error("${props.user}")
     div {
         css {
             verticalAlign = VerticalAlign.middle
             marginRight = 2.vw
         }
-        props.user?.also {
+        IconButton {
+            size = Size.small
+            color = IconButtonColor.primary
+            Person()
+            onClick = {
+                navigate.invoke(LOGIN_PATH)
+            }
+        }
+        /*props.user?.also {
             // If User is non null
             IconButton {
                 div {
@@ -156,6 +175,6 @@ val LoginButton = FC<LoginButtonProps> { props ->
                     }
                 }
             }
-        }
+        }*/
     }
 }

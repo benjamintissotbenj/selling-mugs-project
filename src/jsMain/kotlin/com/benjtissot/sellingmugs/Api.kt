@@ -3,16 +3,42 @@ package com.benjtissot.sellingmugs
 import com.benjtissot.sellingmugs.entities.*
 import io.ktor.client.*
 import io.ktor.client.call.*
+import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import io.ktor.util.logging.*
 
-val jsonClient = HttpClient {
+private val LOG = KtorSimpleLogger("Api.kt")
+
+var jsonClient = HttpClient {
     install(ContentNegotiation) {
         json()
     }
 }
+
+fun updateClientWithToken(token: String) {
+    jsonClient = jsonClient.config {
+        defaultRequest {
+            header("Authorization", "Bearer $token")
+        }
+    }
+    LOG.debug("New client is $jsonClient using token: $token")
+    LOG.debug("Has config : ${jsonClient.engineConfig.toString()}")
+}
+
+fun updateClientWithNoToken() {
+    jsonClient = HttpClient {
+        install(ContentNegotiation) {
+            json()
+        }
+    }
+    LOG.debug("New client is $jsonClient using no token")
+}
+
+// Get default userinfo
 
 // Get session
 suspend fun getSession(): Session {
@@ -53,6 +79,36 @@ suspend fun addArtwork(artwork: Artwork) {
     }
 }
 
+
 suspend fun deleteMugListItem(mugListItem: Mug) {
     jsonClient.delete(Mug.path + "/${mugListItem.id}")
+}
+
+
+// get User Info
+
+suspend fun getUserInfo() : String {
+    val httpResponse = jsonClient.get(USER_INFO_PATH)
+    return httpResponse.body()
+}
+
+suspend fun postDummyLogin() : HttpResponse{
+    val user = User("123","Benjamin", "Tissot", "123", "123", Const.UserType.ADMIN, "23")
+
+    LOG.debug("Posting dummy login")
+    return jsonClient.post(LOGIN_PATH) {
+        contentType(ContentType.Application.Json)
+        setBody(user)
+    }
+}
+suspend fun postDummyRegister(): HttpResponse {
+    val user = User("123","Benjamin", "Tissot", "123", "123", Const.UserType.ADMIN, "23")
+
+    LOG.debug("Posting dummy register")
+    val httpResponse = jsonClient.post(REGISTER_PATH) {
+        contentType(ContentType.Application.Json)
+        setBody(user)
+    }
+
+    return httpResponse
 }
