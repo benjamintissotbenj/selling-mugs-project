@@ -70,9 +70,11 @@ suspend fun getUserInfo() : String {
 
 // get User Info
 
-suspend fun postDummyLogin() {
+suspend fun postDummyLogin() : HttpResponse{
     val user = User("123","Benjamin", "Tissot", "123", "123", Const.UserType.ADMIN, "23")
-    jsonClient.post(LOGIN_PATH) {
+
+    LOG.debug("Posting dummy login")
+    return jsonClient.post(LOGIN_PATH) {
         contentType(ContentType.Application.Json)
         setBody(user)
     }

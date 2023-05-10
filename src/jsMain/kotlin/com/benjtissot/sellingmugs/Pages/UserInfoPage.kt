@@ -61,7 +61,16 @@ val UserInfoPage = FC<UserInfoPageProps> { props ->
             Person()
             onClick = {
                 scope.launch {
-                    postDummyLogin()
+
+                    LOG.debug("Click on Login")
+                    val httpResponse = postDummyLogin()
+                    LOG.debug("After login, response is $httpResponse")
+                    if (httpResponse.status == HttpStatusCode.OK){
+                        LOG.debug("Token is ${httpResponse.body<String>()}")
+                        token = httpResponse.body<String>()
+                    } else {
+                        token = "NOT WORKING"
+                    }
                 }
             }
         }
