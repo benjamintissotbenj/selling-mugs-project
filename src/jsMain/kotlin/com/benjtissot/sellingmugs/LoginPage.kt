@@ -1,14 +1,19 @@
 package com.benjtissot.sellingmugs
 
-import com.benjtissot.sellingmugs.components.*
+import com.benjtissot.sellingmugs.components.FooterComponent
+import com.benjtissot.sellingmugs.components.LoginFormComponent
+import com.benjtissot.sellingmugs.components.NavigationBarComponent
 import com.benjtissot.sellingmugs.entities.Session
 import io.ktor.client.call.*
 import io.ktor.http.*
 import io.ktor.util.logging.*
+import io.ktor.utils.io.core.*
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import mui.icons.material.Person
 import mui.material.IconButton
+import org.komputing.khash.sha256.Sha256
+import org.komputing.khash.sha256.extensions.sha256
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
@@ -42,7 +47,18 @@ val LoginPage = FC<LoginPageProps> { props ->
         }
 
         div {
-            +"User Info Page"
+            +"Login Page"
+        }
+
+        // Creating login form
+
+        LoginFormComponent{
+            onSubmit = { email, clearPassword ->
+                val hashedPassword = clearPassword.sha256().toString()
+                scope.launch{
+                    login(email, hashedPassword)
+                }
+            }
         }
 
         IconButton{

@@ -33,7 +33,7 @@ class UserRepository {
          * @return a [Boolean] determining if the user is authenticated
          */
         suspend fun authenticate(user: User) : Boolean {
-            return userCollection.findOne(and((User::email eq user.id), User::passwordHash eq user.passwordHash)) != null
+            return userCollection.findOne(and(User::email eq user.email, User::passwordHash eq user.passwordHash)) != null
         }
 
     }

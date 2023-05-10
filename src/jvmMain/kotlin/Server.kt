@@ -1,15 +1,9 @@
 import ch.qos.logback.classic.LoggerContext
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import com.benjtissot.sellingmugs.AuthUtil.Companion.hashedUserTable
 import com.benjtissot.sellingmugs.ConfigConst
-import com.benjtissot.sellingmugs.Const
-import com.benjtissot.sellingmugs.HOMEPAGE_PATH
-import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.controllers.*
-import com.benjtissot.sellingmugs.entities.Click
 import com.benjtissot.sellingmugs.entities.Session
-import com.typesafe.config.ConfigFactory
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -64,6 +58,9 @@ fun Application.module() {
         // Handling session
         install(Sessions){
             cookie<Session>("session"){
+                cookie.maxAgeInSeconds = 600
+            }
+            cookie<String>("jwtToken"){
                 cookie.maxAgeInSeconds = 600
             }
         }
@@ -133,13 +130,6 @@ fun Application.installAuthentication(){
     val myRealm = ConfigConst.REALM
 
     install(Authentication){
-        basic("auth-basic"){
-            // Configure basic authentication
-            realm = "Access to connected content"
-            validate { credentials ->
-                hashedUserTable.authenticate(credentials)
-            }
-        }
 
         jwt("auth-jwt") {
             realm = myRealm

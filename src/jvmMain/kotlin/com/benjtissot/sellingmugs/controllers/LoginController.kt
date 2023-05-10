@@ -14,8 +14,10 @@ import io.ktor.server.config.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.sessions.*
 import java.util.*
 
+val LOG = java.util.logging.Logger.getLogger("LoginController.kt")
 fun Route.loginRouting(){
 
     val appConfig = HoconApplicationConfig(ConfigFactory.load())
@@ -26,13 +28,11 @@ fun Route.loginRouting(){
 
     route(LOGIN_PATH) {
         get {
-            call.respondText(
-                this::class.java.classLoader.getResource("index.html")!!.readText(),
-                ContentType.Text.Html
-            )
+            call.respond(HttpStatusCode.OK)
         }
         post {
             val user = call.receive<User>()
+            LOG.info("User is $user is authenticated : ${UserRepository.authenticate(user)}")
             if (UserRepository.authenticate(user)){
                 val token = JWT.create()
                     .withAudience(audience)
@@ -40,6 +40,8 @@ fun Route.loginRouting(){
                     .withClaim("email", user.email)
                     .withExpiresAt(Date(System.currentTimeMillis() + 600000)) // 10 minutes
                     .sign(Algorithm.HMAC256(secret))
+                // todo: set user to session
+                call.sessions.set(token)
                 call.respond(token)
             } else {
                 call.respondRedirect(LOGIN_PATH)
