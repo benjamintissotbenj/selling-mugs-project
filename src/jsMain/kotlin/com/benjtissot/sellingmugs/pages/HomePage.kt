@@ -1,4 +1,4 @@
-package com.benjtissot.sellingmugs.Pages
+package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.FooterComponent

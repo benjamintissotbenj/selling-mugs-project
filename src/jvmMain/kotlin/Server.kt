@@ -126,6 +126,8 @@ fun Application.createRoutes(){
  */
 fun Application.installAuthentication(){
 
+    val LOG = java.util.logging.Logger.getLogger(this.javaClass.name)
+
     val secret = ConfigConst.SECRET
     val issuer = ConfigConst.ISSUER
     val audience = ConfigConst.AUDIENCE
