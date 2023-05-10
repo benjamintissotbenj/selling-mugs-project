@@ -133,7 +133,15 @@ val LoginButton = FC<LoginButtonProps> { props ->
             verticalAlign = VerticalAlign.middle
             marginRight = 2.vw
         }
-        props.user?.also {
+        IconButton {
+            size = Size.small
+            color = IconButtonColor.primary
+            Person()
+            onClick = {
+                navigate.invoke(LOGIN_PATH)
+            }
+        }
+        /*props.user?.also {
             // If User is non null
             IconButton {
                 div {
@@ -167,6 +175,6 @@ val LoginButton = FC<LoginButtonProps> { props ->
                     }
                 }
             }
-        }
+        }*/
     }
 }

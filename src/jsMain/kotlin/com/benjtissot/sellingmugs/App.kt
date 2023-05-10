@@ -33,6 +33,10 @@ val App = FC<Props> {
                 path = USER_INFO_PATH
                 element = createElement(type = UserInfoPage)
             }
+            Route {
+                path = LOGIN_PATH
+                element = createElement(type = LoginPage)
+            }
         }
     }
 

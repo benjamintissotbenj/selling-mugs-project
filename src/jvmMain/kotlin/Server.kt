@@ -150,7 +150,9 @@ fun Application.installAuthentication(){
                     .build())
             // Checking the token credential
             validate { credential ->
-                if (credential.payload.getClaim("username").asString() != "") {
+                LOG.info("validating credentials")
+                if (credential.payload.getClaim("email").asString() != "") {
+                    LOG.info("validating email ${credential.payload.getClaim("email")}")
                     JWTPrincipal(credential.payload)
                 } else {
                     null

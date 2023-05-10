@@ -1,19 +1,31 @@
 package com.benjtissot.sellingmugs
 
-import com.benjtissot.sellingmugs.Pages.LOG
 import com.benjtissot.sellingmugs.entities.*
 import io.ktor.client.*
 import io.ktor.client.call.*
+import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import io.ktor.util.logging.*
 
-val jsonClient = HttpClient {
-    install(ContentNegotiation) {
-        json()
+private val LOG = KtorSimpleLogger("Api.kt")
+
+var jsonClient = getClient("")
+
+fun getClient(token: String): HttpClient {
+    val client = HttpClient {
+        defaultRequest {
+            header("Authorization", "Bearer " + token)
+        }
+        install(ContentNegotiation) {
+            json()
+        }
     }
+    LOG.debug("New client is $client using token: $token")
+    return client
 }
 
 // Get session

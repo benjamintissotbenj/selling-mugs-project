@@ -9,6 +9,7 @@ import com.benjtissot.sellingmugs.repositories.SessionRepository
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -20,9 +21,12 @@ fun Route.userInfoRouting(){
     val LOG = Logger.getLogger(this.javaClass.name)
 
     route(USER_INFO_PATH) {
-        //authenticate("auth-basic") {
+        authenticate("auth-jwt") {
             get {
-                call.respondText("Hello, ${call.principal<UserIdPrincipal>()?.name}!")
+                val principal = call.principal<JWTPrincipal>()
+                val email = principal!!.payload.getClaim("email").asString()
+                val expiresAt = principal.expiresAt?.time?.minus(System.currentTimeMillis())
+                call.respondText("Hello, $email! Token is expired at $expiresAt ms.")
             }
             post {
                 call.respond(HttpStatusCode.OK)
@@ -30,7 +34,7 @@ fun Route.userInfoRouting(){
             delete() {
                 call.respond(HttpStatusCode.OK)
             }
-        //}
+        }
 
     }
 }
