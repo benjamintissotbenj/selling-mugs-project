@@ -1,8 +1,6 @@
-package com.benjtissot.sellingmugs.pages
+package com.benjtissot.sellingmugs
 
 import com.benjtissot.sellingmugs.components.FooterComponent
-import com.benjtissot.sellingmugs.getUserInfo
-import com.benjtissot.sellingmugs.jsonClient
 import io.ktor.util.logging.*
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch

@@ -1,6 +1,5 @@
-package com.benjtissot.sellingmugs.pages
+package com.benjtissot.sellingmugs
 
-import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.*
 import com.benjtissot.sellingmugs.entities.Session
 import io.ktor.client.call.*

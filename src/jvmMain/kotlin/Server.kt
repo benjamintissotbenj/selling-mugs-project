@@ -76,36 +76,35 @@ fun Application.module() {
 
 fun Application.createRoutes(){
     val routing = routing {
+
         // When getting on the empty URL, create session and redirect to homepage
         get("/") {
-            call.respondRedirect(HOMEPAGE_PATH)
-        }
-        static("/") {
-            resources("")
-        }
-
-        get("/hello") {
             call.respondText(
                 this::class.java.classLoader.getResource("index.html")!!.readText(),
                 ContentType.Text.Html
             )
-        }
-        static("/hello") {
-            resources("")
         }
 
         // Routing to my controllers
 
         sessionRouting()
         clickRouting()
-        homepageRouting()
         mugRouting()
+        homepageRouting()
+
         userInfoRouting()
 
         loginRouting()
+        /*
         cartRouting()
         checkoutRouting()
-        paymentRouting()
+        paymentRouting()*/
+
+
+        // Static to access resources (index.html, sellingmugs.js)
+        static("/") {
+            resources("")
+        }
 
 
         // Deactivating MongoDb Driver logs

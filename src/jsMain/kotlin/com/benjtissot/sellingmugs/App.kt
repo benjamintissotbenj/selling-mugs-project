@@ -2,9 +2,6 @@ package com.benjtissot.sellingmugs
 
 import com.benjtissot.sellingmugs.components.NavigationBarComponent
 import com.benjtissot.sellingmugs.entities.Session
-import com.benjtissot.sellingmugs.pages.LoginPage
-import com.benjtissot.sellingmugs.pages.UserInfoPage
-import com.benjtissot.sellingmugs.pages.Homepage
 import io.ktor.util.logging.*
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -14,14 +11,22 @@ import react.router.Route
 import react.router.Routes
 import react.router.dom.BrowserRouter
 
+private val LOG = KtorSimpleLogger("App.kt")
 
 val App = FC<Props> {
-    val LOG = KtorSimpleLogger("App.kt")
     var sessionApp: Session? by useState(null)
 
 
     BrowserRouter {
         Routes {
+            Route {
+                path = "/"
+                element = createElement(type = Homepage)
+            }
+            Route {
+                path = "/homeTest"
+                element = createElement(type = Homepage)
+            }
             Route {
                 path = HOMEPAGE_PATH
                 element = createElement(type = Homepage)

@@ -1,6 +1,5 @@
-package com.benjtissot.sellingmugs.pages
+package com.benjtissot.sellingmugs
 
-import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.FooterComponent
 import com.benjtissot.sellingmugs.components.InputComponent
 import com.benjtissot.sellingmugs.components.MugListComponent
