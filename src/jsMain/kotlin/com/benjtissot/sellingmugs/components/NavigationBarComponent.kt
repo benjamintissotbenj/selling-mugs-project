@@ -136,45 +136,24 @@ val LoginButton = FC<LoginButtonProps> { props ->
         IconButton {
             size = Size.small
             color = IconButtonColor.primary
-            Person()
-            onClick = {
-                navigate.invoke(LOGIN_PATH)
-            }
-        }
-        /*props.user?.also {
-            // If User is non null
-            IconButton {
+            props.user?.also {
                 div {
                     css {
                         marginRight = 1.vw
                     }
                     +props.user!!.getNameInitial()
                 }
-                size = Size.small
-                color = IconButtonColor.primary
                 PersonOutline()
                 onClick = {
-                    navigate.invoke(HOMEPAGE_PATH)
+                    navigate.invoke(USER_INFO_PATH)
+                }
+            } ?: run {
+                Person()
+                onClick = {
+                    navigate.invoke(LOGIN_PATH)
                 }
             }
-        } ?: run {
-            // If user is null
-            LOG.debug("User is null")
-            div {
-                IconButton {
-                    size = Size.small
-                    color = IconButtonColor.primary
-                    Person()
-                    onClick = {
-                        val user = User("123","Benjamin", "Tissot", "123", "123", Const.UserType.ADMIN, "23")
-                        MainScope().launch {
-                            setUser(user)
-                            props.updateSession()
-                        }
-                        navigate.invoke(HOMEPAGE_PATH)
-                    }
-                }
-            }
-        }*/
+
+        }
     }
 }
