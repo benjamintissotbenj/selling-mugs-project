@@ -11,10 +11,7 @@ fun Route.homepageRouting(){
 
     route(HOMEPAGE_PATH) {
         get {
-            call.respondText(
-                this::class.java.classLoader.getResource("index.html")!!.readText(),
-                ContentType.Text.Html
-            )
+            call.respond(HttpStatusCode.OK)
         }
         post {
             call.respond(HttpStatusCode.OK)
@@ -22,8 +19,5 @@ fun Route.homepageRouting(){
         delete() {
             call.respond(HttpStatusCode.OK)
         }
-    }
-    static(HOMEPAGE_PATH) {
-        resources("")
     }
 }
