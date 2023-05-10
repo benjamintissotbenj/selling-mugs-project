@@ -91,9 +91,11 @@ fun Application.createRoutes(){
         clickRouting()
         mugRouting()
         homepageRouting()
-        /*userInfoRouting()
+
+        userInfoRouting()
 
         loginRouting()
+        /*
         cartRouting()
         checkoutRouting()
         paymentRouting()*/
