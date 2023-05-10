@@ -26,7 +26,10 @@ fun Route.loginRouting(){
 
     route(LOGIN_PATH) {
         get {
-            call.respond("Hello Login Controller")
+            call.respondText(
+                this::class.java.classLoader.getResource("index.html")!!.readText(),
+                ContentType.Text.Html
+            )
         }
         post {
             val user = call.receive<User>()

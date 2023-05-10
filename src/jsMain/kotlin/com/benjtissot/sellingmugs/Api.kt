@@ -13,20 +13,32 @@ import io.ktor.util.logging.*
 
 private val LOG = KtorSimpleLogger("Api.kt")
 
-var jsonClient = getClient("")
+var jsonClient = HttpClient {
+    install(ContentNegotiation) {
+        json()
+    }
+}
 
-fun getClient(token: String): HttpClient {
-    val client = HttpClient {
+fun updateClientWithToken(token: String) {
+    jsonClient = jsonClient.config {
         defaultRequest {
-            header("Authorization", "Bearer " + token)
+            header("Authorization", "Bearer $token")
         }
+    }
+    LOG.debug("New client is $jsonClient using token: $token")
+    LOG.debug("Has config : ${jsonClient.engineConfig.toString()}")
+}
+
+fun updateClientWithNoToken() {
+    jsonClient = HttpClient {
         install(ContentNegotiation) {
             json()
         }
     }
-    LOG.debug("New client is $client using token: $token")
-    return client
+    LOG.debug("New client is $jsonClient using no token")
 }
+
+// Get default userinfo
 
 // Get session
 suspend fun getSession(): Session {
@@ -79,8 +91,6 @@ suspend fun getUserInfo() : String {
     val httpResponse = jsonClient.get(USER_INFO_PATH)
     return httpResponse.body()
 }
-
-// get User Info
 
 suspend fun postDummyLogin() : HttpResponse{
     val user = User("123","Benjamin", "Tissot", "123", "123", Const.UserType.ADMIN, "23")

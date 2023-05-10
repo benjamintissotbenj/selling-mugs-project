@@ -25,8 +25,6 @@ private val scope = MainScope()
 
 val LoginPage = FC<LoginPageProps> { props ->
     var session: Session? by useState(null)
-    var token: String by useState("EMPTY")
-    LOG.debug("Rendering loginPage")
     // At first initialisation, get the list
     // Alternative is useState when we want to persist something across re-renders
     useEffectOnce {
@@ -46,7 +44,6 @@ val LoginPage = FC<LoginPageProps> { props ->
 
         div {
             +"User Info Page"
-            +token
         }
 
         IconButton{
@@ -56,21 +53,19 @@ val LoginPage = FC<LoginPageProps> { props ->
             Person()
             onClick = {
                 scope.launch {
-
-                    LOG.debug("Click on Login")
                     val httpResponse = postDummyLogin()
-                    LOG.debug("After login, response is $httpResponse")
                     if (httpResponse.status == HttpStatusCode.OK){
-                        LOG.debug("Token is ${httpResponse.body<String>()}")
-                        token = httpResponse.body<String>()
-                        jsonClient = getClient(token)
-                        LOG.debug("After login, client is $jsonClient")
+                        // Using local variable because otherwise update is not atomic
+                        val tokenString = httpResponse.body<String>()
+                        LOG.debug("Creating new client with new token $tokenString")
+                        updateClientWithToken(tokenString)
                     } else {
-                        token = "NOT WORKING"
+                        LOG.error("Not valid login")
                     }
                 }
             }
         }
+
         IconButton{
             div {
                 +"Register"
@@ -84,9 +79,8 @@ val LoginPage = FC<LoginPageProps> { props ->
                     LOG.debug("After register, response is $httpResponse")
                     if (httpResponse.status == HttpStatusCode.OK){
                         LOG.debug("Token is ${httpResponse.body<String>()}")
-                        token = httpResponse.body<String>()
                     } else {
-                        token = "NOT WORKING"
+                        LOG.error("Register not working")
                     }
                 }
             }
