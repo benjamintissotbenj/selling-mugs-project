@@ -12,80 +12,64 @@ import mui.material.IconButton
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
+import react.router.useNavigate
 import react.useEffectOnce
 import react.useState
 
 private val LOG = KtorSimpleLogger("loginPage.kt")
 
-external interface LoginPageProps : Props {
+external interface LoginPageProps : SessionPageProps {
 }
 
-private val scope = MainScope()
-
 val LoginPage = FC<LoginPageProps> { props ->
-    var session: Session? by useState(null)
-    // At first initialisation, get the list
-    // Alternative is useState when we want to persist something across re-renders
-    useEffectOnce {
-        scope.launch {
-            session = getSession()
+    val navigateLogin = useNavigate()
+    NavigationBarComponent {
+        session = props.session
+        updateSession = props.updateSession
+        navigate = navigateLogin
+    }
+
+    div {
+        +"User Info Page"
+    }
+
+    IconButton{
+        div {
+            +"Login"
+        }
+        Person()
+        onClick = {
+            scope.launch {
+                val httpResponse = postDummyLogin()
+                if (httpResponse.status == HttpStatusCode.OK){
+                    // Using local variable because otherwise update is not atomic
+                    val tokenString = httpResponse.body<String>()
+                    LOG.debug("Creating new client with new token $tokenString")
+                    updateClientWithToken(tokenString)
+                } else {
+                    LOG.error("Not valid login")
+                }
+            }
         }
     }
-    session?.also{
-        NavigationBarComponent {
-            currentSession = session!!
-            updateSession = {
-                scope.launch {
-                    session = getSession()
-                }
-            }
-        }
 
+    IconButton{
         div {
-            +"User Info Page"
+            +"Register"
         }
+        Person()
+        onClick = {
+            LOG.debug("Click on Register")
+            scope.launch {
+                val httpResponse = postDummyRegister()
 
-        IconButton{
-            div {
-                +"Login"
-            }
-            Person()
-            onClick = {
-                scope.launch {
-                    val httpResponse = postDummyLogin()
-                    if (httpResponse.status == HttpStatusCode.OK){
-                        // Using local variable because otherwise update is not atomic
-                        val tokenString = httpResponse.body<String>()
-                        LOG.debug("Creating new client with new token $tokenString")
-                        updateClientWithToken(tokenString)
-                    } else {
-                        LOG.error("Not valid login")
-                    }
+                LOG.debug("After register, response is $httpResponse")
+                if (httpResponse.status == HttpStatusCode.OK){
+                    LOG.debug("Token is ${httpResponse.body<String>()}")
+                } else {
+                    LOG.error("Register not working")
                 }
             }
         }
-
-        IconButton{
-            div {
-                +"Register"
-            }
-            Person()
-            onClick = {
-                LOG.debug("Click on Register")
-                scope.launch {
-                    val httpResponse = postDummyRegister()
-
-                    LOG.debug("After register, response is $httpResponse")
-                    if (httpResponse.status == HttpStatusCode.OK){
-                        LOG.debug("Token is ${httpResponse.body<String>()}")
-                    } else {
-                        LOG.error("Register not working")
-                    }
-                }
-            }
-        }
-
-    } ?:
-
-    FooterComponent {}
+    }
 }

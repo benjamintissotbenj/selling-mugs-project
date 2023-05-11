@@ -11,7 +11,10 @@ fun Route.homepageRouting(){
 
     route(HOMEPAGE_PATH) {
         get {
-            call.respond(HttpStatusCode.OK)
+            call.respondText(
+                this::class.java.classLoader.getResource("index.html")!!.readText(),
+                ContentType.Text.Html
+            )
         }
         post {
             call.respond(HttpStatusCode.OK)

@@ -11,7 +11,6 @@ external interface FooterProps : Props {
 }
 
 val FooterComponent = FC<FooterProps> { props ->
-    val navigate = useNavigate()
     nav {
         css {
             display = Display.flex

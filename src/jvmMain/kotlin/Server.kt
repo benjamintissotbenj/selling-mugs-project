@@ -77,20 +77,13 @@ fun Application.module() {
 fun Application.createRoutes(){
     val routing = routing {
 
-        // When getting on the empty URL, create session and redirect to homepage
-        get("/") {
-            call.respondText(
-                this::class.java.classLoader.getResource("index.html")!!.readText(),
-                ContentType.Text.Html
-            )
-        }
 
         // Routing to my controllers
 
+        homepageRouting()
         sessionRouting()
         clickRouting()
         mugRouting()
-        homepageRouting()
 
         userInfoRouting()
 

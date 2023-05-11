@@ -8,23 +8,20 @@ import com.benjtissot.sellingmugs.entities.Artwork
 import com.benjtissot.sellingmugs.entities.Mug
 import com.benjtissot.sellingmugs.entities.Session
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
 import react.FC
-import react.Props
+import react.router.useNavigate
 import react.useEffectOnce
 import react.useState
 
-external interface HomepageProps : Props {
+external interface HomepageProps : SessionPageProps {
 }
 
-private val scope = MainScope()
-
 val Homepage = FC<HomepageProps> { props ->
+    val navigateFun = useNavigate()
     var mugList by useState(emptyList<Mug>())
-    var session: Session? by useState(null)
 
     // At first initialisation, get the list
     // Alternative is useState when we want to persist something across re-renders
@@ -32,55 +29,47 @@ val Homepage = FC<HomepageProps> { props ->
         scope.launch {
             mugList = getMugList()
         }
-        scope.launch {
-            session = getSession()
+    }
+    NavigationBarComponent {
+        session = props.session
+        updateSession = props.updateSession
+        navigate = navigateFun
+    }
+
+    MugListComponent {
+        list = mugList
+        title = "Best for you"
+        onItemClick = {
+            scope.launch {
+                deleteMugListItem(it) // deletes from server
+                mugList = getMugList() // updates client
+            }
         }
     }
-    session?.also{
-        NavigationBarComponent {
-            currentSession = session!!
-            updateSession = {
+
+    // Creating a field to input a new element
+    InputComponent {
+        onSubmit = { mugName, artURL ->
+            val artwork = Artwork("", artURL)
+            val cartItem = Mug("", mugName, 8.99f, artwork)
+
+            // Using a channel to have a sequential execution
+            val channel = Channel<Job>(capacity = Channel.UNLIMITED).apply {
                 scope.launch {
-                    session = getSession()
+                    consumeEach { it.join() }
                 }
             }
+            channel.trySend(scope.launch{
+                addArtwork(artwork)
+            })
+            channel.trySend(scope.launch{
+                addMugListItem(cartItem)
+                mugList = getMugList() // updates the state (using "useState") so re-renders page
+            })
+
+
         }
-
-        MugListComponent {
-            list = mugList
-            title = "Best for you"
-            onItemClick = {
-                scope.launch {
-                    deleteMugListItem(it) // deletes from server
-                    mugList = getMugList() // updates client
-                }
-            }
-        }
-
-        // Creating a field to input a new element
-        InputComponent {
-            onSubmit = { mugName, artURL ->
-                val artwork = Artwork("", artURL)
-                val cartItem = Mug("", mugName, 8.99f, artwork)
-
-                // Using a channel to have a sequential execution
-                val channel = Channel<Job>(capacity = Channel.UNLIMITED).apply {
-                    scope.launch {
-                        consumeEach { it.join() }
-                    }
-                }
-                channel.trySend(scope.launch{
-                    addArtwork(artwork)
-                })
-                channel.trySend(scope.launch{
-                    addMugListItem(cartItem)
-                    mugList = getMugList() // updates the state (using "useState") so re-renders page
-                })
-
-
-            }
-        }
-    } ?:
+    }
 
     FooterComponent {}
 }

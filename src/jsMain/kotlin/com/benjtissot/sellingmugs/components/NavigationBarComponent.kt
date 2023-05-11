@@ -1,11 +1,9 @@
 package com.benjtissot.sellingmugs.components
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.entities.Session
 import com.benjtissot.sellingmugs.entities.User
 import csstype.*
 import emotion.react.css
 import io.ktor.util.logging.*
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import mui.icons.material.*
 import mui.material.IconButton
@@ -16,19 +14,16 @@ import react.Props
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.h1
 import react.dom.html.ReactHTML.nav
+import react.router.NavigateFunction
 import react.router.useNavigate
 
-val LOG = KtorSimpleLogger("NavigationBarComponent.kt")
+private val LOG = KtorSimpleLogger("NavigationBarComponent.kt")
 
-private val scope = MainScope()
-
-external interface NavProps : Props {
-    var currentSession: Session
-    var updateSession: () -> Unit
+external interface NavigationBarProps : SessionPageProps {
+    var navigate: NavigateFunction
 }
 
-val NavigationBarComponent = FC<NavProps> { props ->
-    val navigate = useNavigate()
+val NavigationBarComponent = FC<NavigationBarProps> { props ->
     nav {
         css {
             backgroundColor = Color("#333")
@@ -69,9 +64,9 @@ val NavigationBarComponent = FC<NavProps> { props ->
                     Search()
                     onClick = {
                         scope.launch{
-                            recordClick(props.currentSession.clickDataId, Const.ClickType.search.toString())
+                            recordClick(props.session.clickDataId, Const.ClickType.search.toString())
                         }
-                        navigate.invoke(HELLO_PATH)
+                        props.navigate.invoke(HELLO_PATH)
                     }
                 }
             }
@@ -88,9 +83,9 @@ val NavigationBarComponent = FC<NavProps> { props ->
                     Home()
                     onClick = {
                         scope.launch{
-                            recordClick(props.currentSession.clickDataId, Const.ClickType.home.toString())
+                            recordClick(props.session.clickDataId, Const.ClickType.home.toString())
                         }
-                        navigate.invoke(HOMEPAGE_PATH)
+                        props.navigate.invoke(HOMEPAGE_PATH)
                     }
                 }
             }
@@ -106,14 +101,14 @@ val NavigationBarComponent = FC<NavProps> { props ->
                     color = IconButtonColor.primary
                     PersonSearch()
                     onClick = {
-                        navigate.invoke(USER_INFO_PATH)
+                        props.navigate.invoke(USER_INFO_PATH)
                     }
                 }
             }
 
             // Login
             LoginButton {
-                user = props.currentSession.user
+                user = props.session.user
                 updateSession = props.updateSession
             }
         }
