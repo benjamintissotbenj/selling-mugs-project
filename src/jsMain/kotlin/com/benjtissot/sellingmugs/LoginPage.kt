@@ -63,6 +63,7 @@ val LoginPage = FC<LoginPageProps> { props ->
                 } else {
                     LOG.error("Not valid login")
                 }
+                props.updateSession()
             }
         }
     }
@@ -83,6 +84,7 @@ val LoginPage = FC<LoginPageProps> { props ->
                 } else {
                     LOG.error("Register not working")
                 }
+                props.updateSession()
             }
         }
     }

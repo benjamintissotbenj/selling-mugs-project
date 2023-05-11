@@ -56,7 +56,11 @@ suspend fun login(email: String, hashedPassword: String){
 
 // Get session
 suspend fun getSession(): Session {
-    return jsonClient.get(Session.path).body()
+    val httpResponse = jsonClient.get(Session.path)
+    // TODO: put token in session
+    LOG.debug("Response headers: ${httpResponse}")
+
+    return httpResponse.body()
 }
 
 suspend fun setUser(user: User) {

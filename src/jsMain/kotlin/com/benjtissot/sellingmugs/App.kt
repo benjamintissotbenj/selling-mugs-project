@@ -65,7 +65,10 @@ val App = FC<Props> {
                 }
                 Route {
                     path = LOGIN_PATH
-                    element = createElement(type = LoginPage)
+                    element = LoginPage.create{
+                        session = sessionApp!!
+                        updateSession = updateSessionApp
+                    }
                 }
             }
         }

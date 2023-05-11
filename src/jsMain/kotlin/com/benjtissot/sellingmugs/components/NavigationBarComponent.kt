@@ -140,7 +140,7 @@ val LoginButton = FC<LoginButtonProps> { props ->
                 }
                 PersonOutline()
                 onClick = {
-                    navigate.invoke(USER_INFO_PATH)
+                    navigate.invoke(LOGIN_PATH)
                 }
             } ?: run {
                 Person()
