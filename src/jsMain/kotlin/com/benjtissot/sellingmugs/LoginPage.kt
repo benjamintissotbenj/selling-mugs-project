@@ -42,7 +42,8 @@ val LoginPage = FC<LoginPageProps> { props ->
             onSubmit = { email, clearPassword ->
                 val hashedPassword = clearPassword.sha256().toString()
                 scope.launch{
-                    login(email, hashedPassword)
+                    val httpResponse = login(email, hashedPassword)
+                    LOG.debug("Login response body is ${httpResponse.body<String>()}")
                 }
             }
     }

@@ -27,6 +27,8 @@ val App = FC<Props> {
     }
 
     sessionApp?.let{
+        updateClientWithToken(sessionApp!!.jwtToken)
+
         val updateSessionApp: () -> Unit = {
             scope.launch {
                 sessionApp = getSession()

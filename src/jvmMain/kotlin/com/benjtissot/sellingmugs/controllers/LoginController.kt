@@ -44,14 +44,13 @@ fun Route.loginRouting(){
                     .withClaim("email", user.email)
                     .withExpiresAt(Date(System.currentTimeMillis() + 600000)) // 10 minutes
                     .sign(Algorithm.HMAC256(secret))
-                call.sessions.set(token)
 
-                // Setting the logged in user to authenticatedUser
+                // Setting the logged in user to authenticatedUser and jwt to token
                 val userSession = call.sessions.get<Session>()?.copy()
 
                 // If session is found, set session user to received user
                 userSession?.let{
-                    val updatedSession = userSession.copy(user = authenticatedUser)
+                    val updatedSession = userSession.copy(user = authenticatedUser, jwtToken = token)
                     try {
                         SessionRepository.updateSession(updatedSession)
                         call.sessions.set(updatedSession)

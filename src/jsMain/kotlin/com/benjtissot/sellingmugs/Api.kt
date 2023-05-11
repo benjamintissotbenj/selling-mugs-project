@@ -45,10 +45,10 @@ fun updateClientWithNoToken() {
 
 // Login methods
 
-suspend fun login(email: String, hashedPassword: String){
+suspend fun login(email: String, hashedPassword: String): HttpResponse {
     // Only need user email and password for login
-    val user = User("", "", "", email, hashedPassword.sha256().toString(), Const.UserType.CLIENT, "")
-    jsonClient.post(LOGIN_PATH) {
+    val user = User("", "", "", email, hashedPassword, Const.UserType.CLIENT, "")
+    return jsonClient.post(LOGIN_PATH) {
         contentType(ContentType.Application.Json)
         setBody(user)
     }
@@ -114,10 +114,7 @@ suspend fun postDummyLogin() : HttpResponse{
     val user = User("","", "", "123", "123".sha256().toString(), Const.UserType.ADMIN, "23")
 
     LOG.debug("Posting dummy login")
-    return jsonClient.post(LOGIN_PATH) {
-        contentType(ContentType.Application.Json)
-        setBody(user)
-    }
+    return login(user.email, user.passwordHash)
 }
 suspend fun postDummyRegister(): HttpResponse {
     val user = User("123","Benjamin", "Tissot", "123", "123".sha256().toString(), Const.UserType.ADMIN, "23")

@@ -15,7 +15,7 @@ class SessionRepository {
          */
         suspend fun createSession() : Session {
             val clickData = ClickDataRepository.createClickData()
-            val newSession = Session(genUuid().toString(), null, clickData.id)
+            val newSession = Session(genUuid().toString(), null, "", clickData.id)
             sessionCollection.insertOne(newSession)
             return newSession
         }
