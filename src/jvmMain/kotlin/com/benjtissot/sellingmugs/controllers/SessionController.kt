@@ -34,7 +34,6 @@ fun Route.sessionRouting(){
         route (USER_PATH) {
             post {
                 val userSession = call.sessions.get<Session>()?.copy()
-                LOG.info("old UserSession is $userSession")
                 // If session is found, set session user to received user
                 userSession?.let{
                     val updatedSession = userSession.copy(user = call.receive<User>())

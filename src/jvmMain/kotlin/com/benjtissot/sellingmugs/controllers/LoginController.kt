@@ -5,7 +5,9 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.benjtissot.sellingmugs.ConfigConst
 import com.benjtissot.sellingmugs.LOGIN_PATH
 import com.benjtissot.sellingmugs.REGISTER_PATH
+import com.benjtissot.sellingmugs.entities.Session
 import com.benjtissot.sellingmugs.entities.User
+import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.repositories.UserRepository
 import com.typesafe.config.ConfigFactory
 import io.ktor.http.*
@@ -14,8 +16,10 @@ import io.ktor.server.config.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.sessions.*
 import java.util.*
 
+val LOG = java.util.logging.Logger.getLogger("LoginController.kt")
 fun Route.loginRouting(){
 
     val appConfig = HoconApplicationConfig(ConfigFactory.load())
@@ -26,20 +30,35 @@ fun Route.loginRouting(){
 
     route(LOGIN_PATH) {
         get {
-            call.respondText(
-                this::class.java.classLoader.getResource("index.html")!!.readText(),
-                ContentType.Text.Html
-            )
+            call.respond(HttpStatusCode.OK)
         }
         post {
             val user = call.receive<User>()
-            if (UserRepository.authenticate(user)){
+            LOG.info("User is $user is authenticated : ${UserRepository.authenticate(user)}")
+            val authenticatedUser = UserRepository.authenticate(user)
+
+            if (authenticatedUser != null){
                 val token = JWT.create()
                     .withAudience(audience)
                     .withIssuer(issuer)
                     .withClaim("email", user.email)
                     .withExpiresAt(Date(System.currentTimeMillis() + 600000)) // 10 minutes
                     .sign(Algorithm.HMAC256(secret))
+                call.sessions.set(token)
+
+                // Setting the logged in user to authenticatedUser
+                val userSession = call.sessions.get<Session>()?.copy()
+
+                // If session is found, set session user to received user
+                userSession?.let{
+                    val updatedSession = userSession.copy(user = authenticatedUser)
+                    try {
+                        SessionRepository.updateSession(updatedSession)
+                        call.sessions.set(updatedSession)
+                    } catch (e: Exception){
+                        call.respond(HttpStatusCode.BadGateway)
+                    }
+                }
                 call.respond(token)
             } else {
                 call.respondRedirect(LOGIN_PATH)
