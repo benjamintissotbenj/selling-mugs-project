@@ -8,8 +8,6 @@ import io.ktor.client.call.*
 import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
-import mui.icons.material.Person
-import mui.material.IconButton
 import org.komputing.khash.sha256.extensions.sha256
 import react.FC
 import react.dom.html.ReactHTML.button
@@ -36,6 +34,7 @@ val LoginPage = FC<RegisterPageProps> { props ->
     div {
 
         css {
+            alignSelf = AlignSelf.center
             display = Display.flex
             flexDirection = FlexDirection.column
             alignItems = AlignItems.center
@@ -87,28 +86,5 @@ val LoginPage = FC<RegisterPageProps> { props ->
             }
         }
 
-    }
-
-
-    IconButton{
-        div {
-            +"Logout"
-        }
-        Person()
-        onClick = {
-            LOG.debug("Click on Logout")
-            scope.launch {
-                val httpResponse = logout()
-
-                LOG.debug("After register, response is $httpResponse")
-                if (httpResponse.status == HttpStatusCode.OK){
-                    LOG.debug("Logged out")
-                    navigateLogin.invoke(HOMEPAGE_PATH)
-                } else {
-                    LOG.error("Logout not working")
-                }
-                props.updateSession()
-            }
-        }
     }
 }

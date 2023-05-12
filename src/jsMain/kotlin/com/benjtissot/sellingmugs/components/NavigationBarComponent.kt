@@ -1,6 +1,5 @@
 package com.benjtissot.sellingmugs.components
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.entities.Session
 import csstype.*
 import emotion.react.css
 import io.ktor.util.logging.*
@@ -10,17 +9,13 @@ import mui.material.IconButton
 import mui.material.IconButtonColor
 import mui.material.Size
 import react.FC
-import react.Props
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.h1
 import react.dom.html.ReactHTML.nav
-import react.router.NavigateFunction
-import react.router.useNavigate
 
 private val LOG = KtorSimpleLogger("NavigationBarComponent.kt")
 
-external interface NavigationBarProps : SessionPageProps {
-    var navigate: NavigateFunction
+external interface NavigationBarProps : NavigationProps {
 }
 
 val NavigationBarComponent = FC<NavigationBarProps> { props ->
@@ -110,19 +105,17 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
             LoginButton {
                 session = props.session
                 updateSession = props.updateSession
+                navigate = props.navigate
             }
         }
     }
 }
 
-external interface LoginButtonProps : Props {
-    var session: Session
-    var updateSession: () -> Unit
+external interface LoginButtonProps : NavigationProps {
 }
 
 val LoginButton = FC<LoginButtonProps> { props ->
 
-    val navigate = useNavigate()
     div {
         css {
             verticalAlign = VerticalAlign.middle
@@ -134,7 +127,7 @@ val LoginButton = FC<LoginButtonProps> { props ->
             if (props.session.user == null || props.session.jwtToken.isBlank()){
                 Person()
                 onClick = {
-                    navigate.invoke(LOGIN_PATH)
+                    props.navigate.invoke(LOGIN_PATH)
                 }
             } else {
                 div {
@@ -145,7 +138,7 @@ val LoginButton = FC<LoginButtonProps> { props ->
                 }
                 PersonOutline()
                 onClick = {
-                    navigate.invoke(LOGIN_PATH)
+                    props.navigate.invoke(LOGIN_PATH)
                 }
             }
 

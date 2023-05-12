@@ -2,17 +2,15 @@ package com.benjtissot.sellingmugs
 
 import com.benjtissot.sellingmugs.components.NavigationBarComponent
 import com.benjtissot.sellingmugs.components.RegisterFormComponent
-import csstype.*
+import csstype.AlignItems
+import csstype.Display
+import csstype.FlexDirection
 import emotion.react.css
 import io.ktor.client.call.*
 import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
-import mui.icons.material.Person
-import mui.material.IconButton
-import org.komputing.khash.sha256.extensions.sha256
 import react.FC
-import react.dom.html.ReactHTML.button
 import react.dom.html.ReactHTML.div
 import react.router.useNavigate
 
@@ -60,28 +58,5 @@ val RegisterPage = FC<RegisterPageProps> { props ->
             }
         }
 
-    }
-
-
-    IconButton{
-        div {
-            +"Logout"
-        }
-        Person()
-        onClick = {
-            LOG.debug("Click on Logout")
-            scope.launch {
-                val httpResponse = logout()
-
-                LOG.debug("After register, response is $httpResponse")
-                if (httpResponse.status == HttpStatusCode.OK){
-                    LOG.debug("Logged out")
-                    navigateRegister.invoke(HOMEPAGE_PATH)
-                } else {
-                    LOG.error("Logout not working")
-                }
-                props.updateSession()
-            }
-        }
     }
 }
