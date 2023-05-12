@@ -11,10 +11,8 @@ import react.dom.html.ReactHTML.div
 
 private val LOG = KtorSimpleLogger("UserInfoPage.kt")
 
-external interface UserInfoPageProps : Props {
+external interface UserInfoPageProps : SessionPageProps {
 }
-
-private val scope = MainScope()
 
 val UserInfoPage = FC<UserInfoPageProps> { props ->
 

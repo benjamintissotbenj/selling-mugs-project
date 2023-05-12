@@ -12,13 +12,14 @@ const val CLICK_PATH = "/click"
 
 // Route Paths
 
-const val HOMEPAGE_PATH = "/home"
+const val HOMEPAGE_PATH = "/"
 const val USER_INFO_PATH = "/user_info"
 const val HELLO_PATH = "/hello"
 const val LOGIN_PATH = "/login"
 const val CLICK_TYPE_PATH = "/click_type"
 const val CLICK_TYPE_VARIABLE_NAME = "click_type"
 const val REGISTER_PATH = "/register"
+const val LOGOUT_PATH = "/logout"
 const val CART_PATH = "/cart"
 const val CHECKOUT_PATH = "/checkout"
 const val PAYMENT_PATH = "/payment"

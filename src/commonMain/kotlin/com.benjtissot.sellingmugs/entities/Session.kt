@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
 data class Session(
     @SerialName("_id") val id: String,
     var user: User?,
+    var jwtToken: String,
     val clickDataId: String,
     ){
 

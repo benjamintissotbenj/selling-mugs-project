@@ -10,67 +10,89 @@ import react.dom.html.ReactHTML.div
 import react.router.Route
 import react.router.Routes
 import react.router.dom.BrowserRouter
+import react.router.useNavigate
 
 private val LOG = KtorSimpleLogger("App.kt")
+
+val scope = MainScope()
 
 val App = FC<Props> {
     var sessionApp: Session? by useState(null)
 
-
-    BrowserRouter {
-        Routes {
-            Route {
-                path = "/"
-                element = createElement(type = Homepage)
-            }
-            Route {
-                path = "/homeTest"
-                element = createElement(type = Homepage)
-            }
-            Route {
-                path = HOMEPAGE_PATH
-                element = createElement(type = Homepage)
-            }
-            Route {
-                path = HELLO_PATH
-                element = createElement(helloComponent)
-            }
-            Route {
-                path = USER_INFO_PATH
-                element = createElement(type = UserInfoPage)
-            }
-            Route {
-                path = LOGIN_PATH
-                element = createElement(type = LoginPage)
-            }
-        }
-    }
-
-}
-
-val helloComponent = FC<Props> {
-
-    var session: Session? by useState(null)
-    val scope = MainScope()
-
-    // At first initialisation, get the list
-    // Alternative is useState when we want to persist something across re-renders
+    // Calling for the session
     useEffectOnce {
         scope.launch {
-            session = getSession()
+            sessionApp = getSession()
         }
     }
-    session?.also{
-        NavigationBarComponent {
-            currentSession = session!!
-            updateSession = {
-                scope.launch {
-                    session = getSession()
+
+    sessionApp?.let{
+        updateClientWithToken(sessionApp!!.jwtToken)
+
+        val updateSessionApp: () -> Unit = {
+            scope.launch {
+                sessionApp = getSession()
+            }
+        }
+
+        BrowserRouter {
+            Routes {
+                Route {
+                    path = "/"
+                    element = Homepage.create{
+                        session = sessionApp!!
+                        updateSession = updateSessionApp
+                    }
+                }
+                Route {
+                    path = HOMEPAGE_PATH
+                    element = Homepage.create{
+                        session = sessionApp!!
+                        updateSession = updateSessionApp
+                    }
+                }
+                Route {
+                    path = HELLO_PATH
+                    element = helloComponent.create{
+                        session = sessionApp!!
+                        updateSession = updateSessionApp
+                    }
+                }
+                Route {
+                    path = USER_INFO_PATH
+                    element = UserInfoPage.create{
+                        session = sessionApp!!
+                        updateSession = updateSessionApp
+                    }
+                }
+                Route {
+                    path = LOGIN_PATH
+                    element = LoginPage.create{
+                        session = sessionApp!!
+                        updateSession = updateSessionApp
+                    }
                 }
             }
         }
-        div {
-            +"Hello Component"
-        }
     }
+    // TODO : if no session, show loading screen
+
+}
+
+external interface SessionPageProps: Props {
+    var session: Session
+    var updateSession: () -> Unit
+}
+
+val helloComponent = FC<SessionPageProps> {props ->
+    val navigateHello = useNavigate()
+    NavigationBarComponent {
+        session = props.session
+        updateSession = props.updateSession
+        navigate = navigateHello
+    }
+    div {
+        +"Hello Component"
+    }
+
 }

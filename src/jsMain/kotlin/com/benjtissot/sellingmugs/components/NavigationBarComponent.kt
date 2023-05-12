@@ -5,7 +5,6 @@ import com.benjtissot.sellingmugs.entities.User
 import csstype.*
 import emotion.react.css
 import io.ktor.util.logging.*
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import mui.icons.material.*
 import mui.material.IconButton
@@ -16,19 +15,16 @@ import react.Props
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.h1
 import react.dom.html.ReactHTML.nav
+import react.router.NavigateFunction
 import react.router.useNavigate
 
-val LOG = KtorSimpleLogger("NavigationBarComponent.kt")
+private val LOG = KtorSimpleLogger("NavigationBarComponent.kt")
 
-private val scope = MainScope()
-
-external interface NavProps : Props {
-    var currentSession: Session
-    var updateSession: () -> Unit
+external interface NavigationBarProps : SessionPageProps {
+    var navigate: NavigateFunction
 }
 
-val NavigationBarComponent = FC<NavProps> { props ->
-    val navigate = useNavigate()
+val NavigationBarComponent = FC<NavigationBarProps> { props ->
     nav {
         css {
             backgroundColor = Color("#333")
@@ -69,9 +65,9 @@ val NavigationBarComponent = FC<NavProps> { props ->
                     Search()
                     onClick = {
                         scope.launch{
-                            recordClick(props.currentSession.clickDataId, Const.ClickType.search.toString())
+                            recordClick(props.session.clickDataId, Const.ClickType.search.toString())
                         }
-                        navigate.invoke(HELLO_PATH)
+                        props.navigate.invoke(HELLO_PATH)
                     }
                 }
             }
@@ -88,9 +84,9 @@ val NavigationBarComponent = FC<NavProps> { props ->
                     Home()
                     onClick = {
                         scope.launch{
-                            recordClick(props.currentSession.clickDataId, Const.ClickType.home.toString())
+                            recordClick(props.session.clickDataId, Const.ClickType.home.toString())
                         }
-                        navigate.invoke(HOMEPAGE_PATH)
+                        props.navigate.invoke(HOMEPAGE_PATH)
                     }
                 }
             }
@@ -106,14 +102,14 @@ val NavigationBarComponent = FC<NavProps> { props ->
                     color = IconButtonColor.primary
                     PersonSearch()
                     onClick = {
-                        navigate.invoke(USER_INFO_PATH)
+                        props.navigate.invoke(USER_INFO_PATH)
                     }
                 }
             }
 
             // Login
             LoginButton {
-                user = props.currentSession.user
+                session = props.session
                 updateSession = props.updateSession
             }
         }
@@ -121,7 +117,7 @@ val NavigationBarComponent = FC<NavProps> { props ->
 }
 
 external interface LoginButtonProps : Props {
-    var user: User?
+    var session: Session
     var updateSession: () -> Unit
 }
 
@@ -136,45 +132,24 @@ val LoginButton = FC<LoginButtonProps> { props ->
         IconButton {
             size = Size.small
             color = IconButtonColor.primary
-            Person()
-            onClick = {
-                navigate.invoke(LOGIN_PATH)
-            }
-        }
-        /*props.user?.also {
-            // If User is non null
-            IconButton {
+            if (props.session.user == null || props.session.jwtToken.isBlank()){
+                Person()
+                onClick = {
+                    navigate.invoke(LOGIN_PATH)
+                }
+            } else {
                 div {
                     css {
                         marginRight = 1.vw
                     }
-                    +props.user!!.getNameInitial()
+                    +props.session.user!!.getNameInitial()
                 }
-                size = Size.small
-                color = IconButtonColor.primary
                 PersonOutline()
                 onClick = {
-                    navigate.invoke(HOMEPAGE_PATH)
+                    navigate.invoke(LOGIN_PATH)
                 }
             }
-        } ?: run {
-            // If user is null
-            LOG.debug("User is null")
-            div {
-                IconButton {
-                    size = Size.small
-                    color = IconButtonColor.primary
-                    Person()
-                    onClick = {
-                        val user = User("123","Benjamin", "Tissot", "123", "123", Const.UserType.ADMIN, "23")
-                        MainScope().launch {
-                            setUser(user)
-                            props.updateSession()
-                        }
-                        navigate.invoke(HOMEPAGE_PATH)
-                    }
-                }
-            }
-        }*/
+
+        }
     }
 }

@@ -10,6 +10,8 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.util.logging.*
+import io.ktor.utils.io.core.*
+import org.komputing.khash.sha256.extensions.sha256
 
 private val LOG = KtorSimpleLogger("Api.kt")
 
@@ -20,7 +22,10 @@ var jsonClient = HttpClient {
 }
 
 fun updateClientWithToken(token: String) {
-    jsonClient = jsonClient.config {
+    jsonClient = HttpClient {
+        install(ContentNegotiation) {
+            json()
+        }
         defaultRequest {
             header("Authorization", "Bearer $token")
         }
@@ -38,11 +43,29 @@ fun updateClientWithNoToken() {
     LOG.debug("New client is $jsonClient using no token")
 }
 
-// Get default userinfo
+// Login methods
+
+suspend fun login(email: String, hashedPassword: String): HttpResponse {
+    // Only need user email and password for login
+    val user = User("", "", "", email, hashedPassword, Const.UserType.CLIENT, "")
+    return jsonClient.post(LOGIN_PATH) {
+        contentType(ContentType.Application.Json)
+        setBody(user)
+    }
+}
+
+suspend fun logout(): HttpResponse {
+    // Only need user email and password for login
+    return jsonClient.get(LOGOUT_PATH)
+}
 
 // Get session
 suspend fun getSession(): Session {
-    return jsonClient.get(Session.path).body()
+    val httpResponse = jsonClient.get(Session.path)
+    // TODO: put token in session
+    LOG.debug("Response headers: ${httpResponse}")
+
+    return httpResponse.body()
 }
 
 suspend fun setUser(user: User) {
@@ -93,16 +116,13 @@ suspend fun getUserInfo() : String {
 }
 
 suspend fun postDummyLogin() : HttpResponse{
-    val user = User("123","Benjamin", "Tissot", "123", "123", Const.UserType.ADMIN, "23")
+    val user = User("","", "", "123", "123".sha256().toString(), Const.UserType.ADMIN, "23")
 
     LOG.debug("Posting dummy login")
-    return jsonClient.post(LOGIN_PATH) {
-        contentType(ContentType.Application.Json)
-        setBody(user)
-    }
+    return login(user.email, user.passwordHash)
 }
 suspend fun postDummyRegister(): HttpResponse {
-    val user = User("123","Benjamin", "Tissot", "123", "123", Const.UserType.ADMIN, "23")
+    val user = User("123","Benjamin", "Tissot", "123", "123".sha256().toString(), Const.UserType.ADMIN, "23")
 
     LOG.debug("Posting dummy register")
     val httpResponse = jsonClient.post(REGISTER_PATH) {
