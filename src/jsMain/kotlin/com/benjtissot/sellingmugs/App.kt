@@ -7,6 +7,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import react.*
 import react.dom.html.ReactHTML.div
+import react.router.NavigateFunction
 import react.router.Route
 import react.router.Routes
 import react.router.dom.BrowserRouter
@@ -72,6 +73,13 @@ val App = FC<Props> {
                         updateSession = updateSessionApp
                     }
                 }
+                Route {
+                    path = REGISTER_PATH
+                    element = RegisterPage.create{
+                        session = sessionApp!!
+                        updateSession = updateSessionApp
+                    }
+                }
             }
         }
     }
@@ -82,6 +90,10 @@ val App = FC<Props> {
 external interface SessionPageProps: Props {
     var session: Session
     var updateSession: () -> Unit
+}
+
+external interface NavigationProps: SessionPageProps {
+    var navigate: NavigateFunction
 }
 
 val helloComponent = FC<SessionPageProps> {props ->

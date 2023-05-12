@@ -10,7 +10,6 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.util.logging.*
-import io.ktor.utils.io.core.*
 import org.komputing.khash.sha256.extensions.sha256
 
 private val LOG = KtorSimpleLogger("Api.kt")
@@ -49,6 +48,13 @@ suspend fun login(email: String, hashedPassword: String): HttpResponse {
     // Only need user email and password for login
     val user = User("", "", "", email, hashedPassword, Const.UserType.CLIENT, "")
     return jsonClient.post(LOGIN_PATH) {
+        contentType(ContentType.Application.Json)
+        setBody(user)
+    }
+}
+
+suspend fun register(user: User): HttpResponse {
+    return jsonClient.post(REGISTER_PATH) {
         contentType(ContentType.Application.Json)
         setBody(user)
     }
@@ -122,13 +128,8 @@ suspend fun postDummyLogin() : HttpResponse{
     return login(user.email, user.passwordHash)
 }
 suspend fun postDummyRegister(): HttpResponse {
-    val user = User("123","Benjamin", "Tissot", "123", "123".sha256().toString(), Const.UserType.ADMIN, "23")
+    val user = User("123", "Benjamin", "Tissot", "123", "123".sha256().toString(), Const.UserType.ADMIN, "23")
 
     LOG.debug("Posting dummy register")
-    val httpResponse = jsonClient.post(REGISTER_PATH) {
-        contentType(ContentType.Application.Json)
-        setBody(user)
-    }
-
-    return httpResponse
+    return register(user)
 }
