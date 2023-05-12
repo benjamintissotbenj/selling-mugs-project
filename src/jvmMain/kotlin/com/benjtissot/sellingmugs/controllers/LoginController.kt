@@ -29,7 +29,7 @@ fun Route.loginRouting(){
             call.respond(HttpStatusCode.OK)
         }
         post {
-            login(call.receive())
+            login()
         }
         delete() {
             call.respond(HttpStatusCode.OK)
@@ -41,7 +41,7 @@ fun Route.loginRouting(){
             call.respond("Hello Register Controller")
         }
         post {
-            register(call.receive())
+            register()
         }
         delete() {
             call.respond(HttpStatusCode.OK)

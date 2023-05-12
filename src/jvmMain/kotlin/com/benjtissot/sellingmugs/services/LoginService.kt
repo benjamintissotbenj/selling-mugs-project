@@ -12,6 +12,7 @@ import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.repositories.UserRepository
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.sessions.*
 import io.ktor.util.pipeline.*
@@ -24,8 +25,8 @@ class LoginService {
         val audience = ConfigConst.AUDIENCE
         val myRealm = ConfigConst.REALM
 
-        suspend fun PipelineContext<*, ApplicationCall>.login(user: User){
-
+        suspend fun PipelineContext<*, ApplicationCall>.login(){
+            val user = call.receive<User>()
             LOG.info("User is $user is authenticated : ${UserRepository.authenticate(user)}")
             val authenticatedUser = UserRepository.authenticate(user)
 
@@ -60,7 +61,9 @@ class LoginService {
             }
         }
 
-        suspend fun PipelineContext<*, ApplicationCall>.register(user: User){
+        suspend fun PipelineContext<*, ApplicationCall>.register(){
+            val user = call.receive<User>()
+
             UserRepository.getUserByEmail(user.email)?.let{
                 // If user is found, error and cannot register new user
                 LOG.severe("User with email ${user.email} already exists, sending Conflict")
@@ -69,7 +72,7 @@ class LoginService {
                 // If user is not found, insert with new UUID
                 user.copy(id = genUuid().toString()).also {
                     UserRepository.insertUser(it)
-                    login(it)
+                    login()
                 }
             }
         }

@@ -2,15 +2,12 @@ package com.benjtissot.sellingmugs.controllers
 
 import com.benjtissot.sellingmugs.SESSION_PATH
 import com.benjtissot.sellingmugs.USER_PATH
-import com.benjtissot.sellingmugs.entities.Session
-import com.benjtissot.sellingmugs.entities.User
-import com.benjtissot.sellingmugs.repositories.SessionRepository
+import com.benjtissot.sellingmugs.services.SessionService.Companion.getSession
+import com.benjtissot.sellingmugs.services.SessionService.Companion.updateUserInSession
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.server.sessions.*
 import java.util.logging.Logger
 
 fun Route.sessionRouting(){
@@ -19,11 +16,7 @@ fun Route.sessionRouting(){
 
     route(SESSION_PATH) {
         get {
-            val userSession = call.sessions.get<Session>() ?: SessionRepository.createSession()
-            userSession.also {
-                call.sessions.set(it)
-                call.respond(it)
-            }
+            getSession()
         }
         post {
             call.respond(HttpStatusCode.OK)
@@ -33,18 +26,7 @@ fun Route.sessionRouting(){
         }
         route (USER_PATH) {
             post {
-                val userSession = call.sessions.get<Session>()?.copy()
-                // If session is found, set session user to received user
-                userSession?.let{
-                    val updatedSession = userSession.copy(user = call.receive<User>())
-                    try {
-                        SessionRepository.updateSession(updatedSession)
-                        call.sessions.set(updatedSession)
-                        call.respond(HttpStatusCode.OK)
-                    } catch (e: Exception){
-                        call.respond(HttpStatusCode.BadGateway)
-                    }
-                }
+                updateUserInSession()
             }
         }
     }
