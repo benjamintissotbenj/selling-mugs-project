@@ -43,12 +43,20 @@ val LoginPage = FC<LoginPageProps> { props ->
                 val hashedPassword = clearPassword.sha256().toString()
                 scope.launch{
                     val httpResponse = login(email, hashedPassword)
-                    LOG.debug("Login response body is ${httpResponse.body<String>()}")
+                    if (httpResponse.status == HttpStatusCode.OK){
+                        // Using local variable because otherwise update is not atomic
+                        val tokenString = httpResponse.body<String>()
+                        LOG.debug("Creating new client with new token $tokenString")
+                        updateClientWithToken(tokenString)
+                    } else {
+                        LOG.error("Not valid login")
+                    }
+                    props.updateSession()
                 }
             }
     }
 
-    IconButton{
+    /*IconButton{
         div {
             +"Login"
         }
@@ -67,7 +75,7 @@ val LoginPage = FC<LoginPageProps> { props ->
                 props.updateSession()
             }
         }
-    }
+    }*/
 
     IconButton{
         div {
@@ -84,6 +92,28 @@ val LoginPage = FC<LoginPageProps> { props ->
                     LOG.debug("Token is ${httpResponse.body<String>()}")
                 } else {
                     LOG.error("Register not working")
+                }
+                props.updateSession()
+            }
+        }
+    }
+
+    IconButton{
+        div {
+            +"Logout"
+        }
+        Person()
+        onClick = {
+            LOG.debug("Click on Logout")
+            scope.launch {
+                val httpResponse = logout()
+
+                LOG.debug("After register, response is $httpResponse")
+                if (httpResponse.status == HttpStatusCode.OK){
+                    LOG.debug("Logged out")
+                    navigateLogin.invoke(HOMEPAGE_PATH)
+                } else {
+                    LOG.error("Logout not working")
                 }
                 props.updateSession()
             }

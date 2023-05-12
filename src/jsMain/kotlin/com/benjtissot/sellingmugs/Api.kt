@@ -54,6 +54,11 @@ suspend fun login(email: String, hashedPassword: String): HttpResponse {
     }
 }
 
+suspend fun logout(): HttpResponse {
+    // Only need user email and password for login
+    return jsonClient.get(LOGOUT_PATH)
+}
+
 // Get session
 suspend fun getSession(): Session {
     val httpResponse = jsonClient.get(Session.path)

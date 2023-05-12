@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.benjtissot.sellingmugs.ConfigConst
 import com.benjtissot.sellingmugs.LOGIN_PATH
+import com.benjtissot.sellingmugs.LOGOUT_PATH
 import com.benjtissot.sellingmugs.REGISTER_PATH
 import com.benjtissot.sellingmugs.entities.Session
 import com.benjtissot.sellingmugs.entities.User
@@ -78,6 +79,31 @@ fun Route.loginRouting(){
             val user = call.receive<User>()
             // TODO: handle when user already existing tries to register
             UserRepository.insertUser(user)
+            call.respond(HttpStatusCode.OK)
+        }
+        delete() {
+            call.respond(HttpStatusCode.OK)
+        }
+    }
+
+    route(LOGOUT_PATH) {
+        get {
+            // Setting the jwt to ""
+            val userSession = call.sessions.get<Session>()?.copy()
+
+            // If session is found, keep session user in database but delete jwt
+            userSession?.let{
+                val updatedSession = userSession.copy(jwtToken = "")
+                try {
+                    SessionRepository.updateSession(updatedSession)
+                    call.sessions.set(updatedSession)
+                } catch (e: Exception){
+                    call.respond(HttpStatusCode.BadGateway)
+                }
+            }
+            call.respond(HttpStatusCode.OK)
+        }
+        post {
             call.respond(HttpStatusCode.OK)
         }
         delete() {

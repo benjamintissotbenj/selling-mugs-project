@@ -1,5 +1,6 @@
 package com.benjtissot.sellingmugs.components
 import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.entities.Session
 import com.benjtissot.sellingmugs.entities.User
 import csstype.*
 import emotion.react.css
@@ -108,7 +109,7 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
 
             // Login
             LoginButton {
-                user = props.session.user
+                session = props.session
                 updateSession = props.updateSession
             }
         }
@@ -116,7 +117,7 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
 }
 
 external interface LoginButtonProps : Props {
-    var user: User?
+    var session: Session
     var updateSession: () -> Unit
 }
 
@@ -131,19 +132,19 @@ val LoginButton = FC<LoginButtonProps> { props ->
         IconButton {
             size = Size.small
             color = IconButtonColor.primary
-            props.user?.also {
+            if (props.session.user == null || props.session.jwtToken.isBlank()){
+                Person()
+                onClick = {
+                    navigate.invoke(LOGIN_PATH)
+                }
+            } else {
                 div {
                     css {
                         marginRight = 1.vw
                     }
-                    +props.user!!.getNameInitial()
+                    +props.session.user!!.getNameInitial()
                 }
                 PersonOutline()
-                onClick = {
-                    navigate.invoke(LOGIN_PATH)
-                }
-            } ?: run {
-                Person()
                 onClick = {
                     navigate.invoke(LOGIN_PATH)
                 }
