@@ -1,7 +1,7 @@
 package com.benjtissot.sellingmugs
 
-import com.benjtissot.sellingmugs.components.LoginFormComponent
 import com.benjtissot.sellingmugs.components.NavigationBarComponent
+import com.benjtissot.sellingmugs.components.RegisterFormComponent
 import csstype.*
 import emotion.react.css
 import io.ktor.client.call.*
@@ -18,19 +18,19 @@ import react.router.useNavigate
 
 private val LOG = KtorSimpleLogger("loginPage.kt")
 
-external interface LoginPageProps : SessionPageProps {
+external interface RegisterPageProps : SessionPageProps {
 }
 
-val LoginPage = FC<RegisterPageProps> { props ->
-    val navigateLogin = useNavigate()
+val RegisterPage = FC<RegisterPageProps> { props ->
+    val navigateRegister = useNavigate()
     NavigationBarComponent {
         session = props.session
         updateSession = props.updateSession
-        navigate = navigateLogin
+        navigate = navigateRegister
     }
 
     div {
-            +"Login Page"
+            +"Register Page"
         }
 
     div {
@@ -41,20 +41,19 @@ val LoginPage = FC<RegisterPageProps> { props ->
             alignItems = AlignItems.center
         }
 
-        // Creating login form
-        LoginFormComponent {
-            onSubmit = { email, clearPassword ->
-                val hashedPassword = clearPassword.sha256().toString()
+        // Creating register form
+        RegisterFormComponent {
+            onSubmit = { user ->
                 scope.launch {
-                    val httpResponse = login(email, hashedPassword)
+                    val httpResponse = register(user)
                     if (httpResponse.status == HttpStatusCode.OK) {
                         // Using local variable because otherwise update is not atomic
                         val tokenString = httpResponse.body<String>()
                         LOG.debug("Creating new client with new token $tokenString")
                         updateClientWithToken(tokenString)
-                        navigateLogin.invoke(HOMEPAGE_PATH)
+                        navigateRegister.invoke(HOMEPAGE_PATH)
                     } else {
-                        LOG.error("Not valid login")
+                        LOG.error("User already exists")
                     }
                     props.updateSession()
                 }
@@ -80,7 +79,17 @@ val LoginPage = FC<RegisterPageProps> { props ->
                 +"Register now"
                 onClick = {
                     LOG.debug("Click on Register")
-                    navigateLogin.invoke(REGISTER_PATH)
+                    scope.launch {
+                        val httpResponse = postDummyRegister()
+
+                        LOG.debug("After register, response is $httpResponse")
+                        if (httpResponse.status == HttpStatusCode.OK){
+                            LOG.debug("Token is ${httpResponse.body<String>()}")
+                        } else {
+                            LOG.error("Register not working")
+                        }
+                        props.updateSession()
+                    }
                 }
             }
         }
@@ -101,7 +110,7 @@ val LoginPage = FC<RegisterPageProps> { props ->
                 LOG.debug("After register, response is $httpResponse")
                 if (httpResponse.status == HttpStatusCode.OK){
                     LOG.debug("Logged out")
-                    navigateLogin.invoke(HOMEPAGE_PATH)
+                    navigateRegister.invoke(HOMEPAGE_PATH)
                 } else {
                     LOG.error("Logout not working")
                 }

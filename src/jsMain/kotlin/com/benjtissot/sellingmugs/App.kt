@@ -72,6 +72,13 @@ val App = FC<Props> {
                         updateSession = updateSessionApp
                     }
                 }
+                Route {
+                    path = REGISTER_PATH
+                    element = RegisterPage.create{
+                        session = sessionApp!!
+                        updateSession = updateSessionApp
+                    }
+                }
             }
         }
     }
