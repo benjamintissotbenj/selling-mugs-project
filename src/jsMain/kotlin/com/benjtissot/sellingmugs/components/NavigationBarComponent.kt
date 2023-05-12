@@ -1,7 +1,6 @@
 package com.benjtissot.sellingmugs.components
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.entities.Session
-import com.benjtissot.sellingmugs.entities.User
 import csstype.*
 import emotion.react.css
 import io.ktor.util.logging.*

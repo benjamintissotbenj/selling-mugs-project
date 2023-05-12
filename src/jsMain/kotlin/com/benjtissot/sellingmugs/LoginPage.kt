@@ -1,23 +1,17 @@
 package com.benjtissot.sellingmugs
 
-import com.benjtissot.sellingmugs.components.*
-import com.benjtissot.sellingmugs.entities.Session
+import com.benjtissot.sellingmugs.components.LoginFormComponent
+import com.benjtissot.sellingmugs.components.NavigationBarComponent
 import io.ktor.client.call.*
 import io.ktor.http.*
 import io.ktor.util.logging.*
-import io.ktor.utils.io.core.*
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import mui.icons.material.Person
 import mui.material.IconButton
-import org.komputing.khash.sha256.Sha256
 import org.komputing.khash.sha256.extensions.sha256
 import react.FC
-import react.Props
 import react.dom.html.ReactHTML.div
 import react.router.useNavigate
-import react.useEffectOnce
-import react.useState
 
 private val LOG = KtorSimpleLogger("loginPage.kt")
 
