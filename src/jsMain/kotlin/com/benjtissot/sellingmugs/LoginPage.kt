@@ -69,6 +69,7 @@ val LoginPage = FC<RegisterPageProps> { props ->
             }
 
             div {
+                divDefaultCss()
                 +"Not a customer yet? "
             }
             button {
@@ -76,6 +77,7 @@ val LoginPage = FC<RegisterPageProps> { props ->
                     marginLeft = 2.vw
                     borderRadius = 2.vh
                     backgroundColor = NamedColor.transparent
+                    fontSize = 2.vh
                 }
                 +"Register now"
                 onClick = {

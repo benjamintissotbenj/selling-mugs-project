@@ -60,40 +60,6 @@ val RegisterPage = FC<RegisterPageProps> { props ->
             }
         }
 
-        div {
-            css {
-                display = Display.flex
-                flexDirection = FlexDirection.row
-                alignItems = AlignItems.center
-            }
-
-            div {
-                +"Not a customer yet? "
-            }
-            button {
-                css {
-                    marginLeft = 2.vw
-                    borderRadius = 2.vh
-                    backgroundColor = NamedColor.transparent
-                }
-                +"Register now"
-                onClick = {
-                    LOG.debug("Click on Register")
-                    scope.launch {
-                        val httpResponse = postDummyRegister()
-
-                        LOG.debug("After register, response is $httpResponse")
-                        if (httpResponse.status == HttpStatusCode.OK){
-                            LOG.debug("Token is ${httpResponse.body<String>()}")
-                        } else {
-                            LOG.error("Register not working")
-                        }
-                        props.updateSession()
-                    }
-                }
-            }
-        }
-
     }
 
 
