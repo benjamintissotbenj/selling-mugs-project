@@ -24,7 +24,7 @@ import java.util.*
 val LOG = java.util.logging.Logger.getLogger("LoginController.kt")
 fun Route.loginRouting(){
 
-    route(LOGIN_PATH) {
+    route(LOGIN_BACKEND_PATH) {
         get {
             call.respond(HttpStatusCode.OK)
         }

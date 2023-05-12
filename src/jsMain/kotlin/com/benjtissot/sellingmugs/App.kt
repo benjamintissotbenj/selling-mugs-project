@@ -43,13 +43,6 @@ val App = FC<Props> {
         BrowserRouter {
             Routes {
                 Route {
-                    path = "/"
-                    element = Homepage.create{
-                        session = sessionApp!!
-                        updateSession = updateSessionApp
-                    }
-                }
-                Route {
                     path = HOMEPAGE_PATH
                     element = Homepage.create{
                         session = sessionApp!!

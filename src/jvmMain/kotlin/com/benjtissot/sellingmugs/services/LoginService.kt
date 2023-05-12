@@ -50,6 +50,7 @@ class LoginService {
                         }
                         call.respond(token)
                     } catch (e: Exception){
+                        // If session cannot be updated
                         call.respond(HttpStatusCode.BadGateway)
                     }
                 } ?: run {
@@ -57,7 +58,7 @@ class LoginService {
                     call.respond(HttpStatusCode.BadGateway)
                 }
             } else {
-                call.respondRedirect(LOGIN_PATH)
+                call.respond(HttpStatusCode.Conflict)
             }
         }
 

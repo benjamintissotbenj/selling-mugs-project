@@ -9,9 +9,6 @@ import io.ktor.server.routing.*
 fun Route.checkoutRouting(){
 
     route(CHECKOUT_PATH) {
-        get {
-            call.respond("Hello Checkout Controller")
-        }
         post {
             call.respond(HttpStatusCode.OK)
         }

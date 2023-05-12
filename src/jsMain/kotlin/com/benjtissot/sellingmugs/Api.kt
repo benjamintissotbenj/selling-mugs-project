@@ -38,7 +38,7 @@ fun updateClientWithToken(token: String) {
 suspend fun login(email: String, hashedPassword: String): HttpResponse {
     // Only need user email and password for login
     val user = User("", "", "", email, hashedPassword, Const.UserType.CLIENT, "")
-    return jsonClient.post(LOGIN_PATH) {
+    return jsonClient.post(LOGIN_BACKEND_PATH) {
         contentType(ContentType.Application.Json)
         setBody(user)
     }
@@ -105,7 +105,7 @@ suspend fun deleteMugListItem(mugListItem: Mug) {
 // get User Info
 
 suspend fun getUserInfo() : String {
-    val httpResponse = jsonClient.get(USER_INFO_PATH)
+    val httpResponse = jsonClient.get(USER_INFO_MESSAGE_PATH)
     return httpResponse.body()
 }
 

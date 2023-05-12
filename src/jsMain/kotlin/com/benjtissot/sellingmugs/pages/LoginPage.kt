@@ -6,6 +6,7 @@ import com.benjtissot.sellingmugs.components.NavigationBarComponent
 import csstype.*
 import emotion.react.css
 import io.ktor.client.call.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
@@ -13,6 +14,7 @@ import org.komputing.khash.sha256.extensions.sha256
 import react.FC
 import react.dom.html.ReactHTML.button
 import react.dom.html.ReactHTML.div
+import react.router.NavigateFunction
 import react.router.useNavigate
 
 private val LOG = KtorSimpleLogger("loginPage.kt")
@@ -31,7 +33,7 @@ val LoginPage = FC<RegisterPageProps> { props ->
     div {
             +"Login Page"
         }
-
+    // General page div
     div {
 
         css {
@@ -47,19 +49,13 @@ val LoginPage = FC<RegisterPageProps> { props ->
                 val hashedPassword = clearPassword.sha256().toString()
                 scope.launch {
                     val httpResponse = login(email, hashedPassword)
-                    if (httpResponse.status == HttpStatusCode.OK) {
-                        // Using local variable because otherwise update is not atomic
-                        val tokenString = httpResponse.body<String>()
-                        updateClientWithToken(tokenString)
-                        navigateLogin.invoke(HOMEPAGE_PATH)
-                    } else {
-                        LOG.error("Not valid login")
-                    }
+                    onLoginResponse(httpResponse, navigateLogin)
                     props.updateSession()
                 }
             }
         }
 
+        // Register invitation
         div {
             css {
                 display = Display.flex
@@ -86,5 +82,27 @@ val LoginPage = FC<RegisterPageProps> { props ->
             }
         }
 
+    }
+}
+
+suspend fun onLoginResponse(httpResponse: HttpResponse, navigateFunction: NavigateFunction){
+    when (httpResponse.status) {
+        HttpStatusCode.OK -> {
+            // Using local variable because otherwise update is not atomic
+            val tokenString = httpResponse.body<String>()
+            updateClientWithToken(tokenString)
+            navigateFunction.invoke(HOMEPAGE_PATH)
+        }
+        HttpStatusCode.Conflict -> {
+            // User exists but is not authenticated
+            LOG.error("Credentials not valid for login")
+        }
+        HttpStatusCode.BadGateway -> {
+            // Session not found or couldn't be updated
+            LOG.error("Session not found or couldn't be updated")
+        }
+        else -> {
+            LOG.error("Unknown error")
+        }
     }
 }
