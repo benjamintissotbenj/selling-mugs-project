@@ -1,12 +1,12 @@
-package com.benjtissot.sellingmugs
+package com.benjtissot.sellingmugs.pages
 
+import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.FooterComponent
 import com.benjtissot.sellingmugs.components.InputComponent
 import com.benjtissot.sellingmugs.components.MugListComponent
 import com.benjtissot.sellingmugs.components.NavigationBarComponent
 import com.benjtissot.sellingmugs.entities.Artwork
 import com.benjtissot.sellingmugs.entities.Mug
-import com.benjtissot.sellingmugs.entities.Session
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
