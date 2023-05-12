@@ -2,6 +2,10 @@ package com.benjtissot.sellingmugs
 
 import com.benjtissot.sellingmugs.components.NavigationBarComponent
 import com.benjtissot.sellingmugs.entities.Session
+import com.benjtissot.sellingmugs.pages.Homepage
+import com.benjtissot.sellingmugs.pages.LoginPage
+import com.benjtissot.sellingmugs.pages.RegisterPage
+import com.benjtissot.sellingmugs.pages.UserInfoPage
 import io.ktor.util.logging.*
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch

@@ -1,5 +1,6 @@
-package com.benjtissot.sellingmugs
+package com.benjtissot.sellingmugs.pages
 
+import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.LoginFormComponent
 import com.benjtissot.sellingmugs.components.NavigationBarComponent
 import csstype.*
@@ -49,7 +50,6 @@ val LoginPage = FC<RegisterPageProps> { props ->
                     if (httpResponse.status == HttpStatusCode.OK) {
                         // Using local variable because otherwise update is not atomic
                         val tokenString = httpResponse.body<String>()
-                        LOG.debug("Creating new client with new token $tokenString")
                         updateClientWithToken(tokenString)
                         navigateLogin.invoke(HOMEPAGE_PATH)
                     } else {

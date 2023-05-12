@@ -25,21 +25,12 @@ fun updateClientWithToken(token: String) {
         install(ContentNegotiation) {
             json()
         }
-        defaultRequest {
-            header("Authorization", "Bearer $token")
+        if (token.isNotBlank()){
+            defaultRequest {
+                header("Authorization", "Bearer $token")
+            }
         }
     }
-    LOG.debug("New client is $jsonClient using token: $token")
-    LOG.debug("Has config : ${jsonClient.engineConfig.toString()}")
-}
-
-fun updateClientWithNoToken() {
-    jsonClient = HttpClient {
-        install(ContentNegotiation) {
-            json()
-        }
-    }
-    LOG.debug("New client is $jsonClient using no token")
 }
 
 // Login methods
@@ -68,9 +59,6 @@ suspend fun logout(): HttpResponse {
 // Get session
 suspend fun getSession(): Session {
     val httpResponse = jsonClient.get(Session.path)
-    // TODO: put token in session
-    LOG.debug("Response headers: ${httpResponse}")
-
     return httpResponse.body()
 }
 

@@ -1,5 +1,6 @@
-package com.benjtissot.sellingmugs
+package com.benjtissot.sellingmugs.pages
 
+import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.FooterComponent
 import com.benjtissot.sellingmugs.components.NavigationBarComponent
 import io.ktor.http.*
