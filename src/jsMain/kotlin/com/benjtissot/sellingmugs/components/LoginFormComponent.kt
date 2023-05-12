@@ -1,5 +1,10 @@
 package com.benjtissot.sellingmugs.components
 
+import com.benjtissot.sellingmugs.*
+import csstype.Color
+import csstype.NamedColor
+import csstype.px
+import csstype.vw
 import org.w3c.dom.HTMLFormElement
 import org.w3c.dom.HTMLInputElement
 import react.FC
@@ -7,8 +12,10 @@ import react.Props
 import react.dom.events.ChangeEventHandler
 import react.dom.events.FormEventHandler
 import react.dom.html.InputType
+import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.form
 import react.dom.html.ReactHTML.input
+import react.dom.html.ReactHTML.label
 import react.useState
 
 external interface LoginFormProps : Props {
@@ -16,41 +23,64 @@ external interface LoginFormProps : Props {
 }
 
 val LoginFormComponent = FC<LoginFormProps> { props ->
-    val (mugName, setMugName) = useState("")
-    val (artURL, setArtURL) = useState("")
+    val (email, setEmail) = useState("")
+    val (password, setPassword) = useState("")
 
     val submitHandler: FormEventHandler<HTMLFormElement> = {
         it.preventDefault()
-        props.onSubmit(mugName, artURL)
-        setMugName("")
-        setArtURL("")
+        props.onSubmit(email, password)
+        setEmail("")
+        setPassword("")
     }
 
-    val mugNameChangeHandler: ChangeEventHandler<HTMLInputElement> = {
-        setMugName(it.target.value)
+    val emailChangeHandler: ChangeEventHandler<HTMLInputElement> = {
+        setEmail(it.target.value)
     }
 
-    val artURLChangeHandler: ChangeEventHandler<HTMLInputElement> = {
-        setArtURL(it.target.value)
+    val passwordChangeHandler: ChangeEventHandler<HTMLInputElement> = {
+        setPassword(it.target.value)
     }
 
-    form {
+    div {
+        formComponentDivCss()
 
-        input {
-            type = InputType.text
-            onChange = mugNameChangeHandler
-            value = mugName
+        form {
+            formCss()
+            div {
+                formLabelGroupDivCss()
+
+                // Email
+                label {
+                    formLabelCss()
+                    +"Email"
+                    input {
+                        formInputCss()
+                        type = InputType.text
+                        onChange = emailChangeHandler
+                        value = email
+                    }
+                }
+
+                // Password
+                label {
+                    formLabelCss()
+                    +"Password"
+                    input {
+                        formInputCss()
+                        type = InputType.password
+                        onChange = passwordChangeHandler
+                        value = password
+                    }
+                }
+            }
+            input {
+                formInputCss(10.vw, 80.px, backColor = Color("#007bff"), frontColor = NamedColor.white)
+                type = InputType.submit
+                value = "Login"
+            }
+
+            onSubmit = submitHandler
         }
-        input {
-            type = InputType.text
-            onChange = artURLChangeHandler
-            value = artURL
-        }
-        input {
-            type = InputType.submit
-            value = "Add Mug"
-        }
-
-        onSubmit = submitHandler
     }
+
 }
