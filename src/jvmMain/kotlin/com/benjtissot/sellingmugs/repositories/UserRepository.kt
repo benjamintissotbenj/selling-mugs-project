@@ -2,6 +2,7 @@ package com.benjtissot.sellingmugs.repositories
 
 import com.benjtissot.sellingmugs.entities.User
 import database
+import org.litote.kmongo.MongoOperator
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
 
@@ -15,6 +16,13 @@ class UserRepository {
          */
         suspend fun insertUser(user: User) {
             userCollection.insertOne(user)
+        }
+
+        /**
+         * @param user the [User] to be inserted
+         */
+        suspend fun getUserByEmail(email: String): User? {
+            return userCollection.findOne(User::email eq email)
         }
 
         /**

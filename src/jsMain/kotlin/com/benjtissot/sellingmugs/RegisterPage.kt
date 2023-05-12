@@ -44,16 +44,22 @@ val RegisterPage = FC<RegisterPageProps> { props ->
             onSubmit = { user ->
                 scope.launch {
                     val httpResponse = register(user)
-                    if (httpResponse.status == HttpStatusCode.OK) {
-                        // Using local variable because otherwise update is not atomic
-                        val tokenString = httpResponse.body<String>()
-                        LOG.debug("Creating new client with new token $tokenString")
-                        updateClientWithToken(tokenString)
-                        navigateRegister.invoke(HOMEPAGE_PATH)
-                    } else {
-                        LOG.error("User already exists")
+                    when (httpResponse.status) {
+                        HttpStatusCode.OK -> { // User is now registered, token is in response
+                            // Using local variable because otherwise update is not atomic
+                            val tokenString = httpResponse.body<String>()
+                            LOG.debug("Creating new client with new token $tokenString")
+                            updateClientWithToken(tokenString)
+                            navigateRegister.invoke(HOMEPAGE_PATH)
+                            props.updateSession()
+                        }
+                        HttpStatusCode.Conflict -> { // User already existed
+                            LOG.error("User already exists")
+                        }
+                        else -> {
+                            LOG.error("Something went wrong")
+                        }
                     }
-                    props.updateSession()
                 }
             }
         }
