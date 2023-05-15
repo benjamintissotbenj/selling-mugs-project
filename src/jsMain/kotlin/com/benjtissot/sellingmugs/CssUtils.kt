@@ -78,3 +78,16 @@ fun PropsWithClassName.divDefaultCss(){
     }
 }
 
+fun PropertiesBuilder.divDefaultHorizontalCss(){
+        display = Display.flex
+        flexDirection = FlexDirection.row
+        alignItems = AlignItems.start
+        padding = 1.vh
+        fontSize = 2.vh
+}
+
+fun PropertiesBuilder.justifySpaceBetween() {
+    display = Display.flex
+    justifyContent = JustifyContent.spaceBetween
+}
+

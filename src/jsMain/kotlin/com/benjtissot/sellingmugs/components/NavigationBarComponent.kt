@@ -21,9 +21,8 @@ external interface NavigationBarProps : NavigationProps {
 val NavigationBarComponent = FC<NavigationBarProps> { props ->
     nav {
         css {
+            justifySpaceBetween()
             backgroundColor = Color("#333")
-            display = Display.flex
-            justifyContent = JustifyContent.spaceBetween
             alignItems = AlignItems.center
             height = 8.vh
             borderRadius = 4.vw

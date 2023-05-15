@@ -1,6 +1,7 @@
 package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.SessionPageProps
+import com.benjtissot.sellingmugs.components.CartListComponent
 import com.benjtissot.sellingmugs.components.FooterComponent
 import com.benjtissot.sellingmugs.components.NavigationBarComponent
 import com.benjtissot.sellingmugs.divDefaultCss
@@ -45,6 +46,14 @@ val CartPage = FC<CartPageProps> { props ->
         divDefaultCss()
         +"The cart is ${cart.toString()}"
     }
+
+    cart?.let{
+        CartListComponent{
+            title = "Cart"
+            list = cart!!.mugCartItemList
+        }
+    }
+
 
     FooterComponent {}
 }

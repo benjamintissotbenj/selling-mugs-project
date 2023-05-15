@@ -19,6 +19,7 @@ class SessionService {
 
         suspend fun PipelineContext<*, ApplicationCall>.updateCartIdInSession(cartId: String){
             getSession().copy(cartId = cartId).also {
+                SessionRepository.updateSession(it)
                 call.sessions.set(it)
             }
         }
