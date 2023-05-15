@@ -2,6 +2,7 @@ import ch.qos.logback.classic.LoggerContext
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.benjtissot.sellingmugs.ConfigConst
+import com.benjtissot.sellingmugs.HOMEPAGE_PATH
 import com.benjtissot.sellingmugs.controllers.*
 import com.benjtissot.sellingmugs.entities.Session
 import io.ktor.http.*
@@ -92,8 +93,14 @@ fun Application.createRoutes(){
 
 
         // Static to access resources (index.html, sellingmugs.js)
-        static("/") {
+        static("/static") {
             resources("")
+        }
+
+        // Any other route redirects to homepage
+        get("/*"){
+            LOG.info("Redirecting to homepage")
+            call.respondRedirect(HOMEPAGE_PATH)
         }
 
 
