@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory
 
 val client = KMongo.createClient().coroutine
 val database = client.getDatabase("debug")
+var redirectPath = ""
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 fun Application.module() {
@@ -61,7 +62,7 @@ fun Application.module() {
             cookie<Session>("session"){
                 cookie.maxAgeInSeconds = 600
             }
-            cookie<String>("jwtToken"){
+            cookie<String>("redirectURL"){
                 cookie.maxAgeInSeconds = 600
             }
         }
@@ -91,6 +92,8 @@ fun Application.createRoutes(){
         checkoutRouting()
         paymentRouting()*/
 
+        checkRedirectRouting()
+
 
         // Static to access resources (index.html, sellingmugs.js)
         static("/static") {
@@ -98,8 +101,10 @@ fun Application.createRoutes(){
         }
 
         // Any other route redirects to homepage
-        get("/*"){
-            LOG.info("Redirecting to homepage")
+        get("/{path}"){
+            val path = call.parameters["path"] ?: error("Invalid get request")
+            redirectPath = "/$path"
+            LOG.info("Redirecting to homepage to load page and redirect from front-end")
             call.respondRedirect(HOMEPAGE_PATH)
         }
 

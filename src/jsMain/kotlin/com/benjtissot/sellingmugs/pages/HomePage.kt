@@ -27,9 +27,18 @@ val Homepage = FC<HomepageProps> { props ->
     // Alternative is useState when we want to persist something across re-renders
     useEffectOnce {
         scope.launch {
-            mugList = getMugList()
+            val redirectPath = checkRedirect()
+            if (ALL_FRONT_END_PATHS.contains(redirectPath)) {
+                navigateFun.invoke(redirectPath)
+            } else {
+                mugList = getMugList()
+            }
         }
     }
+
+    // TODO: make sure this is not rendered when redirecting
+
+
     NavigationBarComponent {
         session = props.session
         updateSession = props.updateSession
