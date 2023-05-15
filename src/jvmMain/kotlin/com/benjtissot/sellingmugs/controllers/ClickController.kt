@@ -19,7 +19,7 @@ fun Route.clickRouting(){
             val clickDataId: String = call.parameters["click_data_id"] ?: error("Invalid post request")
             val clickTypeStr: String = call.parameters["click_type"] ?: error("Invalid post request")
             LOG.info("Click type is $clickTypeStr")
-            val clickType: Const.ClickType = Const.ClickType.valueOf(clickTypeStr)
+            val clickType = Const.ClickType.valueOf(clickTypeStr)
             try {
                 ClickDataRepository.addClickById(clickDataId, clickType)
                 call.respond(HttpStatusCode.OK)

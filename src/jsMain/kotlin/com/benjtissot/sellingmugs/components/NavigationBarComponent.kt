@@ -59,7 +59,7 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
                     Search()
                     onClick = {
                         scope.launch{
-                            recordClick(props.session.clickDataId, Const.ClickType.search.toString())
+                            recordClick(props.session.clickDataId, Const.ClickType.SEARCH.toString())
                         }
                         props.navigate.invoke(HELLO_PATH)
                     }
@@ -78,9 +78,28 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
                     Home()
                     onClick = {
                         scope.launch{
-                            recordClick(props.session.clickDataId, Const.ClickType.home.toString())
+                            recordClick(props.session.clickDataId, Const.ClickType.HOME.toString())
                         }
                         props.navigate.invoke(HOMEPAGE_PATH)
+                    }
+                }
+            }
+
+            // Cart
+            div {
+                css {
+                    verticalAlign = VerticalAlign.middle
+                    marginRight = 2.vw
+                }
+                IconButton {
+                    size = Size.small
+                    color = IconButtonColor.primary
+                    ShoppingCart()
+                    onClick = {
+                        scope.launch{
+                            recordClick(props.session.clickDataId, Const.ClickType.CART.toString())
+                        }
+                        props.navigate.invoke(CART_PATH)
                     }
                 }
             }
@@ -96,6 +115,9 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
                     color = IconButtonColor.primary
                     PersonSearch()
                     onClick = {
+                        scope.launch{
+                            recordClick(props.session.clickDataId, Const.ClickType.USER_INFO.toString())
+                        }
                         props.navigate.invoke(USER_INFO_PATH)
                     }
                 }

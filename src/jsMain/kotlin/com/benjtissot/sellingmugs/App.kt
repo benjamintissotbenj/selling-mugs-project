@@ -2,10 +2,7 @@ package com.benjtissot.sellingmugs
 
 import com.benjtissot.sellingmugs.components.NavigationBarComponent
 import com.benjtissot.sellingmugs.entities.Session
-import com.benjtissot.sellingmugs.pages.Homepage
-import com.benjtissot.sellingmugs.pages.LoginPage
-import com.benjtissot.sellingmugs.pages.RegisterPage
-import com.benjtissot.sellingmugs.pages.UserInfoPage
+import com.benjtissot.sellingmugs.pages.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -73,6 +70,13 @@ val App = FC<Props> {
                 Route {
                     path = REGISTER_PATH
                     element = RegisterPage.create{
+                        session = sessionApp!!
+                        updateSession = updateSessionApp
+                    }
+                }
+                Route {
+                    path = CART_PATH
+                    element = CartPage.create{
                         session = sessionApp!!
                         updateSession = updateSessionApp
                     }

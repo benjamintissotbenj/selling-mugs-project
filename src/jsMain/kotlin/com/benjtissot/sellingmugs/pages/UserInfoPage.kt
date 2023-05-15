@@ -21,11 +21,11 @@ external interface UserInfoPageProps : SessionPageProps {
 
 val UserInfoPage = FC<UserInfoPageProps> { props ->
 
-    val navigateLogin = useNavigate()
+    val navigateUserInfo = useNavigate()
     NavigationBarComponent {
         session = props.session
         updateSession = props.updateSession
-        navigate = navigateLogin
+        navigate = navigateUserInfo
     }
 
     var message by useState("")
@@ -54,7 +54,7 @@ val UserInfoPage = FC<UserInfoPageProps> { props ->
     LogoutButtonComponent {
         session = props.session
         updateSession = props.updateSession
-        navigate = navigateLogin
+        navigate = navigateUserInfo
     }
 
 
