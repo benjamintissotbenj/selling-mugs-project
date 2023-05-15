@@ -85,8 +85,8 @@ fun Application.createRoutes(){
         userInfoRouting()
 
         loginRouting()
-        /*
         cartRouting()
+        /*
         checkoutRouting()
         paymentRouting()*/
 

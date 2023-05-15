@@ -10,6 +10,7 @@ data class Session(
     var user: User?,
     var jwtToken: String,
     val clickDataId: String,
+    val cartId: String
     ){
 
     companion object {

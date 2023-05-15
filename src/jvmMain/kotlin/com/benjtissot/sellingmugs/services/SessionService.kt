@@ -9,19 +9,18 @@ import io.ktor.util.pipeline.*
 
 class SessionService {
     companion object {
-        suspend fun PipelineContext<*, ApplicationCall>.getSession(){
+        suspend fun PipelineContext<*, ApplicationCall>.getSession(): Session{
             val userSession = call.sessions.get<Session>() ?: SessionRepository.createSession()
             userSession.also {
                 call.sessions.set(it)
                 call.respond(it)
+                return it
             }
         }
 
-        suspend fun PipelineContext<*, ApplicationCall>.updateUserInSession(){
-            val userSession = call.sessions.get<Session>() ?: SessionRepository.createSession()
-            userSession.also {
+        suspend fun PipelineContext<*, ApplicationCall>.updateCartIdInSession(cartId: String){
+            getSession().copy(cartId = cartId).also {
                 call.sessions.set(it)
-                call.respond(it)
             }
         }
     }

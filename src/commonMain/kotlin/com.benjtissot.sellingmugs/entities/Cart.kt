@@ -8,8 +8,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Cart(
     @SerialName("_id") val id: String,
-    val mugCartItemList: List<MugCartItem>,
-    val price: Float,){
+    val mugCartItemList: ArrayList<MugCartItem>,
+){
 
     companion object {
         // Idea is that we don't need to define a route and requests in strings. Any changes only need to come from the models

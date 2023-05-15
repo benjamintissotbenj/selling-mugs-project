@@ -1,9 +1,13 @@
 package com.benjtissot.sellingmugs.services
 
+import com.benjtissot.sellingmugs.MugCartItem
 import com.benjtissot.sellingmugs.controllers.LOG
 import com.benjtissot.sellingmugs.controllers.mugCollection
+import com.benjtissot.sellingmugs.entities.Cart
 import com.benjtissot.sellingmugs.entities.Mug
 import com.benjtissot.sellingmugs.genUuid
+import com.benjtissot.sellingmugs.repositories.CartRepository
+import com.benjtissot.sellingmugs.repositories.MugRepository
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -20,7 +24,7 @@ class MugService {
 
         suspend fun PipelineContext<*, ApplicationCall>.insertNewMug(){
             LOG.severe("Posting Mug")
-            mugCollection.insertOne(call.receive<Mug>().copy(genUuid().toString()))
+            MugRepository.updateMug(call.receive<Mug>().copy(genUuid().toString()))
             call.respond(HttpStatusCode.OK)
         }
 

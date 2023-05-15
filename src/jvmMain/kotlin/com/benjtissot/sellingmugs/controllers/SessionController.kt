@@ -24,10 +24,5 @@ fun Route.sessionRouting(){
         delete() {
             call.respond(HttpStatusCode.OK)
         }
-        route (USER_OBJECT_PATH) {
-            post {
-                updateUserInSession()
-            }
-        }
     }
 }

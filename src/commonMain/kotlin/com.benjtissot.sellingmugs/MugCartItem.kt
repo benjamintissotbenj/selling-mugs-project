@@ -8,8 +8,7 @@ import kotlinx.serialization.Serializable
 data class MugCartItem(
     @SerialName("_id") val id: String,
     val mug: Mug,
-    val price: Float,
-    var artID: String,
+    var amount: Int,
 ){
 
     companion object {
