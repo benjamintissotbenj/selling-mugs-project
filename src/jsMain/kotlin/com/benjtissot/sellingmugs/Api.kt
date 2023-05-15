@@ -62,13 +62,6 @@ suspend fun getSession(): Session {
     return httpResponse.body()
 }
 
-suspend fun setUser(user: User) {
-    jsonClient.post(Session.path+User.path) {
-        contentType(ContentType.Application.Json)
-        setBody(user)
-    }
-}
-
 suspend fun recordClick(clickDataId: String, clickType: String) {
 
     jsonClient.post(Click.path + "/$clickDataId/$clickType") {
@@ -99,6 +92,19 @@ suspend fun addArtwork(artwork: Artwork) {
 
 suspend fun deleteMugListItem(mugListItem: Mug) {
     jsonClient.delete(Mug.path + "/${mugListItem.id}")
+}
+
+
+// Cart
+suspend fun addMugToCart(mug: Mug){
+    jsonClient.post(CART_PATH + Mug.path) {
+        contentType(ContentType.Application.Json)
+        setBody(mug)
+    }
+}
+
+suspend fun getCart() : Cart {
+    return jsonClient.get(Cart.path).body()
 }
 
 

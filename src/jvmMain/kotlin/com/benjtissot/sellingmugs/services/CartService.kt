@@ -4,12 +4,10 @@ import com.benjtissot.sellingmugs.MugCartItem
 import com.benjtissot.sellingmugs.entities.Cart
 import com.benjtissot.sellingmugs.entities.Mug
 import com.benjtissot.sellingmugs.genUuid
-import com.benjtissot.sellingmugs.repositories.*
-import com.benjtissot.sellingmugs.services.SessionService.Companion.getSession
+import com.benjtissot.sellingmugs.repositories.CartRepository
 import com.benjtissot.sellingmugs.services.SessionService.Companion.updateCartIdInSession
 import io.ktor.server.application.*
 import io.ktor.util.pipeline.*
-import kotlin.jvm.Throws
 
 class CartService {
     companion object {

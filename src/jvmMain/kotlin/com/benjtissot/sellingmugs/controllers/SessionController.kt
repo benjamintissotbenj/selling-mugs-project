@@ -1,9 +1,7 @@
 package com.benjtissot.sellingmugs.controllers
 
 import com.benjtissot.sellingmugs.SESSION_OBJECT_PATH
-import com.benjtissot.sellingmugs.USER_OBJECT_PATH
 import com.benjtissot.sellingmugs.services.SessionService.Companion.getSession
-import com.benjtissot.sellingmugs.services.SessionService.Companion.updateUserInSession
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
@@ -16,7 +14,7 @@ fun Route.sessionRouting(){
 
     route(SESSION_OBJECT_PATH) {
         get {
-            getSession()
+            call.respond(getSession())
         }
         post {
             call.respond(HttpStatusCode.OK)

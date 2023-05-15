@@ -3,7 +3,6 @@ package com.benjtissot.sellingmugs.services
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.benjtissot.sellingmugs.ConfigConst
-import com.benjtissot.sellingmugs.LOGIN_PATH
 import com.benjtissot.sellingmugs.controllers.LOG
 import com.benjtissot.sellingmugs.entities.Session
 import com.benjtissot.sellingmugs.entities.User

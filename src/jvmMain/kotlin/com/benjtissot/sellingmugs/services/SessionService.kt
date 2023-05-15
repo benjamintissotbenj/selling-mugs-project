@@ -13,7 +13,6 @@ class SessionService {
             val userSession = call.sessions.get<Session>() ?: SessionRepository.createSession()
             userSession.also {
                 call.sessions.set(it)
-                call.respond(it)
                 return it
             }
         }

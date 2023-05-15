@@ -39,9 +39,10 @@ val Homepage = FC<HomepageProps> { props ->
     MugListComponent {
         list = mugList
         title = "Best for you"
-        onItemClick = {
+        onItemClick = { mug ->
             scope.launch {
-                deleteMugListItem(it) // deletes from server
+                // Adding the mug to the cart
+                addMugToCart(mug)
                 mugList = getMugList() // updates client
             }
         }
