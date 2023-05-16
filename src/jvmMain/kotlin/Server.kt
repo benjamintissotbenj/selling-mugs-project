@@ -23,6 +23,8 @@ import io.ktor.server.sessions.*
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
 import org.slf4j.LoggerFactory
+import java.io.File
+import java.net.URI
 
 
 val client = KMongo.createClient().coroutine
@@ -98,6 +100,11 @@ fun Application.createRoutes(){
         // Static to access resources (index.html, sellingmugs.js)
         static("/static") {
             resources("")
+        }
+        get("/favicon.ico") {
+            call.respondFile(File(URI(this::class.java.classLoader.getResource("static/icon.jpg")?.toString()?:""))) {
+                ContentType.Image.JPEG
+            }
         }
 
         // Any other route redirects to homepage

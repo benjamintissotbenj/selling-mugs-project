@@ -27,10 +27,6 @@ fun Route.cartRouting(){
 
     route(CART_PATH) {
 
-        get {
-            call.respondRedirect(HOMEPAGE_PATH)
-        }
-
         // Adding a mug to the cart
         route(Mug.path){
             post {
