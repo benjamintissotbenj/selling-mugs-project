@@ -1,6 +1,7 @@
 package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.components.FooterComponent
 import com.benjtissot.sellingmugs.components.LoginFormComponent
 import com.benjtissot.sellingmugs.components.NavigationBarComponent
 import csstype.*
@@ -24,19 +25,17 @@ external interface LoginPageProps : SessionPageProps {
 
 val LoginPage = FC<RegisterPageProps> { props ->
     val navigateLogin = useNavigate()
+
     NavigationBarComponent {
         session = props.session
         updateSession = props.updateSession
         navigate = navigateLogin
     }
 
-    div {
-            +"Login Page"
-        }
     // General page div
     div {
-
         css {
+            mainPageDiv()
             alignSelf = AlignSelf.center
             display = Display.flex
             flexDirection = FlexDirection.column
@@ -83,6 +82,8 @@ val LoginPage = FC<RegisterPageProps> { props ->
         }
 
     }
+
+    FooterComponent{}
 }
 
 suspend fun onLoginResponse(httpResponse: HttpResponse, navigateFunction: NavigateFunction){

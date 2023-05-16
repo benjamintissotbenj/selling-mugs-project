@@ -25,7 +25,6 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
             backgroundColor = Color("#333")
             alignItems = AlignItems.center
             height = 8.vh
-            borderRadius = 4.vw
         }
 
         h1 {

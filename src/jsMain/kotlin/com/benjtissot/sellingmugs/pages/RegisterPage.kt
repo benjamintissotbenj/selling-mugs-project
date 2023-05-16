@@ -1,6 +1,7 @@
 package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.components.FooterComponent
 import com.benjtissot.sellingmugs.components.NavigationBarComponent
 import com.benjtissot.sellingmugs.components.RegisterFormComponent
 import csstype.AlignItems
@@ -22,6 +23,7 @@ external interface RegisterPageProps : SessionPageProps {
 
 val RegisterPage = FC<RegisterPageProps> { props ->
     val navigateRegister = useNavigate()
+
     NavigationBarComponent {
         session = props.session
         updateSession = props.updateSession
@@ -29,12 +31,8 @@ val RegisterPage = FC<RegisterPageProps> { props ->
     }
 
     div {
-            +"Register Page"
-        }
-
-    div {
-
         css {
+            mainPageDiv()
             display = Display.flex
             flexDirection = FlexDirection.column
             alignItems = AlignItems.center
@@ -66,4 +64,6 @@ val RegisterPage = FC<RegisterPageProps> { props ->
         }
 
     }
+
+    FooterComponent{}
 }

@@ -6,6 +6,7 @@ import com.benjtissot.sellingmugs.pages.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import mui.lab.LoadingButton
 import react.*
 import react.dom.html.ReactHTML.div
 import react.router.NavigateFunction
@@ -84,6 +85,11 @@ val App = FC<Props> {
             }
         }
     }
+        ?: run {
+            LoadingButton {
+
+            }
+        }
     // TODO : if no session, show loading screen
 
 }
