@@ -2,6 +2,7 @@ import ch.qos.logback.classic.LoggerContext
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.benjtissot.sellingmugs.ConfigConst
+import com.benjtissot.sellingmugs.HOMEPAGE_PATH
 import com.benjtissot.sellingmugs.controllers.*
 import com.benjtissot.sellingmugs.entities.Session
 import io.ktor.http.*
@@ -22,10 +23,13 @@ import io.ktor.server.sessions.*
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
 import org.slf4j.LoggerFactory
+import java.io.File
+import java.net.URI
 
 
 val client = KMongo.createClient().coroutine
 val database = client.getDatabase("debug")
+var redirectPath = ""
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 fun Application.module() {
@@ -60,7 +64,7 @@ fun Application.module() {
             cookie<Session>("session"){
                 cookie.maxAgeInSeconds = 600
             }
-            cookie<String>("jwtToken"){
+            cookie<String>("redirectURL"){
                 cookie.maxAgeInSeconds = 600
             }
         }
@@ -90,10 +94,25 @@ fun Application.createRoutes(){
         checkoutRouting()
         paymentRouting()*/
 
+        checkRedirectRouting()
+
 
         // Static to access resources (index.html, sellingmugs.js)
-        static("/") {
+        static("/static") {
             resources("")
+        }
+        get("/favicon.ico") {
+            call.respondFile(File(URI(this::class.java.classLoader.getResource("static/icon.jpg")?.toString()?:""))) {
+                ContentType.Image.JPEG
+            }
+        }
+
+        // Any other route redirects to homepage
+        get("/{path}"){
+            val path = call.parameters["path"] ?: error("Invalid get request")
+            redirectPath = "/$path"
+            LOG.info("Redirecting to homepage to load page and redirect from front-end")
+            call.respondRedirect(HOMEPAGE_PATH)
         }
 
 

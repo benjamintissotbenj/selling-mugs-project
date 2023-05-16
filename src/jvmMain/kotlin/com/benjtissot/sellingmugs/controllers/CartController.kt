@@ -1,6 +1,7 @@
 package com.benjtissot.sellingmugs.controllers
 
 import com.benjtissot.sellingmugs.CART_PATH
+import com.benjtissot.sellingmugs.HOMEPAGE_PATH
 import com.benjtissot.sellingmugs.entities.Cart
 import com.benjtissot.sellingmugs.entities.Mug
 import com.benjtissot.sellingmugs.services.CartService

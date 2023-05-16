@@ -33,6 +33,11 @@ fun updateClientWithToken(token: String) {
     }
 }
 
+// Check Redirect
+suspend fun checkRedirect(): String {
+    return jsonClient.post(CHECK_REDIRECT_PATH).body()
+}
+
 // Login methods
 
 suspend fun login(email: String, hashedPassword: String): HttpResponse {

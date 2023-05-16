@@ -19,6 +19,7 @@ const val CART_PATH = "/customer_cart"
 const val HELLO_PATH = "/hello"
 const val LOGIN_PATH = "/login"
 const val REGISTER_PATH = "/register"
+val ALL_FRONT_END_PATHS = listOf(HOMEPAGE_PATH, USER_INFO_PATH, CART_PATH, HELLO_PATH, LOGIN_PATH, REGISTER_PATH)
 
 // Backend Route Paths
 
@@ -27,3 +28,4 @@ const val CHECKOUT_PATH = "/checkout"
 const val PAYMENT_PATH = "/payment"
 const val USER_INFO_MESSAGE_PATH = "/user_info_message"
 const val LOGIN_BACKEND_PATH = "/login_backend"
+const val CHECK_REDIRECT_PATH = "/check_redirect"
