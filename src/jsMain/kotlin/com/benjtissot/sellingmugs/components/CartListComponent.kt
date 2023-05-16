@@ -13,6 +13,7 @@ import react.dom.html.ReactHTML.header
 external interface CartListProps: Props {
     var list: List<MugCartItem>
     var title: String
+    var onRemoveItem: (MugCartItem) -> Unit
 }
 
 val CartListComponent = FC<CartListProps> {
@@ -24,14 +25,18 @@ val CartListComponent = FC<CartListProps> {
         css {
             display = Display.flex
             flexDirection = FlexDirection.column
-            overflowX = Overflow.scroll
+            overflowY = Overflow.scroll
             scrollBehavior = ScrollBehavior.smooth
             paddingBlock = 1.rem
-            maxWidth = 50.rem
+            maxWidth = 80.rem
+            maxHeight = 60.vh
         }
         props.list.forEach { mugCartItm ->
             MugCartItemComponent {
                 mugCartItem = mugCartItm
+                onRemove = { mugCartItem ->
+                    props.onRemoveItem(mugCartItem)
+                }
             }
         }
 

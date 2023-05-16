@@ -91,3 +91,7 @@ fun PropertiesBuilder.justifySpaceBetween() {
     justifyContent = JustifyContent.spaceBetween
 }
 
+fun PropertiesBuilder.mainPageDiv() {
+    height = 88.vh
+}
+

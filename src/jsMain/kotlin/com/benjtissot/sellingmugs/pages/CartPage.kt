@@ -1,15 +1,16 @@
 package com.benjtissot.sellingmugs.pages
 
-import com.benjtissot.sellingmugs.SessionPageProps
+import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.CartListComponent
 import com.benjtissot.sellingmugs.components.FooterComponent
 import com.benjtissot.sellingmugs.components.NavigationBarComponent
-import com.benjtissot.sellingmugs.divDefaultCss
 import com.benjtissot.sellingmugs.entities.Cart
-import com.benjtissot.sellingmugs.getCart
-import com.benjtissot.sellingmugs.scope
+import csstype.px
+import emotion.react.css
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
+import mui.icons.material.Payment
+import mui.material.IconButton
 import react.FC
 import react.dom.html.ReactHTML.div
 import react.router.useNavigate
@@ -24,12 +25,6 @@ external interface CartPageProps : SessionPageProps {
 val CartPage = FC<CartPageProps> { props ->
 
     val navigateCart = useNavigate()
-    NavigationBarComponent {
-        session = props.session
-        updateSession = props.updateSession
-        navigate = navigateCart
-    }
-
     var cart: Cart? by useState(null)
 
     useEffectOnce {
@@ -38,21 +33,36 @@ val CartPage = FC<CartPageProps> { props ->
         }
     }
 
-    div {
-        divDefaultCss()
-        +"Hello Cart Component"
-    }
-    div {
-        divDefaultCss()
-        +"The cart is ${cart.toString()}"
+    NavigationBarComponent {
+        session = props.session
+        updateSession = props.updateSession
+        navigate = navigateCart
     }
 
-    cart?.let{
-        CartListComponent{
-            title = "Cart"
-            list = cart!!.mugCartItemList
+    div {
+        css {
+            mainPageDiv()
+        }
+
+        cart?.let{
+            CartListComponent{
+                title = "Cart"
+                list = cart!!.mugCartItemList
+                onRemoveItem = { mugCartItem ->
+                    scope.launch {
+                        removeMugCartItemFromCart(mugCartItem)
+                        cart = getCart()
+                    }
+                }
+            }
+
+            IconButton {
+                +"Checkout"
+                Payment()
+            }
         }
     }
+
 
 
     FooterComponent {}

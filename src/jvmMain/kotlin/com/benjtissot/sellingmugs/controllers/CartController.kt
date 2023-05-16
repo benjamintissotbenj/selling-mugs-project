@@ -1,7 +1,7 @@
 package com.benjtissot.sellingmugs.controllers
 
 import com.benjtissot.sellingmugs.CART_PATH
-import com.benjtissot.sellingmugs.HOMEPAGE_PATH
+import com.benjtissot.sellingmugs.MugCartItem
 import com.benjtissot.sellingmugs.entities.Cart
 import com.benjtissot.sellingmugs.entities.Mug
 import com.benjtissot.sellingmugs.services.CartService
@@ -34,6 +34,19 @@ fun Route.cartRouting(){
                 val cart = getCart(getSession().cartId)
                 try {
                     CartService.addMugToCart(mug, cart)
+                } catch (e: Exception){
+                    call.respond(HttpStatusCode.BadGateway)
+                }
+                call.respond(HttpStatusCode.OK)
+            }
+        }
+
+        route(MugCartItem.path){
+            delete{
+                val mugCartItem = call.receive<MugCartItem>().copy()
+                val cart = getCart(getSession().cartId)
+                try {
+                    CartService.removeMugCartItemFromCart(mugCartItem, cart)
                 } catch (e: Exception){
                     call.respond(HttpStatusCode.BadGateway)
                 }

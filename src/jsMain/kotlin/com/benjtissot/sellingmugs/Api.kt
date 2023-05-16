@@ -112,6 +112,13 @@ suspend fun getCart() : Cart {
     return jsonClient.get(Cart.path).body()
 }
 
+suspend fun removeMugCartItemFromCart(mugCartItem: MugCartItem){
+    jsonClient.delete(CART_PATH + MugCartItem.path) {
+        contentType(ContentType.Application.Json)
+        setBody(mugCartItem)
+    }
+}
+
 
 // get User Info
 

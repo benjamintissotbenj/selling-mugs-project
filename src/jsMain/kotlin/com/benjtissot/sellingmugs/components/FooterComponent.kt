@@ -16,9 +16,9 @@ val FooterComponent = FC<FooterProps> { props ->
             display = Display.flex
             justifyContent = JustifyContent.spaceBetween
             alignItems = AlignItems.center
-            height = 8.vh
+            height = 4.vh
             borderRadius = 4.vw
-            position = Position.absolute
+            position = Position.sticky
             bottom = 0.px
         }
 
