@@ -59,7 +59,7 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
                         scope.launch{
                             recordClick(props.session.clickDataId, Const.ClickType.SEARCH.toString())
                         }
-                        props.navigate.invoke(HELLO_PATH)
+                        props.navigate.invoke(CHECKOUT_PATH)
                     }
                 }
             }

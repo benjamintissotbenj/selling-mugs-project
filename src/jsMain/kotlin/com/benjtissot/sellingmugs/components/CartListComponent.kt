@@ -1,7 +1,7 @@
 package com.benjtissot.sellingmugs.components
 
 import com.benjtissot.sellingmugs.MugCartItem
-import com.benjtissot.sellingmugs.entities.Mug
+import com.benjtissot.sellingmugs.fontBig
 import csstype.*
 import emotion.react.css
 import react.FC
@@ -19,7 +19,16 @@ external interface CartListProps: Props {
 val CartListComponent = FC<CartListProps> {
         props ->
     header {
-        +props.title
+        css {
+            width = 100.pct
+        }
+        div {
+            css {
+                fontBig()
+                marginLeft = 10.rem
+            }
+            +props.title
+        }
     }
     div {
         css {
@@ -28,8 +37,9 @@ val CartListComponent = FC<CartListProps> {
             overflowY = Overflow.scroll
             scrollBehavior = ScrollBehavior.smooth
             paddingBlock = 1.rem
+            width = 80.vw
             maxWidth = 80.rem
-            maxHeight = 60.vh
+            maxHeight = 80.vh
         }
         props.list.forEach { mugCartItm ->
             MugCartItemComponent {

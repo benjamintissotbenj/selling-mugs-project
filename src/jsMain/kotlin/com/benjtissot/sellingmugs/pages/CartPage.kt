@@ -5,7 +5,7 @@ import com.benjtissot.sellingmugs.components.CartListComponent
 import com.benjtissot.sellingmugs.components.FooterComponent
 import com.benjtissot.sellingmugs.components.NavigationBarComponent
 import com.benjtissot.sellingmugs.entities.Cart
-import csstype.px
+import csstype.*
 import emotion.react.css
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
@@ -42,6 +42,9 @@ val CartPage = FC<CartPageProps> { props ->
     div {
         css {
             mainPageDiv()
+            display = Display.flex
+            flexDirection = FlexDirection.column
+            alignItems = AlignItems.center
         }
 
         cart?.let{
@@ -55,11 +58,27 @@ val CartPage = FC<CartPageProps> { props ->
                     }
                 }
             }
-
-            IconButton {
-                +"Checkout"
-                Payment()
+            div {
+                css {
+                    width = 100.pct
+                    display = Display.flex
+                    flexDirection = FlexDirection.rowReverse
+                }
+                IconButton {
+                    div {
+                        css {
+                            fontBig()
+                            marginRight = 16.px
+                        }
+                        +"Checkout"
+                    }
+                    Payment()
+                    onClick = {
+                        navigateCart.invoke(CHECKOUT_PATH)
+                    }
+                }
             }
+
         }
     }
 

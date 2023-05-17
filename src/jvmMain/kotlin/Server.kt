@@ -25,6 +25,7 @@ import org.litote.kmongo.reactivestreams.KMongo
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.net.URI
+import java.util.*
 
 
 val client = KMongo.createClient().coroutine
@@ -163,7 +164,7 @@ fun Application.installAuthentication(){
             }
             // What to do if token is not valid
             challenge { defaultScheme, realm ->
-                call.respond(HttpStatusCode.Unauthorized, "Token is not valid or has expired")
+                call.respond(HttpStatusCode.Unauthorized)
             }
         }
 

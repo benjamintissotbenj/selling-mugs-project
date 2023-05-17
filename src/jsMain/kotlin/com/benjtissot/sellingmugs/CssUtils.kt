@@ -74,8 +74,24 @@ fun PropsWithClassName.formInputCss(widthValue: Width, minimumWidth: MinWidth, b
 
 fun PropsWithClassName.divDefaultCss(){
     css {
-        fontSize = 2.vh
+        fontNormal()
     }
+}
+
+fun PropertiesBuilder.fontSmaller(){
+    fontSize = 1.vh
+}
+fun PropertiesBuilder.fontSmall(){
+    fontSize = 1.5.vh
+}
+fun PropertiesBuilder.fontNormal(){
+    fontSize = 2.vh
+}
+fun PropertiesBuilder.fontBig(){
+    fontSize = 3.vh
+}
+fun PropertiesBuilder.fontBigger(){
+    fontSize = 4.vh
 }
 
 fun PropertiesBuilder.divDefaultHorizontalCss(){

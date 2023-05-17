@@ -14,6 +14,8 @@ import com.benjtissot.sellingmugs.services.LoginService.Companion.register
 import com.typesafe.config.ConfigFactory
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import io.ktor.server.config.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -25,8 +27,12 @@ val LOG = java.util.logging.Logger.getLogger("LoginController.kt")
 fun Route.loginRouting(){
 
     route(LOGIN_BACKEND_PATH) {
-        get {
-            call.respond(HttpStatusCode.OK)
+        authenticate("auth-jwt") {
+            get {
+                // Returns a boolean whether or not the user is still logged in
+                val principal = call.principal<JWTPrincipal>()
+                call.respond((principal?.expiresAt?.after(Date(System.currentTimeMillis())) ?: false).toString())
+            }
         }
         post {
             login()

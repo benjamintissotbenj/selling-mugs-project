@@ -13,18 +13,18 @@ const val CART_OBJECT_PATH = "/cart"
 
 // Rendering Paths
 
-const val HOMEPAGE_PATH = "/" // Only rendering path allowed to have a link in backend
+const val HOMEPAGE_PATH = "/" // Only rendering path allowed to have a "get" link in backend
 const val USER_INFO_PATH = "/user_info"
 const val CART_PATH = "/customer_cart"
-const val HELLO_PATH = "/hello"
+const val CHECKOUT_PATH = "/checkout"
 const val LOGIN_PATH = "/login"
 const val REGISTER_PATH = "/register"
-val ALL_FRONT_END_PATHS = listOf(HOMEPAGE_PATH, USER_INFO_PATH, CART_PATH, HELLO_PATH, LOGIN_PATH, REGISTER_PATH)
+val ALL_FRONT_END_PATHS = listOf(HOMEPAGE_PATH, USER_INFO_PATH, CART_PATH, CHECKOUT_PATH, LOGIN_PATH, REGISTER_PATH)
 
 // Backend Route Paths
 
 const val LOGOUT_PATH = "/logout"
-const val CHECKOUT_PATH = "/checkout"
+const val CHECKOUT_BACKEND_PATH = "/checkout_backend"
 const val PAYMENT_PATH = "/payment"
 const val USER_INFO_MESSAGE_PATH = "/user_info_message"
 const val LOGIN_BACKEND_PATH = "/login_backend"

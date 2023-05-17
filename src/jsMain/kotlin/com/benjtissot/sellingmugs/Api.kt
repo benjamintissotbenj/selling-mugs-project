@@ -40,6 +40,10 @@ suspend fun checkRedirect(): String {
 
 // Login methods
 
+suspend fun isLoggedIn(): HttpResponse {
+    return jsonClient.get(LOGIN_BACKEND_PATH)
+}
+
 suspend fun login(email: String, hashedPassword: String): HttpResponse {
     // Only need user email and password for login
     val user = User("", "", "", email, hashedPassword, Const.UserType.CLIENT, "")

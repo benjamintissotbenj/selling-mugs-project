@@ -1,10 +1,6 @@
 package com.benjtissot.sellingmugs.components
 
-import com.benjtissot.sellingmugs.MugCartItem
-import com.benjtissot.sellingmugs.divDefaultCss
-import com.benjtissot.sellingmugs.divDefaultHorizontalCss
-import com.benjtissot.sellingmugs.entities.Mug
-import com.benjtissot.sellingmugs.justifySpaceBetween
+import com.benjtissot.sellingmugs.*
 import csstype.*
 import emotion.react.css
 import react.FC
@@ -12,7 +8,6 @@ import react.Props
 import react.dom.html.ReactHTML.button
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.img
-import react.dom.html.ReactHTML.span
 import kotlin.math.roundToInt
 
 
@@ -33,8 +28,15 @@ val MugCartItemComponent = FC<MugCartItemProps> {
             borderBottom = 1.px
         }
 
-        // Product image
+        // Image and Name
         div {
+            css {
+                display = Display.flex
+                flexDirection = FlexDirection.row
+                alignItems = AlignItems.center
+                justifyContent = JustifyContent.center
+            }
+            // Product image
             img {
                 src = props.mugCartItem.mug.artwork.imageURL
                 // Styles for the product image
@@ -45,7 +47,7 @@ val MugCartItemComponent = FC<MugCartItemProps> {
                 }
             }
 
-            span {
+            div {
                 // Styles for the product name
                 css {
                     fontSize = 2.vh
@@ -56,35 +58,38 @@ val MugCartItemComponent = FC<MugCartItemProps> {
             }
         }
 
-        span {
-            // Styles for the product price
-            css {
-                marginBottom = 8.px
-            }
-            +"£ ${props.mugCartItem.mug.price.roundToInt()}"
-        }
-        span {
-            // Styles for the product quantity
-            css {
-                color = NamedColor.gray
-            }
-            +"Quantity: ${props.mugCartItem.amount}"
-        }
-        button {
-            // Styles for the remove button
-            css {
-                marginTop = 8.px
-            }
-            onClick = { props.onRemove(props.mugCartItem) }
-            +"Remove"
-        }
-
+        // Quantity, price, remove button
         div {
             css {
-                alignSelf = AlignSelf.flexEnd
-                fontSize = 2.vh
+                display = Display.flex
+                flexDirection = FlexDirection.row
+                alignItems = AlignItems.center
+                justifyContent = JustifyContent.spaceBetween
+                width = 30.vw
+                maxWidth = 30.rem
             }
-            +"x${props.mugCartItem.amount}"
+
+            div {
+                // Styles for the product price
+                divDefaultCss()
+                +"£ ${props.mugCartItem.mug.price.roundToInt()}"
+            }
+            div {
+                // Styles for the product quantity
+                css {
+                    fontNormal()
+                    color = NamedColor.gray
+                }
+                +"Quantity: ${props.mugCartItem.amount}"
+            }
+            button {
+                // Styles for the remove button
+                divDefaultCss()
+                onClick = { props.onRemove(props.mugCartItem) }
+                +"Remove"
+            }
         }
+
+
     }
 }

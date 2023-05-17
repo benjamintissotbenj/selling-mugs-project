@@ -13,7 +13,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
 import react.FC
-import react.dom.html.ReactHTML
 import react.dom.html.ReactHTML.div
 import react.router.useNavigate
 import react.useEffectOnce
