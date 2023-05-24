@@ -43,9 +43,6 @@ fun Route.loginRouting(){
     }
 
     route(REGISTER_PATH) {
-        get {
-            call.respond("Hello Register Controller")
-        }
         post {
             register()
         }
