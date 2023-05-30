@@ -74,6 +74,9 @@ val CartPage = FC<CartPageProps> { props ->
                     }
                     Payment()
                     onClick = {
+                        scope.launch{
+                            recordClick(props.session.clickDataId, Const.ClickType.CHECKOUT_CART.toString())
+                        }
                         navigateCart.invoke(CHECKOUT_PATH)
                     }
                 }

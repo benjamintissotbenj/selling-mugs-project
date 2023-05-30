@@ -4,15 +4,14 @@ import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.FooterComponent
 import com.benjtissot.sellingmugs.components.NavigationBarComponent
 import com.benjtissot.sellingmugs.components.RegisterFormComponent
-import csstype.AlignItems
-import csstype.Display
-import csstype.FlexDirection
+import csstype.*
 import emotion.react.css
 import io.ktor.client.call.*
 import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
 import react.FC
+import react.dom.html.ReactHTML
 import react.dom.html.ReactHTML.div
 import react.router.useNavigate
 
@@ -59,6 +58,33 @@ val RegisterPage = FC<RegisterPageProps> { props ->
                             LOG.error("Something went wrong")
                         }
                     }
+                }
+            }
+        }
+
+        // Login invitation
+        div {
+            css {
+                display = Display.flex
+                flexDirection = FlexDirection.row
+                alignItems = AlignItems.center
+            }
+
+            div {
+                divDefaultCss()
+                +"Already have an account? "
+            }
+            ReactHTML.button {
+                css {
+                    marginLeft = 2.vw
+                    borderRadius = 2.vh
+                    backgroundColor = NamedColor.transparent
+                    fontSize = 2.vh
+                }
+                +"Login"
+                onClick = {
+                    LOG.debug("Click on Login")
+                    navigateRegister.invoke(LOGIN_PATH)
                 }
             }
         }

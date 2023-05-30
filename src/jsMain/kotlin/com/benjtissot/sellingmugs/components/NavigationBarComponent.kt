@@ -57,7 +57,7 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
                     Search()
                     onClick = {
                         scope.launch{
-                            recordClick(props.session.clickDataId, Const.ClickType.SEARCH.toString())
+                            recordClick(props.session.clickDataId, Const.ClickType.CHECKOUT_NAV.toString())
                         }
                         props.navigate.invoke(CHECKOUT_PATH)
                     }
@@ -76,7 +76,7 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
                     Home()
                     onClick = {
                         scope.launch{
-                            recordClick(props.session.clickDataId, Const.ClickType.HOME.toString())
+                            recordClick(props.session.clickDataId, Const.ClickType.HOME_NAV.toString())
                         }
                         props.navigate.invoke(HOMEPAGE_PATH)
                     }
@@ -95,7 +95,7 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
                     ShoppingCart()
                     onClick = {
                         scope.launch{
-                            recordClick(props.session.clickDataId, Const.ClickType.CART.toString())
+                            recordClick(props.session.clickDataId, Const.ClickType.CART_NAV.toString())
                         }
                         props.navigate.invoke(CART_PATH)
                     }
@@ -114,7 +114,7 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
                     PersonSearch()
                     onClick = {
                         scope.launch{
-                            recordClick(props.session.clickDataId, Const.ClickType.USER_INFO.toString())
+                            recordClick(props.session.clickDataId, Const.ClickType.USER_INFO_NAV.toString())
                         }
                         props.navigate.invoke(USER_INFO_PATH)
                     }
