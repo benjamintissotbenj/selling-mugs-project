@@ -10,8 +10,10 @@ fun PropsWithClassName.formComponentDivCss(){
         display = Display.flex
         flexDirection = FlexDirection.column
         alignItems = AlignItems.center
+        justifyContent = JustifyContent.center
         padding = 1.vh
         marginBottom = 1.vh
+        marginTop = 10.vh
         width = 50.vw
         maxWidth = 50.rem
         minWidth = 300.px
@@ -74,8 +76,24 @@ fun PropsWithClassName.formInputCss(widthValue: Width, minimumWidth: MinWidth, b
 
 fun PropsWithClassName.divDefaultCss(){
     css {
-        fontSize = 2.vh
+        fontNormal()
     }
+}
+
+fun PropertiesBuilder.fontSmaller(){
+    fontSize = 1.vh
+}
+fun PropertiesBuilder.fontSmall(){
+    fontSize = 1.5.vh
+}
+fun PropertiesBuilder.fontNormal(){
+    fontSize = 2.vh
+}
+fun PropertiesBuilder.fontBig(){
+    fontSize = 3.vh
+}
+fun PropertiesBuilder.fontBigger(){
+    fontSize = 4.vh
 }
 
 fun PropertiesBuilder.divDefaultHorizontalCss(){
@@ -89,5 +107,9 @@ fun PropertiesBuilder.divDefaultHorizontalCss(){
 fun PropertiesBuilder.justifySpaceBetween() {
     display = Display.flex
     justifyContent = JustifyContent.spaceBetween
+}
+
+fun PropertiesBuilder.mainPageDiv() {
+    height = 88.vh
 }
 

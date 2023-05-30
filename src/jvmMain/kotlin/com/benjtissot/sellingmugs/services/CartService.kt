@@ -27,5 +27,11 @@ class CartService {
             }
             CartRepository.updateCart(cart)
         }
+
+        @Throws
+        suspend fun removeMugCartItemFromCart(mugCartItem: MugCartItem, cart: Cart) {
+            cart.mugCartItemList.remove(mugCartItem)
+            CartRepository.updateCart(cart)
+        }
     }
 }

@@ -1,18 +1,16 @@
 package com.benjtissot.sellingmugs
 
-import com.benjtissot.sellingmugs.components.NavigationBarComponent
 import com.benjtissot.sellingmugs.entities.Session
 import com.benjtissot.sellingmugs.pages.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import mui.lab.LoadingButton
 import react.*
-import react.dom.html.ReactHTML.div
 import react.router.NavigateFunction
 import react.router.Route
 import react.router.Routes
 import react.router.dom.BrowserRouter
-import react.router.useNavigate
 
 private val LOG = KtorSimpleLogger("App.kt")
 
@@ -47,8 +45,8 @@ val App = FC<Props> {
                     }
                 }
                 Route {
-                    path = HELLO_PATH
-                    element = helloComponent.create{
+                    path = CHECKOUT_PATH
+                    element = CheckoutPage.create{
                         session = sessionApp!!
                         updateSession = updateSessionApp
                     }
@@ -84,6 +82,11 @@ val App = FC<Props> {
             }
         }
     }
+        ?: run {
+            LoadingButton {
+
+            }
+        }
     // TODO : if no session, show loading screen
 
 }
@@ -95,17 +98,4 @@ external interface SessionPageProps: Props {
 
 external interface NavigationProps: SessionPageProps {
     var navigate: NavigateFunction
-}
-
-val helloComponent = FC<SessionPageProps> {props ->
-    val navigateHello = useNavigate()
-    NavigationBarComponent {
-        session = props.session
-        updateSession = props.updateSession
-        navigate = navigateHello
-    }
-    div {
-        +"Hello Component"
-    }
-
 }
