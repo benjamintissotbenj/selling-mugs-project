@@ -81,9 +81,9 @@ class LoginService {
             // Setting the jwt to ""
             val userSession = call.sessions.get<Session>()?.copy()
 
-            // If session is found, keep session user in database but delete jwt
+            // If session is found, delete jwt and delete user
             userSession?.let{
-                val updatedSession = userSession.copy(jwtToken = "")
+                val updatedSession = userSession.copy(user = null, jwtToken = "")
                 try {
                     SessionRepository.updateSession(updatedSession)
                     call.sessions.set(updatedSession)

@@ -59,6 +59,13 @@ val App = FC<Props> {
                     }
                 }
                 Route {
+                    path = ADMIN_PANEL_PATH
+                    element = AdminPanelPage.create{
+                        session = sessionApp!!
+                        updateSession = updateSessionApp
+                    }
+                }
+                Route {
                     path = LOGIN_PATH
                     element = LoginPage.create{
                         session = sessionApp!!

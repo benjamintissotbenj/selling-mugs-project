@@ -17,8 +17,7 @@ fun PropsWithClassName.formComponentDivCss(){
         width = 50.vw
         maxWidth = 50.rem
         minWidth = 300.px
-        borderRadius = 2.vh
-        boxShadow = BoxShadow(0.px, 0.px, blurRadius = 2.px, spreadRadius = 1.px, NamedColor.gray)
+        boxShade()
     }
 }
 
@@ -66,8 +65,7 @@ fun PropsWithClassName.formInputCss(widthValue: Width, minimumWidth: MinWidth, b
         width = widthValue
         minWidth = minimumWidth
         fontSize = 2.vh
-        borderRadius = 2.vh
-        boxShadow = BoxShadow(0.px, 0.px, blurRadius = 2.px, spreadRadius = 1.px, NamedColor.gray)
+        boxShade()
     }
 }
 
@@ -79,6 +77,8 @@ fun PropsWithClassName.divDefaultCss(){
         fontNormal()
     }
 }
+
+// FONTS
 
 fun PropertiesBuilder.fontSmaller(){
     fontSize = 1.vh
@@ -95,6 +95,20 @@ fun PropertiesBuilder.fontBig(){
 fun PropertiesBuilder.fontBigger(){
     fontSize = 4.vh
 }
+
+
+// BOX SIZE
+
+fun PropertiesBuilder.boxNormal(){
+    width = 50.vw
+    maxWidth = 50.rem
+    minWidth = 300.px
+    height = 50.vh
+    maxHeight = 50.rem
+    minHeight = 200.px
+    boxShade()
+}
+
 
 fun PropertiesBuilder.divDefaultHorizontalCss(){
         display = Display.flex
@@ -113,3 +127,12 @@ fun PropertiesBuilder.mainPageDiv() {
     height = 88.vh
 }
 
+
+fun PropertiesBuilder.boxShade() {
+    borderRadius = 2.vh
+    boxShadow = BoxShadow(0.px, 0.px, blurRadius = 2.px, spreadRadius = 1.px, NamedColor.gray)
+}
+
+fun PropertiesBuilder.center(){
+    alignSelf = AlignSelf.center
+}
