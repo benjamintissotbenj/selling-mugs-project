@@ -45,9 +45,9 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
 
             // Description
 
-            val image = Image("5d15ca551163cde90d7b2203", "Default Image", "image/jpg", 1000, 1000, 0.5f, 0.5f, 1, 0)
+            val image = Image("6477219c4667a70918608ee5", "Default Image", "image/jpg", 1000, 1000, 0.5f, 0.5f, 1, 0)
             val placeholder = Placeholder("front", arrayListOf(image))
-            val variants = arrayListOf(Variant(666, 600, true))
+            val variants = arrayListOf(Variant())
             val print_areas = arrayListOf(
                 PrintArea(
                     variant_ids = variants.map { it.id } as ArrayList<Int>,

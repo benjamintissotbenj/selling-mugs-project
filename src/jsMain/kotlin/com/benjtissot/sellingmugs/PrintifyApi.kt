@@ -20,7 +20,7 @@ var jsonPrintifyClient = HttpClient {
 }
 
 suspend fun postProduct(mugProduct: MugProduct): HttpResponse{
-    return jsonPrintifyClient.post("https://api.printify.com/v1/shops/8965065/products.json"){
+    return jsonPrintifyClient.post("https://fast-earth-36264.herokuapp.com/https://api.printify.com/v1/shops/8965065/products.json"){
         contentType(ContentType.Application.Json)
         setBody(mugProduct)
 
