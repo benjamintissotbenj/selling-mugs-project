@@ -22,31 +22,9 @@ external interface CheckoutPageProps: SessionPageProps {
 
 val CheckoutPage = FC<SessionPageProps> { props ->
     val navigateCheckout = useNavigate()
-    var loggedIn by useState(false)
 
-    useEffectOnce {
-        scope.launch {
-            val loggedInResponse = isLoggedIn()
-            val loggedInValue = loggedInResponse.status != HttpStatusCode.Unauthorized && (loggedInResponse.body<String>() == "true")
-
-            LOG.debug("User is logged in with response: ${loggedInResponse.status != HttpStatusCode.Unauthorized} && ${loggedInResponse.body<Boolean>()} : $loggedInValue")
-            if (!loggedInValue) {
-                navigateCheckout.invoke(LOGIN_PATH)
-            }
-            loggedIn = loggedInValue
-        }
-    }
-
-    NavigationBarComponent {
-        session = props.session
-        updateSession = props.updateSession
-        navigate = navigateCheckout
-    }
-
-    if (loggedIn){
-        div {
-            +"Hello Checkout Component"
-        }
+    div {
+        +"Hello Checkout Component"
     }
 
 }

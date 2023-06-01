@@ -19,12 +19,12 @@ import react.router.useNavigate
 import react.useEffectOnce
 import react.useState
 
-private val LOG = KtorSimpleLogger("UserInfoPage.kt")
+private val LOG = KtorSimpleLogger("AdminPanelPage.kt")
 
 external interface AdminPanelPageProps : SessionPageProps {
 }
 
-val AdminPanelPage = FC<AdminPanelPageProps> { props ->
+val AdminPanelPage = FC<SessionPageProps> { props ->
 
     val navigateAdmin = useNavigate()
     var message by useState("")
@@ -35,48 +35,46 @@ val AdminPanelPage = FC<AdminPanelPageProps> { props ->
     }
     var createProduct by useState(false)
 
-    NavigationBarComponent {
-        session = props.session
-        updateSession = props.updateSession
-        navigate = navigateAdmin
-    }
-
-
-    div {
-        css {
-            mainPageDiv()
-        }
-
+    if ((props.session.user?.userType ?: Const.UserType.CLIENT) == Const.UserType.ADMIN){
         div {
             css {
-                fontNormal()
+                mainPageDiv()
             }
-            +"Hello Admin Page"
-            +"Extra message $message"
-        }
 
-        if (!createProduct){
-            IconButton {
-                div {
-                    +"Create Product"
+            div {
+                css {
+                    fontNormal()
                 }
-                AddCircle()
-                onClick = {
-                    createProduct = true
+                +"Hello Admin Page"
+                +"Extra message $message"
+            }
+
+            if (!createProduct){
+                IconButton {
+                    div {
+                        +"Create Product"
+                    }
+                    AddCircle()
+                    onClick = {
+                        createProduct = true
+                    }
+                }
+            } else {
+                CreateProductComponent{
+
                 }
             }
-        } else {
-            CreateProductComponent{
 
+            LogoutButtonComponent {
+                session = props.session
+                updateSession = props.updateSession
+                navigate = navigateAdmin
             }
         }
-
-        LogoutButtonComponent {
-            session = props.session
-            updateSession = props.updateSession
-            navigate = navigateAdmin
+    } else {
+        div {
+            divDefaultCss()
+            +"You must be an admin to view this page"
         }
     }
-
-    FooterComponent {}
 }
