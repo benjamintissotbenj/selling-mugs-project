@@ -1,5 +1,6 @@
 package com.benjtissot.sellingmugs.pages
 
+import ImageDrop
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.CreateProductComponent
 import com.benjtissot.sellingmugs.components.FooterComponent
@@ -14,8 +15,10 @@ import kotlinx.coroutines.launch
 import mui.icons.material.AddCircle
 import mui.icons.material.Refresh
 import mui.material.IconButton
+import org.w3c.files.File
 import react.FC
 import react.dom.html.ReactHTML.div
+import react.dom.html.ReactHTML.img
 import react.router.useNavigate
 import react.useEffectOnce
 import react.useState
@@ -34,6 +37,7 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
             message = getUserInfo()
         }
     }
+    var imageDropped : File? by useState(null)
     var createProduct by useState(false)
     var productToPublishId : String by useState("")
 
@@ -85,6 +89,20 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
                 updateSession = props.updateSession
                 navigate = navigateAdmin
             }
+            ImageDrop {
+                onImageDrop = { fileList ->
+                    LOG.debug("Image Was Dropped")
+                    LOG.debug("File List: $fileList")
+                    imageDropped = fileList[0]
+                }
+            }
+
+            imageDropped?.let {
+                div {
+                    +"imageDropped type = ${imageDropped?.type}"
+                }
+            }
+
         }
     } else {
         div {
