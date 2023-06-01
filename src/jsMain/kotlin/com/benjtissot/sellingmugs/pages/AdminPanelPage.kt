@@ -5,6 +5,7 @@ import com.benjtissot.sellingmugs.components.CreateProductComponent
 import com.benjtissot.sellingmugs.components.FooterComponent
 import com.benjtissot.sellingmugs.components.LogoutButtonComponent
 import com.benjtissot.sellingmugs.components.NavigationBarComponent
+import com.benjtissot.sellingmugs.entities.printify.MugProduct
 import csstype.Display
 import emotion.react.css
 import io.ktor.http.*
@@ -34,6 +35,7 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
         }
     }
     var createProduct by useState(false)
+    var productToPublishId : String by useState("")
 
     if ((props.session.user?.userType ?: Const.UserType.CLIENT) == Const.UserType.ADMIN){
         div {
@@ -61,7 +63,20 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
                 }
             } else {
                 CreateProductComponent{
+                    onProductCreatedSuccess = { productId ->
+                        productToPublishId = productId
+                        LOG.debug("Created product $productId")
+                    }
+                    onProductCreatedFailed = { productId ->
+                        // TODO : Error Message
+                        LOG.debug("Could not create product")
+                    }
+                }
 
+                if (productToPublishId.isNotBlank()){
+                    IconButton {
+
+                    }
                 }
             }
 

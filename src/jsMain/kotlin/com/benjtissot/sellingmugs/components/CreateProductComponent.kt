@@ -7,21 +7,22 @@ import csstype.FlexDirection
 import csstype.JustifyContent
 import csstype.pct
 import emotion.react.css
+import io.ktor.client.call.*
 import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
-import mui.icons.material.Person
-import mui.icons.material.PersonRemove
-import mui.icons.material.Publish
+import kotlinx.serialization.json.JsonObject
+import mui.icons.material.PostAdd
 import mui.material.IconButton
 import react.FC
-import react.dom.html.ReactHTML
 import react.dom.html.ReactHTML.div
 
 
 private val LOG = KtorSimpleLogger("CreateProductComponent.kt")
 
 external interface CreateProductProps : NavigationProps {
+    var onProductCreatedSuccess : (productId: String) -> Unit
+    var onProductCreatedFailed : (productId: String) -> Unit
 }
 
 val CreateProductComponent = FC<CreateProductProps> { props ->
@@ -63,10 +64,20 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
             )
             IconButton{
                 +"Post Dummy Product"
-                Publish()
+                PostAdd()
                 onClick = {
-                    scope.launch{
-                        postProduct(mugProduct)
+                    scope.launch {
+                        val httpResponse = postProduct(mugProduct)
+                        val productId = httpResponse.body<JsonObject>().get("id").toString().removeSurrounding("\"")
+
+                        if (httpResponse.status != HttpStatusCode.OK){
+                            props.onProductCreatedFailed(productId)
+                            return@launch
+                        }
+                        props.onProductCreatedSuccess(productId)
+
+                        publishProduct(productId)
+
                     }
                 }
             }

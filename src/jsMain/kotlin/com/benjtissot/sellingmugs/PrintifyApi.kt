@@ -1,6 +1,9 @@
 package com.benjtissot.sellingmugs
 
+import com.benjtissot.sellingmugs.entities.printify.External
+import com.benjtissot.sellingmugs.entities.printify.Publish
 import com.benjtissot.sellingmugs.entities.printify.MugProduct
+import com.benjtissot.sellingmugs.entities.printify.PublishSucceed
 import io.ktor.client.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -19,10 +22,22 @@ var jsonPrintifyClient = HttpClient {
     }
 }
 
-suspend fun postProduct(mugProduct: MugProduct): HttpResponse{
+suspend fun postProduct(mugProduct: MugProduct): HttpResponse {
     return jsonPrintifyClient.post("https://fast-earth-36264.herokuapp.com/https://api.printify.com/v1/shops/8965065/products.json"){
         contentType(ContentType.Application.Json)
         setBody(mugProduct)
 
+    }
+}
+
+suspend fun publishProduct(productId: String) {
+    jsonPrintifyClient.post("https://fast-earth-36264.herokuapp.com/https://api.printify.com/v1/shops/8965065/products/$productId/publish.json"){
+        contentType(ContentType.Application.Json)
+        setBody(Publish())
+    }
+
+    jsonPrintifyClient.post("https://fast-earth-36264.herokuapp.com/https://api.printify.com/v1/shops/8965065/products/$productId/publishing_succeeded.json"){
+        contentType(ContentType.Application.Json)
+        setBody(PublishSucceed(External(productId, "localhost:9090")))
     }
 }
