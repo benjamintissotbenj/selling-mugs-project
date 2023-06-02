@@ -1,16 +1,16 @@
 package com.benjtissot.sellingmugs
 
-import com.benjtissot.sellingmugs.entities.printify.External
-import com.benjtissot.sellingmugs.entities.printify.Publish
-import com.benjtissot.sellingmugs.entities.printify.MugProduct
-import com.benjtissot.sellingmugs.entities.printify.PublishSucceed
+import com.benjtissot.sellingmugs.entities.printify.*
 import io.ktor.client.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import io.ktor.util.*
+import org.w3c.files.File
 
 
 var jsonPrintifyClient = HttpClient {
@@ -39,5 +39,15 @@ suspend fun publishProduct(productId: String) {
     jsonPrintifyClient.post("https://fast-earth-36264.herokuapp.com/https://api.printify.com/v1/shops/8965065/products/$productId/publishing_succeeded.json"){
         contentType(ContentType.Application.Json)
         setBody(PublishSucceed(External(productId, "localhost:9090")))
+    }
+}
+
+/**
+ * @param imageFile is a 64base encoded string of the image to upload
+ */
+suspend fun uploadImage(imageFile: ImageForUpload) : HttpResponse {
+    return jsonPrintifyClient.post("https://fast-earth-36264.herokuapp.com/https://api.printify.com/v1/uploads/images.json"){
+        contentType(ContentType.Application.Json)
+        setBody(imageFile)
     }
 }

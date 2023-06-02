@@ -6,6 +6,7 @@ import com.benjtissot.sellingmugs.components.CreateProductComponent
 import com.benjtissot.sellingmugs.components.FooterComponent
 import com.benjtissot.sellingmugs.components.LogoutButtonComponent
 import com.benjtissot.sellingmugs.components.NavigationBarComponent
+import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
 import com.benjtissot.sellingmugs.entities.printify.MugProduct
 import csstype.Display
 import emotion.react.css
@@ -15,10 +16,16 @@ import kotlinx.coroutines.launch
 import mui.icons.material.AddCircle
 import mui.icons.material.Refresh
 import mui.material.IconButton
+import org.w3c.dom.asList
 import org.w3c.files.File
+import org.w3c.files.FileReader
 import react.FC
+import react.dom.html.InputType
 import react.dom.html.ReactHTML.div
+import react.dom.html.ReactHTML.form
 import react.dom.html.ReactHTML.img
+import react.dom.html.ReactHTML.input
+import react.dom.html.ReactHTML.label
 import react.router.useNavigate
 import react.useEffectOnce
 import react.useState
@@ -89,11 +96,36 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
                 updateSession = props.updateSession
                 navigate = navigateAdmin
             }
+
+            form {
+                label {
+                    input {
+                        type = InputType.file
+                        onChange = {
+                            imageDropped = (it.target.files?.asList() as List<File>)[0]
+                        }
+                    }
+                }
+            }
+
             ImageDrop {
                 onImageDrop = { fileList ->
                     LOG.debug("Image Was Dropped")
                     LOG.debug("File List: $fileList")
-                    imageDropped = fileList[0]
+                    scope.launch{
+                        val imageFile = fileList[0]
+                        val reader = FileReader()
+                        reader.readAsDataURL(imageFile)
+                        reader.onload = { event ->
+                            val uploadImage = ImageForUpload(imageFile.name, selectBase64ContentFromURLData(reader.result as String))
+                            LOG.debug(uploadImage.toString())
+                            scope.launch{
+                                val httpResponse = uploadImage(uploadImage)
+                            }
+                        }
+
+                        imageDropped = imageFile
+                    }
                 }
             }
 
@@ -110,4 +142,13 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
             +"You must be an admin to view this page"
         }
     }
+}
+
+fun selectBase64ContentFromURLData(input : String) : String {
+    val list = input.split("base64,")
+    var base64Content = ""
+    for (i in 1 until list.size){
+        base64Content += list[i]
+    }
+    return base64Content
 }

@@ -53,7 +53,7 @@ fun Application.module() {
         install(Compression) {
             gzip()
         }
-        val port = environment.config.propertyOrNull("ktor.deployment.port")?.getString() ?: "8080"
+        val port = environment.config.propertyOrNull("ktor.deployment.port")?.getString() ?: "9090"
 
 
 
