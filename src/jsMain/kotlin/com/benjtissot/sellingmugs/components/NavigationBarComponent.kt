@@ -116,7 +116,11 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
                         scope.launch{
                             recordClick(props.session.clickDataId, Const.ClickType.USER_INFO_NAV.toString())
                         }
-                        props.navigate.invoke(USER_INFO_PATH)
+                        if ((props.session.user?.userType ?: Const.UserType.CLIENT) == Const.UserType.ADMIN){
+                            props.navigate.invoke(ADMIN_PANEL_PATH)
+                        } else {
+                            props.navigate.invoke(USER_INFO_PATH)
+                        }
                     }
                 }
             }

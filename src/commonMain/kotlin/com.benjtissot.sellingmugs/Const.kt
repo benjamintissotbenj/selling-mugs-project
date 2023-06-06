@@ -14,4 +14,12 @@ class Const {
             return type
         }
     }
+
+    enum class ColorCode(var colourCode: String) {
+        BLUE("#007bff"),
+        ;
+        fun code(): String {
+            return colourCode
+        }
+    }
 }

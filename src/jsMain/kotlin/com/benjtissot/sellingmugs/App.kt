@@ -46,9 +46,10 @@ val App = FC<Props> {
                 }
                 Route {
                     path = CHECKOUT_PATH
-                    element = CheckoutPage.create{
+                    element = AuthenticatedPage.create{
                         session = sessionApp!!
                         updateSession = updateSessionApp
+                        internalPage = CheckoutPage
                     }
                 }
                 Route {
@@ -56,6 +57,14 @@ val App = FC<Props> {
                     element = UserInfoPage.create{
                         session = sessionApp!!
                         updateSession = updateSessionApp
+                    }
+                }
+                Route {
+                    path = ADMIN_PANEL_PATH
+                    element = AuthenticatedPage.create{
+                        session = sessionApp!!
+                        updateSession = updateSessionApp
+                        internalPage = AdminPanelPage
                     }
                 }
                 Route {

@@ -2,6 +2,7 @@ package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.FooterComponent
+import com.benjtissot.sellingmugs.components.LogoutButtonComponent
 import com.benjtissot.sellingmugs.components.NavigationBarComponent
 import emotion.react.css
 import io.ktor.http.*
@@ -67,30 +68,3 @@ val UserInfoPage = FC<UserInfoPageProps> { props ->
     FooterComponent {}
 }
 
-
-external interface LogoutButtonProps : NavigationProps {
-}
-
-val LogoutButtonComponent = FC<LogoutButtonProps> { props ->
-    IconButton{
-    div {
-        +"Logout"
-    }
-    mui.icons.material.Person()
-    onClick = {
-        LOG.debug("Click on Logout")
-        scope.launch {
-            val httpResponse = logout()
-
-            LOG.debug("After register, response is $httpResponse")
-            if (httpResponse.status == HttpStatusCode.OK){
-                LOG.debug("Logged out")
-                props.navigate.invoke(HOMEPAGE_PATH)
-            } else {
-                LOG.error("Logout not working")
-            }
-            props.updateSession()
-        }
-    }
-}
-}
