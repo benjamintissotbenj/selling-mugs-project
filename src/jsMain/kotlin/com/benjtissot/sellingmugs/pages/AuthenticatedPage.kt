@@ -1,14 +1,13 @@
 package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.components.FooterComponent
-import com.benjtissot.sellingmugs.components.NavigationBarComponent
+import com.benjtissot.sellingmugs.components.highLevel.FooterComponent
+import com.benjtissot.sellingmugs.components.highLevel.NavigationBarComponent
 import io.ktor.client.call.*
 import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
 import react.FC
-import react.Props
 import react.dom.html.ReactHTML.div
 import react.router.useNavigate
 import react.useEffectOnce

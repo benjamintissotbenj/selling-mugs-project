@@ -1,7 +1,7 @@
-package com.benjtissot.sellingmugs.components
+package com.benjtissot.sellingmugs.components.createProduct
 
-import ImageDrop
 import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.components.forms.CreateProductForm
 import com.benjtissot.sellingmugs.entities.printify.*
 import com.benjtissot.sellingmugs.entities.printify.Image
 import com.benjtissot.sellingmugs.pages.selectBase64ContentFromURLData
@@ -12,9 +12,6 @@ import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonObject
-import mui.icons.material.PostAdd
-import mui.material.IconButton
-import org.w3c.files.File
 import org.w3c.files.FileReader
 import react.FC
 import react.dom.html.ReactHTML.div
@@ -31,7 +28,7 @@ external interface CreateProductProps : NavigationProps {
 
 val CreateProductComponent = FC<CreateProductProps> { props ->
     var imageDropped : Image? by useState(null)
-    var uploadedImageUrl: String by useState("")
+    var uploadedImageUrl: String by useState(" ") // Starts blank but not empty, as to not show warning message initially
 
     // Parent to hold flex to center the box
     div {
@@ -44,10 +41,11 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
         div {
             css {
                 fontNormal()
-                boxNormal()
+                boxNormalNormal()
                 boxShade()
                 center()
-                justifyContent = JustifyContent.center
+                contentCenteredHorizontally()
+                padding = 1.vh
             }
 
             ImageDrop {
@@ -86,35 +84,29 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
                 }
             }
 
-            // Title
 
-            // Description
+            CreateProductForm {
+                onSubmit = { title, description ->
+                    scope.launch {// Data processing to create the product in Printify store
 
+                        // TODO: Create popup with information and confirmation
+                        imageDropped?.let {
 
-            // Data processing to create the product in Printify store
-            imageDropped?.let {
+                            val placeholder = Placeholder("front", arrayListOf(imageDropped!!))
+                            val variants = arrayListOf(Variant())
+                            val print_areas = arrayListOf(
+                                PrintArea(
+                                    variant_ids = variants.map { it.id } as ArrayList<Int>,
+                                    placeholders = arrayListOf(placeholder)
+                                )
+                            )
 
-                val placeholder = Placeholder("front", arrayListOf(imageDropped!!))
-                val variants = arrayListOf(Variant())
-                val print_areas = arrayListOf(
-                    PrintArea(
-                        variant_ids = variants.map { it.id } as ArrayList<Int>,
-                        placeholders = arrayListOf(placeholder)
-                    )
-                )
-
-                val mugProduct = MugProduct(
-                    title = "Default Title",
-                    description = "Default Description",
-                    variants = variants,
-                    print_areas = print_areas
-                )
-
-                IconButton{
-                    +"Post Dummy Product"
-                    PostAdd()
-                    onClick = {
-                        scope.launch {
+                            val mugProduct = MugProduct(
+                                title = title,
+                                description = description,
+                                variants = variants,
+                                print_areas = print_areas
+                            )
                             val httpResponse = postProduct(mugProduct)
                             val productId = httpResponse.body<JsonObject>().get("id").toString().removeSurrounding("\"")
 
@@ -125,16 +117,17 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
                             props.onProductCreatedSuccess(productId)
 
                             publishProduct(productId)
-
+                        } ?: let {
+                            uploadedImageUrl = "" // Shows that there was an attempt to upload the product without an image
                         }
+
+
+
                     }
                 }
-            } ?: let {
-                div {
-                    +"Please upload an image"
-                }
-            }
 
+                uploadImageWarning = uploadedImageUrl.isEmpty()
+            }
 
         }
     }

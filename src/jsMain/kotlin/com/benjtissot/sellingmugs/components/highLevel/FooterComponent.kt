@@ -1,11 +1,10 @@
-package com.benjtissot.sellingmugs.components
+package com.benjtissot.sellingmugs.components.highLevel
 import csstype.*
 import emotion.react.css
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.h1
 import react.dom.html.ReactHTML.nav
-import react.router.useNavigate
 
 external interface FooterProps : Props {
 }

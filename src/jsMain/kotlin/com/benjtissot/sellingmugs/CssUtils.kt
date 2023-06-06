@@ -8,10 +8,7 @@ import com.benjtissot.sellingmugs.Const.ColorCode.*
 // CSS for Forms
 fun PropsWithClassName.formComponentDivCss(){
     css {
-        display = Display.flex
-        flexDirection = FlexDirection.column
-        alignItems = AlignItems.center
-        justifyContent = JustifyContent.center
+        fullCenterColumnOriented()
         padding = 1.vh
         marginBottom = 1.vh
         marginTop = 10.vh
@@ -20,6 +17,13 @@ fun PropsWithClassName.formComponentDivCss(){
         minWidth = 300.px
         boxShade()
     }
+}
+
+fun PropertiesBuilder.fullCenterColumnOriented(){
+    display = Display.flex
+    flexDirection = FlexDirection.column
+    alignItems = AlignItems.center
+    justifyContent = JustifyContent.center
 }
 
 fun PropsWithClassName.formCss(){
@@ -100,13 +104,21 @@ fun PropertiesBuilder.fontBigger(){
 
 // BOX SIZE
 
-fun PropertiesBuilder.boxNormal(){
+fun PropertiesBuilder.boxNormalNormal(){
     width = 50.vw
     maxWidth = 50.rem
     minWidth = 300.px
     height = 50.vh
     maxHeight = 50.rem
     minHeight = 200.px
+}
+fun PropertiesBuilder.boxNormalSmall(){
+    width = 50.vw
+    maxWidth = 50.rem
+    minWidth = 300.px
+    height = 20.vh
+    maxHeight = 20.rem
+    minHeight = 100.px
 }
 
 

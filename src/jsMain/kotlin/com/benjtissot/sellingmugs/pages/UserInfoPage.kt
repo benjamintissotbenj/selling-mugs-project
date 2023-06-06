@@ -1,11 +1,10 @@
 package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.components.FooterComponent
+import com.benjtissot.sellingmugs.components.highLevel.FooterComponent
 import com.benjtissot.sellingmugs.components.LogoutButtonComponent
-import com.benjtissot.sellingmugs.components.NavigationBarComponent
+import com.benjtissot.sellingmugs.components.highLevel.NavigationBarComponent
 import emotion.react.css
-import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
 import mui.icons.material.Refresh

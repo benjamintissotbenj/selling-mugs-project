@@ -1,4 +1,4 @@
-package com.benjtissot.sellingmugs.components
+package com.benjtissot.sellingmugs.components.forms
 
 import org.w3c.dom.HTMLFormElement
 import org.w3c.dom.HTMLInputElement
@@ -11,11 +11,11 @@ import react.dom.html.ReactHTML.form
 import react.dom.html.ReactHTML.input
 import react.useState
 
-external interface InputProps : Props {
+external interface CreateMugProps : Props {
     var onSubmit: (String, String) -> Unit
 }
 
-val InputComponent = FC<InputProps> { props ->
+val CreateMugComponent = FC<CreateMugProps> { props ->
     val (mugName, setMugName) = useState("")
     val (artURL, setArtURL) = useState("")
 

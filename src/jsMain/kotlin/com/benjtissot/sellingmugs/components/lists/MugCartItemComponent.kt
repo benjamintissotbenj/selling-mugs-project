@@ -1,4 +1,4 @@
-package com.benjtissot.sellingmugs.components
+package com.benjtissot.sellingmugs.components.lists
 
 import com.benjtissot.sellingmugs.*
 import csstype.*

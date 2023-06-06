@@ -1,9 +1,9 @@
 package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.components.CartListComponent
-import com.benjtissot.sellingmugs.components.FooterComponent
-import com.benjtissot.sellingmugs.components.NavigationBarComponent
+import com.benjtissot.sellingmugs.components.lists.CartListComponent
+import com.benjtissot.sellingmugs.components.highLevel.FooterComponent
+import com.benjtissot.sellingmugs.components.highLevel.NavigationBarComponent
 import com.benjtissot.sellingmugs.entities.Cart
 import csstype.*
 import emotion.react.css

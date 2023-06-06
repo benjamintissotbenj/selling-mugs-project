@@ -1,10 +1,10 @@
 package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.components.FooterComponent
-import com.benjtissot.sellingmugs.components.InputComponent
-import com.benjtissot.sellingmugs.components.MugListComponent
-import com.benjtissot.sellingmugs.components.NavigationBarComponent
+import com.benjtissot.sellingmugs.components.highLevel.FooterComponent
+import com.benjtissot.sellingmugs.components.forms.CreateMugComponent
+import com.benjtissot.sellingmugs.components.lists.MugListComponent
+import com.benjtissot.sellingmugs.components.highLevel.NavigationBarComponent
 import com.benjtissot.sellingmugs.entities.Artwork
 import com.benjtissot.sellingmugs.entities.Mug
 import emotion.react.css
@@ -66,7 +66,7 @@ val Homepage = FC<HomepageProps> { props ->
             }
 
             // Creating a field to input a new element
-            InputComponent {
+            CreateMugComponent {
                 onSubmit = { mugName, artURL ->
                     val artwork = Artwork("", artURL)
                     val cartItem = Mug("", mugName, 8.99f, artwork)

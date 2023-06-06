@@ -1,4 +1,4 @@
-package com.benjtissot.sellingmugs.components
+package com.benjtissot.sellingmugs.components.forms
 
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.entities.User

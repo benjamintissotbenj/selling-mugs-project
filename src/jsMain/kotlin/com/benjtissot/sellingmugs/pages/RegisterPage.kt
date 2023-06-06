@@ -1,9 +1,9 @@
 package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.components.FooterComponent
-import com.benjtissot.sellingmugs.components.NavigationBarComponent
-import com.benjtissot.sellingmugs.components.RegisterFormComponent
+import com.benjtissot.sellingmugs.components.highLevel.FooterComponent
+import com.benjtissot.sellingmugs.components.highLevel.NavigationBarComponent
+import com.benjtissot.sellingmugs.components.forms.RegisterFormComponent
 import csstype.*
 import emotion.react.css
 import io.ktor.client.call.*

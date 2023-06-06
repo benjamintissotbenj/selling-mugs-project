@@ -1,3 +1,5 @@
+package com.benjtissot.sellingmugs.components.createProduct
+
 import com.benjtissot.sellingmugs.*
 import csstype.JustifyContent
 import emotion.react.css
@@ -66,7 +68,7 @@ val ImageDrop = FC<ImageDropProps> { props ->
     div {
 
         css {
-            boxNormal()
+            boxNormalSmall()
             if (isDragging){
                 boxBlueShade()
             } else {
