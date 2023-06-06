@@ -31,13 +31,13 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
     var createProduct by useState(false)
     var productToPublishId : String by useState("")
 
-    if ((props.session.user?.userType ?: Const.UserType.CLIENT) == Const.UserType.ADMIN){
-        div {
-            css {
-                mainPageDiv()
-                contentCenteredHorizontally()
-            }
+    div {
+        css {
+            mainPageDiv()
+            contentCenteredHorizontally()
+        }
 
+        if ((props.session.user?.userType ?: Const.UserType.CLIENT) == Const.UserType.ADMIN){
             div {
                 css {
                     fontNormal()
@@ -66,29 +66,25 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
                         // TODO : Error Message
                         LOG.debug("Could not create product")
                     }
-                }
-
-                if (productToPublishId.isNotBlank()){
-                    IconButton {
-
+                    onClickClose = {
+                        createProduct = false
                     }
                 }
             }
 
+            LogoutButtonComponent {
+                session = props.session
+                updateSession = props.updateSession
+                navigate = navigateAdmin
+            }
 
+        } else {
+            div {
+                divDefaultCss()
+                +"You must be an admin to view this page"
+            }
         }
 
-        LogoutButtonComponent {
-            session = props.session
-            updateSession = props.updateSession
-            navigate = navigateAdmin
-        }
-
-    } else {
-        div {
-            divDefaultCss()
-            +"You must be an admin to view this page"
-        }
     }
 }
 
