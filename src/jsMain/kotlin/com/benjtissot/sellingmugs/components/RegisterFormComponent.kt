@@ -17,6 +17,7 @@ import react.dom.html.ReactHTML.form
 import react.dom.html.ReactHTML.input
 import react.dom.html.ReactHTML.label
 import react.useState
+import com.benjtissot.sellingmugs.Const.ColorCode.*
 
 external interface RegisterFormProps : Props {
     var onSubmit: (User) -> Unit
@@ -123,7 +124,7 @@ val RegisterFormComponent = FC<RegisterFormProps> { props ->
             }
 
             input {
-                formInputCss(10.vw, 80.px, backColor = Color("#007bff"), frontColor = NamedColor.white)
+                formInputCss(10.vw, 80.px, backColor = Color(BLUE.code()), frontColor = NamedColor.white)
                 type = InputType.submit
                 value = "Register"
             }

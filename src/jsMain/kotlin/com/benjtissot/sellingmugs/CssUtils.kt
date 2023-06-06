@@ -3,6 +3,7 @@ package com.benjtissot.sellingmugs
 import csstype.*
 import emotion.react.css
 import react.PropsWithClassName
+import com.benjtissot.sellingmugs.Const.ColorCode.*
 
 // CSS for Forms
 fun PropsWithClassName.formComponentDivCss(){
@@ -106,7 +107,6 @@ fun PropertiesBuilder.boxNormal(){
     height = 50.vh
     maxHeight = 50.rem
     minHeight = 200.px
-    boxShade()
 }
 
 
@@ -132,7 +132,23 @@ fun PropertiesBuilder.boxShade() {
     borderRadius = 2.vh
     boxShadow = BoxShadow(0.px, 0.px, blurRadius = 2.px, spreadRadius = 1.px, NamedColor.gray)
 }
+fun PropertiesBuilder.boxBlueShade() {
+    borderRadius = 2.vh
+    boxShadow = BoxShadow(0.px, 0.px, blurRadius = 2.px, spreadRadius = 1.px, Color(BLUE.code()))
+}
 
 fun PropertiesBuilder.center(){
     alignSelf = AlignSelf.center
+}
+
+fun PropertiesBuilder.contentCenteredHorizontally(){
+    display = Display.flex
+    flexDirection = FlexDirection.column
+    alignItems = AlignItems.center
+}
+
+fun PropertiesBuilder.contentCenteredVertically(){
+    display = Display.flex
+    flexDirection = FlexDirection.row
+    alignItems = AlignItems.center
 }

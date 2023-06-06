@@ -3,18 +3,12 @@ package com.benjtissot.sellingmugs.pages
 import ImageDrop
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.CreateProductComponent
-import com.benjtissot.sellingmugs.components.FooterComponent
 import com.benjtissot.sellingmugs.components.LogoutButtonComponent
-import com.benjtissot.sellingmugs.components.NavigationBarComponent
 import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
-import com.benjtissot.sellingmugs.entities.printify.MugProduct
-import csstype.Display
 import emotion.react.css
-import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
 import mui.icons.material.AddCircle
-import mui.icons.material.Refresh
 import mui.material.IconButton
 import org.w3c.dom.asList
 import org.w3c.files.File
@@ -23,7 +17,6 @@ import react.FC
 import react.dom.html.InputType
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.form
-import react.dom.html.ReactHTML.img
 import react.dom.html.ReactHTML.input
 import react.dom.html.ReactHTML.label
 import react.router.useNavigate
@@ -44,7 +37,6 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
             message = getUserInfo()
         }
     }
-    var imageDropped : File? by useState(null)
     var createProduct by useState(false)
     var productToPublishId : String by useState("")
 
@@ -52,6 +44,7 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
         div {
             css {
                 mainPageDiv()
+                contentCenteredHorizontally()
             }
 
             div {
@@ -91,51 +84,15 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
                 }
             }
 
-            LogoutButtonComponent {
-                session = props.session
-                updateSession = props.updateSession
-                navigate = navigateAdmin
-            }
-
-            form {
-                label {
-                    input {
-                        type = InputType.file
-                        onChange = {
-                            imageDropped = (it.target.files?.asList() as List<File>)[0]
-                        }
-                    }
-                }
-            }
-
-            ImageDrop {
-                onImageDrop = { fileList ->
-                    LOG.debug("Image Was Dropped")
-                    LOG.debug("File List: $fileList")
-                    scope.launch{
-                        val imageFile = fileList[0]
-                        val reader = FileReader()
-                        reader.readAsDataURL(imageFile)
-                        reader.onload = { event ->
-                            val uploadImage = ImageForUpload(imageFile.name, selectBase64ContentFromURLData(reader.result as String))
-                            LOG.debug(uploadImage.toString())
-                            scope.launch{
-                                val httpResponse = uploadImage(uploadImage)
-                            }
-                        }
-
-                        imageDropped = imageFile
-                    }
-                }
-            }
-
-            imageDropped?.let {
-                div {
-                    +"imageDropped type = ${imageDropped?.type}"
-                }
-            }
 
         }
+
+        LogoutButtonComponent {
+            session = props.session
+            updateSession = props.updateSession
+            navigate = navigateAdmin
+        }
+
     } else {
         div {
             divDefaultCss()
