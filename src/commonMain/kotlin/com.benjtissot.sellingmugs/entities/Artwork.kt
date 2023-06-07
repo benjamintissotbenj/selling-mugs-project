@@ -8,6 +8,7 @@ import kotlinx.serialization.Serializable
 data class Artwork(
     @SerialName("_id") val id: String,
     val imageURL: String,
+    val public: Boolean = true // tells if it is artwork that should be available to anyone
     ){
 
     companion object {
