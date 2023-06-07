@@ -80,28 +80,25 @@ fun Application.createRoutes(){
     val routing = routing {
 
 
-        // Routing to my controllers
-
+        // Routing to the controllers
         homepageRouting()
         sessionRouting()
         clickRouting()
         mugRouting()
-
         userInfoRouting()
-
         loginRouting()
         cartRouting()
-        /*
         checkoutRouting()
-        paymentRouting()*/
+        paymentRouting()
+        userRouting()
 
         checkRedirectRouting()
-
 
         // Static to access resources (index.html, sellingmugs.js)
         static("/static") {
             resources("")
         }
+        // Accessing the icon for the browser
         get("/favicon.ico") {
             call.respondFile(File(URI(this::class.java.classLoader.getResource("static/icon.jpg")?.toString()?:""))) {
                 ContentType.Image.JPEG
@@ -127,7 +124,7 @@ fun Application.createRoutes(){
     }
 
     // Print out all the routes for debug
-    allRoutes(routing).forEach { println(it) }
+    // allRoutes(routing).forEach { println(it) }
 }
 
 /**
