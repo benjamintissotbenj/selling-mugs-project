@@ -1,6 +1,6 @@
 package com.benjtissot.sellingmugs.components.highLevel
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.components.LoginButton
+import com.benjtissot.sellingmugs.components.buttons.LoginButton
 import csstype.*
 import emotion.react.css
 import io.ktor.client.call.*

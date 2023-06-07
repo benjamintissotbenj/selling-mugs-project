@@ -1,10 +1,12 @@
-package com.benjtissot.sellingmugs.components
+package com.benjtissot.sellingmugs.components.buttons
 
 import com.benjtissot.sellingmugs.LOGIN_PATH
 import com.benjtissot.sellingmugs.NavigationProps
 import csstype.VerticalAlign
 import csstype.vw
 import emotion.react.css
+import mui.icons.material.AccountCircle
+import mui.icons.material.AccountCircleOutlined
 import mui.icons.material.Person
 import mui.icons.material.PersonOutline
 import mui.material.IconButton
@@ -29,7 +31,7 @@ val LoginButton = FC<LoginButtonProps> { props ->
             size = Size.small
             color = IconButtonColor.primary
             if (!props.loggedIn){
-                Person()
+                AccountCircle()
                 onClick = {
                     props.navigate.invoke(LOGIN_PATH)
                 }
@@ -40,7 +42,7 @@ val LoginButton = FC<LoginButtonProps> { props ->
                     }
                     +props.session.user!!.getNameInitial()
                 }
-                PersonOutline()
+                AccountCircleOutlined()
                 onClick = {
                     props.navigate.invoke(LOGIN_PATH)
                 }
