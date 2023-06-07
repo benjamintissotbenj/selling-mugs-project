@@ -3,6 +3,7 @@ package com.benjtissot.sellingmugs.pages
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.highLevel.FooterComponent
 import com.benjtissot.sellingmugs.components.highLevel.NavigationBarComponent
+import emotion.react.css
 import io.ktor.client.call.*
 import io.ktor.http.*
 import io.ktor.util.logging.*
@@ -28,7 +29,6 @@ val AuthenticatedPage = FC<AuthenticatedPageProps> { props ->
             val loggedInResponse = isLoggedIn()
             val loggedInValue = loggedInResponse.status != HttpStatusCode.Unauthorized && (loggedInResponse.body<String>() == "true")
 
-            LOG.debug("User is logged in with response: ${loggedInResponse.status != HttpStatusCode.Unauthorized} && ${loggedInResponse.body<Boolean>()} : $loggedInValue")
             if (!loggedInValue) {
                 navigateAuthenticated.invoke(LOGIN_PATH)
             }
@@ -49,7 +49,9 @@ val AuthenticatedPage = FC<AuthenticatedPageProps> { props ->
         }
     } else {
         div {
-            divDefaultCss()
+            css {
+                mainPageDiv()
+            }
             +"You are not authenticated"
         }
     }

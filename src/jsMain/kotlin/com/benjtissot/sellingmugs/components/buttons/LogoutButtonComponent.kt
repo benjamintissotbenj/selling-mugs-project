@@ -1,4 +1,4 @@
-package com.benjtissot.sellingmugs.components
+package com.benjtissot.sellingmugs.components.buttons
 
 import com.benjtissot.sellingmugs.HOMEPAGE_PATH
 import com.benjtissot.sellingmugs.NavigationProps
@@ -7,7 +7,6 @@ import com.benjtissot.sellingmugs.scope
 import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
-import mui.icons.material.Person
 import mui.icons.material.PersonRemove
 import mui.material.IconButton
 import react.FC
@@ -26,18 +25,17 @@ val LogoutButtonComponent = FC<LogoutButtonProps> { props ->
         }
         PersonRemove()
         onClick = {
-            LOG.debug("Click on Logout")
             scope.launch {
                 val httpResponse = logout()
 
-                LOG.debug("After logout, response is $httpResponse")
+                LOG.debug("After logout, response is $httpResponse, updating session")
+                props.updateSession()
                 if (httpResponse.status == HttpStatusCode.OK){
                     LOG.debug("Logged out")
                     props.navigate.invoke(HOMEPAGE_PATH)
                 } else {
                     LOG.error("Logout not working")
                 }
-                props.updateSession()
             }
         }
     }

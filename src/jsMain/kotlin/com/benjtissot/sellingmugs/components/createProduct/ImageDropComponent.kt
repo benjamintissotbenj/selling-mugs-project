@@ -15,6 +15,9 @@ import react.*
 import react.dom.html.InputType
 import react.dom.html.ReactHTML
 import react.dom.html.ReactHTML.div
+import react.dom.html.ReactHTML.form
+import react.dom.html.ReactHTML.input
+import react.dom.html.ReactHTML.label
 
 private val LOG = KtorSimpleLogger("DragDropComponent.kt")
 
@@ -87,13 +90,22 @@ val ImageDrop = FC<ImageDropProps> { props ->
         }
 
         div {
+            css {
+                fontNormal()
+            }
             +"Drag and Drop image  - OR -  "
         }
 
 
-        ReactHTML.form {
-            ReactHTML.label {
-                ReactHTML.input {
+        form {
+            label {
+                css {
+                    fontNormal()
+                }
+                input {
+                    css {
+                        fontNormal()
+                    }
                     type = InputType.file
                     onChange = {
                         props.onImageDrop((it.target.files?.asList() as List<File>))

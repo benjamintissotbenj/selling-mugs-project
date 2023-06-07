@@ -61,7 +61,8 @@ suspend fun register(user: User): HttpResponse {
 }
 
 suspend fun logout(): HttpResponse {
-    // Only need user email and password for login
+    // Reset the client to delete JWT and updating the session
+    updateClientWithToken("")
     return jsonClient.get(LOGOUT_PATH)
 }
 
@@ -131,15 +132,13 @@ suspend fun getUserInfo() : String {
     return httpResponse.body()
 }
 
-suspend fun postDummyLogin() : HttpResponse{
-    val user = User("","", "", "123", "123".sha256().toString(), Const.UserType.ADMIN, "23")
-
-    LOG.debug("Posting dummy login")
-    return login(user.email, user.passwordHash)
+suspend fun updateUser(user: User) : HttpResponse {
+    return jsonClient.post(USER_OBJECT_PATH){
+        contentType(ContentType.Application.Json)
+        setBody(user)
+    }
 }
-suspend fun postDummyRegister(): HttpResponse {
-    val user = User("123", "Benjamin", "Tissot", "123", "123".sha256().toString(), Const.UserType.ADMIN, "23")
 
-    LOG.debug("Posting dummy register")
-    return register(user)
+suspend fun getUserList() : List<User> {
+    return jsonClient.get(USER_OBJECT_PATH).body()
 }

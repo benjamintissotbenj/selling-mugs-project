@@ -1,7 +1,10 @@
 package com.benjtissot.sellingmugs.components.highLevel
 import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.components.buttons.LoginButton
 import csstype.*
 import emotion.react.css
+import io.ktor.client.call.*
+import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
 import mui.icons.material.*
@@ -12,6 +15,8 @@ import react.FC
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.h1
 import react.dom.html.ReactHTML.nav
+import react.useEffectOnce
+import react.useState
 
 private val LOG = KtorSimpleLogger("NavigationBarComponent.kt")
 
@@ -19,9 +24,20 @@ external interface NavigationBarProps : NavigationProps {
 }
 
 val NavigationBarComponent = FC<NavigationBarProps> { props ->
+
+    var loggedIn by useState(false)
+
+    useEffectOnce {
+        scope.launch {
+            val loggedInResponse = isLoggedIn()
+            loggedIn = (loggedInResponse.status != HttpStatusCode.Unauthorized) && (loggedInResponse.body<String>() == "true")
+        }
+    }
+
     nav {
         css {
             justifySpaceBetween()
+            minHeight = 40.px
             backgroundColor = Color("#333")
             alignItems = AlignItems.center
             height = 8.vh
@@ -45,7 +61,7 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
             }
 
 
-            // Search
+            // Search (TODO: actually Checkout right now)
             div {
                 css {
                     verticalAlign = VerticalAlign.middle
@@ -103,7 +119,7 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
             }
 
             // UserInfo
-            div {
+            /*div {
                 css {
                     verticalAlign = VerticalAlign.middle
                     marginRight = 2.vw
@@ -123,49 +139,16 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
                         }
                     }
                 }
-            }
+            }*/
 
             // Login
             LoginButton {
                 session = props.session
                 updateSession = props.updateSession
                 navigate = props.navigate
+                this.loggedIn = loggedIn
             }
         }
     }
 }
 
-external interface LoginButtonProps : NavigationProps {
-}
-
-val LoginButton = FC<LoginButtonProps> { props ->
-
-    div {
-        css {
-            verticalAlign = VerticalAlign.middle
-            marginRight = 2.vw
-        }
-        IconButton {
-            size = Size.small
-            color = IconButtonColor.primary
-            if (props.session.user == null || props.session.jwtToken.isBlank()){
-                Person()
-                onClick = {
-                    props.navigate.invoke(LOGIN_PATH)
-                }
-            } else {
-                div {
-                    css {
-                        marginRight = 1.vw
-                    }
-                    +props.session.user!!.getNameInitial()
-                }
-                PersonOutline()
-                onClick = {
-                    props.navigate.invoke(LOGIN_PATH)
-                }
-            }
-
-        }
-    }
-}

@@ -14,6 +14,13 @@ class UserRepository {
         /**
          * @param user the [User] to be inserted
          */
+        suspend fun getUserList() : List<User> {
+            return userCollection.find().toList()
+        }
+
+        /**
+         * @param user the [User] to be inserted
+         */
         suspend fun insertUser(user: User) {
             userCollection.insertOne(user)
         }

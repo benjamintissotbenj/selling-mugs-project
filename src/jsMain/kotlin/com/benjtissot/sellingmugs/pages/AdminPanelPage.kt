@@ -2,15 +2,20 @@ package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.createProduct.CreateProductComponent
-import com.benjtissot.sellingmugs.components.LogoutButtonComponent
+import com.benjtissot.sellingmugs.components.buttons.LogoutButtonComponent
+import com.benjtissot.sellingmugs.components.lists.ManageUsersComponent
+import com.benjtissot.sellingmugs.components.lists.UserItem
+import com.benjtissot.sellingmugs.entities.User
 import emotion.react.css
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
 import mui.icons.material.AddCircle
+import mui.icons.material.Person
 import mui.material.IconButton
 import react.FC
 import react.dom.html.ReactHTML.div
 import react.router.useNavigate
+import react.useEffect
 import react.useEffectOnce
 import react.useState
 
@@ -28,16 +33,24 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
             message = getUserInfo()
         }
     }
-    var createProduct by useState(false)
-    var productToPublishId : String by useState("")
+    var productPopupOpen by useState(false)
+    var usersPopupOpen by useState(false)
 
-    if ((props.session.user?.userType ?: Const.UserType.CLIENT) == Const.UserType.ADMIN){
-        div {
-            css {
-                mainPageDiv()
-                contentCenteredHorizontally()
-            }
+    var userList by useState(emptyList<User>())
 
+    useEffectOnce {
+        scope.launch {
+            userList = getUserList()
+        }
+    }
+
+    div {
+        css {
+            mainPageDiv()
+            contentCenteredHorizontally()
+        }
+
+        if ((props.session.user?.userType ?: Const.UserType.CLIENT) == Const.UserType.ADMIN){
             div {
                 css {
                     fontNormal()
@@ -46,49 +59,67 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
                 +"Extra message $message"
             }
 
-            if (!createProduct){
+            if (!productPopupOpen){
                 IconButton {
                     div {
                         +"Create Product"
                     }
                     AddCircle()
                     onClick = {
-                        createProduct = true
+                        productPopupOpen = true
                     }
                 }
             } else {
                 CreateProductComponent{
                     onProductCreatedSuccess = { productId ->
-                        productToPublishId = productId
                         LOG.debug("Created product $productId")
                     }
                     onProductCreatedFailed = { productId ->
                         // TODO : Error Message
                         LOG.debug("Could not create product")
                     }
-                }
-
-                if (productToPublishId.isNotBlank()){
-                    IconButton {
-
+                    onClickClose = {
+                        productPopupOpen = false
                     }
                 }
             }
 
+            if (!usersPopupOpen){
+                IconButton {
+                    div {
+                        +"Manage users"
+                    }
+                    Person()
+                    onClick = {
+                        usersPopupOpen = true
+                    }
+                }
+            } else {
+                ManageUsersComponent {
+                    this.userList = userList
+                    onChangeUserType = { user ->
+                        scope.launch {
+                            updateUser(user)
+                            userList = getUserList()
+                        }
+                    }
+                }
 
+            }
+
+            LogoutButtonComponent {
+                session = props.session
+                updateSession = props.updateSession
+                navigate = navigateAdmin
+            }
+
+        } else {
+            div {
+                divDefaultCss()
+                +"You must be an admin to view this page"
+            }
         }
 
-        LogoutButtonComponent {
-            session = props.session
-            updateSession = props.updateSession
-            navigate = navigateAdmin
-        }
-
-    } else {
-        div {
-            divDefaultCss()
-            +"You must be an admin to view this page"
-        }
     }
 }
 
