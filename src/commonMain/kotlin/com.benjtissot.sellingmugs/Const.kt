@@ -1,7 +1,14 @@
 package com.benjtissot.sellingmugs
 
 class Const {
-    enum class UserType {CLIENT, ADMIN}
+    enum class UserType(var type: String) {
+        CLIENT("CLIENT"),
+        ADMIN("ADMIN"),;
+
+        override fun toString(): String {
+            return type
+        }
+    }
     enum class ClickType(var type: String) {
         SEARCH_NAV("SEARCH_NAV"),
         HOME_NAV("HOME_NAV"),

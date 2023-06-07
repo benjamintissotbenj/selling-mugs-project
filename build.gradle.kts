@@ -36,21 +36,10 @@ kotlin {
         browser {
             binaries.executable()
             webpackTask {
-                cssSupport {
-                    enabled = true
-                }
             }
             runTask {
-                cssSupport {
-                    enabled = true
-                }
             }
             testTask {
-                useKarma {
-                    webpackConfig.cssSupport {
-                        enabled = true
-                    }
-                }
             }
         }
     }
@@ -104,6 +93,9 @@ kotlin {
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-react-dom")
                 // Adding CSS Styling
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-emotion")
+
+                // Adding UI components
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-ring-ui")
 
                 // Getting Icons
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-mui-icons:5.11.11-pre.546")

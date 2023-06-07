@@ -1,26 +1,22 @@
 package com.benjtissot.sellingmugs.components.lists
 
-import com.benjtissot.sellingmugs.contentCenteredVertically
-import com.benjtissot.sellingmugs.entities.Mug
+import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.entities.User
-import com.benjtissot.sellingmugs.fontNormal
-import com.benjtissot.sellingmugs.fontSmall
-import com.benjtissot.sellingmugs.justifySpaceBetween
-import csstype.AlignContent
-import csstype.rem
+import csstype.*
 import emotion.react.css
+import io.ktor.util.logging.*
 import mui.icons.material.PersonOutline
-import mui.material.Icon
-import mui.material.IconSize
+import mui.material.*
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
-import react.dom.html.ReactHTML.img
+import react.useState
 
 
+private val LOG = KtorSimpleLogger("UserItem.kt")
 external interface UserItemProps: Props {
     var user: User
-    var onItemClick: (User) -> Unit
+    var onChangeUserType: (User) -> Unit
 }
 
 val UserItem = FC<UserItemProps> {
@@ -29,8 +25,8 @@ val UserItem = FC<UserItemProps> {
         css {
             contentCenteredVertically()
             justifySpaceBetween()
-            width = 10.rem
-            height = 10.rem
+            width = 40.vw
+            height = 10.vh
             padding = 1.rem
         }
 
@@ -41,12 +37,50 @@ val UserItem = FC<UserItemProps> {
 
         div {
             css {
-                fontSmall()
+                fontNormal()
             }
             +props.user.getNameInitial()
         }
 
-        onClick = {props.onItemClick(props.user)}
+        var userType by useState(props.user.userType.toString())
+
+
+
+        Select {
+            // Attributes
+            css {
+                width = 100.rem
+                maxWidth = 10.vw
+                minWidth = 110.px
+                height = 3.rem
+                maxHeight = 5.vh
+                minHeight = 40.px
+                color = NamedColor.black
+                fontNormal()
+            }
+            //labelId = "select-type-label"
+            value = userType
+            /*label = InputLabel.create{
+                id = "select-type-label"
+            }*/
+            onChange = { event, _ ->
+                userType = event.target.value
+                LOG.debug("Changing input to ${event.target.value}")
+                props.onChangeUserType(props.user)
+            }
+
+
+            // Children, in the selector
+
+            MenuItem {
+                value = Const.UserType.CLIENT.toString()
+                +Const.UserType.CLIENT.toString()
+            }
+            MenuItem {
+                value = Const.UserType.ADMIN.toString()
+                +Const.UserType.ADMIN.toString()
+            }
+        }
     }
 
 

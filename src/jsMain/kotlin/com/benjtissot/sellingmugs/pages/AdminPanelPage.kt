@@ -4,6 +4,8 @@ import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.createProduct.CreateProductComponent
 import com.benjtissot.sellingmugs.components.buttons.LogoutButtonComponent
 import com.benjtissot.sellingmugs.components.lists.ManageUsersComponent
+import com.benjtissot.sellingmugs.components.lists.UserItem
+import com.benjtissot.sellingmugs.entities.User
 import emotion.react.css
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
@@ -13,6 +15,7 @@ import mui.material.IconButton
 import react.FC
 import react.dom.html.ReactHTML.div
 import react.router.useNavigate
+import react.useEffect
 import react.useEffectOnce
 import react.useState
 
@@ -32,6 +35,8 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
     }
     var productPopupOpen by useState(false)
     var usersPopupOpen by useState(false)
+
+    var userList by useState(emptyList<User>())
 
     div {
         css {
@@ -84,9 +89,16 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
                     }
                 }
             } else {
-                ManageUsersComponent {
+                useEffect {
 
                 }
+                ManageUsersComponent {
+                    this.userList = userList
+                    onChangeUserType = { user ->
+
+                    }
+                }
+
             }
 
             LogoutButtonComponent {

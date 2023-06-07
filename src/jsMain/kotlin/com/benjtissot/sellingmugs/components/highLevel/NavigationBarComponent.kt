@@ -37,6 +37,7 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
     nav {
         css {
             justifySpaceBetween()
+            minHeight = 40.px
             backgroundColor = Color("#333")
             alignItems = AlignItems.center
             height = 8.vh
