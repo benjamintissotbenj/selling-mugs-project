@@ -61,7 +61,8 @@ suspend fun register(user: User): HttpResponse {
 }
 
 suspend fun logout(): HttpResponse {
-    // Only need user email and password for login
+    // Reset the client to delete JWT and updating the session
+    updateClientWithToken("")
     return jsonClient.get(LOGOUT_PATH)
 }
 
