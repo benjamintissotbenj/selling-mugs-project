@@ -23,6 +23,7 @@ fun Route.userRouting(){
         }
         post {
             updateUser(call.receive())
+            call.respond(HttpStatusCode.OK)
         }
         delete() {
             call.respond(HttpStatusCode.OK)

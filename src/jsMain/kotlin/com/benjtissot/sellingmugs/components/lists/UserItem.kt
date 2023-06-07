@@ -66,7 +66,7 @@ val UserItem = FC<UserItemProps> {
             onChange = { event, _ ->
                 userType = event.target.value
                 LOG.debug("Changing input to ${event.target.value}")
-                props.onChangeUserType(props.user)
+                props.onChangeUserType(props.user.copy(userType = Const.UserType.valueOf(event.target.value)))
             }
 
 

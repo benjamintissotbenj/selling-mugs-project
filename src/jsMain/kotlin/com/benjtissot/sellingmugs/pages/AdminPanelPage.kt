@@ -38,6 +38,12 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
 
     var userList by useState(emptyList<User>())
 
+    useEffectOnce {
+        scope.launch {
+            userList = getUserList()
+        }
+    }
+
     div {
         css {
             mainPageDiv()
@@ -89,13 +95,13 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
                     }
                 }
             } else {
-                useEffect {
-
-                }
                 ManageUsersComponent {
                     this.userList = userList
                     onChangeUserType = { user ->
-
+                        scope.launch {
+                            updateUser(user)
+                            userList = getUserList()
+                        }
                     }
                 }
 
