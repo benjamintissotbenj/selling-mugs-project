@@ -18,6 +18,7 @@ import react.dom.html.ReactHTML.input
 import react.dom.html.ReactHTML.label
 import react.useState
 import com.benjtissot.sellingmugs.Const.ColorCode.*
+import react.dom.html.AutoComplete
 
 external interface RegisterFormProps : Props {
     var onSubmit: (User) -> Unit
@@ -58,6 +59,7 @@ val RegisterFormComponent = FC<RegisterFormProps> { props ->
                     +"First Name"
                     input {
                         formInputCss()
+                        autoComplete = AutoComplete.givenName
                         type = InputType.text
                         onChange = {
                             setFirstName(it.target.value)
@@ -72,6 +74,7 @@ val RegisterFormComponent = FC<RegisterFormProps> { props ->
                     +"Last Name"
                     input {
                         formInputCss()
+                        autoComplete = AutoComplete.familyName
                         type = InputType.text
                         onChange = {
                             setLastName(it.target.value)
@@ -86,6 +89,7 @@ val RegisterFormComponent = FC<RegisterFormProps> { props ->
                     +"Email"
                     input {
                         formInputCss()
+                        autoComplete = AutoComplete.email
                         type = InputType.text
                         onChange = {
                             setEmail(it.target.value)
@@ -100,6 +104,7 @@ val RegisterFormComponent = FC<RegisterFormProps> { props ->
                     +"Password"
                     input {
                         formInputCss()
+                        autoComplete = AutoComplete.newPassword
                         type = InputType.password
                         onChange = {
                             setPassword(it.target.value)
@@ -114,6 +119,7 @@ val RegisterFormComponent = FC<RegisterFormProps> { props ->
                     +"Confirm Password"
                     input {
                         formInputCss()
+                        autoComplete = AutoComplete.newPassword
                         type = InputType.password
                         onChange = {
                             setConfirmPassword(it.target.value)

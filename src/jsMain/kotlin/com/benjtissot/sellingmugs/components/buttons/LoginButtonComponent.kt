@@ -1,7 +1,6 @@
 package com.benjtissot.sellingmugs.components.buttons
 
-import com.benjtissot.sellingmugs.LOGIN_PATH
-import com.benjtissot.sellingmugs.NavigationProps
+import com.benjtissot.sellingmugs.*
 import csstype.VerticalAlign
 import csstype.vw
 import emotion.react.css
@@ -44,7 +43,11 @@ val LoginButton = FC<LoginButtonProps> { props ->
                 }
                 AccountCircleOutlined()
                 onClick = {
-                    props.navigate.invoke(LOGIN_PATH)
+                    if ((props.session.user?.userType ?: Const.UserType.CLIENT) == Const.UserType.ADMIN){
+                        props.navigate.invoke(ADMIN_PANEL_PATH)
+                    } else {
+                        props.navigate.invoke(USER_INFO_PATH)
+                    }
                 }
             }
 

@@ -29,7 +29,6 @@ val AuthenticatedPage = FC<AuthenticatedPageProps> { props ->
             val loggedInResponse = isLoggedIn()
             val loggedInValue = loggedInResponse.status != HttpStatusCode.Unauthorized && (loggedInResponse.body<String>() == "true")
 
-            LOG.debug("User is logged in with response: ${loggedInResponse.status != HttpStatusCode.Unauthorized} && ${loggedInResponse.body<Boolean>()} : $loggedInValue")
             if (!loggedInValue) {
                 navigateAuthenticated.invoke(LOGIN_PATH)
             }

@@ -61,7 +61,7 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
             }
 
 
-            // Search
+            // Search (TODO: actually Checkout right now)
             div {
                 css {
                     verticalAlign = VerticalAlign.middle
@@ -119,7 +119,7 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
             }
 
             // UserInfo
-            div {
+            /*div {
                 css {
                     verticalAlign = VerticalAlign.middle
                     marginRight = 2.vw
@@ -139,7 +139,7 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
                         }
                     }
                 }
-            }
+            }*/
 
             // Login
             LoginButton {

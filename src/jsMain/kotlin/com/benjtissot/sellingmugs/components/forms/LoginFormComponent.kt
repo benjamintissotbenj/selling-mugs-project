@@ -18,6 +18,7 @@ import react.dom.html.ReactHTML.input
 import react.dom.html.ReactHTML.label
 import react.useState
 import com.benjtissot.sellingmugs.Const.ColorCode.*
+import react.dom.html.AutoComplete
 
 external interface LoginFormProps : Props {
     var onSubmit: (String, String) -> Unit
@@ -56,6 +57,7 @@ val LoginFormComponent = FC<LoginFormProps> { props ->
                     +"Email"
                     input {
                         formInputCss()
+                        autoComplete = AutoComplete.email
                         type = InputType.text
                         onChange = emailChangeHandler
                         value = email
@@ -68,6 +70,7 @@ val LoginFormComponent = FC<LoginFormProps> { props ->
                     +"Password"
                     input {
                         formInputCss()
+                        autoComplete = AutoComplete.currentPassword
                         type = InputType.password
                         onChange = passwordChangeHandler
                         value = password
