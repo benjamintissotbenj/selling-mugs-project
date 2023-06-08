@@ -26,14 +26,16 @@ fun Route.mugRouting(){
 
     route(Mug.path) {
         get {
-            getMugList()
+            call.respond(getMugList())
         }
         post {
-            insertNewMug()
+            insertNewMug(call.receive<Mug>().copy(genUuid()))
+            call.respond(HttpStatusCode.OK)
         }
         delete("/{id}") {
             val id = call.parameters["id"] ?: error("Invalid delete request")
             deleteMug(id)
+            call.respond(HttpStatusCode.OK)
         }
     }
 
