@@ -15,7 +15,7 @@ class ClickRepository {
          * @return the created [Click]
          */
         suspend fun createClick(clickType: Const.ClickType) : Click {
-            val newClick = Click(genUuid().toString(), clickType)
+            val newClick = Click(genUuid(), clickType)
             clickCollection.insertOne(newClick)
             return newClick
         }

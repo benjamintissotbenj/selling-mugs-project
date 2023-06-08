@@ -29,7 +29,6 @@ external interface CreateProductProps : NavigationProps {
 }
 
 val CreateProductComponent = FC<CreateProductProps> { props ->
-    var imageDropped : Image? by useState(null)
     var uploadedImageUrl: String by useState(" ") // Starts blank but not empty, as to not show warning message initially
 
     // Parent to hold flex to center the box
@@ -77,16 +76,13 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
                             )
                             // LOG.debug(uploadImage.toString())
                             scope.launch{
-                                val httpResponse = uploadImage(uploadImage)
-                                val imageReceived = httpResponse.body<ImageForUploadReceive>()
-                                uploadedImageUrl = imageReceived.preview_url
-                                imageDropped = imageReceived.toImage()
+                                uploadedImageUrl = uploadImage(uploadImage)
                             }
                         }
                     }
                 }
 
-                imageDropped?.let {
+                if (uploadedImageUrl.isNotBlank()) {
                     img {
                         src = uploadedImageUrl
                         // Styles for the product image
@@ -102,7 +98,7 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
                 CreateProductForm {
                     onSubmit = { title, description ->
                         scope.launch {// Data processing to create the product in Printify store
-
+                            /*
                             // TODO: Create popup with information and confirmation
                             imageDropped?.let {
 
@@ -121,7 +117,7 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
                                     variants = variants,
                                     print_areas = print_areas
                                 )
-                                val httpResponse = postProduct(mugProduct)
+                                val httpResponse = createProduct(mugProduct)
                                 val productId = httpResponse.body<JsonObject>().get("id").toString().removeSurrounding("\"")
 
                                 if (httpResponse.status != HttpStatusCode.OK){
@@ -135,7 +131,7 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
                                 uploadedImageUrl = "" // Shows that there was an attempt to upload the product without an image
                             }
 
-
+                            */
 
                         }
                     }

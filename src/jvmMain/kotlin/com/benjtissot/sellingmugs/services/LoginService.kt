@@ -70,7 +70,7 @@ class LoginService {
                 call.respond(HttpStatusCode.Conflict)
             } ?: let {
                 // If user is not found, insert with new UUID
-                user.copy(id = genUuid().toString()).also {
+                user.copy(id = genUuid()).also {
                     UserRepository.insertUser(it)
                     login()
                 }

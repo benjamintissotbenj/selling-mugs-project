@@ -24,7 +24,7 @@ class MugService {
 
         suspend fun PipelineContext<*, ApplicationCall>.insertNewMug(){
             LOG.severe("Posting Mug")
-            MugRepository.updateMug(call.receive<Mug>().copy(genUuid().toString()))
+            MugRepository.updateMug(call.receive<Mug>().copy(genUuid()))
             call.respond(HttpStatusCode.OK)
         }
 

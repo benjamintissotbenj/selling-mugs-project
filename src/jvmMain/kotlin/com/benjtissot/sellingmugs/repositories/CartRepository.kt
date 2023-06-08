@@ -17,7 +17,7 @@ class CartRepository {
          * @return the created cart
          */
         suspend fun createCart() : Cart {
-            val newCart = Cart(genUuid().toString(), arrayListOf())
+            val newCart = Cart(genUuid(), arrayListOf())
             cartCollection.insertOne(newCart)
             return newCart
         }

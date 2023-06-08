@@ -6,7 +6,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Artwork(
-    @SerialName("_id") val id: String,
+    @SerialName("_id") val id: String,  // id in the database
+    val printifyId: String = "",
     val imageURL: String,
     val public: Boolean = true // tells if it is artwork that should be available to anyone
     ){

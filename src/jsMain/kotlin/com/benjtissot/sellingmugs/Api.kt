@@ -1,6 +1,7 @@
 package com.benjtissot.sellingmugs
 
 import com.benjtissot.sellingmugs.entities.*
+import com.benjtissot.sellingmugs.entities.printify.*
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
@@ -10,7 +11,6 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.util.logging.*
-import org.komputing.khash.sha256.extensions.sha256
 
 private val LOG = KtorSimpleLogger("Api.kt")
 
@@ -141,4 +141,32 @@ suspend fun updateUser(user: User) : HttpResponse {
 
 suspend fun getUserList() : List<User> {
     return jsonClient.get(USER_OBJECT_PATH).body()
+}
+
+// Printify methods, relayed by the backend
+
+/**
+ * @param imageFile is a 64base encoded string of the image to upload
+ * @return the [Artwork.imageURL] for the uploaded image
+ */
+suspend fun uploadImage(imageFile: ImageForUpload, public : Boolean = true) : String {
+    return jsonClient.post("$PRINTIFY_PATH$UPLOAD_IMAGE_PATH/$public"){
+        contentType(ContentType.Application.Json)
+        setBody(imageFile)
+    }.body()
+}
+
+suspend fun createProduct(mugProduct: MugProduct): HttpResponse {
+    return jsonClient.post(PRINTIFY_PATH + CREATE_PRODUCT_PATH){
+        contentType(ContentType.Application.Json)
+        setBody(mugProduct)
+
+    }
+}
+
+suspend fun publishProduct(productId: String) {
+    jsonClient.post(PRINTIFY_PATH + PUBLISH_PRODUCT_PATH){
+        contentType(ContentType.Application.Json)
+        setBody(productId)
+    }
 }

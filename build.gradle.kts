@@ -82,6 +82,9 @@ kotlin {
                 // Hashing in jvm
                 implementation("com.github.komputing.khash:sha256:1.1.1")
 
+                // Client because calling printify api
+                implementation("io.ktor:ktor-client-java:$ktorVersion")
+                implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
             }
         }
 

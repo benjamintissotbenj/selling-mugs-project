@@ -12,7 +12,7 @@ val clickDataCollection = database.getCollection<ClickData>()
 class ClickDataRepository {
     companion object {
         suspend fun createClickData() : ClickData {
-            val clickData = ClickData(genUuid().toString(), arrayListOf<Click>())
+            val clickData = ClickData(genUuid(), arrayListOf<Click>())
             clickDataCollection.insertOne(clickData)
             return clickData
         }
