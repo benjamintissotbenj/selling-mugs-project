@@ -18,19 +18,16 @@ import org.litote.kmongo.eq
 class MugService {
     companion object {
 
-        suspend fun PipelineContext<*, ApplicationCall>.getMugList(){
-            call.respond(mugCollection.find().toList())
+        suspend fun getMugList() : List<Mug> {
+            return mugCollection.find().toList().filter {mug -> mug.artwork.public} // only get the publicly available mugs
         }
 
-        suspend fun PipelineContext<*, ApplicationCall>.insertNewMug(){
-            LOG.severe("Posting Mug")
-            MugRepository.updateMug(call.receive<Mug>().copy(genUuid().toString()))
-            call.respond(HttpStatusCode.OK)
+        suspend fun insertNewMug(mug: Mug){
+            MugRepository.updateMug(mug)
         }
 
-        suspend fun PipelineContext<*, ApplicationCall>.deleteMug(id: String){
+        suspend fun deleteMug(id: String){
             mugCollection.deleteOne(Mug::id eq id) //type safe
-            call.respond(HttpStatusCode.OK)
         }
     }
 }

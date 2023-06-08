@@ -6,7 +6,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Mug(@SerialName("_id") val id: String,
+               val printifyId: String,
                val name: String,
+               var description: String = "",
                val price: Float,
                var artwork: Artwork){
 

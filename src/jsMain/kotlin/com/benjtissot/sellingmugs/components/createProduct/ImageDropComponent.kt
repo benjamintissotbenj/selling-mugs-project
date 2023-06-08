@@ -13,7 +13,6 @@ import org.w3c.dom.events.Event
 import org.w3c.files.File
 import react.*
 import react.dom.html.InputType
-import react.dom.html.ReactHTML
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.form
 import react.dom.html.ReactHTML.input

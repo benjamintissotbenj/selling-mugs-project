@@ -1,18 +1,15 @@
 package com.benjtissot.sellingmugs.components
 
-import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.NavigationProps
+import com.benjtissot.sellingmugs.contentCenteredVertically
+import com.benjtissot.sellingmugs.fontBig
 import csstype.*
 import emotion.react.css
-import io.ktor.http.*
 import io.ktor.util.logging.*
-import kotlinx.coroutines.launch
 import mui.icons.material.CloseRounded
-import mui.icons.material.Person
-import mui.icons.material.PersonRemove
 import mui.material.IconButton
 import mui.material.Size
 import react.FC
-import react.dom.html.ReactHTML
 import react.dom.html.ReactHTML.div
 
 

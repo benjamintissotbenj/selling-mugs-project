@@ -91,7 +91,7 @@ fun Application.createRoutes(){
         checkoutRouting()
         paymentRouting()
         userRouting()
-
+        printifyRouting()
         checkRedirectRouting()
 
         // Static to access resources (index.html, sellingmugs.js)

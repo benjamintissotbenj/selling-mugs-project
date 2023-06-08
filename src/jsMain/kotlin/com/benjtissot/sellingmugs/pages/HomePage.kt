@@ -2,15 +2,10 @@ package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.highLevel.FooterComponent
-import com.benjtissot.sellingmugs.components.forms.CreateMugComponent
-import com.benjtissot.sellingmugs.components.lists.MugListComponent
 import com.benjtissot.sellingmugs.components.highLevel.NavigationBarComponent
-import com.benjtissot.sellingmugs.entities.Artwork
+import com.benjtissot.sellingmugs.components.lists.MugListComponent
 import com.benjtissot.sellingmugs.entities.Mug
 import emotion.react.css
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
 import react.FC
 import react.dom.html.ReactHTML.div
@@ -62,30 +57,6 @@ val Homepage = FC<HomepageProps> { props ->
                         addMugToCart(mug)
                         mugList = getMugList() // updates client
                     }
-                }
-            }
-
-            // Creating a field to input a new element
-            CreateMugComponent {
-                onSubmit = { mugName, artURL ->
-                    val artwork = Artwork("", artURL)
-                    val cartItem = Mug("", mugName, 8.99f, artwork)
-
-                    // Using a channel to have a sequential execution
-                    val channel = Channel<Job>(capacity = Channel.UNLIMITED).apply {
-                        scope.launch {
-                            consumeEach { it.join() }
-                        }
-                    }
-                    channel.trySend(scope.launch {
-                        addArtwork(artwork)
-                    })
-                    channel.trySend(scope.launch {
-                        addMugListItem(cartItem)
-                        mugList = getMugList() // updates the state (using "useState") so re-renders page
-                    })
-
-
                 }
             }
         }

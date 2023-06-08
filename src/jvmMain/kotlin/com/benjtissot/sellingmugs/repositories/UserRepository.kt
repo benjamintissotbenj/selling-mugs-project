@@ -5,6 +5,7 @@ import database
 import org.litote.kmongo.MongoOperator
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
+import org.litote.kmongo.upsert
 
 val userCollection = database.getCollection<User>()
 
@@ -36,11 +37,7 @@ class UserRepository {
          * @param user the [User] to be updated (inserted if not existent)
          */
         suspend fun updateUser(user: User) {
-            userCollection.updateOneById(user.id, user).also {
-                if (!it.wasAcknowledged()) {
-                    userCollection.insertOne(user)
-                }
-            }
+            userCollection.updateOneById(user.id, user, upsert())
         }
 
         /**

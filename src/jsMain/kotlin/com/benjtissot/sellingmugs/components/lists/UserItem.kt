@@ -1,12 +1,18 @@
 package com.benjtissot.sellingmugs.components.lists
 
-import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.Const
+import com.benjtissot.sellingmugs.contentCenteredVertically
 import com.benjtissot.sellingmugs.entities.User
+import com.benjtissot.sellingmugs.fontNormal
+import com.benjtissot.sellingmugs.justifySpaceBetween
 import csstype.*
 import emotion.react.css
 import io.ktor.util.logging.*
 import mui.icons.material.PersonOutline
-import mui.material.*
+import mui.material.Icon
+import mui.material.IconSize
+import mui.material.MenuItem
+import mui.material.Select
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div

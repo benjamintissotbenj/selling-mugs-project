@@ -3,6 +3,7 @@ package com.benjtissot.sellingmugs.repositories
 import com.benjtissot.sellingmugs.entities.Session
 import com.benjtissot.sellingmugs.genUuid
 import database
+import org.litote.kmongo.upsert
 
 val sessionCollection = database.getCollection<Session>()
 
@@ -15,7 +16,7 @@ class SessionRepository {
          */
         suspend fun createSession() : Session {
             val clickData = ClickDataRepository.createClickData()
-            val newSession = Session(genUuid().toString(), null, "", clickData.id, "")
+            val newSession = Session(genUuid(), null, "", clickData.id, "")
             sessionCollection.insertOne(newSession)
             return newSession
         }
@@ -24,11 +25,7 @@ class SessionRepository {
          * @param session the [Session] to be updated (inserted if not existent)
          */
         suspend fun updateSession(session: Session) {
-            sessionCollection.updateOneById(session.id, session).also {
-                if (!it.wasAcknowledged()) {
-                    sessionCollection.insertOne(session)
-                }
-            }
+            sessionCollection.updateOneById(session.id, session, upsert())
         }
     }
 

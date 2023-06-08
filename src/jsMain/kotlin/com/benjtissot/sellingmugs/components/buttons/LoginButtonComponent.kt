@@ -6,8 +6,6 @@ import csstype.vw
 import emotion.react.css
 import mui.icons.material.AccountCircle
 import mui.icons.material.AccountCircleOutlined
-import mui.icons.material.Person
-import mui.icons.material.PersonOutline
 import mui.material.IconButton
 import mui.material.IconButtonColor
 import mui.material.Size

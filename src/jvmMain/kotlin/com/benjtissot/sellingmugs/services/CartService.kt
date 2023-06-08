@@ -23,7 +23,7 @@ class CartService {
             cart.mugCartItemList.find { it.mug.id == mug.id }?.also {
                 it.amount++
             } ?: run {
-                cart.mugCartItemList.add(MugCartItem(genUuid().toString(), mug, 1))
+                cart.mugCartItemList.add(MugCartItem(genUuid(), mug, 1))
             }
             CartRepository.updateCart(cart)
         }

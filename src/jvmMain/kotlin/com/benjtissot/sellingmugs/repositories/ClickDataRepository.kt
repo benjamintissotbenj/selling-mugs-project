@@ -6,13 +6,14 @@ import com.benjtissot.sellingmugs.entities.ClickData
 import com.benjtissot.sellingmugs.genUuid
 import database
 import org.litote.kmongo.eq
+import org.litote.kmongo.upsert
 
 val clickDataCollection = database.getCollection<ClickData>()
 
 class ClickDataRepository {
     companion object {
         suspend fun createClickData() : ClickData {
-            val clickData = ClickData(genUuid().toString(), arrayListOf<Click>())
+            val clickData = ClickData(genUuid(), arrayListOf<Click>())
             clickDataCollection.insertOne(clickData)
             return clickData
         }
@@ -30,11 +31,7 @@ class ClickDataRepository {
          * @param clickData the [ClickData] to be updated (inserted if not existent)
          */
         suspend fun updateClickData(clickData: ClickData) {
-            clickDataCollection.updateOneById(clickData.id, clickData).also {
-                if (!it.wasAcknowledged()) {
-                    clickDataCollection.insertOne(clickData)
-                }
-            }
+            clickDataCollection.updateOneById(clickData.id, clickData, upsert())
         }
 
         suspend fun  addClickById(clickDataId: String, clickType: Const.ClickType){
