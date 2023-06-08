@@ -39,6 +39,14 @@ suspend fun apiUploadImage(imageFile: ImageForUpload) : HttpResponse {
 }
 
 /**
+ * Deletes an image to the printify account
+ * @param productId the product to be deleted
+ */
+suspend fun apiDeleteProduct(productId: String) : HttpResponse {
+    return jsonPrintifyClient.delete("shops/$shopId/products/$productId.json")
+}
+
+/**
  * Creates a product on the printify store
  * @param mugProduct is the product to be created on the store
  */

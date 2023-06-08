@@ -105,11 +105,12 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
                                 if (httpResponse.status != HttpStatusCode.OK){
                                     props.onProductCreatedFailed(productId)
                                     return@launch
+                                } else {
+                                    props.onProductCreatedSuccess(productId)
+                                    publishProduct(productId)
+                                    // TODO: Create popup with information and confirmation
                                 }
-                                props.onProductCreatedSuccess(productId)
 
-                                publishProduct(productId)
-                                // TODO: Create popup with information and confirmation
                             }?:let{
                                 //TODO: show an error message
                                 return@launch

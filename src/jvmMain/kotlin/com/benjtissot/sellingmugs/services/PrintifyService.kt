@@ -26,9 +26,13 @@ class PrintifyService {
          * @param public determine if the uploaded image should be available publicly
          * @return a [String] containing the URL at which the art can be found
          */
-        suspend fun uploadImage(imageFile: ImageForUpload, public: Boolean) : ImageForUploadReceive {
+        suspend fun uploadImage(imageFile: ImageForUpload, public: Boolean) : ImageForUploadReceive? {
             // Upload to printify and save the resulting Artwork
-            val receivedImage = apiUploadImage(imageFile).body<ImageForUploadReceive>()
+            val httpResponse = apiUploadImage(imageFile)
+            if (httpResponse.status != HttpStatusCode.OK){
+                return null
+            }
+            val receivedImage = httpResponse.body<ImageForUploadReceive>()
             ArtworkService.updateArtwork(receivedImage.toArtwork({str -> getUuidFromString(str)},  public))
             return receivedImage
         }
@@ -67,6 +71,10 @@ class PrintifyService {
                 LOG.severe("Product could not be published")
                 return HttpStatusCode.InternalServerError
             }
+        }
+
+        suspend fun deleteProduct(productId: String) : HttpStatusCode {
+            return apiDeleteProduct(productId).status
         }
     }
 }

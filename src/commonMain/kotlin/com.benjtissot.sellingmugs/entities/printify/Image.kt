@@ -36,5 +36,9 @@ class ImageForUploadReceive(val id: String,
     fun toArtwork(uuidGen: (String) -> String, public: Boolean = true) : Artwork {
         return Artwork(uuidGen(id), id, preview_url, public)
     }
+    
+    override fun toString() : String {
+        return "ImageForUploadReceive[$id, $file_name, $mime_type, $height, $width, $size, $preview_url, $upload_time]"
+    }
 
 }

@@ -30,7 +30,7 @@ class ArtworkService {
         }
 
         suspend fun PipelineContext<*, ApplicationCall>.deleteArtwork(id: String){
-            mugCollection.deleteOne(Artwork::id eq id) //type safe
+            artworkCollection.deleteOne(Artwork::id eq id) //type safe
             call.respond(HttpStatusCode.OK)
         }
     }
