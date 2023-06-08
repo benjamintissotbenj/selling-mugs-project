@@ -3,8 +3,9 @@ package com.benjtissot.sellingmugs.components.createProduct
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.PopupHeaderComponent
 import com.benjtissot.sellingmugs.components.forms.CreateProductForm
-import com.benjtissot.sellingmugs.entities.printify.*
-import com.benjtissot.sellingmugs.entities.printify.Image
+import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
+import com.benjtissot.sellingmugs.entities.printify.ImageForUploadReceive
+import com.benjtissot.sellingmugs.entities.printify.MugProductInfo
 import com.benjtissot.sellingmugs.pages.selectBase64ContentFromURLData
 import csstype.*
 import emotion.react.css
@@ -12,7 +13,6 @@ import io.ktor.client.call.*
 import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.JsonObject
 import org.w3c.files.FileReader
 import react.FC
 import react.dom.html.ReactHTML.div

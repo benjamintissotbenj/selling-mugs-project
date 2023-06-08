@@ -1,7 +1,9 @@
 package com.benjtissot.sellingmugs
 
 import com.benjtissot.sellingmugs.entities.*
-import com.benjtissot.sellingmugs.entities.printify.*
+import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
+import com.benjtissot.sellingmugs.entities.printify.ImageForUploadReceive
+import com.benjtissot.sellingmugs.entities.printify.MugProductInfo
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
@@ -83,25 +85,6 @@ suspend fun recordClick(clickDataId: String, clickType: String) {
 // MugList
 suspend fun getMugList(): List<Mug> {
     return jsonClient.get(Mug.path).body()
-}
-
-suspend fun addMugListItem(mugListItem: Mug) {
-    jsonClient.post(Mug.path) {
-        contentType(ContentType.Application.Json)
-        setBody(mugListItem)
-    }
-}
-
-suspend fun addArtwork(artwork: Artwork) {
-    jsonClient.post(Artwork.path) {
-        contentType(ContentType.Application.Json)
-        setBody(artwork)
-    }
-}
-
-
-suspend fun deleteMugListItem(mugListItem: Mug) {
-    jsonClient.delete(Mug.path + "/${mugListItem.id}")
 }
 
 

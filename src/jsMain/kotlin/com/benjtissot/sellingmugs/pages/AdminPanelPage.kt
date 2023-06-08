@@ -1,10 +1,9 @@
 package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.components.createProduct.CreateProductComponent
 import com.benjtissot.sellingmugs.components.buttons.LogoutButtonComponent
+import com.benjtissot.sellingmugs.components.createProduct.CreateProductComponent
 import com.benjtissot.sellingmugs.components.lists.ManageUsersComponent
-import com.benjtissot.sellingmugs.components.lists.UserItem
 import com.benjtissot.sellingmugs.entities.User
 import emotion.react.css
 import io.ktor.util.logging.*
@@ -15,7 +14,6 @@ import mui.material.IconButton
 import react.FC
 import react.dom.html.ReactHTML.div
 import react.router.useNavigate
-import react.useEffect
 import react.useEffectOnce
 import react.useState
 

@@ -7,7 +7,9 @@ import io.ktor.client.call.*
 import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
-import mui.icons.material.*
+import mui.icons.material.Home
+import mui.icons.material.Search
+import mui.icons.material.ShoppingCart
 import mui.material.IconButton
 import mui.material.IconButtonColor
 import mui.material.Size

@@ -1,6 +1,10 @@
 package com.benjtissot.sellingmugs.components.forms
 
 import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.Const.ColorCode.BLUE
+import com.benjtissot.sellingmugs.Const.ColorCode.RED
+import csstype.*
+import emotion.react.css
 import org.w3c.dom.HTMLFormElement
 import react.FC
 import react.Props
@@ -11,9 +15,6 @@ import react.dom.html.ReactHTML.form
 import react.dom.html.ReactHTML.input
 import react.dom.html.ReactHTML.label
 import react.useState
-import com.benjtissot.sellingmugs.Const.ColorCode.*
-import csstype.*
-import emotion.react.css
 
 external interface CreateProductFormProps : Props {
     var onSubmit: (String, String) -> Unit

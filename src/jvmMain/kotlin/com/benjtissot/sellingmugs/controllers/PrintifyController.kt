@@ -1,6 +1,9 @@
 package com.benjtissot.sellingmugs.controllers
 
-import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.CREATE_PRODUCT_PATH
+import com.benjtissot.sellingmugs.PRINTIFY_PATH
+import com.benjtissot.sellingmugs.PUBLISH_PRODUCT_PATH
+import com.benjtissot.sellingmugs.UPLOAD_IMAGE_PATH
 import com.benjtissot.sellingmugs.services.PrintifyService
 import io.ktor.http.*
 import io.ktor.server.application.*

@@ -1,6 +1,7 @@
 package com.benjtissot.sellingmugs.components.forms
 
 import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.Const.ColorCode.BLUE
 import csstype.Color
 import csstype.NamedColor
 import csstype.px
@@ -11,14 +12,13 @@ import react.FC
 import react.Props
 import react.dom.events.ChangeEventHandler
 import react.dom.events.FormEventHandler
+import react.dom.html.AutoComplete
 import react.dom.html.InputType
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.form
 import react.dom.html.ReactHTML.input
 import react.dom.html.ReactHTML.label
 import react.useState
-import com.benjtissot.sellingmugs.Const.ColorCode.*
-import react.dom.html.AutoComplete
 
 external interface LoginFormProps : Props {
     var onSubmit: (String, String) -> Unit

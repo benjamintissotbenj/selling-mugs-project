@@ -1,6 +1,5 @@
 package com.benjtissot.sellingmugs
 
-import com.benjtissot.sellingmugs.controllers.LOG
 import com.benjtissot.sellingmugs.entities.printify.*
 import io.ktor.client.*
 import io.ktor.client.plugins.*

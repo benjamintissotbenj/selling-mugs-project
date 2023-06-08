@@ -2,10 +2,11 @@ package com.benjtissot.sellingmugs.services
 
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.entities.Mug
-import com.benjtissot.sellingmugs.entities.printify.*
+import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
+import com.benjtissot.sellingmugs.entities.printify.ImageForUploadReceive
+import com.benjtissot.sellingmugs.entities.printify.MugProductInfo
 import com.benjtissot.sellingmugs.repositories.MugRepository
 import io.ktor.client.call.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.serialization.json.JsonObject
 
