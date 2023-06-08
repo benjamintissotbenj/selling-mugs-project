@@ -6,6 +6,7 @@ import database
 import org.litote.kmongo.MongoOperator
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
+import org.litote.kmongo.upsert
 
 val cartCollection = database.getCollection<Cart>()
 
@@ -37,11 +38,7 @@ class CartRepository {
          * @param cart the [Cart] to be updated (inserted if not existent)
          */
         suspend fun updateCart(cart: Cart) {
-            cartCollection.updateOneById(cart.id, cart).also {
-                if (!it.wasAcknowledged()) {
-                    cartCollection.insertOne(cart)
-                }
-            }
+            cartCollection.updateOneById(cart.id, cart, upsert())
         }
 
     }

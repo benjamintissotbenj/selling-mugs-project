@@ -18,7 +18,6 @@ fun Route.printifyRouting(){
         route(UPLOAD_IMAGE_PATH + "/{public}"){
             post {
                 val public : Boolean = call.parameters["public"]?.let {valueOf(it)} ?: error("Invalid public value in post request")
-                // TODO: upload image to printify and save it in database
                 call.respondText(PrintifyService.uploadImage(call.receive(), public))
             }
         }

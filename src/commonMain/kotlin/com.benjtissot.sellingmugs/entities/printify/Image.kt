@@ -31,10 +31,10 @@ class ImageForUploadReceive(val id: String,
     /**
      * Creates an artwork based on the received image, and retrieves the correct artwork UUID with a given method
      * @param uuidGen a method to retrieve a [UUID] [String] from the printify store id.
-     * @param public determines if the artwork should be public or not
+     * @param public determines if the artwork should be public or not. Get it from the HTTP request
      */
     fun toArtwork(uuidGen: (String) -> String, public: Boolean = true) : Artwork {
-        return Artwork(uuidGen(id), id, preview_url, public) // todo: add the public boolean to the other class if possible
+        return Artwork(uuidGen(id), id, preview_url, public)
     }
 
 }

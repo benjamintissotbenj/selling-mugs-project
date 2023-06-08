@@ -25,7 +25,6 @@ class ArtworkService {
         }
 
         suspend fun updateArtwork(artwork: Artwork){
-            // TODO : replace evey "if !it.wasAcknowledged()" by upsert()
             artworkCollection.updateOneById(artwork.id, artwork, upsert())
         }
 
