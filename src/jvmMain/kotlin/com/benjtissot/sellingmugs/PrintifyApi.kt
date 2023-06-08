@@ -55,11 +55,11 @@ suspend fun apiCreateProduct(mugProduct: MugProduct): HttpResponse {
  * Publishes a created product on the printify store
  * @param productId the Id of the product to be published
  */
-suspend fun apiPublishProduct(productId: String) {
-    jsonPrintifyClient.post("shops/$shopId/products/$productId/publish.json"){
+suspend fun apiPublishProduct(productId: String) : HttpStatusCode {
+    return jsonPrintifyClient.post("shops/$shopId/products/$productId/publish.json"){
         contentType(ContentType.Application.Json)
         setBody(Publish())
-    }
+    }.status
 }
 
 
@@ -67,9 +67,9 @@ suspend fun apiPublishProduct(productId: String) {
  * Confirms the publication of a product on the printify store
  * @param productId the Id of the product that was published
  */
-suspend fun apiPublishingSuccessfulProduct(productId: String) {
-    jsonPrintifyClient.post("shops/$shopId/products/$productId/publishing_succeeded.json"){
+suspend fun apiPublishingSuccessfulProduct(productId: String) : HttpStatusCode {
+    return jsonPrintifyClient.post("shops/$shopId/products/$productId/publishing_succeeded.json"){
         contentType(ContentType.Application.Json)
         setBody(PublishSucceed(External(productId, "localhost:9090")))
-    }
+    }.status
 }

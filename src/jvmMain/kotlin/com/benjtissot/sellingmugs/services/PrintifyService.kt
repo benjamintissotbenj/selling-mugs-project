@@ -1,10 +1,13 @@
 package com.benjtissot.sellingmugs.services
 
-import com.benjtissot.sellingmugs.apiUploadImage
-import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
-import com.benjtissot.sellingmugs.entities.printify.ImageForUploadReceive
-import com.benjtissot.sellingmugs.getUuidFromString
+import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.entities.Mug
+import com.benjtissot.sellingmugs.entities.printify.*
+import com.benjtissot.sellingmugs.repositories.MugRepository
 import io.ktor.client.call.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import kotlinx.serialization.json.JsonObject
 
 val LOG = java.util.logging.Logger.getLogger("PrintifyService.kt")
 
@@ -22,21 +25,47 @@ class PrintifyService {
          * @param public determine if the uploaded image should be available publicly
          * @return a [String] containing the URL at which the art can be found
          */
-        suspend fun uploadImage(imageFile: ImageForUpload, public: Boolean) : String {
+        suspend fun uploadImage(imageFile: ImageForUpload, public: Boolean) : ImageForUploadReceive {
             // Upload to printify and save the resulting Artwork
-            val artwork = apiUploadImage(imageFile).body<ImageForUploadReceive>()
-                .toArtwork({str -> getUuidFromString(str)},  public)
-            ArtworkService.updateArtwork(artwork)
-            LOG.info("Artwork was saved")
-            return artwork.imageURL
+            val receivedImage = apiUploadImage(imageFile).body<ImageForUploadReceive>()
+            ArtworkService.updateArtwork(receivedImage.toArtwork({str -> getUuidFromString(str)},  public))
+            return receivedImage
         }
 
-        suspend fun createProduct(){
-            // TODO: implement
+        /**
+         * @return the printify product id
+         */
+        suspend fun createProduct(mugProductInfo: MugProductInfo) : String? {
+            val mugProduct = mugProductInfo.toMugProduct()
+            val httpResponse = apiCreateProduct(mugProduct)
+            if (httpResponse.status != HttpStatusCode.OK){
+                return null
+            }
+            // Now that we have uploaded the MugProduct, we can save a Mug to our database
+            val productId = httpResponse.body<JsonObject>().get("id").toString().removeSurrounding("\"")
+            val artwork = ArtworkService.findArtworkByPrintifyId(mugProductInfo.image.id)
+            artwork?.let {
+                val mug = Mug(getUuidFromString(productId), productId, mugProduct.title, mugProduct.description, mugProduct.variants[0].price/100f, artwork)
+                MugRepository.updateMug(mug)
+                return productId
+            } ?: let {
+                return null
+            }
         }
 
-        suspend fun publishProduct(){
-            // TODO: implement
+        /**
+         * @param productId Publishes the product created under productId
+         *
+         */
+        suspend fun publishProduct(productId: String) : HttpStatusCode {
+            val publishStatus = apiPublishProduct(productId)
+            val publishSuccessStatus = apiPublishingSuccessfulProduct(productId)
+            if (publishStatus == HttpStatusCode.OK && publishSuccessStatus == HttpStatusCode.OK){
+                return HttpStatusCode.OK
+            } else {
+                LOG.severe("Product could not be published")
+                return HttpStatusCode.InternalServerError
+            }
         }
     }
 }

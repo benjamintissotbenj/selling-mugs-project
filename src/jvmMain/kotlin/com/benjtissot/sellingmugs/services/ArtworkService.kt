@@ -3,11 +3,8 @@ package com.benjtissot.sellingmugs.services
 import com.benjtissot.sellingmugs.controllers.artworkCollection
 import com.benjtissot.sellingmugs.controllers.mugCollection
 import com.benjtissot.sellingmugs.entities.Artwork
-import com.benjtissot.sellingmugs.genUuid
-import com.benjtissot.sellingmugs.repositories.clickCollection
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.util.pipeline.*
 import org.litote.kmongo.eq
@@ -26,6 +23,10 @@ class ArtworkService {
 
         suspend fun updateArtwork(artwork: Artwork){
             artworkCollection.updateOneById(artwork.id, artwork, upsert())
+        }
+
+        suspend fun findArtworkByPrintifyId(printifyId: String) : Artwork? {
+            return artworkCollection.findOne(Artwork::printifyId eq printifyId)
         }
 
         suspend fun PipelineContext<*, ApplicationCall>.deleteArtwork(id: String){

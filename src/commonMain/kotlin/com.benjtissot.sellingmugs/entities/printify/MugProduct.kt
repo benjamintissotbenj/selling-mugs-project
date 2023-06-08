@@ -13,3 +13,33 @@ class MugProduct(
     val print_areas: ArrayList<PrintArea>
     ) {
 }
+
+@Serializable
+class MugProductInfo(
+    val title: String,
+    val description: String,
+    val image: Image
+){
+    /**
+     * Creates a MugProduct from a MugProductInfo
+     */
+    fun toMugProduct() : MugProduct {
+        val placeholder = Placeholder("front", arrayListOf(image))
+        val variants = arrayListOf(Variant())
+        val print_areas = arrayListOf(
+            PrintArea(
+                variant_ids = variants.map { it.id } as ArrayList<Int>,
+                placeholders = arrayListOf(placeholder)
+            )
+        )
+
+        val mugProduct = MugProduct(
+            title = title,
+            description = description,
+            variants = variants,
+            print_areas = print_areas
+        )
+
+        return mugProduct
+    }
+}

@@ -18,17 +18,22 @@ fun Route.printifyRouting(){
         route(UPLOAD_IMAGE_PATH + "/{public}"){
             post {
                 val public : Boolean = call.parameters["public"]?.let {valueOf(it)} ?: error("Invalid public value in post request")
-                call.respondText(PrintifyService.uploadImage(call.receive(), public))
+                call.respond(PrintifyService.uploadImage(call.receive(), public))
             }
         }
         route(CREATE_PRODUCT_PATH){
             post {
-                // TODO: create product for printiry and in database
+                val productId = PrintifyService.createProduct(call.receive())
+                productId?.let{
+                    call.respond(productId)
+                } ?: let {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
             }
         }
         route(PUBLISH_PRODUCT_PATH){
             post {
-                // TODO: publish product to printify
+                call.respond(PrintifyService.publishProduct(call.receive()))
             }
         }
     }

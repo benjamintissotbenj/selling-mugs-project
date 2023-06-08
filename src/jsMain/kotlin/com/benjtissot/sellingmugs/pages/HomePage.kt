@@ -69,7 +69,7 @@ val Homepage = FC<HomepageProps> { props ->
             CreateMugComponent {
                 onSubmit = { mugName, artURL ->
                     val artwork = Artwork("", "", artURL, true)
-                    val cartItem = Mug("", mugName, "DefaultDescription", 8.99f, artwork)
+                    val cartItem = Mug("", "", mugName, "DefaultDescription", 8.99f, artwork)
 
                     // Using a channel to have a sequential execution
                     val channel = Channel<Job>(capacity = Channel.UNLIMITED).apply {

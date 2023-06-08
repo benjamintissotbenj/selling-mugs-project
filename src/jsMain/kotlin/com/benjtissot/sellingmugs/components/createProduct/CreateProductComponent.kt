@@ -29,7 +29,7 @@ external interface CreateProductProps : NavigationProps {
 }
 
 val CreateProductComponent = FC<CreateProductProps> { props ->
-    var uploadedImageUrl: String by useState(" ") // Starts blank but not empty, as to not show warning message initially
+    var uploadedImage: ImageForUploadReceive? by useState(null) // Starts blank but not empty, as to not show warning message initially
 
     // Parent to hold flex to center the box
     div {
@@ -74,17 +74,16 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
                                 file_name = imageFile.name,
                                 contents = selectBase64ContentFromURLData(reader.result as String)
                             )
-                            // LOG.debug(uploadImage.toString())
                             scope.launch{
-                                uploadedImageUrl = uploadImage(uploadImage)
+                                uploadedImage = uploadImage(uploadImage)
                             }
                         }
                     }
                 }
 
-                if (uploadedImageUrl.isNotBlank()) {
+                uploadedImage?.let {
                     img {
-                        src = uploadedImageUrl
+                        src = uploadedImage?.preview_url ?: ""
                         // Styles for the product image
                         css {
                             width = 80.px
@@ -98,27 +97,10 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
                 CreateProductForm {
                     onSubmit = { title, description ->
                         scope.launch {// Data processing to create the product in Printify store
-                            /*
-                            // TODO: Create popup with information and confirmation
-                            imageDropped?.let {
-
-                                val placeholder = Placeholder("front", arrayListOf(imageDropped!!))
-                                val variants = arrayListOf(Variant())
-                                val print_areas = arrayListOf(
-                                    PrintArea(
-                                        variant_ids = variants.map { it.id } as ArrayList<Int>,
-                                        placeholders = arrayListOf(placeholder)
-                                    )
-                                )
-
-                                val mugProduct = MugProduct(
-                                    title = title,
-                                    description = description,
-                                    variants = variants,
-                                    print_areas = print_areas
-                                )
-                                val httpResponse = createProduct(mugProduct)
-                                val productId = httpResponse.body<JsonObject>().get("id").toString().removeSurrounding("\"")
+                            uploadedImage?.let {
+                                val mugProductInfo = MugProductInfo(title, description, uploadedImage!!.toImage())
+                                val httpResponse = createProduct(mugProductInfo)
+                                val productId = httpResponse.body<String>()
 
                                 if (httpResponse.status != HttpStatusCode.OK){
                                     props.onProductCreatedFailed(productId)
@@ -127,16 +109,16 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
                                 props.onProductCreatedSuccess(productId)
 
                                 publishProduct(productId)
-                            } ?: let {
-                                uploadedImageUrl = "" // Shows that there was an attempt to upload the product without an image
+                                // TODO: Create popup with information and confirmation
+                            }?:let{
+                                //TODO: show an error message
+                                return@launch
                             }
-
-                            */
 
                         }
                     }
 
-                    uploadImageWarning = uploadedImageUrl.isEmpty()
+                    uploadImageWarning = (uploadedImage == null)
                 }
             }
 

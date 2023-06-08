@@ -149,17 +149,20 @@ suspend fun getUserList() : List<User> {
  * @param imageFile is a 64base encoded string of the image to upload
  * @return the [Artwork.imageURL] for the uploaded image
  */
-suspend fun uploadImage(imageFile: ImageForUpload, public : Boolean = true) : String {
+suspend fun uploadImage(imageFile: ImageForUpload, public : Boolean = true) : ImageForUploadReceive {
     return jsonClient.post("$PRINTIFY_PATH$UPLOAD_IMAGE_PATH/$public"){
         contentType(ContentType.Application.Json)
         setBody(imageFile)
     }.body()
 }
 
-suspend fun createProduct(mugProduct: MugProduct): HttpResponse {
+/**
+ * @return the product id
+ */
+suspend fun createProduct(mugProductInfo: MugProductInfo): HttpResponse {
     return jsonClient.post(PRINTIFY_PATH + CREATE_PRODUCT_PATH){
         contentType(ContentType.Application.Json)
-        setBody(mugProduct)
+        setBody(mugProductInfo)
 
     }
 }
