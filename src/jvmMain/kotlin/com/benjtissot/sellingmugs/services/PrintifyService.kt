@@ -10,7 +10,6 @@ import io.ktor.client.call.*
 import io.ktor.http.*
 import kotlinx.serialization.json.JsonObject
 
-val LOG = java.util.logging.Logger.getLogger("PrintifyService.kt")
 
 /**
  * Although most of the product handling is done through the printify API directly, we need to
@@ -19,6 +18,8 @@ val LOG = java.util.logging.Logger.getLogger("PrintifyService.kt")
  */
 class PrintifyService {
     companion object {
+
+        val LOG = java.util.logging.Logger.getLogger("PrintifyService.kt")
 
         /**
          * Handles the upload of an image. Stores information about the artwork in the database and uploads the contents to printify

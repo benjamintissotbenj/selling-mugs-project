@@ -11,7 +11,6 @@ import org.junit.Test
 
 class PrintifyTests : AbstractDatabaseTests(){
 
-    // TODO: these tests are still using the debug database, not the test. Must find a way to change the database based on build
     private val LOG = KtorSimpleLogger("PrintifyTests.kt")
 
     @Test
