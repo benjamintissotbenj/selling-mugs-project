@@ -1,48 +1,66 @@
 import ch.qos.logback.classic.LoggerContext
-import com.mongodb.reactivestreams.client.MongoClient
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.*
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
-import org.junit.After
 import org.junit.AfterClass
-import org.junit.Before
 import org.junit.BeforeClass
-import org.litote.kmongo.coroutine.CoroutineDatabase
-import org.litote.kmongo.coroutine.coroutine
-import org.litote.kmongo.reactivestreams.KMongo
 import org.slf4j.LoggerFactory
 
 abstract class AbstractDatabaseTests {
     companion object {
 
+        val LOG = java.util.logging.Logger.getLogger(this.javaClass.name)
         @OptIn(DelicateCoroutinesApi::class)
         val mainThreadSurrogate = newSingleThreadContext("Test coroutine thread")
+        lateinit var scope : CoroutineScope
 
-        @OptIn(ExperimentalCoroutinesApi::class)
         @BeforeClass
         @JvmStatic fun setup() {
+            LOG.delimit("START SETUP")
+            setupScope()
+
             database = client.getDatabase("test")
 
-            // Deactivating MongoDb Driver logs
-            val loggerContext: LoggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
-            val rootLogger = loggerContext.getLogger("org.mongodb.driver")
-            rootLogger.level = ch.qos.logback.classic.Level.OFF
+            clearDatabase()
 
-            val LOG = java.util.logging.Logger.getLogger(this.javaClass.name)
-            LOG.severe("MongoDB Driver Logs deactivated")
-
-            LOG.severe("Setting a surrogate main thread, \"Test corouting thread \"")
-            Dispatchers.setMain(mainThreadSurrogate)
+            deactivateMongoDriverLogs()
+            LOG.delimit("FINISH SETUP")
         }
 
         @OptIn(ExperimentalCoroutinesApi::class)
         @AfterClass
         @JvmStatic fun teardown() {
+            LOG.delimit("START TEARDOWN")
             client.close()
             Dispatchers.resetMain() // reset the main dispatcher to the original Main dispatcher
+            LOG.delimit("FINISH TEARDOWN")
+        }
+
+        private fun deactivateMongoDriverLogs(){
+            // Deactivating MongoDb Driver logs
+            val loggerContext: LoggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
+            val rootLogger = loggerContext.getLogger("org.mongodb.driver")
+            rootLogger.level = ch.qos.logback.classic.Level.OFF
+
+            LOG.severe("MongoDB Driver Logs deactivated")
+        }
+
+        private fun clearDatabase(){
+            // Start off by clearing the test database
+            // Doing this here rather than in the After to be able to look at the state of the database
+            // after testing
+            scope.launch {
+                database.listCollectionNames().forEach {
+                    database.dropCollection(it)
+                }
+            }
+        }
+
+        @OptIn(ExperimentalCoroutinesApi::class)
+        private fun setupScope(){
+            LOG.severe("Setting up a surrogate main thread, \"Test coroutine thread\"")
+            Dispatchers.setMain(mainThreadSurrogate)
+            scope = MainScope()
         }
     }
 }

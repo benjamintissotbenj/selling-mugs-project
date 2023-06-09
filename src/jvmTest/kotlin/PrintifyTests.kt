@@ -15,7 +15,9 @@ class PrintifyTests : AbstractDatabaseTests(){
 
     @Test
     fun managingProduct() = runTest {
-        launch(Dispatchers.Main) {
+        LOG.debug("Information")
+        scope.launch {
+            LOG.debug("Information in coroutine")
             // Upload Image
             val imageForUploadReceive = uploadImageTest()
 

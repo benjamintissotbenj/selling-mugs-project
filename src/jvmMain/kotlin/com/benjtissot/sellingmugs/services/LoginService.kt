@@ -67,6 +67,7 @@ class LoginService {
                 LOG.severe("User with email ${user.email} already exists, sending Conflict")
                 throw UserAlreadyExistsException()
             } else {
+                LOG.info("User was not found, creating user and logging them in")
                 // If user is not found, insert with new UUID
                 user.copy(id = genUuid()).also {
                     UserRepository.insertUser(it)
