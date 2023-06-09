@@ -1,5 +1,11 @@
 import ch.qos.logback.classic.LoggerContext
 import com.mongodb.reactivestreams.client.MongoClient
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.AfterClass
 import org.junit.Before
@@ -9,16 +15,16 @@ import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
 import org.slf4j.LoggerFactory
 
-abstract class AbstractDatabaseTests : AbstractCoroutineTests() {
+abstract class AbstractDatabaseTests {
     companion object {
 
-        private lateinit var mongoClient: MongoClient
-        lateinit var database: CoroutineDatabase
+        @OptIn(DelicateCoroutinesApi::class)
+        val mainThreadSurrogate = newSingleThreadContext("Test coroutine thread")
 
+        @OptIn(ExperimentalCoroutinesApi::class)
         @BeforeClass
         @JvmStatic fun setup() {
-            mongoClient = KMongo.createClient()
-            database = mongoClient.coroutine.getDatabase("test")
+            database = client.getDatabase("test")
 
             // Deactivating MongoDb Driver logs
             val loggerContext: LoggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
@@ -27,12 +33,16 @@ abstract class AbstractDatabaseTests : AbstractCoroutineTests() {
 
             val LOG = java.util.logging.Logger.getLogger(this.javaClass.name)
             LOG.severe("MongoDB Driver Logs deactivated")
+
+            LOG.severe("Setting a surrogate main thread, \"Test corouting thread \"")
+            Dispatchers.setMain(mainThreadSurrogate)
         }
 
+        @OptIn(ExperimentalCoroutinesApi::class)
         @AfterClass
         @JvmStatic fun teardown() {
-            mongoClient.coroutine.close()
-            mongoClient.close()
+            client.close()
+            Dispatchers.resetMain() // reset the main dispatcher to the original Main dispatcher
         }
     }
 }

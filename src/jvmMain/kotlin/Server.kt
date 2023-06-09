@@ -27,7 +27,7 @@ import java.net.URI
 
 
 val client = KMongo.createClient().coroutine
-val database = client.getDatabase("debug")
+var database = client.getDatabase("debug")
 var redirectPath = ""
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)

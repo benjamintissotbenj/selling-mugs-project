@@ -18,12 +18,14 @@ import org.slf4j.LoggerFactory
 abstract class AbstractCoroutineTests {
     companion object {
         @OptIn(DelicateCoroutinesApi::class)
-        private val mainThreadSurrogate = newSingleThreadContext("Test coroutine thread")
+        val mainThreadSurrogate = newSingleThreadContext("Test coroutine thread")
 
         @OptIn(ExperimentalCoroutinesApi::class)
         @BeforeClass
         @JvmStatic
         fun setup() {
+            val LOG = java.util.logging.Logger.getLogger(this.javaClass.name)
+            LOG.severe("Setting a surrogate main thread, \"Test corouting thread \"")
             Dispatchers.setMain(mainThreadSurrogate)
         }
 
