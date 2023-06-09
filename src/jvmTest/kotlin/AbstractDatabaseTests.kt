@@ -1,6 +1,8 @@
 import ch.qos.logback.classic.LoggerContext
+import io.ktor.util.logging.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -9,21 +11,20 @@ import org.slf4j.LoggerFactory
 abstract class AbstractDatabaseTests {
     companion object {
 
-        val LOG = java.util.logging.Logger.getLogger(this.javaClass.name)
+        private val LOG = KtorSimpleLogger("AbstractDatabaseTests.kt")
         @OptIn(DelicateCoroutinesApi::class)
         val mainThreadSurrogate = newSingleThreadContext("Test coroutine thread")
-        lateinit var scope : CoroutineScope
 
         @BeforeClass
         @JvmStatic fun setup() {
             LOG.delimit("START SETUP")
+            deactivateMongoDriverLogs()
+
             setupScope()
 
             database = client.getDatabase("test")
 
             clearDatabase()
-
-            deactivateMongoDriverLogs()
             LOG.delimit("FINISH SETUP")
         }
 
@@ -42,14 +43,15 @@ abstract class AbstractDatabaseTests {
             val rootLogger = loggerContext.getLogger("org.mongodb.driver")
             rootLogger.level = ch.qos.logback.classic.Level.OFF
 
-            LOG.severe("MongoDB Driver Logs deactivated")
+            LOG.warn("MongoDB Driver Logs deactivated")
         }
 
-        private fun clearDatabase(){
+        private fun clearDatabase() = runTest {
             // Start off by clearing the test database
             // Doing this here rather than in the After to be able to look at the state of the database
             // after testing
-            scope.launch {
+            launch {
+                LOG.warn("Dropping every collection in test database")
                 database.listCollectionNames().forEach {
                     database.dropCollection(it)
                 }
@@ -58,9 +60,8 @@ abstract class AbstractDatabaseTests {
 
         @OptIn(ExperimentalCoroutinesApi::class)
         private fun setupScope(){
-            LOG.severe("Setting up a surrogate main thread, \"Test coroutine thread\"")
+            LOG.warn("Setting up a surrogate main thread, \"Test coroutine thread\"")
             Dispatchers.setMain(mainThreadSurrogate)
-            scope = MainScope()
         }
     }
 }

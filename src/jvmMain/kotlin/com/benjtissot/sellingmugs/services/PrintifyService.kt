@@ -8,6 +8,7 @@ import com.benjtissot.sellingmugs.entities.printify.MugProductInfo
 import com.benjtissot.sellingmugs.repositories.MugRepository
 import io.ktor.client.call.*
 import io.ktor.http.*
+import io.ktor.util.logging.*
 import kotlinx.serialization.json.JsonObject
 
 
@@ -19,7 +20,7 @@ import kotlinx.serialization.json.JsonObject
 class PrintifyService {
     companion object {
 
-        val LOG = java.util.logging.Logger.getLogger("PrintifyService.kt")
+        val LOG = KtorSimpleLogger("PrintifyService.kt")
 
         /**
          * Handles the upload of an image. Stores information about the artwork in the database and uploads the contents to printify
@@ -69,7 +70,7 @@ class PrintifyService {
             if (publishStatus == HttpStatusCode.OK && publishSuccessStatus == HttpStatusCode.OK){
                 return HttpStatusCode.OK
             } else {
-                LOG.severe("Product could not be published")
+                LOG.error("Product could not be published")
                 return HttpStatusCode.InternalServerError
             }
         }

@@ -8,7 +8,6 @@ import com.benjtissot.sellingmugs.services.BadCredentialsException
 import com.benjtissot.sellingmugs.services.LoginService.Companion.login
 import com.benjtissot.sellingmugs.services.LoginService.Companion.logout
 import com.benjtissot.sellingmugs.services.LoginService.Companion.register
-import com.benjtissot.sellingmugs.services.SessionService.Companion.getSession
 import com.benjtissot.sellingmugs.services.UserAlreadyExistsException
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -18,9 +17,10 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
+import io.ktor.util.logging.*
 import java.util.*
 
-val LOG = java.util.logging.Logger.getLogger("LoginController.kt")
+private val LOG = KtorSimpleLogger("LoginController.kt")
 fun Route.loginRouting(){
 
     route(LOGIN_BACKEND_PATH) {

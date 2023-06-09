@@ -1,5 +1,5 @@
 
 val dash = "-".repeat(30)
-fun java.util.logging.Logger?.delimit(message: String){
-    this?.severe("$dash $message $dash")
+fun io.ktor.util.logging.Logger?.delimit(message: String){
+    this?.error("$dash $message $dash")
 }
