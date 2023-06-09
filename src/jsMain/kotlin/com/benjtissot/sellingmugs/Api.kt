@@ -55,10 +55,10 @@ suspend fun login(email: String, hashedPassword: String): HttpResponse {
     }
 }
 
-suspend fun register(user: User): HttpResponse {
+suspend fun register(registerInfo: RegisterInfo): HttpResponse {
     return jsonClient.post(REGISTER_PATH) {
         contentType(ContentType.Application.Json)
-        setBody(user)
+        setBody(registerInfo)
     }
 }
 

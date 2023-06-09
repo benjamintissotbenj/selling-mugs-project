@@ -2,6 +2,7 @@ package com.benjtissot.sellingmugs.components.forms
 
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.Const.ColorCode.BLUE
+import com.benjtissot.sellingmugs.entities.RegisterInfo
 import com.benjtissot.sellingmugs.entities.User
 import csstype.Color
 import csstype.NamedColor
@@ -21,7 +22,7 @@ import react.dom.html.ReactHTML.label
 import react.useState
 
 external interface RegisterFormProps : Props {
-    var onSubmit: (User) -> Unit
+    var onSubmit: (RegisterInfo) -> Unit
 }
 
 val RegisterFormComponent = FC<RegisterFormProps> { props ->
@@ -35,8 +36,8 @@ val RegisterFormComponent = FC<RegisterFormProps> { props ->
         it.preventDefault()
         // Todo: put in better checks
         if (password.isNotBlank() && password == confirmPassword){
-            val user = User("", firstName, lastName, email, password.sha256().toString(), Const.UserType.CLIENT, "")
-            props.onSubmit(user)
+            val registerInfo = RegisterInfo(firstName, lastName, email, password.sha256().toString())
+            props.onSubmit(registerInfo)
             setEmail("")
             setFirstName("")
             setLastName("")

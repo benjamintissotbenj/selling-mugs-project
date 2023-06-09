@@ -39,9 +39,9 @@ val RegisterPage = FC<RegisterPageProps> { props ->
 
         // Creating register form
         RegisterFormComponent {
-            onSubmit = { user ->
+            onSubmit = { registerInfo ->
                 scope.launch {
-                    val httpResponse = register(user)
+                    val httpResponse = register(registerInfo)
                     when (httpResponse.status) {
                         HttpStatusCode.OK -> { // User is now registered, token is in response
                             // Using local variable because otherwise update is not atomic

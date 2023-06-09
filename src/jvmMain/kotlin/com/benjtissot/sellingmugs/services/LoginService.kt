@@ -3,6 +3,7 @@ package com.benjtissot.sellingmugs.services
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.benjtissot.sellingmugs.ConfigConst
+import com.benjtissot.sellingmugs.entities.RegisterInfo
 import com.benjtissot.sellingmugs.entities.Session
 import com.benjtissot.sellingmugs.entities.User
 import com.benjtissot.sellingmugs.genUuid
@@ -57,22 +58,22 @@ class LoginService {
 
 
         /**
-         * @param user the user to be registered
+         * @param registerInfo the user to be registered
          * @param session the user session to be updated
          * @return the updated session to be set in the call.sessions object
          */
         @Throws(UserAlreadyExistsException::class)
-        suspend fun register(user: User, session: Session) : Session {
-            if (UserRepository.getUserByEmail(user.email) != null) {
+        suspend fun register(registerInfo: RegisterInfo, session: Session) : Session {
+            if (UserRepository.getUserByEmail(registerInfo.email) != null) {
                 // If user is found, error and cannot register new user
-                LOG.error("User with email ${user.email} already exists, sending Conflict")
+                LOG.error("User with email ${registerInfo.email} already exists, sending Conflict")
                 throw UserAlreadyExistsException()
             } else {
                 LOG.info("User was not found, creating user and logging them in")
                 // If user is not found, insert with new UUID
-                user.copy(id = genUuid()).also {
+                registerInfo.toUser(id = genUuid()).also {
                     UserRepository.insertUser(it)
-                    return login(user, session)
+                    return login(it, session)
                 }
             }
         }
