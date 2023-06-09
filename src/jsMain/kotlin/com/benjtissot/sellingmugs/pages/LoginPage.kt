@@ -23,7 +23,7 @@ private val LOG = KtorSimpleLogger("loginPage.kt")
 external interface LoginPageProps : SessionPageProps {
 }
 
-val LoginPage = FC<RegisterPageProps> { props ->
+val LoginPage = FC<LoginPageProps> { props ->
     val navigateLogin = useNavigate()
 
     NavigationBarComponent {
@@ -48,8 +48,8 @@ val LoginPage = FC<RegisterPageProps> { props ->
                 val hashedPassword = clearPassword.sha256().toString()
                 scope.launch {
                     val httpResponse = login(email, hashedPassword)
-                    onLoginResponse(httpResponse, navigateLogin)
                     props.updateSession()
+                    onLoginResponse(httpResponse, navigateLogin)
                 }
             }
         }
@@ -101,6 +101,10 @@ suspend fun onLoginResponse(httpResponse: HttpResponse, navigateFunction: Naviga
         HttpStatusCode.BadGateway -> {
             // Session not found or couldn't be updated
             LOG.error("Session not found or couldn't be updated")
+        }
+        HttpStatusCode.InternalServerError -> {
+            // Any other error
+            LOG.error("Unexpected server error")
         }
         else -> {
             LOG.error("Unknown error")

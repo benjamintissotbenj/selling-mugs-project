@@ -51,6 +51,7 @@ fun Route.mugRouting(){
         delete("/{id}") {
             val id = call.parameters["id"] ?: error("Invalid delete request")
             deleteArtwork(id)
+            call.respond(HttpStatusCode.OK)
         }
     }
 }

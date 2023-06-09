@@ -5,17 +5,12 @@ import com.benjtissot.sellingmugs.entities.Cart
 import com.benjtissot.sellingmugs.entities.Mug
 import com.benjtissot.sellingmugs.genUuid
 import com.benjtissot.sellingmugs.repositories.CartRepository
-import com.benjtissot.sellingmugs.services.SessionService.Companion.updateCartIdInSession
-import io.ktor.server.application.*
-import io.ktor.util.pipeline.*
 
 class CartService {
     companion object {
 
-        suspend fun PipelineContext<*, ApplicationCall>.getCart(id: String) : Cart {
-            return CartRepository.getCart(id) ?: CartRepository.createCart().also {
-                updateCartIdInSession(it.id)
-            }
+        suspend fun getCart(id: String) : Cart? {
+            return CartRepository.getCart(id)
         }
 
         @Throws
