@@ -4,6 +4,7 @@ import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.forms.LoginFormComponent
 import com.benjtissot.sellingmugs.components.highLevel.FooterComponent
 import com.benjtissot.sellingmugs.components.highLevel.NavigationBarComponent
+import com.benjtissot.sellingmugs.entities.LoginInfo
 import csstype.*
 import emotion.react.css
 import io.ktor.client.call.*
@@ -47,7 +48,8 @@ val LoginPage = FC<LoginPageProps> { props ->
             onSubmit = { email, clearPassword ->
                 val hashedPassword = clearPassword.sha256().toString()
                 scope.launch {
-                    val httpResponse = login(email, hashedPassword)
+                    val loginInfo = LoginInfo(email, hashedPassword)
+                    val httpResponse = login(loginInfo)
                     props.updateSession()
                     onLoginResponse(httpResponse, navigateLogin)
                 }

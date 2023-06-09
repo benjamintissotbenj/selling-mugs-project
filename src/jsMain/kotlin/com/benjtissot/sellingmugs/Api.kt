@@ -46,19 +46,17 @@ suspend fun isLoggedIn(): HttpResponse {
     return jsonClient.get(LOGIN_BACKEND_PATH)
 }
 
-suspend fun login(email: String, hashedPassword: String): HttpResponse {
-    // Only need user email and password for login
-    val user = User("", "", "", email, hashedPassword, Const.UserType.CLIENT, "")
+suspend fun login(loginInfo: LoginInfo): HttpResponse {
     return jsonClient.post(LOGIN_BACKEND_PATH) {
         contentType(ContentType.Application.Json)
-        setBody(user)
+        setBody(loginInfo)
     }
 }
 
-suspend fun register(user: User): HttpResponse {
+suspend fun register(registerInfo: RegisterInfo): HttpResponse {
     return jsonClient.post(REGISTER_PATH) {
         contentType(ContentType.Application.Json)
-        setBody(user)
+        setBody(registerInfo)
     }
 }
 

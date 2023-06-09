@@ -4,8 +4,10 @@ import com.benjtissot.sellingmugs.CHECK_REDIRECT_PATH
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.util.logging.*
 import redirectPath
 
+private val LOG = KtorSimpleLogger("CheckRedirectController.kt")
 fun Route.checkRedirectRouting(){
 
 

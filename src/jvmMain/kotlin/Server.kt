@@ -19,6 +19,7 @@ import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
+import io.ktor.util.logging.*
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
 import org.slf4j.LoggerFactory
@@ -29,6 +30,8 @@ import java.net.URI
 val client = KMongo.createClient().coroutine
 var database = client.getDatabase("debug")
 var redirectPath = ""
+
+private val LOG = KtorSimpleLogger("Server.kt")
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 fun Application.module() {
@@ -116,9 +119,7 @@ fun Application.createRoutes(){
         val loggerContext: LoggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
         val rootLogger = loggerContext.getLogger("org.mongodb.driver")
         rootLogger.level = ch.qos.logback.classic.Level.OFF
-
-        val LOG = java.util.logging.Logger.getLogger(this.javaClass.name)
-        LOG.severe("MongoDB Driver Logs deactivated")
+        LOG.error("MongoDB Driver Logs deactivated")
     }
 
     // Print out all the routes for debug
@@ -129,8 +130,6 @@ fun Application.createRoutes(){
  * Method used to configure authentication method via JWT
  */
 fun Application.installAuthentication(){
-
-    val LOG = java.util.logging.Logger.getLogger(this.javaClass.name)
 
     val secret = ConfigConst.SECRET
     val issuer = ConfigConst.ISSUER

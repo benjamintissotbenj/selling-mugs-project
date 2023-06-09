@@ -9,13 +9,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
-class PrintifyTests : AbstractDatabaseTests(){
+class PrintifyTests : AbstractDatabaseTests() {
 
     private val LOG = KtorSimpleLogger("PrintifyTests.kt")
 
     @Test
     fun managingProduct() = runTest {
-        launch(Dispatchers.Main) {
+        LOG.debug("Information")
+        launch {
+            LOG.debug("Information in coroutine")
             // Upload Image
             val imageForUploadReceive = uploadImageTest()
 
