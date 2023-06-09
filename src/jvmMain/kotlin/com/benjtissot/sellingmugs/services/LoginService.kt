@@ -62,7 +62,7 @@ class LoginService {
          */
         @Throws(UserAlreadyExistsException::class)
         suspend fun register(user: User, session: Session) : Session {
-            if (UserRepository.getUserByEmail(user.email) == null) {
+            if (UserRepository.getUserByEmail(user.email) != null) {
                 // If user is found, error and cannot register new user
                 LOG.severe("User with email ${user.email} already exists, sending Conflict")
                 throw UserAlreadyExistsException()
