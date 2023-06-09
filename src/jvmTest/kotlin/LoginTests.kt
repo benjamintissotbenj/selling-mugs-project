@@ -4,11 +4,13 @@ import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.repositories.UserRepository
 import com.benjtissot.sellingmugs.services.BadCredentialsException
 import com.benjtissot.sellingmugs.services.LoginService
+import com.benjtissot.sellingmugs.services.UserAlreadyExistsException
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
+import kotlin.test.assertFailsWith
 import kotlin.test.fail
 
 class LoginTests : AbstractDatabaseTests() {
@@ -49,6 +51,23 @@ class LoginTests : AbstractDatabaseTests() {
 
     @Test
     /**
+     * Checks registering fails if user already exists
+     */
+    fun registerFailTest() = runTest {
+        launch {
+            LoginService.register(registerInfos[2], session)
+            assertFailsWith(UserAlreadyExistsException::class) {
+                LoginService.register(registerInfos[2], session)
+            }
+            // Checking changing passwords still fails
+            assertFailsWith(UserAlreadyExistsException::class) {
+                LoginService.register(registerInfos[2].copy(passwordHash = "other password"), session)
+            }
+        }
+    }
+
+    @Test
+    /**
      * Logs in a user, then Checks that the user is logged into the session and that
      * all the correct data has been saved to the database
      */
@@ -65,6 +84,19 @@ class LoginTests : AbstractDatabaseTests() {
             assert(getUser != null)
             assert(getUser?.id != null)
             assert(getUser?.id == session.user?.id)
+        }
+    }
+
+    @Test
+    /**
+     * Registers a user and checks that logging in with another password fails
+     */
+    fun loginFailTest() = runTest {
+        launch {
+            LoginService.register(registerInfos[3], session)
+            assertFailsWith(BadCredentialsException::class) {
+                session = LoginService.login(registerInfos[3].copy(passwordHash = "anotherPassword").toLoginInfo(), session)
+            }
         }
     }
 
