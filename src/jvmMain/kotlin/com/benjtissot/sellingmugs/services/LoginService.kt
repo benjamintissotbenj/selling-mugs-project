@@ -3,6 +3,7 @@ package com.benjtissot.sellingmugs.services
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.benjtissot.sellingmugs.ConfigConst
+import com.benjtissot.sellingmugs.entities.LoginInfo
 import com.benjtissot.sellingmugs.entities.RegisterInfo
 import com.benjtissot.sellingmugs.entities.Session
 import com.benjtissot.sellingmugs.entities.User
@@ -17,7 +18,6 @@ import io.ktor.server.sessions.*
 import io.ktor.util.logging.*
 import io.ktor.util.pipeline.*
 import java.util.*
-import kotlin.jvm.Throws
 
 private val LOG = KtorSimpleLogger("LoginService.kt")
 class LoginService {
@@ -33,16 +33,15 @@ class LoginService {
          * @return the updated session to be set in the call.sessions object
          */
         @Throws(BadCredentialsException::class)
-        suspend fun login(user: User, session: Session) : Session {
+        suspend fun login(loginInfo: LoginInfo, session: Session) : Session {
             //TODO: create userInfo class for transfers
-            LOG.info("User is $user is authenticated : ${UserRepository.authenticate(user)}")
-            val authenticatedUser = UserRepository.authenticate(user)
-
+            val authenticatedUser = UserRepository.authenticate(loginInfo)
+            LOG.info("User is $loginInfo is authenticated : $authenticatedUser")
             if (authenticatedUser != null){
                 val token = JWT.create()
                     .withAudience(audience)
                     .withIssuer(issuer)
-                    .withClaim("email", user.email)
+                    .withClaim("email", loginInfo.email)
                     .withExpiresAt(Date(System.currentTimeMillis() + 1200000)) //20min, expires after the cookies i.e. session detection
                     .sign(Algorithm.HMAC256(secret))
 
@@ -73,7 +72,7 @@ class LoginService {
                 // If user is not found, insert with new UUID
                 registerInfo.toUser(id = genUuid()).also {
                     UserRepository.insertUser(it)
-                    return login(it, session)
+                    return login(registerInfo.toLoginInfo(), session)
                 }
             }
         }

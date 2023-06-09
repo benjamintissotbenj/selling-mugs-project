@@ -3,7 +3,6 @@ package com.benjtissot.sellingmugs.components.forms
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.Const.ColorCode.BLUE
 import com.benjtissot.sellingmugs.entities.RegisterInfo
-import com.benjtissot.sellingmugs.entities.User
 import csstype.Color
 import csstype.NamedColor
 import csstype.px

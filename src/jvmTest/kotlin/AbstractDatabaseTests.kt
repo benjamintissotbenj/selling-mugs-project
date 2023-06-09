@@ -4,11 +4,40 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.AfterClass
+import org.junit.Before
 import org.junit.BeforeClass
 import org.slf4j.LoggerFactory
 
 abstract class AbstractDatabaseTests {
+
+    @Before
+    open fun before(){
+        LOG.delimit("Test start")
+        clearDatabase()
+    }
+
+    @After
+    open fun after(){
+        LOG.delimit("Test end")
+    }
+
+    /**
+     * Clears the database, called before every test
+     */
+    private fun clearDatabase() = runTest {
+        // Start off by clearing the test database
+        // Doing this here rather than in the After to be able to look at the state of the database
+        // after testing
+        launch {
+            LOG.warn("Dropping every collection in test database")
+            database.listCollectionNames().forEach {
+                database.dropCollection(it)
+            }
+        }
+    }
+
     companion object {
 
         private val LOG = KtorSimpleLogger("AbstractDatabaseTests.kt")
@@ -16,16 +45,14 @@ abstract class AbstractDatabaseTests {
         val mainThreadSurrogate = newSingleThreadContext("Test coroutine thread")
 
         @BeforeClass
-        @JvmStatic fun setup() {
-            LOG.delimit("START SETUP")
+        @JvmStatic fun init() {
+            LOG.delimit("START INIT")
             deactivateMongoDriverLogs()
 
             setupScope()
 
             database = client.getDatabase("test")
-
-            clearDatabase()
-            LOG.delimit("FINISH SETUP")
+            LOG.delimit("FINISH INIT")
         }
 
         @OptIn(ExperimentalCoroutinesApi::class)
@@ -44,18 +71,6 @@ abstract class AbstractDatabaseTests {
             rootLogger.level = ch.qos.logback.classic.Level.OFF
 
             LOG.warn("MongoDB Driver Logs deactivated")
-        }
-
-        private fun clearDatabase() = runTest {
-            // Start off by clearing the test database
-            // Doing this here rather than in the After to be able to look at the state of the database
-            // after testing
-            launch {
-                LOG.warn("Dropping every collection in test database")
-                database.listCollectionNames().forEach {
-                    database.dropCollection(it)
-                }
-            }
         }
 
         @OptIn(ExperimentalCoroutinesApi::class)

@@ -1,5 +1,6 @@
 package com.benjtissot.sellingmugs.repositories
 
+import com.benjtissot.sellingmugs.entities.LoginInfo
 import com.benjtissot.sellingmugs.entities.User
 import database
 import org.litote.kmongo.MongoOperator
@@ -44,8 +45,8 @@ class UserRepository {
          * @param user the [User] to be authenticated
          * @return a [Boolean] determining if the user is authenticated
          */
-        suspend fun authenticate(user: User) : User? {
-            return userCollection.findOne(and(User::email eq user.email, User::passwordHash eq user.passwordHash))
+        suspend fun authenticate(loginIngo: LoginInfo) : User? {
+            return userCollection.findOne(and(User::email eq loginIngo.email, User::passwordHash eq loginIngo.passwordHash))
         }
 
     }

@@ -36,3 +36,46 @@ data class User(
         return "${firstName[0]}. $lastName"
     }
 }
+
+/**
+ * Class used to send user login information from front-end to back-end
+ */
+@Serializable
+data class LoginInfo(
+    val email: String,
+    val passwordHash: String,
+){}
+
+
+
+/**
+ * Class used to send user registering information from front-end to back-end
+ */
+@Serializable
+data class RegisterInfo(
+    val firstName: String,
+    val lastName: String,
+    val email: String,
+    val passwordHash: String,
+){
+
+    fun toUser(id: String) : User {
+        return User(id, firstName, lastName, email, passwordHash, Const.UserType.CLIENT, "")
+    }
+
+    fun toLoginInfo() : LoginInfo {
+        return LoginInfo(email, passwordHash)
+    }
+
+    companion object {
+
+        /**
+         * Returns a dummy user
+         * @param seed a seed, returns an admin if [seed]<=1
+         */
+        fun dummy(seed: Int) : RegisterInfo {
+            val seedString = seed.toString()
+            return RegisterInfo(seedString, seedString, seedString, seedString)
+        }
+    }
+}
