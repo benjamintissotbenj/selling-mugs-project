@@ -14,10 +14,11 @@ import react.dom.html.ReactHTML
 
 
 external interface LoginButtonProps : NavigationProps {
-    var loggedIn: Boolean
 }
 
 val LoginButton = FC<LoginButtonProps> { props ->
+
+    val loggedIn = props.session.jwtToken.isNotEmpty() && (props.session.user != null)
 
     ReactHTML.div {
         css {
@@ -27,7 +28,7 @@ val LoginButton = FC<LoginButtonProps> { props ->
         IconButton {
             size = Size.small
             color = IconButtonColor.primary
-            if (!props.loggedIn){
+            if (!loggedIn){
                 AccountCircle()
                 onClick = {
                     props.navigate.invoke(LOGIN_PATH)

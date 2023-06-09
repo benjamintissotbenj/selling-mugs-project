@@ -15,8 +15,10 @@ class SessionRepository {
          * @return the created session
          */
         suspend fun createSession() : Session {
+            // A session will always have empty clickdata and empty cart
             val clickData = ClickDataRepository.createClickData()
-            val newSession = Session(genUuid(), null, "", clickData.id, "")
+            val cart = CartRepository.createCart()
+            val newSession = Session(genUuid(), null, null, "", clickData.id, cart.id)
             sessionCollection.insertOne(newSession)
             return newSession
         }
@@ -24,8 +26,9 @@ class SessionRepository {
         /**
          * @param session the [Session] to be updated (inserted if not existent)
          */
-        suspend fun updateSession(session: Session) {
+        suspend fun updateSession(session: Session) : Session {
             sessionCollection.updateOneById(session.id, session, upsert())
+            return session
         }
     }
 

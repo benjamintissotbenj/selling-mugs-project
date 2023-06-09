@@ -16,6 +16,7 @@ import io.ktor.server.response.*
 import io.ktor.server.sessions.*
 import io.ktor.util.pipeline.*
 import java.util.*
+import kotlin.jvm.Throws
 
 class LoginService {
     companion object {
@@ -24,8 +25,14 @@ class LoginService {
         val audience = ConfigConst.AUDIENCE
         val myRealm = ConfigConst.REALM
 
-        suspend fun PipelineContext<*, ApplicationCall>.login(){
-            val user = call.receive<User>()
+        /**
+         * @param user the user to be authenticated
+         * @param session the user session to be updated
+         * @return the updated session to be set in the call.sessions object
+         */
+        @Throws(BadCredentialsException::class)
+        suspend fun login(user: User, session: Session) : Session {
+            //TODO: create userInfo class for transfers
             LOG.info("User is $user is authenticated : ${UserRepository.authenticate(user)}")
             val authenticatedUser = UserRepository.authenticate(user)
 
@@ -38,60 +45,52 @@ class LoginService {
                     .sign(Algorithm.HMAC256(secret))
 
                 // Setting the logged in user to authenticatedUser and jwt to token
-                val userSession = call.sessions.get<Session>()?.copy()
+                return session.copy(user = authenticatedUser, lastUser= authenticatedUser, jwtToken = token)
+                    .also{SessionRepository.updateSession(it)}
 
-                // If session is found, set session user to received user
-                userSession?.let{
-                    try {
-                        userSession.copy(user = authenticatedUser, jwtToken = token).also{
-                            SessionRepository.updateSession(it)
-                            call.sessions.set(it)
-                        }
-                        call.respond(token)
-                    } catch (e: Exception){
-                        // If session cannot be updated
-                        call.respond(HttpStatusCode.BadGateway)
-                    }
-                } ?: run {
-                    // If session is not found, return Bad Gateway
-                    call.respond(HttpStatusCode.BadGateway)
-                }
             } else {
-                call.respond(HttpStatusCode.Conflict)
+                // If user is not authenticated, simply throw an exception
+                throw BadCredentialsException()
             }
         }
 
-        suspend fun PipelineContext<*, ApplicationCall>.register(){
-            val user = call.receive<User>()
 
-            UserRepository.getUserByEmail(user.email)?.let{
+        /**
+         * @param user the user to be registered
+         * @param session the user session to be updated
+         * @return the updated session to be set in the call.sessions object
+         */
+        @Throws(UserAlreadyExistsException::class)
+        suspend fun register(user: User, session: Session) : Session {
+            if (UserRepository.getUserByEmail(user.email) != null) {
                 // If user is found, error and cannot register new user
                 LOG.severe("User with email ${user.email} already exists, sending Conflict")
-                call.respond(HttpStatusCode.Conflict)
-            } ?: let {
+                throw UserAlreadyExistsException()
+            } else {
                 // If user is not found, insert with new UUID
                 user.copy(id = genUuid()).also {
                     UserRepository.insertUser(it)
-                    login()
+                    return login(user, session)
                 }
             }
         }
 
-        suspend fun PipelineContext<*, ApplicationCall>.logout(){
-            // Setting the jwt to ""
-            val userSession = call.sessions.get<Session>()?.copy()
-
-            // If session is found, delete jwt and delete user
-            userSession?.let{
-                val updatedSession = userSession.copy(user = null, jwtToken = "")
-                try {
-                    SessionRepository.updateSession(updatedSession)
-                    call.sessions.set(updatedSession)
-                } catch (e: Exception){
-                    call.respond(HttpStatusCode.BadGateway)
-                }
-            }
-            call.respond(HttpStatusCode.OK)
+        /**
+         * Method that logs out a user from the currentSession and returns the [Session] object
+         * from which the user has been logged out
+         */
+        suspend fun logout(currentSession: Session) : Session {
+        // Only logout from a session that exists
+            return SessionRepository.updateSession(currentSession.copy(user = null, jwtToken = ""))
         }
+
     }
+}
+
+class BadCredentialsException : Exception() {
+
+}
+
+class UserAlreadyExistsException : Exception() {
+
 }

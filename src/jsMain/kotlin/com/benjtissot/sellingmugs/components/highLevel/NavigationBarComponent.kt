@@ -27,15 +27,6 @@ external interface NavigationBarProps : NavigationProps {
 
 val NavigationBarComponent = FC<NavigationBarProps> { props ->
 
-    var loggedIn by useState(false)
-
-    useEffectOnce {
-        scope.launch {
-            val loggedInResponse = isLoggedIn()
-            loggedIn = (loggedInResponse.status != HttpStatusCode.Unauthorized) && (loggedInResponse.body<String>() == "true")
-        }
-    }
-
     nav {
         css {
             justifySpaceBetween()
@@ -148,7 +139,6 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
                 session = props.session
                 updateSession = props.updateSession
                 navigate = props.navigate
-                this.loggedIn = loggedIn
             }
         }
     }
