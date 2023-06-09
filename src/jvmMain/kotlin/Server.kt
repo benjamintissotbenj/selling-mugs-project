@@ -10,7 +10,6 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
-import io.ktor.server.config.*
 import io.ktor.server.engine.*
 import io.ktor.server.http.content.*
 import io.ktor.server.netty.*
@@ -25,11 +24,10 @@ import org.litote.kmongo.reactivestreams.KMongo
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.net.URI
-import java.util.*
 
 
 val client = KMongo.createClient().coroutine
-val database = client.getDatabase("debug")
+var database = client.getDatabase("debug")
 var redirectPath = ""
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
