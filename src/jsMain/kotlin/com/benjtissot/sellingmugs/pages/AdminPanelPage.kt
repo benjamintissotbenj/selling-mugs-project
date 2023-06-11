@@ -10,7 +10,7 @@ import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
 import mui.icons.material.AddCircle
 import mui.icons.material.Person
-import mui.material.IconButton
+import mui.material.*
 import react.FC
 import react.dom.html.ReactHTML.div
 import react.router.useNavigate
@@ -69,11 +69,13 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
                 }
             } else {
                 CreateProductComponent{
-                    onProductCreatedSuccess = { productId ->
+                    setAlert = props.setAlert
+                    onProductCreatedSuccess = { productId, productName ->
+                        setAlert(successAlert( "Product $productName created successfully !"))
                         LOG.debug("Created product $productId")
                     }
                     onProductCreatedFailed = { productId ->
-                        // TODO : Error Message
+                        setAlert(errorAlert( "Could not create product"))
                         LOG.debug("Could not create product")
                     }
                     onClickClose = {
@@ -119,6 +121,7 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
         }
 
     }
+
 }
 
 fun selectBase64ContentFromURLData(input : String) : String {

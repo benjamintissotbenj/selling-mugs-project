@@ -18,7 +18,7 @@ import react.useState
 
 external interface CreateProductFormProps : Props {
     var onSubmit: (String, String) -> Unit
-    var uploadImageWarning: Boolean
+    var deleteFieldsOnSubmit: Boolean
 }
 
 val CreateProductForm = FC<CreateProductFormProps> { props ->
@@ -28,8 +28,10 @@ val CreateProductForm = FC<CreateProductFormProps> { props ->
     val submitHandler: FormEventHandler<HTMLFormElement> = {
         it.preventDefault()
         props.onSubmit(title, description)
-        title = ""
-        description = ""
+        if (props.deleteFieldsOnSubmit){
+            title = ""
+            description = ""
+        }
     }
 
     div {
@@ -70,17 +72,6 @@ val CreateProductForm = FC<CreateProductFormProps> { props ->
                         }
                         value = description
                     }
-                }
-            }
-
-            if (props.uploadImageWarning){
-                div {
-                    css {
-                        fontNormal()
-                        color = Color(RED.code())
-                        marginBottom = 1.vh
-                    }
-                    +"Please upload an image before creating a product"
                 }
             }
 

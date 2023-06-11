@@ -34,7 +34,6 @@ class LoginService {
          */
         @Throws(BadCredentialsException::class)
         suspend fun login(loginInfo: LoginInfo, session: Session) : Session {
-            //TODO: create userInfo class for transfers
             val authenticatedUser = UserRepository.authenticate(loginInfo)
             LOG.info("User is $loginInfo is authenticated : $authenticatedUser")
             if (authenticatedUser != null){
