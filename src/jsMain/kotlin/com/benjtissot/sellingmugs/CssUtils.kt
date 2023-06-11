@@ -86,19 +86,19 @@ fun PropsWithClassName.divDefaultCss(){
 // FONTS
 
 fun PropertiesBuilder.fontSmaller(){
-    fontSize = 1.vh
+    fontSize = 0.5.rem
 }
 fun PropertiesBuilder.fontSmall(){
-    fontSize = 1.5.vh
+    fontSize = 0.75.rem
 }
 fun PropertiesBuilder.fontNormal(){
-    fontSize = 2.vh
+    fontSize = 1.rem
 }
 fun PropertiesBuilder.fontBig(){
-    fontSize = 3.vh
+    fontSize = 1.5.rem
 }
 fun PropertiesBuilder.fontBigger(){
-    fontSize = 4.vh
+    fontSize = 2.rem
 }
 
 

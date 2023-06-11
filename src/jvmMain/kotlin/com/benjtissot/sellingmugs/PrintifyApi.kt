@@ -12,7 +12,6 @@ import io.ktor.serialization.kotlinx.json.*
 /**
  * Commonly owned Printify API to be accessed both by the front-end and the backend
  */
-// TODO: turn all the front-end calls to this API into regular server calls that will then propagate
 var jsonPrintifyClient = HttpClient {
     install(ContentNegotiation) {
         json()

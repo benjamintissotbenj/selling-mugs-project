@@ -1,11 +1,14 @@
 package com.benjtissot.sellingmugs
 
+import com.benjtissot.sellingmugs.components.LoadingScreenComponent
 import com.benjtissot.sellingmugs.entities.Session
 import com.benjtissot.sellingmugs.pages.*
 import io.ktor.util.logging.*
+import kotlinx.browser.document
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import mui.lab.LoadingButton
+import org.w3c.dom.Attr
 import react.*
 import react.router.NavigateFunction
 import react.router.Route
@@ -90,12 +93,10 @@ val App = FC<Props> {
                 }
             }
         }
+    } ?: run {
+        // Make the loader invisible when screen is loaded
+        document.getElementById("loading-container")?.id = "invisible"
     }
-        ?: run {
-            LoadingButton {
-
-            }
-        }
     // TODO : if no session, show loading screen
 
 }
