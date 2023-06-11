@@ -25,7 +25,7 @@ val LoadingScreenComponent = FC<Props> {
                 boxNormalSmall()
                 boxBlueShade()
             }
-            +"Selling Mugs"
+            +"Please Wait"
             LoadingButton {
                 css {
                     margin = 16.px
