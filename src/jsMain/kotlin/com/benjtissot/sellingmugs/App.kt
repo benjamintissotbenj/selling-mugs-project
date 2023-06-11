@@ -97,7 +97,6 @@ val App = FC<Props> {
         // Make the loader invisible when screen is loaded
         document.getElementById("loading-container")?.id = "invisible"
     }
-    // TODO : if no session, show loading screen
 
 }
 
