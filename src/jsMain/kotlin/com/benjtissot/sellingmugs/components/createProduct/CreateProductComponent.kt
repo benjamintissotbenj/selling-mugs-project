@@ -23,7 +23,7 @@ import react.useState
 private val LOG = KtorSimpleLogger("CreateProductComponent.kt")
 
 external interface CreateProductProps : NavigationProps {
-    var onProductCreatedSuccess : (productId: String) -> Unit
+    var onProductCreatedSuccess : (productId: String, productName: String) -> Unit
     var onProductCreatedFailed : (productId: String) -> Unit
     var onClickClose: () -> Unit
 }
@@ -75,7 +75,13 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
                                 contents = selectBase64ContentFromURLData(reader.result as String)
                             )
                             scope.launch{
-                                uploadedImage = uploadImage(uploadImage)
+                                val uploadReceive = uploadImage(uploadImage)
+                                uploadReceive?.let {
+                                    props.setAlert(successAlert("Image ${uploadImage.file_name} was uploaded successfully !"))
+                                } ?: let {
+                                    props.setAlert(errorAlert("Image ${uploadImage.file_name} could not be uploaded."))
+                                }
+                                uploadedImage = uploadReceive
                             }
                         }
                     }
@@ -106,20 +112,18 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
                                     props.onProductCreatedFailed(productId)
                                     return@launch
                                 } else {
-                                    props.onProductCreatedSuccess(productId)
+                                    props.onProductCreatedSuccess(productId, title)
                                     publishProduct(productId)
-                                    // TODO: Create popup with information and confirmation
                                 }
 
                             }?:let{
-                                //TODO: show an error message
+                                props.setAlert(errorAlert("Please upload an image before creating a product"))
                                 return@launch
                             }
 
                         }
                     }
-
-                    uploadImageWarning = (uploadedImage == null)
+                    deleteFieldsOnSubmit = (uploadedImage!=null)
                 }
             }
 

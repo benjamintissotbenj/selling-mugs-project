@@ -3,7 +3,6 @@ package com.benjtissot.sellingmugs.pages
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.buttons.LogoutButtonComponent
 import com.benjtissot.sellingmugs.components.createProduct.CreateProductComponent
-import com.benjtissot.sellingmugs.components.highLevel.AlertComponent
 import com.benjtissot.sellingmugs.components.lists.ManageUsersComponent
 import com.benjtissot.sellingmugs.entities.User
 import emotion.react.css
@@ -70,11 +69,13 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
                 }
             } else {
                 CreateProductComponent{
-                    onProductCreatedSuccess = { productId ->
+                    setAlert = props.setAlert
+                    onProductCreatedSuccess = { productId, productName ->
+                        setAlert(successAlert( "Product $productName created successfully !"))
                         LOG.debug("Created product $productId")
                     }
                     onProductCreatedFailed = { productId ->
-                        // TODO : Error Message
+                        setAlert(errorAlert( "Could not create product"))
                         LOG.debug("Could not create product")
                     }
                     onClickClose = {
@@ -110,22 +111,6 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
                 session = props.session
                 updateSession = props.updateSession
                 navigate = navigateAdmin
-            }
-
-            Button {
-                variant = ButtonVariant.outlined
-                +"Open Success"
-                onClick = {
-                    props.setAlert(showAlert("Success", "Success message", AlertColor.success))
-                }
-            }
-
-            Button {
-                variant = ButtonVariant.outlined
-                +"Open Fail"
-                onClick = {
-                    props.setAlert(showAlert("Fail", "Fail message", AlertColor.error))
-                }
             }
 
         } else {
