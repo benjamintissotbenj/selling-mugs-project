@@ -39,7 +39,7 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
         h1 {
             css {
                 color = NamedColor.white
-                fontSize = 3.vh
+                fontBig()
                 marginLeft = 4.vw
             }
             +"Selling Mugs Project"

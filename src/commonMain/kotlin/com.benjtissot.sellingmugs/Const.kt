@@ -23,7 +23,8 @@ class Const {
     }
 
     enum class ColorCode(var colourCode: String) {
-        BLUE("#007bff"),
+        BLUE("#00adf1"),
+        DARK_BLUE("##0088d0"),
         RED("#ff0b00"),
         ;
         fun code(): String {

@@ -71,6 +71,9 @@ fun Application.module() {
             }
         }
 
+        // Deactivating MongoDb Driver logs
+        deactivateMongoDriverLogs()
+
         // Creates the routing for the application
         createRoutes()
 
@@ -114,16 +117,17 @@ fun Application.createRoutes(){
             call.respondRedirect(HOMEPAGE_PATH)
         }
 
-
-        // Deactivating MongoDb Driver logs
-        val loggerContext: LoggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
-        val rootLogger = loggerContext.getLogger("org.mongodb.driver")
-        rootLogger.level = ch.qos.logback.classic.Level.OFF
-        LOG.error("MongoDB Driver Logs deactivated")
     }
 
     // Print out all the routes for debug
     // allRoutes(routing).forEach { println(it) }
+}
+
+fun deactivateMongoDriverLogs(){
+    val loggerContext: LoggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
+    val rootLogger = loggerContext.getLogger("org.mongodb.driver")
+    rootLogger.level = ch.qos.logback.classic.Level.OFF
+    LOG.error("MongoDB Driver Logs deactivated")
 }
 
 /**
