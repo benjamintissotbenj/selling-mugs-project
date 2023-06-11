@@ -1,14 +1,12 @@
 package com.benjtissot.sellingmugs
 
-import com.benjtissot.sellingmugs.components.LoadingScreenComponent
+import com.benjtissot.sellingmugs.components.highLevel.AlertComponent
 import com.benjtissot.sellingmugs.entities.Session
 import com.benjtissot.sellingmugs.pages.*
 import io.ktor.util.logging.*
 import kotlinx.browser.document
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import mui.lab.LoadingButton
-import org.w3c.dom.Attr
 import react.*
 import react.router.NavigateFunction
 import react.router.Route
@@ -21,6 +19,11 @@ val scope = MainScope()
 
 val App = FC<Props> {
     var sessionApp: Session? by useState(null)
+    val (alertState, setAlertState ) = useState(AlertState())
+
+    fun setAlert(newAlertState: AlertState){
+        setAlertState.invoke(newAlertState)
+    }
 
     // Calling for the session
     useEffectOnce {
@@ -45,6 +48,7 @@ val App = FC<Props> {
                     element = Homepage.create{
                         session = sessionApp!!
                         updateSession = updateSessionApp
+                        setAlert = {alertState -> setAlert(alertState)}
                     }
                 }
                 Route {
@@ -52,6 +56,7 @@ val App = FC<Props> {
                     element = AuthenticatedPage.create{
                         session = sessionApp!!
                         updateSession = updateSessionApp
+                        setAlert = {alertState -> setAlert(alertState)}
                         internalPage = CheckoutPage
                     }
                 }
@@ -60,6 +65,7 @@ val App = FC<Props> {
                     element = UserInfoPage.create{
                         session = sessionApp!!
                         updateSession = updateSessionApp
+                        setAlert = {alertState -> setAlert(alertState)}
                     }
                 }
                 Route {
@@ -67,6 +73,7 @@ val App = FC<Props> {
                     element = AuthenticatedPage.create{
                         session = sessionApp!!
                         updateSession = updateSessionApp
+                        setAlert = {alertState -> setAlert(alertState)}
                         internalPage = AdminPanelPage
                     }
                 }
@@ -75,6 +82,7 @@ val App = FC<Props> {
                     element = LoginPage.create{
                         session = sessionApp!!
                         updateSession = updateSessionApp
+                        setAlert = {alertState -> setAlert(alertState)}
                     }
                 }
                 Route {
@@ -82,6 +90,7 @@ val App = FC<Props> {
                     element = RegisterPage.create{
                         session = sessionApp!!
                         updateSession = updateSessionApp
+                        setAlert = {alertState -> setAlert(alertState)}
                     }
                 }
                 Route {
@@ -89,10 +98,17 @@ val App = FC<Props> {
                     element = CartPage.create{
                         session = sessionApp!!
                         updateSession = updateSessionApp
+                        setAlert = {alertState -> setAlert(alertState)}
                     }
                 }
             }
         }
+
+        AlertComponent {
+            this.alertState = alertState
+            this.setAlert = {alert -> setAlert(alert)}
+        }
+
     } ?: run {
         // Make the loader invisible when screen is loaded
         document.getElementById("loading-container")?.id = "invisible"
@@ -103,6 +119,7 @@ val App = FC<Props> {
 external interface SessionPageProps: Props {
     var session: Session
     var updateSession: () -> Unit
+    var setAlert: (AlertState) -> Unit
 }
 
 external interface NavigationProps: SessionPageProps {

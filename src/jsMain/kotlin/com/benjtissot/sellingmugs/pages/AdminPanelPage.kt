@@ -3,6 +3,7 @@ package com.benjtissot.sellingmugs.pages
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.buttons.LogoutButtonComponent
 import com.benjtissot.sellingmugs.components.createProduct.CreateProductComponent
+import com.benjtissot.sellingmugs.components.highLevel.AlertComponent
 import com.benjtissot.sellingmugs.components.lists.ManageUsersComponent
 import com.benjtissot.sellingmugs.entities.User
 import emotion.react.css
@@ -10,7 +11,7 @@ import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
 import mui.icons.material.AddCircle
 import mui.icons.material.Person
-import mui.material.IconButton
+import mui.material.*
 import react.FC
 import react.dom.html.ReactHTML.div
 import react.router.useNavigate
@@ -111,6 +112,22 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
                 navigate = navigateAdmin
             }
 
+            Button {
+                variant = ButtonVariant.outlined
+                +"Open Success"
+                onClick = {
+                    props.setAlert(showAlert("Success", "Success message", AlertColor.success))
+                }
+            }
+
+            Button {
+                variant = ButtonVariant.outlined
+                +"Open Fail"
+                onClick = {
+                    props.setAlert(showAlert("Fail", "Fail message", AlertColor.error))
+                }
+            }
+
         } else {
             div {
                 divDefaultCss()
@@ -119,6 +136,7 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
         }
 
     }
+
 }
 
 fun selectBase64ContentFromURLData(input : String) : String {

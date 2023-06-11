@@ -46,6 +46,7 @@ val AuthenticatedPage = FC<AuthenticatedPageProps> { props ->
         props.internalPage {
             session = props.session
             updateSession = props.updateSession
+            setAlert = props.setAlert
         }
     } else {
         div {
