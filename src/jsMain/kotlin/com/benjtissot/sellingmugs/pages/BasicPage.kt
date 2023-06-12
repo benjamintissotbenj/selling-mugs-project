@@ -3,6 +3,7 @@ package com.benjtissot.sellingmugs.pages
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.highLevel.FooterComponent
 import com.benjtissot.sellingmugs.components.highLevel.NavigationBarComponent
+import csstype.Overflow
 import emotion.react.css
 import io.ktor.client.call.*
 import io.ktor.http.*
@@ -30,12 +31,17 @@ val BasicPage = FC<BasicPageProps> { props ->
         this.navigate = navigate
         this.setAlert = props.setAlert
     }
-
-    props.internalPage {
-        session = props.session
-        updateSession = props.updateSession
-        this.navigate = navigate
-        setAlert = props.setAlert
+    div {
+        css {
+            mainPageDiv()
+            overflowY = Overflow.scroll
+        }
+        props.internalPage {
+            session = props.session
+            updateSession = props.updateSession
+            this.navigate = navigate
+            setAlert = props.setAlert
+        }
     }
 
     FooterComponent {}

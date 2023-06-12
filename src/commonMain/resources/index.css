@@ -105,3 +105,11 @@ header {
         transform: rotate(360deg);
     }
 }
+
+
+/*
+::-webkit-scrollbar {
+    width: 1vw;
+}
+
+ */

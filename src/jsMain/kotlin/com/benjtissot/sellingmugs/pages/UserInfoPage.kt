@@ -28,29 +28,24 @@ val UserInfoPage = FC<NavigationProps> { props ->
     }
 
     div {
-        css {
-            mainPageDiv()
-        }
-        div {
-            divDefaultCss()
-            +"Hello User Info Component"
-            +"Extra message $message"
-        }
+        divDefaultCss()
+        +"Hello User Info Component"
+        +"Extra message $message"
+    }
 
-        IconButton {
-            Refresh()
-            onClick = {
-                scope.launch {
-                    message = getUserInfo()
-                }
+    IconButton {
+        Refresh()
+        onClick = {
+            scope.launch {
+                message = getUserInfo()
             }
         }
+    }
 
-        LogoutButtonComponent {
-            session = props.session
-            updateSession = props.updateSession
-            navigate = props.navigate
-        }
+    LogoutButtonComponent {
+        session = props.session
+        updateSession = props.updateSession
+        navigate = props.navigate
     }
 
 }

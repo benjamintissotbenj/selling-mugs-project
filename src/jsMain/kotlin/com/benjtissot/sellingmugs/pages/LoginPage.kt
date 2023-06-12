@@ -27,7 +27,6 @@ val LoginPage = FC<NavigationProps> { props ->
 
     div {
         css {
-            mainPageDiv()
             contentCenteredHorizontally()
         }
         // Creating login form

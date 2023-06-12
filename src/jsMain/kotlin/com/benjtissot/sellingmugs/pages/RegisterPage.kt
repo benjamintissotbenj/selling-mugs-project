@@ -22,7 +22,6 @@ val RegisterPage = FC<NavigationProps> { props ->
 
     div {
         css {
-            mainPageDiv()
             contentCenteredHorizontally()
         }
         // Creating register form

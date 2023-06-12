@@ -48,9 +48,6 @@ val AuthenticatedPage = FC<AuthenticatedPageProps> { props ->
             } else {
                 FC<Props> {
                     div {
-                        css {
-                            mainPageDiv()
-                        }
                         +"You are not authenticated"
                     }
                 }

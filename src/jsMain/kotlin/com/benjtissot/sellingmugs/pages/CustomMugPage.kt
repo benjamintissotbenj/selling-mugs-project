@@ -26,12 +26,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
     }
 
     div {
-        css {
-            mainPageDiv()
-        }
-        div {
-            +"Hello CustomMugPage"
-        }
+        +"Hello CustomMugPage"
     }
 
 }

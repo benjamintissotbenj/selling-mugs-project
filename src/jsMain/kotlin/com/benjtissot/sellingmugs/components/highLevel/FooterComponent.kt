@@ -1,4 +1,5 @@
 package com.benjtissot.sellingmugs.components.highLevel
+import com.benjtissot.sellingmugs.Const
 import csstype.*
 import emotion.react.css
 import react.FC
@@ -17,8 +18,11 @@ val FooterComponent = FC<FooterProps> { props ->
             alignItems = AlignItems.center
             height = 4.vh
             borderRadius = 4.vw
-            position = Position.sticky
+            position = Position.absolute
             bottom = 0.px
+            left = 0.px
+            width = 100.pct
+            backgroundColor = Color(Const.ColorCode.BACKGROUND_BLUE.code())
         }
 
         h1 {

@@ -41,7 +41,6 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
 
     div {
         css {
-            mainPageDiv()
             contentCenteredHorizontally()
         }
 

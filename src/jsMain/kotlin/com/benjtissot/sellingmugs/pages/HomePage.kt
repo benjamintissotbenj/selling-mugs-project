@@ -38,9 +38,6 @@ val Homepage = FC<NavigationProps> { props ->
     }
 
     div {
-        css {
-            mainPageDiv()
-        }
         MugListComponent {
             list = mugList
             title = "Best for you"
@@ -60,8 +57,8 @@ val Homepage = FC<NavigationProps> { props ->
             +"Customize your own mug !"
 
             HoverImageComponent {
-                width = 160.px
-                height = 160.px
+                width = 10.rem
+                height = 10.rem
                 srcMain = "https://images.printify.com/api/catalog/5e440fbfd897db313b1987d1.jpg?s=320"
                 srcHover = "https://images.printify.com/api/catalog/6358ee8d99b22ccab005e8a7.jpg?s=320"
                 onClick = {

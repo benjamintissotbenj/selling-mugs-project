@@ -17,12 +17,8 @@ val CheckoutPage = FC<SessionPageProps> { props ->
     val navigateCheckout = useNavigate()
 
     div {
-        css {
-            mainPageDiv()
-        }
-        div {
-            +"Hello Checkout Component"
-        }
+        +"Hello Checkout Component"
     }
+
 
 }
