@@ -106,6 +106,15 @@ val App = FC<Props> {
                         internalPage = CartPage
                     }
                 }
+                Route {
+                    path = CUSTOM_MUG_PATH
+                    element = BasicPage.create{
+                        session = sessionApp!!
+                        updateSession = updateSessionApp
+                        setAlert = {alertState -> setAlert(alertState)}
+                        internalPage = CustomMugPage
+                    }
+                }
             }
         }
 

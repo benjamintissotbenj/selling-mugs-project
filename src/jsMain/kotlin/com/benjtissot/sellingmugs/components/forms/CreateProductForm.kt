@@ -2,8 +2,10 @@ package com.benjtissot.sellingmugs.components.forms
 
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.Const.ColorCode.BLUE
-import com.benjtissot.sellingmugs.Const.ColorCode.RED
-import csstype.*
+import csstype.Color
+import csstype.NamedColor
+import csstype.px
+import csstype.vw
 import emotion.react.css
 import org.w3c.dom.HTMLFormElement
 import react.FC

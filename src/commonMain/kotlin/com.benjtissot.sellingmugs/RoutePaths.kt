@@ -18,6 +18,7 @@ const val HOMEPAGE_PATH = "/" // Only rendering path allowed to have a "get" lin
 const val USER_INFO_PATH = "/user_info"
 const val ADMIN_PANEL_PATH = "/admin_panel"
 const val CART_PATH = "/customer_cart"
+const val CUSTOM_MUG_PATH = "/custom_mug"
 const val CHECKOUT_PATH = "/checkout"
 const val LOGIN_PATH = "/login"
 const val REGISTER_PATH = "/register"
