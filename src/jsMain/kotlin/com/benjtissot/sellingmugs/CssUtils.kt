@@ -137,6 +137,7 @@ fun PropertiesBuilder.justifySpaceBetween() {
 
 fun PropertiesBuilder.mainPageDiv() {
     height = 88.vh
+    width = 100.vw
 }
 
 

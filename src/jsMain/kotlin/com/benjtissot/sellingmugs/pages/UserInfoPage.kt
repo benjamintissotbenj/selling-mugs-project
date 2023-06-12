@@ -17,12 +17,9 @@ import react.useState
 
 private val LOG = KtorSimpleLogger("UserInfoPage.kt")
 
-external interface UserInfoPageProps : SessionPageProps {
-}
 
-val UserInfoPage = FC<UserInfoPageProps> { props ->
+val UserInfoPage = FC<NavigationProps> { props ->
 
-    val navigateUserInfo = useNavigate()
     var message by useState("")
     useEffectOnce {
         scope.launch {
@@ -30,18 +27,10 @@ val UserInfoPage = FC<UserInfoPageProps> { props ->
         }
     }
 
-    NavigationBarComponent {
-        session = props.session
-        updateSession = props.updateSession
-        navigate = navigateUserInfo
-    }
-
-
     div {
         css {
             mainPageDiv()
         }
-
         div {
             divDefaultCss()
             +"Hello User Info Component"
@@ -60,10 +49,9 @@ val UserInfoPage = FC<UserInfoPageProps> { props ->
         LogoutButtonComponent {
             session = props.session
             updateSession = props.updateSession
-            navigate = navigateUserInfo
+            navigate = props.navigate
         }
     }
 
-    FooterComponent {}
 }
 

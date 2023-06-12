@@ -45,10 +45,11 @@ val App = FC<Props> {
             Routes {
                 Route {
                     path = HOMEPAGE_PATH
-                    element = Homepage.create{
+                    element = BasicPage.create{
                         session = sessionApp!!
                         updateSession = updateSessionApp
                         setAlert = {alertState -> setAlert(alertState)}
+                        internalPage = Homepage
                     }
                 }
                 Route {
@@ -62,10 +63,11 @@ val App = FC<Props> {
                 }
                 Route {
                     path = USER_INFO_PATH
-                    element = UserInfoPage.create{
+                    element = BasicPage.create{
                         session = sessionApp!!
                         updateSession = updateSessionApp
                         setAlert = {alertState -> setAlert(alertState)}
+                        internalPage = UserInfoPage
                     }
                 }
                 Route {
@@ -79,26 +81,29 @@ val App = FC<Props> {
                 }
                 Route {
                     path = LOGIN_PATH
-                    element = LoginPage.create{
+                    element = BasicPage.create{
                         session = sessionApp!!
                         updateSession = updateSessionApp
                         setAlert = {alertState -> setAlert(alertState)}
+                        internalPage = LoginPage
                     }
                 }
                 Route {
                     path = REGISTER_PATH
-                    element = RegisterPage.create{
+                    element = BasicPage.create{
                         session = sessionApp!!
                         updateSession = updateSessionApp
                         setAlert = {alertState -> setAlert(alertState)}
+                        internalPage = RegisterPage
                     }
                 }
                 Route {
                     path = CART_PATH
-                    element = CartPage.create{
+                    element = BasicPage.create{
                         session = sessionApp!!
                         updateSession = updateSessionApp
                         setAlert = {alertState -> setAlert(alertState)}
+                        internalPage = CartPage
                     }
                 }
             }

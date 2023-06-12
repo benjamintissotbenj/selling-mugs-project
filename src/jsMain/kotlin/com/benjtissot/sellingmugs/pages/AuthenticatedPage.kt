@@ -9,6 +9,7 @@ import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
 import react.FC
+import react.Props
 import react.dom.html.ReactHTML.div
 import react.router.useNavigate
 import react.useEffectOnce
@@ -17,7 +18,7 @@ import react.useState
 private val LOG = KtorSimpleLogger("AuthenticatedPage.kt")
 
 external interface AuthenticatedPageProps : SessionPageProps {
-    var internalPage : FC<SessionPageProps>
+    var internalPage : FC<NavigationProps>
 }
 val AuthenticatedPage = FC<AuthenticatedPageProps> { props ->
 
@@ -36,26 +37,24 @@ val AuthenticatedPage = FC<AuthenticatedPageProps> { props ->
         }
     }
 
-    NavigationBarComponent {
+    BasicPage {
         session = props.session
         updateSession = props.updateSession
-        navigate = navigateAuthenticated
-    }
+        setAlert = props.setAlert
 
-    if (loggedIn){
-        props.internalPage {
-            session = props.session
-            updateSession = props.updateSession
-            setAlert = props.setAlert
-        }
-    } else {
-        div {
-            css {
-                mainPageDiv()
+        this.internalPage =
+            if (loggedIn) {
+                props.internalPage
+            } else {
+                FC<Props> {
+                    div {
+                        css {
+                            mainPageDiv()
+                        }
+                        +"You are not authenticated"
+                    }
+                }
             }
-            +"You are not authenticated"
-        }
-    }
 
-    FooterComponent {}
+    }
 }

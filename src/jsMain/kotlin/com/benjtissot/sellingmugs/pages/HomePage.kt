@@ -13,13 +13,11 @@ import react.router.useNavigate
 import react.useEffectOnce
 import react.useState
 
-external interface HomepageProps : SessionPageProps {
-}
 
 var checkRedirect: String? = null
 
-val Homepage = FC<HomepageProps> { props ->
-    val navigateFun = useNavigate()
+val Homepage = FC<NavigationProps> { props ->
+    val navigateFun = props.navigate
     var mugList by useState(emptyList<Mug>())
 
     // At first initialisation, get the list
@@ -36,31 +34,21 @@ val Homepage = FC<HomepageProps> { props ->
         }
     }
 
-    checkRedirect?.let {
-
-        NavigationBarComponent {
-            session = props.session
-            updateSession = props.updateSession
-            navigate = navigateFun
+    div {
+        css {
+            mainPageDiv()
         }
-
-        div {
-            css {
-                mainPageDiv()
-            }
-            MugListComponent {
-                list = mugList
-                title = "Best for you"
-                onItemClick = { mug ->
-                    scope.launch {
-                        // Adding the mug to the cart
-                        addMugToCart(mug)
-                        mugList = getMugList() // updates client
-                    }
+        MugListComponent {
+            list = mugList
+            title = "Best for you"
+            onItemClick = { mug ->
+                scope.launch {
+                    // Adding the mug to the cart
+                    addMugToCart(mug)
+                    mugList = getMugList() // updates client
                 }
             }
         }
-
-        FooterComponent {}
     }
+
 }

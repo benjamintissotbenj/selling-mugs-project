@@ -19,12 +19,8 @@ import react.useState
 
 private val LOG = KtorSimpleLogger("CartPage.kt")
 
-external interface CartPageProps : SessionPageProps {
-}
+val CartPage = FC<NavigationProps> { props ->
 
-val CartPage = FC<CartPageProps> { props ->
-
-    val navigateCart = useNavigate()
     var cart: Cart? by useState(null)
 
     useEffectOnce {
@@ -33,22 +29,12 @@ val CartPage = FC<CartPageProps> { props ->
         }
     }
 
-    NavigationBarComponent {
-        session = props.session
-        updateSession = props.updateSession
-        navigate = navigateCart
-    }
-
     div {
         css {
             mainPageDiv()
-            display = Display.flex
-            flexDirection = FlexDirection.column
-            alignItems = AlignItems.center
         }
-
-        cart?.let{
-            CartListComponent{
+        cart?.let {
+            CartListComponent {
                 title = "Cart"
                 list = cart!!.mugCartItemList
                 onRemoveItem = { mugCartItem ->
@@ -74,18 +60,14 @@ val CartPage = FC<CartPageProps> { props ->
                     }
                     Payment()
                     onClick = {
-                        scope.launch{
+                        scope.launch {
                             recordClick(props.session.clickDataId, Const.ClickType.CHECKOUT_CART.toString())
                         }
-                        navigateCart.invoke(CHECKOUT_PATH)
+                        props.navigate.invoke(CHECKOUT_PATH)
                     }
                 }
             }
 
         }
     }
-
-
-
-    FooterComponent {}
 }

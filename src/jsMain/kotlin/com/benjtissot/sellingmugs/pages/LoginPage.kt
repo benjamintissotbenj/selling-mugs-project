@@ -21,28 +21,15 @@ import react.router.useNavigate
 
 private val LOG = KtorSimpleLogger("loginPage.kt")
 
-external interface LoginPageProps : SessionPageProps {
-}
 
-val LoginPage = FC<LoginPageProps> { props ->
-    val navigateLogin = useNavigate()
+val LoginPage = FC<NavigationProps> { props ->
 
-    NavigationBarComponent {
-        session = props.session
-        updateSession = props.updateSession
-        navigate = navigateLogin
-    }
 
-    // General page div
     div {
         css {
             mainPageDiv()
-            alignSelf = AlignSelf.center
-            display = Display.flex
-            flexDirection = FlexDirection.column
-            alignItems = AlignItems.center
+            contentCenteredHorizontally()
         }
-
         // Creating login form
         LoginFormComponent {
             onSubmit = { email, clearPassword ->
@@ -51,7 +38,7 @@ val LoginPage = FC<LoginPageProps> { props ->
                     val loginInfo = LoginInfo(email, hashedPassword)
                     val httpResponse = login(loginInfo)
                     props.updateSession()
-                    onLoginResponse(httpResponse, navigateLogin)
+                    onLoginResponse(httpResponse, props.navigate)
                 }
             }
         }
@@ -78,14 +65,11 @@ val LoginPage = FC<LoginPageProps> { props ->
                 +"Register now"
                 onClick = {
                     LOG.debug("Click on Register")
-                    navigateLogin.invoke(REGISTER_PATH)
+                    props.navigate.invoke(REGISTER_PATH)
                 }
             }
         }
-
     }
-
-    FooterComponent{}
 }
 
 suspend fun onLoginResponse(httpResponse: HttpResponse, navigateFunction: NavigateFunction){
