@@ -22,6 +22,7 @@ val HoverImageComponent = FC<HoverImageProps> { props ->
             position = Position.relative
             height = props.height
             width = props.width
+            marginTop = 4.vw
         }
         onClick = {
             props.onClick()

@@ -9,8 +9,8 @@ class Image(val id: String,
             val type: String,
             val height: Int,
             val width: Int,
-            val x: Float = 0.5f,
-            val y: Float = 0.5f,
+            val x: Float = 0.5f, // position of the center
+            val y: Float = 0.5f, // position of the center
             val scale: Float = 1f, // this means scale relative to width
             val angle: Int = 0) {
 }

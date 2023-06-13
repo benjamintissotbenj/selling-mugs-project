@@ -15,6 +15,7 @@ import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.img
+import react.useState
 import ringui.Col
 import ringui.Grid
 import ringui.Row
@@ -25,14 +26,22 @@ external interface EditImageOnTemplateProps: Props {
 }
 
 val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
-    var scale = 1
-    val templateWidth = scale*40f
+    val templateWidth = 40f
     val templateHeight = templateWidth/2f
     val gridUnit = templateWidth/10f
     val gridWidth = 12f*gridUnit
     val gridHeight = templateHeight + gridUnit
     val hwratio = (props.uploadedImage?.height?:1)/(props.uploadedImage?.width?:1)
 
+    var scale = 1f // ratio image_width / template_width
+
+    var imageWidth = scale*templateWidth
+    var imageHeight = hwratio*imageWidth
+
+    var horizontalPositionPercentage by useState(50) // from 0 to 100
+    var verticalPositionPercentage by useState(50) // from 0 to 100
+    var x = (horizontalPositionPercentage*2f-50f)/100f // from -0.5 to +1.5, as it is the position of the center
+    var y = (verticalPositionPercentage*2f-50f)/100f // from -0.5 to +1.5, as it is the position of the center
 
     Grid {
         css {
@@ -85,11 +94,11 @@ val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
                             css {
                                 position = Position.absolute
                                 right = 0.px
-                                top = -1f/4f*hwratio*templateWidth.vw
-                                left = 0.px
+                                top = (y-1f)*imageHeight.vw
+                                left = (x-1f)*imageWidth.vw
                                 bottom = 0.px
-                                width = templateWidth.vw
-                                // Height is auto
+                                width = imageWidth.vw
+                                height = imageHeight.vw
                                 objectFit = ObjectFit.contain
                                 opacity = "0.5".unsafeCast<Opacity>()
                             }
@@ -121,6 +130,10 @@ val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
                     orientation = Orientation.vertical
                     defaultValue = "50"
                     valueLabelDisplay = "auto"
+                    value = 100 - verticalPositionPercentage
+                    onChange = {evt, value, thumb ->
+                        verticalPositionPercentage = 100 - value as Int
+                    }
                 }
             }
         }
@@ -145,6 +158,10 @@ val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
                     size = Size.small
                     defaultValue = "50"
                     valueLabelDisplay = "auto"
+                    value = horizontalPositionPercentage
+                    onChange = {evt, value, thumb ->
+                        horizontalPositionPercentage = value as Int
+                    }
                 }
             }
         }
