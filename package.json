@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "core-js": "^3.31.0",
     "react": "18.2",
     "save": "^2.9.0",
     "uuid": "^9.0.0"
