@@ -127,7 +127,7 @@ fun PropertiesBuilder.boxNormalBig(){
     maxWidth = 60.rem
     minWidth = 360.px
     height = "fit-content".unsafeCast<Height>()
-    maxHeight = 80.rem
+    maxHeight = 80.vw
     minHeight = 100.px
 }
 
