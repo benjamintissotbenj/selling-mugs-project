@@ -1,7 +1,9 @@
 package com.benjtissot.sellingmugs.controllers
 
 import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.entities.printify.ReceiveProduct
 import com.benjtissot.sellingmugs.services.PrintifyService
+import com.benjtissot.sellingmugs.services.PrintifyService.Companion.getProductPreviewImages
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -45,7 +47,17 @@ fun Route.printifyRouting(){
         route("$PRODUCT_PATH/{productId}"){
             get {
                 val productId : String = call.parameters["productId"] ?: error("Invalid public value in post request")
-                call.respond(PrintifyService.getProduct(productId))
+                PrintifyService.getProduct(productId)?.let {
+                    call.respond(it)
+                } ?: let {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+            }
+            route(IMAGES_PATH){
+                get {
+                    val productId : String = call.parameters["productId"] ?: error("Invalid public value in post request")
+                    call.respond(getProductPreviewImages(productId))
+                }
             }
         }
     }

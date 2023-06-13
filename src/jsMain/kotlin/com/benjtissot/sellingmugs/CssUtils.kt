@@ -104,6 +104,15 @@ fun PropertiesBuilder.fontBigger(){
 
 // BOX SIZE
 
+fun PropertiesBuilder.boxNormalSmall(){
+    width = 40.vw
+    maxWidth = 40.rem
+    minWidth = 240.px
+    height = "fit-content".unsafeCast<Height>()
+    maxHeight = 20.rem
+    minHeight = 100.px
+}
+
 fun PropertiesBuilder.boxNormalNormal(){
     width = 50.vw
     maxWidth = 50.rem
@@ -112,12 +121,13 @@ fun PropertiesBuilder.boxNormalNormal(){
     maxHeight = 50.rem
     minHeight = 200.px
 }
-fun PropertiesBuilder.boxNormalSmall(){
-    width = 40.vw
-    maxWidth = 40.rem
-    minWidth = 240.px
+
+fun PropertiesBuilder.boxNormalBig(){
+    width = 60.vw
+    maxWidth = 60.rem
+    minWidth = 360.px
     height = "fit-content".unsafeCast<Height>()
-    maxHeight = 20.rem
+    maxHeight = 80.rem
     minHeight = 100.px
 }
 

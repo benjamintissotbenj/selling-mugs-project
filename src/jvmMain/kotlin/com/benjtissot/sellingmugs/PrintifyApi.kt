@@ -86,6 +86,6 @@ suspend fun apiPublishingSuccessfulProduct(productId: String) : HttpStatusCode {
  * @param productId the printify id of the product to get
  * @return a [ReceiveProduct] object that holds all the information concerning the product
  */
-suspend fun apiGetProduct(productId: String) : ReceiveProduct {
-    return jsonPrintifyClient.get("shops/$shopId/products/$productId.json").body()
+suspend fun apiGetProduct(productId: String) : HttpResponse {
+    return jsonPrintifyClient.get("shops/$shopId/products/$productId.json")
 }

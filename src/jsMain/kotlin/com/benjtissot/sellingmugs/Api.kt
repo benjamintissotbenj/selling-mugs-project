@@ -167,3 +167,11 @@ suspend fun publishProduct(productId: String) {
 suspend fun getProduct(productId: String) : ReceiveProduct {
     return jsonClient.get("$PRINTIFY_PATH$PRODUCT_PATH/$productId").body()
 }
+
+/**
+ * Gets the list of preview images sources for a product from printify
+ * @param productId the product ID
+ */
+suspend fun getProductPreviewImages(productId: String) : List<String> {
+    return jsonClient.get("$PRINTIFY_PATH$PRODUCT_PATH/$productId$IMAGES_PATH").body()
+}

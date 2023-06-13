@@ -74,7 +74,7 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
                                 file_name = imageFile.name,
                                 contents = selectBase64ContentFromURLData(reader.result as String)
                             )
-                            scope.launch{
+                            scope.launch {
                                 val uploadReceive = uploadImage(uploadImage)
                                 uploadReceive?.let {
                                     props.setAlert(successAlert("Image ${uploadImage.file_name} was uploaded successfully !"))

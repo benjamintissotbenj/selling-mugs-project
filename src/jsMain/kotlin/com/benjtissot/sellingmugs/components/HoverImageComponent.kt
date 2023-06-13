@@ -29,8 +29,8 @@ val HoverImageComponent = FC<HoverImageProps> { props ->
         ReactHTML.img {
             css {
                 position = Position.absolute
-                height = 100.pct
-                width = 100.pct
+                height = props.height
+                width = props.width
                 right = 0.px
                 top = 0.px
                 left = 0.px
@@ -41,8 +41,8 @@ val HoverImageComponent = FC<HoverImageProps> { props ->
         ReactHTML.img {
             css {
                 position = Position.absolute
-                height = 100.pct
-                width = 100.pct
+                height = props.height
+                width = props.width
                 right = 0.px
                 top = 0.px
                 left = 0.px

@@ -1,6 +1,7 @@
 package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.components.EditImageOnTemplateComponent
 import com.benjtissot.sellingmugs.components.HoverImageComponent
 import com.benjtissot.sellingmugs.components.createProduct.ImageDrop
 import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
@@ -16,13 +17,16 @@ import kotlinx.coroutines.launch
 import org.w3c.files.FileReader
 import react.FC
 import react.dom.html.ReactHTML.div
+import react.dom.html.ReactHTML.img
 import react.useEffectOnce
 import react.useState
 
 private val LOG = KtorSimpleLogger("CustomMugPage.kt")
 
 val CustomMugPage = FC<NavigationProps> { props ->
-    var receiveProduct: ReceiveProduct? by useState(null)
+    var receiveProduct : ReceiveProduct? by useState(null)
+    var uploadedImage : ImageForUploadReceive? by useState(null)
+    val productPreviewImageSources : List<String> = receiveProduct?.images?.map{it.src} ?: emptyList()
 
     useEffectOnce {
         scope.launch {
@@ -44,8 +48,8 @@ val CustomMugPage = FC<NavigationProps> { props ->
                 contentCenteredHorizontally()
             }
             HoverImageComponent {
-                width = 10.rem
-                height = 10.rem
+                width = 20.vw
+                height = 20.vw
                 srcMain = "https://images.printify.com/api/catalog/5e440fbfd897db313b1987d1.jpg?s=320"
                 srcHover = "https://images.printify.com/api/catalog/6358ee8d99b22ccab005e8a7.jpg?s=320"
                 onClick = {
@@ -54,6 +58,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
             }
         }
 
+        // Creation of the custom mug
         div {
             css {
                 width = 67.pct
@@ -62,7 +67,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
             }
             div {
                 css {
-                    boxNormalNormal()
+                    boxNormalBig()
                     boxShade()
                     contentCenteredVertically()
                     contentCenteredHorizontally()
@@ -80,6 +85,9 @@ val CustomMugPage = FC<NavigationProps> { props ->
                             scope.launch{
                                 val uploadReceive = uploadImage(uploadImage, public = false)
                                 uploadReceive?.let {
+
+                                    uploadedImage = uploadReceive
+
                                     val mugProductInfo = MugProductInfo("Custom ${uploadReceive.id}", "", it.toImage())
                                     val httpResponse = createProduct(mugProductInfo)
                                     val productId = httpResponse.body<String>()
@@ -100,12 +108,26 @@ val CustomMugPage = FC<NavigationProps> { props ->
                     }
                 }
 
-                receiveProduct?.let {
-                    div {
-                        +"Product was created"
-                    }
+                EditImageOnTemplateComponent {
+                    this.uploadedImage = uploadedImage
                 }
 
+            }
+        }
+    }
+
+    // Image Preview List
+    div {
+        css {
+            contentCenteredVertically()
+        }
+        productPreviewImageSources.forEach {
+            img {
+                css {
+                    width = 10.vw
+                    height = 10.vw
+                }
+                src = it
             }
         }
     }

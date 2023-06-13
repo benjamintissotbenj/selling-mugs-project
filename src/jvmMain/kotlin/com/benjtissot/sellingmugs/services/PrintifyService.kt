@@ -86,8 +86,29 @@ class PrintifyService {
          * @param productId the printify id of the product to get
          * @return a [ReceiveProduct] object that holds all the information concerning the product
          */
-        suspend fun getProduct(productId: String): ReceiveProduct {
-            return apiGetProduct(productId)
+        suspend fun getProduct(productId: String): ReceiveProduct? {
+            val httpResponse = apiGetProduct(productId)
+            return if (httpResponse.status == HttpStatusCode.OK){
+                httpResponse.body()
+            } else {
+                null
+            }
+        }
+
+
+        /**
+         * Gets the preview images sources for a product from the store
+         * @param productId the printify id of the product to get
+         * @return a [List]<[String]> object that holds all the preview images for the product
+         */
+        suspend fun getProductPreviewImages(productId: String): List<String> {
+            val httpResponse = apiGetProduct(productId)
+            return if (httpResponse.status == HttpStatusCode.OK){
+                val receiveProduct = httpResponse.body<ReceiveProduct>()
+                receiveProduct.images.map { img -> img.src }
+            } else {
+                emptyList()
+            }
         }
     }
 }

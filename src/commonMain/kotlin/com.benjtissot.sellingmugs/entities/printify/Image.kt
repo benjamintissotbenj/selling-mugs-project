@@ -11,7 +11,7 @@ class Image(val id: String,
             val width: Int,
             val x: Float = 0.5f,
             val y: Float = 0.5f,
-            val scale: Int = 1,
+            val scale: Float = 1f, // this means scale relative to width
             val angle: Int = 0) {
 }
 @Serializable
