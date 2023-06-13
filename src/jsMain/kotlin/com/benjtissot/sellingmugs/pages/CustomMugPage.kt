@@ -3,28 +3,26 @@ package com.benjtissot.sellingmugs.pages
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.HoverImageComponent
 import com.benjtissot.sellingmugs.components.createProduct.ImageDrop
-import com.benjtissot.sellingmugs.components.highLevel.FooterComponent
-import com.benjtissot.sellingmugs.components.highLevel.NavigationBarComponent
-import com.benjtissot.sellingmugs.components.lists.CartListComponent
 import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
 import com.benjtissot.sellingmugs.entities.printify.ImageForUploadReceive
+import com.benjtissot.sellingmugs.entities.printify.MugProductInfo
+import com.benjtissot.sellingmugs.entities.printify.ReceiveProduct
 import csstype.*
 import emotion.react.css
+import io.ktor.client.call.*
+import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
-import mui.icons.material.Payment
-import mui.material.IconButton
 import org.w3c.files.FileReader
 import react.FC
 import react.dom.html.ReactHTML.div
-import react.router.useNavigate
 import react.useEffectOnce
 import react.useState
 
 private val LOG = KtorSimpleLogger("CustomMugPage.kt")
 
 val CustomMugPage = FC<NavigationProps> { props ->
-    var uploadedImage: ImageForUploadReceive? by useState(null) // Starts blank but not empty, as to not show warning message initially
+    var receiveProduct: ReceiveProduct? by useState(null)
 
     useEffectOnce {
         scope.launch {
@@ -71,8 +69,6 @@ val CustomMugPage = FC<NavigationProps> { props ->
                 }
                 ImageDrop {
                     onImageDrop = { fileList ->
-                        LOG.debug("Image Was Dropped")
-                        LOG.debug("File List: $fileList")
                         val imageFile = fileList[0]
                         val reader = FileReader()
                         reader.readAsDataURL(imageFile)
@@ -82,17 +78,34 @@ val CustomMugPage = FC<NavigationProps> { props ->
                                 contents = selectBase64ContentFromURLData(reader.result as String)
                             )
                             scope.launch{
-                                val uploadReceive = uploadImage(uploadImage)
+                                val uploadReceive = uploadImage(uploadImage, public = false)
                                 uploadReceive?.let {
-                                    props.setAlert(successAlert("Image ${uploadImage.file_name} was uploaded successfully !"))
+                                    val mugProductInfo = MugProductInfo("Custom ${uploadReceive.id}", "", it.toImage())
+                                    val httpResponse = createProduct(mugProductInfo)
+                                    val productId = httpResponse.body<String>()
+
+                                    if (httpResponse.status != HttpStatusCode.OK){
+                                        props.setAlert(errorAlert("Mug with image ${uploadImage.file_name} could not be created."))
+                                        return@launch
+                                    } else {
+                                        publishProduct(productId)
+                                        props.setAlert(successAlert("Mug with image ${uploadImage.file_name} was created successfully !"))
+                                        receiveProduct = getProduct(productId)
+                                    }
                                 } ?: let {
                                     props.setAlert(errorAlert("Image ${uploadImage.file_name} could not be uploaded."))
                                 }
-                                uploadedImage = uploadReceive
                             }
                         }
                     }
                 }
+
+                receiveProduct?.let {
+                    div {
+                        +"Product was created"
+                    }
+                }
+
             }
         }
     }

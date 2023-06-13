@@ -42,3 +42,21 @@ class ImageForUploadReceive(val id: String,
     }
 
 }
+
+@Serializable
+class ImageForUpload(var file_name: String = "", var contents: String = "", var url: String = "") {
+
+    override fun toString() : String{
+        return "File for Upload: $file_name with contents $contents or url $url"
+    }
+}
+
+@Serializable
+class ImageForProduct(
+    var src: String,
+    var variant_ids: List<String>,
+    var position: String,
+    var is_default: Boolean,
+    var is_selected_for_publishing: Boolean
+    ) {
+}

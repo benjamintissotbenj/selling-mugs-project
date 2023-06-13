@@ -4,6 +4,7 @@ import com.benjtissot.sellingmugs.entities.*
 import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
 import com.benjtissot.sellingmugs.entities.printify.ImageForUploadReceive
 import com.benjtissot.sellingmugs.entities.printify.MugProductInfo
+import com.benjtissot.sellingmugs.entities.printify.ReceiveProduct
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
@@ -148,9 +149,21 @@ suspend fun createProduct(mugProductInfo: MugProductInfo): HttpResponse {
     }
 }
 
+/**
+ * Publishes the product
+ * @param productId the product ID
+ */
 suspend fun publishProduct(productId: String) {
     jsonClient.post(PRINTIFY_PATH + PUBLISH_PRODUCT_PATH){
         contentType(ContentType.Application.Json)
         setBody(productId)
     }
+}
+
+/**
+ * Gets a product from printify
+ * @param productId the product ID
+ */
+suspend fun getProduct(productId: String) : ReceiveProduct {
+    return jsonClient.get("$PRINTIFY_PATH$PRODUCT_PATH/$productId").body()
 }

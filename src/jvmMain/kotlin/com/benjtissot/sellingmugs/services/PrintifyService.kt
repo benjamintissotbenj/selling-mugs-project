@@ -5,6 +5,7 @@ import com.benjtissot.sellingmugs.entities.Mug
 import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
 import com.benjtissot.sellingmugs.entities.printify.ImageForUploadReceive
 import com.benjtissot.sellingmugs.entities.printify.MugProductInfo
+import com.benjtissot.sellingmugs.entities.printify.ReceiveProduct
 import com.benjtissot.sellingmugs.repositories.MugRepository
 import io.ktor.client.call.*
 import io.ktor.http.*
@@ -77,6 +78,16 @@ class PrintifyService {
 
         suspend fun deleteProduct(productId: String) : HttpStatusCode {
             return apiDeleteProduct(productId).status
+        }
+
+
+        /**
+         * Gets a product from the store
+         * @param productId the printify id of the product to get
+         * @return a [ReceiveProduct] object that holds all the information concerning the product
+         */
+        suspend fun getProduct(productId: String): ReceiveProduct {
+            return apiGetProduct(productId)
         }
     }
 }

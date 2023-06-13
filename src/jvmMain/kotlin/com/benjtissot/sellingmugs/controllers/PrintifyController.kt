@@ -1,9 +1,6 @@
 package com.benjtissot.sellingmugs.controllers
 
-import com.benjtissot.sellingmugs.CREATE_PRODUCT_PATH
-import com.benjtissot.sellingmugs.PRINTIFY_PATH
-import com.benjtissot.sellingmugs.PUBLISH_PRODUCT_PATH
-import com.benjtissot.sellingmugs.UPLOAD_IMAGE_PATH
+import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.services.PrintifyService
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -18,7 +15,7 @@ fun Route.printifyRouting(){
         get {
             call.respond("Hello Printify Controller")
         }
-        route(UPLOAD_IMAGE_PATH + "/{public}"){
+        route("$UPLOAD_IMAGE_PATH/{public}"){
             post {
                 val public : Boolean = call.parameters["public"]?.let {valueOf(it)} ?: error("Invalid public value in post request")
                 val imageForUploadReceive = PrintifyService.uploadImage(call.receive(), public)
@@ -42,6 +39,13 @@ fun Route.printifyRouting(){
         route(PUBLISH_PRODUCT_PATH){
             post {
                 call.respond(PrintifyService.publishProduct(call.receive()))
+            }
+        }
+
+        route("$PRODUCT_PATH/{productId}"){
+            get {
+                val productId : String = call.parameters["productId"] ?: error("Invalid public value in post request")
+                call.respond(PrintifyService.getProduct(productId))
             }
         }
     }

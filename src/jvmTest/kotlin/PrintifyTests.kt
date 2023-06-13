@@ -4,7 +4,6 @@ import com.benjtissot.sellingmugs.entities.printify.MugProductInfo
 import com.benjtissot.sellingmugs.services.PrintifyService
 import io.ktor.http.*
 import io.ktor.util.logging.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
