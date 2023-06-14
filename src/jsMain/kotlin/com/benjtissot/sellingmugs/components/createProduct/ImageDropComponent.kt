@@ -79,7 +79,7 @@ val ImageDrop = FC<ImageDropProps> { props ->
             }
             contentCenteredVertically()
             justifyContent = JustifyContent.center
-            margin = 2.vw
+            marginTop = 2.vw
         }
 
         ref = dropZoneRef

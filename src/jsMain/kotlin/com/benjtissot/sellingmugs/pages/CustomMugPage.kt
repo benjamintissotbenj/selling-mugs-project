@@ -3,6 +3,7 @@ package com.benjtissot.sellingmugs.pages
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.EditImageOnTemplateComponent
 import com.benjtissot.sellingmugs.components.HoverImageComponent
+import com.benjtissot.sellingmugs.components.SweepImageComponent
 import com.benjtissot.sellingmugs.components.createProduct.ImageDrop
 import com.benjtissot.sellingmugs.entities.printify.Image
 import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
@@ -27,7 +28,6 @@ import kotlin.random.Random
 
 private val LOG = KtorSimpleLogger("CustomMugPage.kt")
 
-val random = Random(0)
 
 val CustomMugPage = FC<NavigationProps> { props ->
     var receiveProduct : ReceiveProduct? by useState(null)
@@ -56,14 +56,10 @@ val CustomMugPage = FC<NavigationProps> { props ->
                 width = 33.pct
                 contentCenteredHorizontally()
             }
-            HoverImageComponent {
+            SweepImageComponent {
                 width = 20.vw
                 height = 20.vw
-                srcMain = "https://images.printify.com/api/catalog/5e440fbfd897db313b1987d1.jpg?s=320"
-                srcHover = "https://images.printify.com/api/catalog/6358ee8d99b22ccab005e8a7.jpg?s=320"
-                onClick = {
-                    props.navigate.invoke(CUSTOM_MUG_PATH)
-                }
+                srcList = productPreviewImageSources
             }
         }
 
@@ -125,22 +121,6 @@ val CustomMugPage = FC<NavigationProps> { props ->
                         receiveProduct = it
                     }
                 }
-            }
-        }
-    }
-
-    // Image Preview List
-    div {
-        css {
-            contentCenteredVertically()
-        }
-        for (i: Int in productPreviewImageSources.indices){
-            img {
-                css {
-                    width = 10.vw
-                    height = 10.vw
-                }
-                src = "${productPreviewImageSources[i]}?${random.nextInt()}" // necessary to re-load image on update
             }
         }
     }

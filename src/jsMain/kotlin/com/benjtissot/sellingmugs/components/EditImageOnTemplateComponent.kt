@@ -56,7 +56,7 @@ val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
 
     Grid {
         css {
-            width = gridWidth.vw
+            width = gridWidth.rem
             height = "fit-content".unsafeCast<Height>()
             padding = 0.px
             margin = 16.px
@@ -225,30 +225,36 @@ val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
                 }
                 xs = 4
                 xsOffset = 4
-                IconButton {
-                    Refresh()
-                    div {
-                        css {
-                            fontNormal()
-                        }
-                        +"Refresh Preview"
+                div {
+                    css {
+                        contentCenteredHorizontally()
                     }
-                    onClick = {
-                        // Put Update in printify
-                        if (uploadedImage != null && receiveProduct != null) {
-                            val transformedImage = Image(
-                                uploadedImage.id,
-                                uploadedImage.file_name,
-                                uploadedImage.mime_type,
-                                uploadedImage.height,
-                                uploadedImage.width,
-                                x,
-                                y,
-                                scale,
-                                rotate
-                            )
-                            scope.launch {
-                                props.updateProduct(putProduct(receiveProduct.id, receiveProduct.changeImage(transformedImage)))
+                    IconButton {
+                        Refresh()
+                        div {
+                            css {
+                                fontNormal()
+                                margin = 2.rem
+                            }
+                            +"Refresh Preview"
+                        }
+                        onClick = {
+                            // Put Update in printify
+                            if (uploadedImage != null && receiveProduct != null) {
+                                val transformedImage = Image(
+                                    uploadedImage.id,
+                                    uploadedImage.file_name,
+                                    uploadedImage.mime_type,
+                                    uploadedImage.height,
+                                    uploadedImage.width,
+                                    x,
+                                    y,
+                                    scale,
+                                    rotate
+                                )
+                                scope.launch {
+                                    props.updateProduct(putProduct(receiveProduct.id, receiveProduct.changeImage(transformedImage)))
+                                }
                             }
                         }
                     }
@@ -276,8 +282,8 @@ val ImageOnTemplateComponent = FC<ImageOnTemplateProps> { props ->
         css {
             overflow = Overflow.hidden
             position = Position.relative
-            width = props.templateWidth.vw
-            height = props.templateHeight.vw
+            width = props.templateWidth.rem
+            height = props.templateHeight.rem
             margin = 0.px
         }
 
@@ -285,8 +291,8 @@ val ImageOnTemplateComponent = FC<ImageOnTemplateProps> { props ->
         img {
             css {
                 absolute0Pos()
-                width = props.templateWidth.vw
-                height = (props.templateWidth/2).vw
+                width = props.templateWidth.rem
+                height = (props.templateWidth/2).rem
             }
             src = "/print_template.png"
         }
@@ -296,10 +302,10 @@ val ImageOnTemplateComponent = FC<ImageOnTemplateProps> { props ->
             img {
                 css {
                     absolute0Pos()
-                    top = ((2*props.y*props.templateHeight - props.imageHeight)/2f).vw
-                    left = ((2*props.x*props.templateWidth - props.imageWidth)/2f).vw
-                    width = props.imageWidth.vw
-                    height = props.imageHeight.vw
+                    top = ((2*props.y*props.templateHeight - props.imageHeight)/2f).rem
+                    left = ((2*props.x*props.templateWidth - props.imageWidth)/2f).rem
+                    width = props.imageWidth.rem
+                    height = props.imageHeight.rem
                     objectFit = ObjectFit.contain
                     opacity = "0.5".unsafeCast<Opacity>()
                     transform = rotate(props.rotate.deg)
