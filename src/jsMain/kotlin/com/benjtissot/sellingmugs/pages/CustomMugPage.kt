@@ -25,10 +25,13 @@ private val LOG = KtorSimpleLogger("CustomMugPage.kt")
 
 val CustomMugPage = FC<NavigationProps> { props ->
     var receiveProduct : ReceiveProduct? by useState(null)
+    var droppedImageName: String = ""
     var uploadedImage : ImageForUploadReceive? by useState(null)
     val productPreviewImageSources : List<String> = receiveProduct?.images?.map{it.src} ?: emptyList()
+    val reader = FileReader()
 
     useEffectOnce {
+
         scope.launch {
 
         }
@@ -74,12 +77,13 @@ val CustomMugPage = FC<NavigationProps> { props ->
                 }
                 ImageDrop {
                     onImageDrop = { fileList ->
+                        reader.abort()
                         val imageFile = fileList[0]
-                        val reader = FileReader()
+                        droppedImageName = imageFile.name
                         reader.readAsDataURL(imageFile)
                         reader.onload = { _ ->
                             val uploadImage = ImageForUpload(
-                                file_name = imageFile.name,
+                                file_name = droppedImageName,
                                 contents = selectBase64ContentFromURLData(reader.result as String)
                             )
                             scope.launch{

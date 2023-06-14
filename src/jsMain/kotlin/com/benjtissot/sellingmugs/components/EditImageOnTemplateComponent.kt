@@ -31,7 +31,7 @@ val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
     val gridUnit = templateWidth/10f
     val gridWidth = 12f*gridUnit
     val gridHeight = templateHeight + gridUnit
-    val hwratio = (props.uploadedImage?.height?:1)/(props.uploadedImage?.width?:1)
+    val hwratio = (props.uploadedImage?.height?:1).toFloat()/(props.uploadedImage?.width?:1).toFloat()
 
     var scale = 1f // ratio image_width / template_width
 
@@ -94,8 +94,8 @@ val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
                             css {
                                 position = Position.absolute
                                 right = 0.px
-                                top = (y-1f)*imageHeight.vw
-                                left = (x-1f)*imageWidth.vw
+                                top = ((2*y*templateHeight - imageHeight)/2f).vw
+                                left = ((2*x*templateWidth - imageWidth)/2f).vw
                                 bottom = 0.px
                                 width = imageWidth.vw
                                 height = imageHeight.vw
