@@ -2,6 +2,7 @@ package com.benjtissot.sellingmugs.components
 
 import com.benjtissot.sellingmugs.contentCenteredHorizontally
 import com.benjtissot.sellingmugs.entities.printify.ImageForUploadReceive
+import com.benjtissot.sellingmugs.fontNormal
 import csstype.*
 import emotion.react.css
 import mui.material.GridDirection
@@ -20,28 +21,37 @@ import ringui.Col
 import ringui.Grid
 import ringui.Row
 
+val marksPosSlider = arrayOf(
+    SliderMark(0, "0"),
+    SliderMark(25, "25"),
+    SliderMark(50, "50"),
+    SliderMark(75, "75"),
+    SliderMark(100, "100"),
+)
 
 external interface EditImageOnTemplateProps: Props {
     var uploadedImage: ImageForUploadReceive?
 }
 
+
 val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
+
+    var scale by useState(1f) // ratio image_width / template_width
+    var horizontalPositionPercentage by useState(50) // from 0 to 100
+    var verticalPositionPercentage by useState(50) // from 0 to 100
+
     val templateWidth = 40f
     val templateHeight = templateWidth/2f
-    val gridUnit = templateWidth/10f
+    val gridUnit = templateWidth/8f
     val gridWidth = 12f*gridUnit
     val gridHeight = templateHeight + gridUnit
     val hwratio = (props.uploadedImage?.height?:1).toFloat()/(props.uploadedImage?.width?:1).toFloat()
 
-    var scale = 1f // ratio image_width / template_width
+    val imageWidth = scale*templateWidth
+    val imageHeight = hwratio*imageWidth
 
-    var imageWidth = scale*templateWidth
-    var imageHeight = hwratio*imageWidth
-
-    var horizontalPositionPercentage by useState(50) // from 0 to 100
-    var verticalPositionPercentage by useState(50) // from 0 to 100
-    var x = (horizontalPositionPercentage*2f-50f)/100f // from -0.5 to +1.5, as it is the position of the center
-    var y = (verticalPositionPercentage*2f-50f)/100f // from -0.5 to +1.5, as it is the position of the center
+    val x = (horizontalPositionPercentage*2f-50f)/100f // from -0.5 to +1.5, as it is the position of the center
+    val y = (verticalPositionPercentage*2f-50f)/100f // from -0.5 to +1.5, as it is the position of the center
 
     Grid {
         css {
@@ -50,6 +60,8 @@ val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
             padding = 0.px
             margin = 16.px
         }
+
+        // Template images + y slider
         Row {
             css {
                 padding = 0.px
@@ -62,8 +74,8 @@ val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
                     marginBottom = 0.px
                     contentCenteredHorizontally()
                 }
-                xsOffset = 1
-                xs = 10
+                xsOffset = 2
+                xs = 8
                 // Template and overlayed image
                 div {
                     css {
@@ -117,7 +129,7 @@ val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
                     flexDirection = FlexDirection.column
                     alignItems = AlignItems.center
                 }
-                xs = 1
+                xs = 2
                 Slider {
                     sx {
                         "{\n" +
@@ -126,9 +138,12 @@ val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
                                 "    },\n" +
                                 "  }"
                     }
+                    marks = marksPosSlider
                     size = Size.small
                     orientation = Orientation.vertical
-                    defaultValue = "50"
+                    defaultValue = 50.asDynamic()
+                    min = 0
+                    max = 100
                     valueLabelDisplay = "auto"
                     value = 100 - verticalPositionPercentage
                     onChange = {evt, value, thumb ->
@@ -138,6 +153,7 @@ val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
             }
         }
 
+        // x slider
         Row {
             css {
                 padding = 0.px
@@ -152,15 +168,64 @@ val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
                     flexDirection = FlexDirection.row
                     alignItems = AlignItems.center
                 }
-                xs = 10
-                xsOffset = 1
+                xs = 8
+                xsOffset = 2
                 Slider {
+                    marks = marksPosSlider
                     size = Size.small
-                    defaultValue = "50"
+                    defaultValue = 50.asDynamic()
+                    min = 0
+                    max = 100
                     valueLabelDisplay = "auto"
                     value = horizontalPositionPercentage
                     onChange = {evt, value, thumb ->
                         horizontalPositionPercentage = value as Int
+                    }
+                }
+            }
+        }
+
+        // Scale slider
+        Row {
+            css {
+                padding = 0.px
+                margin = 0.px
+            }
+            Col {
+                css {
+                    padding = 0.px
+                    marginTop = 0.px
+                    marginBottom = 0.px
+                    display = Display.flex
+                    flexDirection = FlexDirection.row
+                    alignItems = AlignItems.center
+                    fontNormal()
+                }
+                xs = 2
+                xsOffset = 1
+                +"Scale :"
+            }
+            Col {
+                css {
+                    padding = 0.px
+                    marginTop = 0.px
+                    marginBottom = 0.px
+                    display = Display.flex
+                    flexDirection = FlexDirection.row
+                    alignItems = AlignItems.center
+                }
+                xs = 6
+                xsOffset = 1
+
+                Slider {
+                    size = Size.small
+                    defaultValue = 100.asDynamic()
+                    min = 10
+                    max = 300
+                    valueLabelDisplay = "auto"
+                    value = scale*100f
+                    onChange = {evt, value, thumb ->
+                        scale = value/100f
                     }
                 }
             }

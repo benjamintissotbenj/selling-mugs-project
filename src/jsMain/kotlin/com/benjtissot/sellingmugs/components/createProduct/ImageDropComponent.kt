@@ -2,6 +2,7 @@ package com.benjtissot.sellingmugs.components.createProduct
 
 import com.benjtissot.sellingmugs.*
 import csstype.JustifyContent
+import csstype.vw
 import emotion.react.css
 import io.ktor.util.logging.*
 import mui.icons.material.Upload
@@ -78,6 +79,7 @@ val ImageDrop = FC<ImageDropProps> { props ->
             }
             contentCenteredVertically()
             justifyContent = JustifyContent.center
+            margin = 2.vw
         }
 
         ref = dropZoneRef
