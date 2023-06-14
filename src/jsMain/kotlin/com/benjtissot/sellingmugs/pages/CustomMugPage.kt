@@ -4,6 +4,7 @@ import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.EditImageOnTemplateComponent
 import com.benjtissot.sellingmugs.components.HoverImageComponent
 import com.benjtissot.sellingmugs.components.createProduct.ImageDrop
+import com.benjtissot.sellingmugs.entities.printify.Image
 import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
 import com.benjtissot.sellingmugs.entities.printify.ImageForUploadReceive
 import com.benjtissot.sellingmugs.entities.printify.MugProductInfo
@@ -14,14 +15,19 @@ import io.ktor.client.call.*
 import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
+import mui.icons.material.Refresh
+import mui.material.IconButton
 import org.w3c.files.FileReader
 import react.FC
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.img
 import react.useEffectOnce
 import react.useState
+import kotlin.random.Random
 
 private val LOG = KtorSimpleLogger("CustomMugPage.kt")
+
+val random = Random(0)
 
 val CustomMugPage = FC<NavigationProps> { props ->
     var receiveProduct : ReceiveProduct? by useState(null)
@@ -114,8 +120,11 @@ val CustomMugPage = FC<NavigationProps> { props ->
 
                 EditImageOnTemplateComponent {
                     this.uploadedImage = uploadedImage
+                    this.receiveProduct = receiveProduct
+                    this.updateProduct = {
+                        receiveProduct = it
+                    }
                 }
-
             }
         }
     }
@@ -125,13 +134,13 @@ val CustomMugPage = FC<NavigationProps> { props ->
         css {
             contentCenteredVertically()
         }
-        productPreviewImageSources.forEach {
+        for (i: Int in productPreviewImageSources.indices){
             img {
                 css {
                     width = 10.vw
                     height = 10.vw
                 }
-                src = it
+                src = "${productPreviewImageSources[i]}?${random.nextInt()}" // necessary to re-load image on update
             }
         }
     }

@@ -53,6 +53,16 @@ fun Route.printifyRouting(){
                     call.respond(HttpStatusCode.BadRequest)
                 }
             }
+
+            put {
+                val productId : String = call.parameters["productId"] ?: error("Invalid public value in post request")
+                PrintifyService.putProduct(productId, call.receive())?.let {
+                    call.respond(it)
+                } ?: let {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+            }
+
             route(IMAGES_PATH){
                 get {
                     val productId : String = call.parameters["productId"] ?: error("Invalid public value in post request")

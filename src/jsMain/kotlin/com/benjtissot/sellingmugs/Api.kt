@@ -1,10 +1,7 @@
 package com.benjtissot.sellingmugs
 
 import com.benjtissot.sellingmugs.entities.*
-import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
-import com.benjtissot.sellingmugs.entities.printify.ImageForUploadReceive
-import com.benjtissot.sellingmugs.entities.printify.MugProductInfo
-import com.benjtissot.sellingmugs.entities.printify.ReceiveProduct
+import com.benjtissot.sellingmugs.entities.printify.*
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
@@ -166,6 +163,19 @@ suspend fun publishProduct(productId: String) {
  */
 suspend fun getProduct(productId: String) : ReceiveProduct {
     return jsonClient.get("$PRINTIFY_PATH$PRODUCT_PATH/$productId").body()
+}
+
+/**
+ * Updates a product from the store
+ * @param productId the printify id of the product to get
+ * @param updatedProduct the product to be updated
+ * @return a [ReceiveProduct] object that holds all the information concerning the product
+ */
+suspend fun putProduct(productId: String, updatedProductImage: UpdateProductImage) : ReceiveProduct {
+    return jsonClient.put("$PRINTIFY_PATH$PRODUCT_PATH/$productId") {
+        contentType(ContentType.Application.Json)
+        setBody(updatedProductImage)
+    }.body()
 }
 
 /**

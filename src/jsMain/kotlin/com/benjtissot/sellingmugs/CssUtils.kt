@@ -126,7 +126,7 @@ fun PropertiesBuilder.boxNormalBig(){
     width = 60.vw
     maxWidth = 60.rem
     minWidth = 360.px
-    height = 90.vw
+    height = 80.vh
     minHeight = 100.px
 }
 
@@ -173,4 +173,19 @@ fun PropertiesBuilder.contentCenteredVertically(){
     display = Display.flex
     flexDirection = FlexDirection.row
     alignItems = AlignItems.center
+}
+
+fun PropertiesBuilder.colDefault(){
+    padding = 0.px
+    marginTop = 0.px
+    marginBottom = 0.px
+    contentCenteredVertically()
+}
+
+fun PropertiesBuilder.absolute0Pos(){
+    position = Position.absolute
+    right = 0.px
+    top = 0.px
+    left = 0.px
+    bottom = 0.px
 }
