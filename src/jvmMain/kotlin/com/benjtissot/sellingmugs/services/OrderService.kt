@@ -1,13 +1,6 @@
 package com.benjtissot.sellingmugs.services
 
-import com.benjtissot.sellingmugs.MugCartItem
-import com.benjtissot.sellingmugs.entities.Cart
-import com.benjtissot.sellingmugs.entities.Mug
-import com.benjtissot.sellingmugs.entities.printify.order.AddressTo
-import com.benjtissot.sellingmugs.entities.printify.order.Order
-import com.benjtissot.sellingmugs.entities.printify.order.ShippingCosts
-import com.benjtissot.sellingmugs.genUuid
-import com.benjtissot.sellingmugs.repositories.CartRepository
+import com.benjtissot.sellingmugs.entities.printify.order.*
 import com.benjtissot.sellingmugs.repositories.OrderRepository
 
 class OrderService {
@@ -15,6 +8,10 @@ class OrderService {
 
         suspend fun getOrder(id: String) : Order? {
             return OrderRepository.getOrder(id)
+        }
+
+        suspend fun getOrderFromPrintify(localId: String) : Order? {
+            TODO("Implement")
         }
 
         suspend fun createOrderFromCart(addressTo: AddressTo) : Order {
@@ -25,8 +22,9 @@ class OrderService {
             TODO("Implement")
         }
 
-        suspend fun placeOrderToPrintify(orderId: String) {
+        suspend fun placeOrderToPrintify(orderId: String) : PrintifyOrderPushResult {
             TODO("Implement")
+            // Get printifyId and store it in Order Object
         }
 
         suspend fun cancelOrder(orderId: String) {

@@ -3,6 +3,7 @@ package orderTests
 import AbstractDatabaseTests
 import com.benjtissot.sellingmugs.entities.Session
 import com.benjtissot.sellingmugs.entities.printify.order.AddressTo
+import com.benjtissot.sellingmugs.entities.printify.order.PrintifyOrderPushSuccess
 import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.services.CartService
 import com.benjtissot.sellingmugs.services.MugService
@@ -16,6 +17,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
+import kotlin.test.fail
 
 class GeneralOrderTests : AbstractDatabaseTests() {
 
@@ -68,7 +70,6 @@ class GeneralOrderTests : AbstractDatabaseTests() {
     fun calculateShippingPrice() = runTest {
         LOG.delimit("Calculate shipping price Test")
         launch {
-            val order = OrderService.getOrder(orderId)
             val shippingCosts = OrderService.calculateOrderShippingCost(orderId)
             assert(shippingCosts != null)
             // TODO: Assert correct prices
@@ -82,18 +83,17 @@ class GeneralOrderTests : AbstractDatabaseTests() {
     fun placeOrderToPrintifyTest() = runTest {
         LOG.delimit("placeOrderToPrintify Test")
         launch {
-
-        }
-    }
-
-    @Test
-            /**
-             * Confirms an order to printify
-             */
-    fun confirmOrderTest() = runTest {
-        LOG.delimit("confirmOrder Test")
-        launch {
-
+            val printifyOrderPushResult = OrderService.placeOrderToPrintify(orderId)
+            if (printifyOrderPushResult is PrintifyOrderPushSuccess){
+                val order = OrderService.getOrderFromPrintify(orderId)
+                assert(order != null)
+                order?.id?.let {
+                    assert(it.isNotBlank())
+                    assert(it == printifyOrderPushResult.id)
+                } // assert that printify id is not null
+            } else {
+                fail()
+            }
         }
     }
 
