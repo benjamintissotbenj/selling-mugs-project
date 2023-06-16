@@ -50,7 +50,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
             width = 100.pct
         }
 
-        // Image container
+        // Image and drag-and-drop container
         div {
             css {
                 width = 33.pct
@@ -61,57 +61,63 @@ val CustomMugPage = FC<NavigationProps> { props ->
                 height = 20.vw
                 srcList = productPreviewImageSources
             }
+
+            ImageDrop {
+                height = 20.vh
+                width = 30.vw
+                onImageDrop = { fileList ->
+                    reader.abort()
+                    val imageFile = fileList[0]
+                    droppedImageName = imageFile.name
+                    reader.readAsDataURL(imageFile)
+                    reader.onload = { _ ->
+                        val uploadImage = ImageForUpload(
+                            file_name = droppedImageName,
+                            contents = selectBase64ContentFromURLData(reader.result as String)
+                        )
+                        scope.launch{
+                            val uploadReceive = uploadImage(uploadImage, public = false)
+                            uploadReceive?.let {
+
+                                uploadedImage = uploadReceive
+
+                                val mugProductInfo = MugProductInfo("Custom ${uploadReceive.id}", "", it.toImage())
+                                val httpResponse = createProduct(mugProductInfo)
+                                val productId = httpResponse.body<String>()
+
+                                if (httpResponse.status != HttpStatusCode.OK){
+                                    props.setAlert(errorAlert("Mug with image ${uploadImage.file_name} could not be created."))
+                                    return@launch
+                                } else {
+                                    publishProduct(productId)
+                                    props.setAlert(successAlert("Mug with image ${uploadImage.file_name} was created successfully !"))
+                                    receiveProduct = getProduct(productId)
+                                }
+                            } ?: let {
+                                props.setAlert(errorAlert("Image ${uploadImage.file_name} could not be uploaded."))
+                            }
+                        }
+                    }
+                }
+            }
+
         }
 
         // Creation of the custom mug
         div {
             css {
                 width = 67.pct
-                contentCenteredVertically()
+                marginTop = 4.vh
                 contentCenteredHorizontally()
             }
             div {
                 css {
                     boxNormalBig()
+                    maxHeight = "fit-content".unsafeCast<MaxHeight>()
+                    margin = "auto".unsafeCast<Margin>()
                     boxShade()
                     contentCenteredVertically()
                     contentCenteredHorizontally()
-                }
-                ImageDrop {
-                    onImageDrop = { fileList ->
-                        reader.abort()
-                        val imageFile = fileList[0]
-                        droppedImageName = imageFile.name
-                        reader.readAsDataURL(imageFile)
-                        reader.onload = { _ ->
-                            val uploadImage = ImageForUpload(
-                                file_name = droppedImageName,
-                                contents = selectBase64ContentFromURLData(reader.result as String)
-                            )
-                            scope.launch{
-                                val uploadReceive = uploadImage(uploadImage, public = false)
-                                uploadReceive?.let {
-
-                                    uploadedImage = uploadReceive
-
-                                    val mugProductInfo = MugProductInfo("Custom ${uploadReceive.id}", "", it.toImage())
-                                    val httpResponse = createProduct(mugProductInfo)
-                                    val productId = httpResponse.body<String>()
-
-                                    if (httpResponse.status != HttpStatusCode.OK){
-                                        props.setAlert(errorAlert("Mug with image ${uploadImage.file_name} could not be created."))
-                                        return@launch
-                                    } else {
-                                        publishProduct(productId)
-                                        props.setAlert(successAlert("Mug with image ${uploadImage.file_name} was created successfully !"))
-                                        receiveProduct = getProduct(productId)
-                                    }
-                                } ?: let {
-                                    props.setAlert(errorAlert("Image ${uploadImage.file_name} could not be uploaded."))
-                                }
-                            }
-                        }
-                    }
                 }
 
                 EditImageOnTemplateComponent {

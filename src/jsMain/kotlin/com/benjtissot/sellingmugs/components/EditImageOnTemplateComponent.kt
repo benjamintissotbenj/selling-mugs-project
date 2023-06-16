@@ -56,7 +56,7 @@ val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
 
     Grid {
         css {
-            width = gridWidth.rem
+            width = gridWidth.vw
             height = "fit-content".unsafeCast<Height>()
             padding = 0.px
             margin = 16.px
@@ -222,19 +222,17 @@ val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
                 css {
                     colDefault()
                     fontNormal()
+                    contentCenteredHorizontally()
                 }
-                xs = 4
-                xsOffset = 4
+                xs = 6
+                xsOffset = 3
                 div {
-                    css {
-                        contentCenteredHorizontally()
-                    }
                     IconButton {
                         Refresh()
                         div {
                             css {
                                 fontNormal()
-                                margin = 2.rem
+                                margin = 2.vw
                             }
                             +"Refresh Preview"
                         }
@@ -282,8 +280,8 @@ val ImageOnTemplateComponent = FC<ImageOnTemplateProps> { props ->
         css {
             overflow = Overflow.hidden
             position = Position.relative
-            width = props.templateWidth.rem
-            height = props.templateHeight.rem
+            width = props.templateWidth.vw
+            height = props.templateHeight.vw
             margin = 0.px
         }
 
@@ -291,8 +289,8 @@ val ImageOnTemplateComponent = FC<ImageOnTemplateProps> { props ->
         img {
             css {
                 absolute0Pos()
-                width = props.templateWidth.rem
-                height = (props.templateWidth/2).rem
+                width = props.templateWidth.vw
+                height = (props.templateWidth/2).vw
             }
             src = "/print_template.png"
         }
@@ -302,10 +300,10 @@ val ImageOnTemplateComponent = FC<ImageOnTemplateProps> { props ->
             img {
                 css {
                     absolute0Pos()
-                    top = ((2*props.y*props.templateHeight - props.imageHeight)/2f).rem
-                    left = ((2*props.x*props.templateWidth - props.imageWidth)/2f).rem
-                    width = props.imageWidth.rem
-                    height = props.imageHeight.rem
+                    top = ((2*props.y*props.templateHeight - props.imageHeight)/2f).vw
+                    left = ((2*props.x*props.templateWidth - props.imageWidth)/2f).vw
+                    width = props.imageWidth.vw
+                    height = props.imageHeight.vw
                     objectFit = ObjectFit.contain
                     opacity = "0.5".unsafeCast<Opacity>()
                     transform = rotate(props.rotate.deg)

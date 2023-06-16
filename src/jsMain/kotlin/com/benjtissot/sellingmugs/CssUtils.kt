@@ -189,3 +189,10 @@ fun PropertiesBuilder.absolute0Pos(){
     left = 0.px
     bottom = 0.px
 }
+
+fun PropertiesBuilder.submitFileStyle(){
+    contentCenteredHorizontally()
+    height = 100.pct
+    width = 100.pct
+    cursor = Cursor.pointer
+}
