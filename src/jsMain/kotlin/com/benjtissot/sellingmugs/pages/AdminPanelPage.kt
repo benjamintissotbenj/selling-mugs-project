@@ -19,9 +19,6 @@ import react.useState
 
 private val LOG = KtorSimpleLogger("AdminPanelPage.kt")
 
-external interface AdminPanelPageProps : SessionPageProps {
-}
-
 val AdminPanelPage = FC<SessionPageProps> { props ->
 
     val navigateAdmin = useNavigate()
@@ -44,7 +41,6 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
 
     div {
         css {
-            mainPageDiv()
             contentCenteredHorizontally()
         }
 

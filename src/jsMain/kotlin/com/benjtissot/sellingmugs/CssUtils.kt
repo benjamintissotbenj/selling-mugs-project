@@ -104,6 +104,15 @@ fun PropertiesBuilder.fontBigger(){
 
 // BOX SIZE
 
+fun PropertiesBuilder.boxNormalSmall(){
+    width = 40.vw
+    maxWidth = 40.rem
+    minWidth = 240.px
+    height = 20.vh
+    maxHeight = 20.rem
+    minHeight = 100.px
+}
+
 fun PropertiesBuilder.boxNormalNormal(){
     width = 50.vw
     maxWidth = 50.rem
@@ -112,12 +121,12 @@ fun PropertiesBuilder.boxNormalNormal(){
     maxHeight = 50.rem
     minHeight = 200.px
 }
-fun PropertiesBuilder.boxNormalSmall(){
-    width = 40.vw
-    maxWidth = 40.rem
-    minWidth = 240.px
-    height = "fit-content".unsafeCast<Height>()
-    maxHeight = 20.rem
+
+fun PropertiesBuilder.boxNormalBig(){
+    width = 60.vw
+    maxWidth = 60.rem
+    minWidth = 360.px
+    height = 80.vh
     minHeight = 100.px
 }
 
@@ -137,6 +146,7 @@ fun PropertiesBuilder.justifySpaceBetween() {
 
 fun PropertiesBuilder.mainPageDiv() {
     height = 88.vh
+    width = 100.vw
 }
 
 
@@ -163,4 +173,26 @@ fun PropertiesBuilder.contentCenteredVertically(){
     display = Display.flex
     flexDirection = FlexDirection.row
     alignItems = AlignItems.center
+}
+
+fun PropertiesBuilder.colDefault(){
+    padding = 0.px
+    marginTop = 0.px
+    marginBottom = 0.px
+    contentCenteredVertically()
+}
+
+fun PropertiesBuilder.absolute0Pos(){
+    position = Position.absolute
+    right = 0.px
+    top = 0.px
+    left = 0.px
+    bottom = 0.px
+}
+
+fun PropertiesBuilder.submitFileStyle(){
+    contentCenteredHorizontally()
+    height = 100.pct
+    width = 100.pct
+    cursor = Cursor.pointer
 }

@@ -9,9 +9,9 @@ class Image(val id: String,
             val type: String,
             val height: Int,
             val width: Int,
-            val x: Float = 0.5f,
-            val y: Float = 0.5f,
-            val scale: Int = 1,
+            val x: Float = 0.5f, // position of the center
+            val y: Float = 0.5f, // position of the center
+            val scale: Float = 1f, // this means scale relative to width
             val angle: Int = 0) {
 }
 @Serializable
@@ -41,4 +41,22 @@ class ImageForUploadReceive(val id: String,
         return "ImageForUploadReceive[$id, $file_name, $mime_type, $height, $width, $size, $preview_url, $upload_time]"
     }
 
+}
+
+@Serializable
+class ImageForUpload(var file_name: String = "", var contents: String = "", var url: String = "") {
+
+    override fun toString() : String{
+        return "File for Upload: $file_name with contents $contents or url $url"
+    }
+}
+
+@Serializable
+class ImageForProduct(
+    var src: String,
+    var variant_ids: List<String>,
+    var position: String,
+    var is_default: Boolean,
+    var is_selected_for_publishing: Boolean
+    ) {
 }

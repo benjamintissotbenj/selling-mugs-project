@@ -26,5 +26,9 @@ class MugRepository {
             mugCollection.updateOneById(mug.id, mug, upsert())
         }
 
+        suspend fun getMugByPrintifyId(printifyId: String) : Mug? {
+            return mugCollection.findOne(Mug::printifyId eq printifyId)
+        }
+
     }
 }

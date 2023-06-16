@@ -4,7 +4,7 @@ html {
 
 /* Body */
 body {
-    background-color: #f2f7fc;
+    background-color: #f7f7f7;
     font-family: Arial, sans-serif;
     margin: 0;
 }
@@ -105,3 +105,11 @@ header {
         transform: rotate(360deg);
     }
 }
+
+
+/*
+::-webkit-scrollbar {
+    width: 1vw;
+}
+
+ */

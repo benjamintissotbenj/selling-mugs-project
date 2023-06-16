@@ -17,26 +17,13 @@ import react.router.useNavigate
 
 private val LOG = KtorSimpleLogger("loginPage.kt")
 
-external interface RegisterPageProps : SessionPageProps {
-}
 
-val RegisterPage = FC<RegisterPageProps> { props ->
-    val navigateRegister = useNavigate()
-
-    NavigationBarComponent {
-        session = props.session
-        updateSession = props.updateSession
-        navigate = navigateRegister
-    }
+val RegisterPage = FC<NavigationProps> { props ->
 
     div {
         css {
-            mainPageDiv()
-            display = Display.flex
-            flexDirection = FlexDirection.column
-            alignItems = AlignItems.center
+            contentCenteredHorizontally()
         }
-
         // Creating register form
         RegisterFormComponent {
             onSubmit = { registerInfo ->
@@ -48,12 +35,14 @@ val RegisterPage = FC<RegisterPageProps> { props ->
                             val tokenString = httpResponse.body<String>()
                             LOG.debug("Creating new client with new token $tokenString")
                             updateClientWithToken(tokenString)
-                            navigateRegister.invoke(HOMEPAGE_PATH)
+                            props.navigate.invoke(HOMEPAGE_PATH)
                             props.updateSession()
                         }
+
                         HttpStatusCode.Conflict -> { // User already existed
                             LOG.error("User already exists")
                         }
+
                         else -> {
                             LOG.error("Something went wrong")
                         }
@@ -84,12 +73,9 @@ val RegisterPage = FC<RegisterPageProps> { props ->
                 +"Login"
                 onClick = {
                     LOG.debug("Click on Login")
-                    navigateRegister.invoke(LOGIN_PATH)
+                    props.navigate.invoke(LOGIN_PATH)
                 }
             }
         }
-
     }
-
-    FooterComponent{}
 }

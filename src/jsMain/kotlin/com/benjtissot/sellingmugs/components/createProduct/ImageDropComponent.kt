@@ -1,7 +1,7 @@
 package com.benjtissot.sellingmugs.components.createProduct
 
 import com.benjtissot.sellingmugs.*
-import csstype.JustifyContent
+import csstype.*
 import emotion.react.css
 import io.ktor.util.logging.*
 import mui.icons.material.Upload
@@ -22,6 +22,8 @@ private val LOG = KtorSimpleLogger("DragDropComponent.kt")
 
 external interface ImageDropProps : Props {
     var onImageDrop: (List<File>) -> Unit
+    var width: Width?
+    var height: Height?
 }
 
 
@@ -39,6 +41,9 @@ val ImageDrop = FC<ImageDropProps> { props ->
 
         val handleDragOver: (Event) -> Unit = { event ->
             event.preventDefault()
+            if (!isDragging){
+                isDragging = true
+            }
         }
 
         val handleDragLeave: (Event) -> Unit = { event ->
@@ -71,6 +76,8 @@ val ImageDrop = FC<ImageDropProps> { props ->
 
         css {
             boxNormalSmall()
+            width = props.width?:40.vw
+            height = props.height?:20.vh
             if (isDragging){
                 boxBlueShade()
             } else {
@@ -78,32 +85,42 @@ val ImageDrop = FC<ImageDropProps> { props ->
             }
             contentCenteredVertically()
             justifyContent = JustifyContent.center
+            marginTop = 2.vw
         }
 
         ref = dropZoneRef
 
-        // TODO: make this look pretty and centered correctly
-
-        Icon {
-            Upload()
-        }
-
-        div {
+        form {
             css {
                 fontNormal()
+                submitFileStyle()
             }
-            +"Drag and Drop image  - OR -  "
-        }
-
-
-        form {
             label {
                 css {
-                    fontNormal()
+                    submitFileStyle()
+                    justifyContent = JustifyContent.center
                 }
+                div {
+                    +"Drag and Drop image"
+                }
+                div {
+                    css {
+                        fontWeight = FontWeight.bold
+                    }
+                    +"OR"
+                }
+                div {
+                    +"Click to choose a file "
+                }
+
+                Icon {
+                    Upload()
+                }
+
                 input {
                     css {
                         fontNormal()
+                        display = "none".unsafeCast<Display>()
                     }
                     type = InputType.file
                     onChange = {

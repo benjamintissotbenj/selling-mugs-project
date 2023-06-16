@@ -2,6 +2,7 @@ package com.benjtissot.sellingmugs
 
 import com.benjtissot.sellingmugs.entities.printify.*
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
@@ -78,4 +79,26 @@ suspend fun apiPublishingSuccessfulProduct(productId: String) : HttpStatusCode {
         contentType(ContentType.Application.Json)
         setBody(PublishSucceed(External(productId, "localhost:9090")))
     }.status
+}
+
+/**
+ * Gets a product from the store
+ * @param productId the printify id of the product to get
+ * @return a [ReceiveProduct] object that holds all the information concerning the product
+ */
+suspend fun apiGetProduct(productId: String) : HttpResponse {
+    return jsonPrintifyClient.get("shops/$shopId/products/$productId.json")
+}
+
+/**
+ * Updates a product from the store
+ * @param productId the printify id of the product to get
+ * @param updatedProduct the product to be updated
+ * @return a [ReceiveProduct] object that holds all the information concerning the product
+ */
+suspend fun apiUpdateProduct(productId: String, updatedProductImage: UpdateProductImage) : HttpResponse {
+    return jsonPrintifyClient.put("shops/$shopId/products/$productId.json"){
+        contentType(ContentType.Application.Json)
+        setBody(updatedProductImage)
+    }
 }

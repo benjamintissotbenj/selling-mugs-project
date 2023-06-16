@@ -1,10 +1,7 @@
 package com.benjtissot.sellingmugs.components.lists
 
 import com.benjtissot.sellingmugs.entities.Mug
-import csstype.Display
-import csstype.Overflow
-import csstype.ScrollBehavior
-import csstype.rem
+import csstype.*
 import emotion.react.css
 import react.FC
 import react.Props
@@ -29,7 +26,6 @@ val MugListComponent = FC<MugListProps> {
             overflowX = Overflow.scroll
             scrollBehavior = ScrollBehavior.smooth
             paddingBlock = 1.rem
-            maxWidth = 100.rem
         }
         props.list.forEach { mugItm ->
             MugItemComponent {

@@ -108,6 +108,12 @@ fun Application.createRoutes(){
                 ContentType.Image.JPEG
             }
         }
+        // Accessing the icon for the browser
+        get("/print_template.png") {
+            call.respondFile(File(URI(this::class.java.classLoader.getResource("static/print_template_mug.png")?.toString()?:""))) {
+                ContentType.Image.PNG
+            }
+        }
 
         // Any other route redirects to homepage
         get("/{path}"){

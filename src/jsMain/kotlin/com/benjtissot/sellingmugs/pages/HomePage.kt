@@ -1,25 +1,26 @@
 package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.components.HoverImageComponent
 import com.benjtissot.sellingmugs.components.highLevel.FooterComponent
 import com.benjtissot.sellingmugs.components.highLevel.NavigationBarComponent
 import com.benjtissot.sellingmugs.components.lists.MugListComponent
 import com.benjtissot.sellingmugs.entities.Mug
+import csstype.*
 import emotion.react.css
 import kotlinx.coroutines.launch
 import react.FC
 import react.dom.html.ReactHTML.div
+import react.dom.html.ReactHTML.img
 import react.router.useNavigate
 import react.useEffectOnce
 import react.useState
 
-external interface HomepageProps : SessionPageProps {
-}
 
 var checkRedirect: String? = null
 
-val Homepage = FC<HomepageProps> { props ->
-    val navigateFun = useNavigate()
+val Homepage = FC<NavigationProps> { props ->
+    val navigateFun = props.navigate
     var mugList by useState(emptyList<Mug>())
 
     // At first initialisation, get the list
@@ -36,31 +37,36 @@ val Homepage = FC<HomepageProps> { props ->
         }
     }
 
-    checkRedirect?.let {
-
-        NavigationBarComponent {
-            session = props.session
-            updateSession = props.updateSession
-            navigate = navigateFun
-        }
-
-        div {
-            css {
-                mainPageDiv()
-            }
-            MugListComponent {
-                list = mugList
-                title = "Best for you"
-                onItemClick = { mug ->
-                    scope.launch {
-                        // Adding the mug to the cart
-                        addMugToCart(mug)
-                        mugList = getMugList() // updates client
-                    }
+    div {
+        MugListComponent {
+            list = mugList
+            title = "Best for you"
+            onItemClick = { mug ->
+                scope.launch {
+                    // Adding the mug to the cart
+                    addMugToCart(mug)
+                    mugList = getMugList() // updates client
                 }
             }
         }
 
-        FooterComponent {}
+        div {
+            css {
+                contentCenteredHorizontally()
+            }
+            +"Customize your own mug !"
+
+            HoverImageComponent {
+                width = 10.rem
+                height = 10.rem
+                srcMain = "https://images.printify.com/api/catalog/5e440fbfd897db313b1987d1.jpg?s=320"
+                srcHover = "https://images.printify.com/api/catalog/6358ee8d99b22ccab005e8a7.jpg?s=320"
+                onClick = {
+                    props.navigate.invoke(CUSTOM_MUG_PATH)
+                }
+            }
+        }
+
     }
+
 }

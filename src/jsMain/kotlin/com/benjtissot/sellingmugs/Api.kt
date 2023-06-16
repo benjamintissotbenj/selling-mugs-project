@@ -1,9 +1,7 @@
 package com.benjtissot.sellingmugs
 
 import com.benjtissot.sellingmugs.entities.*
-import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
-import com.benjtissot.sellingmugs.entities.printify.ImageForUploadReceive
-import com.benjtissot.sellingmugs.entities.printify.MugProductInfo
+import com.benjtissot.sellingmugs.entities.printify.*
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
@@ -85,12 +83,19 @@ suspend fun getMugList(): List<Mug> {
     return jsonClient.get(Mug.path).body()
 }
 
+suspend fun getMugByPrintifyId(printifyId: String): Mug? {
+    val httpResponse = jsonClient.get("${Mug.path}/$printifyId")
+    return if (httpResponse.status == HttpStatusCode.OK) httpResponse.body() else null
+}
+
 
 // Cart
-suspend fun addMugToCart(mug: Mug){
-    jsonClient.post(CART_PATH + Mug.path) {
-        contentType(ContentType.Application.Json)
-        setBody(mug)
+suspend fun addMugToCart(mug: Mug?){
+    mug?.let {
+        jsonClient.post(CART_PATH + Mug.path) {
+            contentType(ContentType.Application.Json)
+            setBody(mug)
+        }
     }
 }
 
@@ -148,9 +153,42 @@ suspend fun createProduct(mugProductInfo: MugProductInfo): HttpResponse {
     }
 }
 
+/**
+ * Publishes the product
+ * @param productId the product ID
+ */
 suspend fun publishProduct(productId: String) {
     jsonClient.post(PRINTIFY_PATH + PUBLISH_PRODUCT_PATH){
         contentType(ContentType.Application.Json)
         setBody(productId)
     }
+}
+
+/**
+ * Gets a product from printify
+ * @param productId the product ID
+ */
+suspend fun getProduct(productId: String) : ReceiveProduct {
+    return jsonClient.get("$PRINTIFY_PATH$PRODUCT_PATH/$productId").body()
+}
+
+/**
+ * Updates a product from the store
+ * @param productId the printify id of the product to get
+ * @param updatedProduct the product to be updated
+ * @return a [ReceiveProduct] object that holds all the information concerning the product
+ */
+suspend fun putProduct(productId: String, updatedProductImage: UpdateProductImage) : ReceiveProduct {
+    return jsonClient.put("$PRINTIFY_PATH$PRODUCT_PATH/$productId") {
+        contentType(ContentType.Application.Json)
+        setBody(updatedProductImage)
+    }.body()
+}
+
+/**
+ * Gets the list of preview images sources for a product from printify
+ * @param productId the product ID
+ */
+suspend fun getProductPreviewImages(productId: String) : List<String> {
+    return jsonClient.get("$PRINTIFY_PATH$PRODUCT_PATH/$productId$IMAGES_PATH").body()
 }

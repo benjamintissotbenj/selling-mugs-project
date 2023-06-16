@@ -18,10 +18,11 @@ const val HOMEPAGE_PATH = "/" // Only rendering path allowed to have a "get" lin
 const val USER_INFO_PATH = "/user_info"
 const val ADMIN_PANEL_PATH = "/admin_panel"
 const val CART_PATH = "/customer_cart"
+const val CUSTOM_MUG_PATH = "/custom_mug"
 const val CHECKOUT_PATH = "/checkout"
 const val LOGIN_PATH = "/login"
 const val REGISTER_PATH = "/register"
-val ALL_FRONT_END_PATHS = listOf(HOMEPAGE_PATH, USER_INFO_PATH, CART_PATH, CHECKOUT_PATH, LOGIN_PATH, REGISTER_PATH, ADMIN_PANEL_PATH)
+val ALL_FRONT_END_PATHS = listOf(HOMEPAGE_PATH, USER_INFO_PATH, CART_PATH, CHECKOUT_PATH, LOGIN_PATH, REGISTER_PATH, ADMIN_PANEL_PATH, CUSTOM_MUG_PATH)
 
 // Backend Route Paths
 
@@ -35,3 +36,5 @@ const val PRINTIFY_PATH = "/printify"
 const val CREATE_PRODUCT_PATH = "/create"
 const val PUBLISH_PRODUCT_PATH = "/publish"
 const val UPLOAD_IMAGE_PATH = "/upload"
+const val PRODUCT_PATH = "/product"
+const val IMAGES_PATH = "/images"
