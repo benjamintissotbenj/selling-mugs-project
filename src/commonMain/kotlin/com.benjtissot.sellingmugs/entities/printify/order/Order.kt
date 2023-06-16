@@ -13,3 +13,9 @@ data class Order(
     val shipping_method: Int = 1,
 ) {
 }
+@Serializable
+data class OrderToCalculateShippingCosts(
+    val line_items: List<LineItem>,
+    val address_to: AddressTo,
+) {
+}
