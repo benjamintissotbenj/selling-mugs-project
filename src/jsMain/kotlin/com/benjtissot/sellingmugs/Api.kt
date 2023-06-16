@@ -83,12 +83,19 @@ suspend fun getMugList(): List<Mug> {
     return jsonClient.get(Mug.path).body()
 }
 
+suspend fun getMugByPrintifyId(printifyId: String): Mug? {
+    val httpResponse = jsonClient.get("${Mug.path}/$printifyId")
+    return if (httpResponse.status == HttpStatusCode.OK) httpResponse.body() else null
+}
+
 
 // Cart
-suspend fun addMugToCart(mug: Mug){
-    jsonClient.post(CART_PATH + Mug.path) {
-        contentType(ContentType.Application.Json)
-        setBody(mug)
+suspend fun addMugToCart(mug: Mug?){
+    mug?.let {
+        jsonClient.post(CART_PATH + Mug.path) {
+            contentType(ContentType.Application.Json)
+            setBody(mug)
+        }
     }
 }
 

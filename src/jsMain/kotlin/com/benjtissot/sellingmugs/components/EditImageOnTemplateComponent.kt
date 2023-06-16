@@ -283,6 +283,7 @@ val ImageOnTemplateComponent = FC<ImageOnTemplateProps> { props ->
             width = props.templateWidth.vw
             height = props.templateHeight.vw
             margin = 0.px
+            zIndex = "5".unsafeCast<ZIndex>()
         }
 
         // Template in the background
@@ -291,6 +292,7 @@ val ImageOnTemplateComponent = FC<ImageOnTemplateProps> { props ->
                 absolute0Pos()
                 width = props.templateWidth.vw
                 height = (props.templateWidth/2).vw
+                zIndex = "3".unsafeCast<ZIndex>()
             }
             src = "/print_template.png"
         }
@@ -307,6 +309,7 @@ val ImageOnTemplateComponent = FC<ImageOnTemplateProps> { props ->
                     objectFit = ObjectFit.contain
                     opacity = "0.5".unsafeCast<Opacity>()
                     transform = rotate(props.rotate.deg)
+                    zIndex = "4".unsafeCast<ZIndex>()
                 }
                 src = props.uploadedImage?.preview_url
             }

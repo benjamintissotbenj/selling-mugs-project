@@ -6,6 +6,7 @@ import com.benjtissot.sellingmugs.genUuid
 import com.benjtissot.sellingmugs.services.ArtworkService.Companion.deleteArtwork
 import com.benjtissot.sellingmugs.services.ArtworkService.Companion.getArtworkList
 import com.benjtissot.sellingmugs.services.ArtworkService.Companion.insertNewArtwork
+import com.benjtissot.sellingmugs.services.MugService
 import com.benjtissot.sellingmugs.services.MugService.Companion.deleteMug
 import com.benjtissot.sellingmugs.services.MugService.Companion.getMugList
 import com.benjtissot.sellingmugs.services.MugService.Companion.insertNewMug
@@ -36,6 +37,16 @@ fun Route.mugRouting(){
             val id = call.parameters["id"] ?: error("Invalid delete request")
             deleteMug(id)
             call.respond(HttpStatusCode.OK)
+        }
+        route("/{printifyId}") {
+            get {
+                val printifyId = call.parameters["printifyId"] ?: error("Invalid delete request")
+                MugService.getMugByPrintifyId(printifyId)?.let {
+                    call.respond(it)
+                } ?: let {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+            }
         }
     }
 

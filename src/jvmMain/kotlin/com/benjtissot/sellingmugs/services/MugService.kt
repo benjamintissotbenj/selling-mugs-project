@@ -16,6 +16,10 @@ class MugService {
             MugRepository.updateMug(mug)
         }
 
+        suspend fun getMugByPrintifyId(printifyId: String): Mug? {
+            return MugRepository.getMugByPrintifyId(printifyId)
+        }
+
         suspend fun deleteMug(id: String){
             mugCollection.deleteOne(Mug::id eq id) //type safe
         }

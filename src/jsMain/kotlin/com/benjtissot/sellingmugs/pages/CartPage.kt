@@ -29,36 +29,41 @@ val CartPage = FC<NavigationProps> { props ->
         }
     }
     cart?.let {
-        CartListComponent {
-            title = "Cart"
-            list = cart!!.mugCartItemList
-            onRemoveItem = { mugCartItem ->
-                scope.launch {
-                    removeMugCartItemFromCart(mugCartItem)
-                    cart = getCart()
-                }
-            }
-        }
         div {
             css {
-                width = 100.pct
-                display = Display.flex
-                flexDirection = FlexDirection.rowReverse
+                contentCenteredHorizontally()
             }
-            IconButton {
-                div {
-                    css {
-                        fontBig()
-                        marginRight = 16.px
-                    }
-                    +"Checkout"
-                }
-                Payment()
-                onClick = {
+            CartListComponent {
+                title = "Cart"
+                list = cart!!.mugCartItemList
+                onRemoveItem = { mugCartItem ->
                     scope.launch {
-                        recordClick(props.session.clickDataId, Const.ClickType.CHECKOUT_CART.toString())
+                        removeMugCartItemFromCart(mugCartItem)
+                        cart = getCart()
                     }
-                    props.navigate.invoke(CHECKOUT_PATH)
+                }
+            }
+            div {
+                css {
+                    width = 100.pct
+                    display = Display.flex
+                    flexDirection = FlexDirection.rowReverse
+                }
+                IconButton {
+                    div {
+                        css {
+                            fontBig()
+                            marginRight = 16.px
+                        }
+                        +"Checkout"
+                    }
+                    Payment()
+                    onClick = {
+                        scope.launch {
+                            recordClick(props.session.clickDataId, Const.ClickType.CHECKOUT_CART.toString())
+                        }
+                        props.navigate.invoke(CHECKOUT_PATH)
+                    }
                 }
             }
         }

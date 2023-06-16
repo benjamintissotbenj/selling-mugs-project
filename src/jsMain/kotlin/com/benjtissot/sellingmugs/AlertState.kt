@@ -8,7 +8,7 @@ class AlertState (
     val title: String = "Title",
     val message: String = "Message",
     val severity: AlertColor = AlertColor.info,
-    val variant: AlertVariant = AlertVariant.outlined,
+    val variant: AlertVariant = AlertVariant.standard,
 ) {
 }
 
@@ -19,7 +19,7 @@ fun showAlert(
     title: String,
     message: String,
     severity: AlertColor = AlertColor.info,
-    variant: AlertVariant = AlertVariant.outlined
+    variant: AlertVariant = AlertVariant.standard
 ): AlertState {
     return AlertState(true, title, message, severity, variant)
 }
@@ -38,7 +38,7 @@ fun successAlert(
  * Creation of an error Alert
  */
 fun errorAlert(
-    message: String,
+    message: String = "Something went wrong",
     title: String = "Error"
 ): AlertState {
     return showAlert(title, message, AlertColor.error)
