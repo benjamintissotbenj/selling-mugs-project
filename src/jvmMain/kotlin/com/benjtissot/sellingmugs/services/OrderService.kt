@@ -5,6 +5,7 @@ import com.benjtissot.sellingmugs.entities.Cart
 import com.benjtissot.sellingmugs.entities.Mug
 import com.benjtissot.sellingmugs.entities.printify.order.AddressTo
 import com.benjtissot.sellingmugs.entities.printify.order.Order
+import com.benjtissot.sellingmugs.entities.printify.order.ShippingCosts
 import com.benjtissot.sellingmugs.genUuid
 import com.benjtissot.sellingmugs.repositories.CartRepository
 import com.benjtissot.sellingmugs.repositories.OrderRepository
@@ -20,7 +21,7 @@ class OrderService {
             TODO("Implement")
         }
 
-        suspend fun calculateOrderShippingCost(orderId: String) {
+        suspend fun calculateOrderShippingCost(orderId: String) : ShippingCosts? {
             TODO("Implement")
         }
 

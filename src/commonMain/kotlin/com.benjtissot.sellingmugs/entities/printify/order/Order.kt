@@ -9,13 +9,24 @@ data class Order(
     val label: String,
     val line_items: List<LineItem>,
     val address_to: AddressTo,
+    val shipping_method: Int = 1, // 1 is standard, 2 is express
     val send_shipping_notification: Boolean = true,
-    val shipping_method: Int = 1,
 ) {
+    fun getCalculateShipping(): OrderToCalculateShippingCosts {
+        return OrderToCalculateShippingCosts(line_items, address_to)
+    }
 }
+
 @Serializable
 data class OrderToCalculateShippingCosts(
     val line_items: List<LineItem>,
     val address_to: AddressTo,
+) {
+}
+
+@Serializable
+data class ShippingCosts(
+    val standard: Int,
+    val express: Int,
 ) {
 }
