@@ -23,12 +23,13 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.asserter
 
-class CreateOrderTest : AbstractDatabaseTests() {
+class CancelOrderTest : AbstractDatabaseTests() {
 
     private val LOG = KtorSimpleLogger("orderTests/CreateOrderTests.kt")
 
     lateinit var session: Session
-    val productIds : ArrayList<String> = ArrayList(emptyList())
+    lateinit var orderId : String
+    private val productIds : ArrayList<String> = ArrayList(emptyList())
 
 
     @Before
@@ -38,9 +39,9 @@ class CreateOrderTest : AbstractDatabaseTests() {
             session = SessionRepository.createSession()
             // Create 3 different mugs
             LOG.debug("Creating 3 different mugs")
-            productIds.add(createProductWithImage(imageForUpload1))
-            productIds.add(createProductWithImage(imageForUpload2))
-            productIds.add(createProductWithImage(imageForUpload3))
+            productIds.add(CreateOrderTest.createProductWithImage(imageForUpload1))
+            productIds.add(CreateOrderTest.createProductWithImage(imageForUpload2))
+            productIds.add(CreateOrderTest.createProductWithImage(imageForUpload3))
 
             // Add the products to cart
             CartService.getCart(session.cartId)?.let { cart ->
@@ -50,7 +51,20 @@ class CreateOrderTest : AbstractDatabaseTests() {
                     }
                 }
             }
-
+            val addressTo = AddressTo(
+                "Test",
+                "TEST",
+                "selling.mugs.imperial@gmail.com",
+                "",
+                "GB",
+                "England",
+                "Exhibition Rd",
+                "South Kensington",
+                "London",
+                "SW7 2BX"
+            )
+            orderId = OrderService.createOrderFromCart(addressTo, session.cartId).external_id
+            LOG.debug("The local OrderID is $orderId")
         }
     }
 
@@ -96,22 +110,4 @@ class CreateOrderTest : AbstractDatabaseTests() {
             super.after()
         }
     }
-
-    companion object {
-
-        suspend fun createProductWithImage(imageForUpload: ImageForUpload) : String {
-
-            // Upload Image
-            val imageForUploadReceive = PrintifyTests.uploadImageTest(imageForUpload)
-
-            // Create Product
-            val productId = PrintifyTests.createProductTest(imageForUploadReceive)
-
-            // Publish Product if productId is not null
-            PrintifyTests.publishProductTest(productId)
-
-            return productId
-        }
-    }
-
 }

@@ -29,7 +29,7 @@ data class Order(
                 shipping_method = 1, // 1 is standard, 2 is express
                 send_shipping_notification = true,
                 id = "", // Printify id
-                status = STATUS_ON_HOLD
+                status = STATUS_PENDING
             )
         }
     }

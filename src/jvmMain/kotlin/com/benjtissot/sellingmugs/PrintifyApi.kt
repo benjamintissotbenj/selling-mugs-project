@@ -178,9 +178,20 @@ suspend fun apiCancelOrder(orderPrintifyId: String) : HttpStatusCode {
  * @param orderToCalculateShippingCosts the formatted order to calculate shipping costs
  * @return a [ShippingCosts] object that holds the different shipping costs (standard/express)
  */
-suspend fun apiCalculateOrderShippingCost(orderToCalculateShippingCosts: OrderToCalculateShippingCosts) : ShippingCosts {
+suspend fun apiCalculateOrderShippingCost(orderToCalculateShippingCosts: OrderToCalculateShippingCosts) : HttpResponse {
     return jsonPrintifyClient.post("shops/$shopId/orders/shipping.json"){
         contentType(ContentType.Application.Json)
         setBody(orderToCalculateShippingCosts)
-    }.body()
+    }
+}
+
+
+
+/**
+ * Sends an order to production in Printify
+ * @param orderPrintifyId the printify id of the order to be cancelled
+ * @return a [HttpStatusCode] that tells us if the order was cancelled
+ */
+suspend fun apiSendOrderToProduction(orderPrintifyId: String) : HttpResponse {
+    return jsonPrintifyClient.post("shops/$shopId/orders/$orderPrintifyId/send_to_production.json")
 }

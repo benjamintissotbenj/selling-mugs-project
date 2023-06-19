@@ -8,8 +8,12 @@ import org.junit.After
 import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
+import org.litote.kmongo.coroutine.coroutine
+import org.litote.kmongo.reactivestreams.KMongo
 import org.slf4j.LoggerFactory
+import kotlin.random.Random
 
+val random = Random(0)
 abstract class AbstractDatabaseTests {
 
     @Before
@@ -42,7 +46,7 @@ abstract class AbstractDatabaseTests {
 
         private val LOG = KtorSimpleLogger("AbstractDatabaseTests.kt")
         @OptIn(DelicateCoroutinesApi::class)
-        val mainThreadSurrogate = newSingleThreadContext("Test coroutine thread")
+        val mainThreadSurrogate = newSingleThreadContext("Test-coroutine-thread-${random.nextInt()}")
 
         @BeforeClass
         @JvmStatic fun init() {
@@ -50,7 +54,6 @@ abstract class AbstractDatabaseTests {
             deactivateMongoDriverLogs()
 
             setupScope()
-
             database = client.getDatabase("test")
             LOG.delimit("FINISH INIT")
         }
@@ -59,7 +62,6 @@ abstract class AbstractDatabaseTests {
         @AfterClass
         @JvmStatic fun teardown() {
             LOG.delimit("START TEARDOWN")
-            client.close()
             Dispatchers.resetMain() // reset the main dispatcher to the original Main dispatcher
             LOG.delimit("FINISH TEARDOWN")
         }

@@ -27,7 +27,7 @@ import java.io.File
 import java.net.URI
 
 
-val client = KMongo.createClient().coroutine
+var client = KMongo.createClient().coroutine
 var database = client.getDatabase("debug")
 var redirectPath = ""
 

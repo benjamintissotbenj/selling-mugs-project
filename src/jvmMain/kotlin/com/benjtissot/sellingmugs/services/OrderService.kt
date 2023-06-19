@@ -47,9 +47,20 @@ class OrderService {
             return newOrder
         }
 
+        /**
+         * Calculates the shipping costs for an order from Printify
+         * @param orderId the id of the order for which we want to calculate shipping costs
+         * @return a [ShippingCosts] object that holds the different shipping costs (standard/express)
+         */
         suspend fun calculateOrderShippingCost(orderId: String) : ShippingCosts? {
             val order = getOrder(orderId) ?: return null
-            return apiCalculateOrderShippingCost(order.getCalculateShipping())
+            val httpResponse = apiCalculateOrderShippingCost(order.getCalculateShipping())
+            return if (httpResponse.status == HttpStatusCode.OK){
+                httpResponse.body<ShippingCosts>()
+            } else {
+                null
+            }
+
         }
 
 
@@ -78,7 +89,7 @@ class OrderService {
 
         /**
          * Cancels a specific order from Printify
-         * @param orderId the locql id of the order to be cancelled
+         * @param orderId the local id of the order to be cancelled
          * @return a [HttpStatusCode] that tells us if the order was cancelled
          */
         suspend fun cancelOrder(orderId: String) : HttpStatusCode {
@@ -88,10 +99,6 @@ class OrderService {
             } else {
                 apiCancelOrder(getOrderPrintifyId(orderId))
             }
-        }
-
-        suspend fun sendOrderToProduction(orderId: String) {
-            TODO("Implement")
         }
 
     }

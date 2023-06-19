@@ -9,6 +9,7 @@ import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.services.CartService
 import com.benjtissot.sellingmugs.services.MugService
 import com.benjtissot.sellingmugs.services.OrderService
+import com.benjtissot.sellingmugs.services.PrintifyService
 import delimit
 import imageForUpload1
 import imageForUpload2
@@ -18,6 +19,7 @@ import io.ktor.server.auth.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.fail
@@ -105,25 +107,6 @@ class GeneralOrderTests : AbstractDatabaseTests() {
 
     @Test
     /**
-     * Sends an order to production in printify
-     */
-    fun sendOrderToProduction() = runTest {
-        LOG.delimit("Send Order to Production Test")
-        launch {
-            OrderService.placeOrderToPrintify(orderId)
-            val order = OrderService.getOrderFromPrintify(orderId)
-
-            // Check order is empty
-            assert(order?.line_items?.isEmpty() ?: false)
-            OrderService.sendOrderToProduction(orderId)
-
-            // Check order is put into production
-            assert(order?.status == Order.STATUS_PAYMENT_NOT_RECEIVED)
-        }
-    }
-
-    @Test
-    /**
      * Cancels an order in Printify
      */
     fun deleteOrder() = runTest {
@@ -138,6 +121,23 @@ class GeneralOrderTests : AbstractDatabaseTests() {
 
             // Check order is cancelled
             assert(order?.status == Order.STATUS_CANCELLED)
+        }
+    }
+
+
+    @After
+    override fun after() = runTest {
+        launch {
+            productIds.forEach {
+                // Cancels the order created in printify
+                LOG.debug("Cancelling order $orderId")
+                OrderService.cancelOrder(orderId)
+
+                // Delete the published product if it has been published
+                LOG.debug("Deleting product $it")
+                PrintifyService.deleteProduct(it)
+            }
+            super.after()
         }
     }
 
