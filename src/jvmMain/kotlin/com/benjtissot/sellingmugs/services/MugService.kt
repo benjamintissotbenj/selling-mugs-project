@@ -23,5 +23,9 @@ class MugService {
         suspend fun deleteMug(id: String){
             mugCollection.deleteOne(Mug::id eq id) //type safe
         }
+
+        suspend fun deleteMugByPrintifyId(printifyId: String){
+            mugCollection.deleteOne(Mug::printifyId eq printifyId) //type safe
+        }
     }
 }

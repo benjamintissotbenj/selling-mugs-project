@@ -1,12 +1,14 @@
 import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
 import com.benjtissot.sellingmugs.entities.printify.ImageForUploadReceive
 import com.benjtissot.sellingmugs.entities.printify.MugProductInfo
+import com.benjtissot.sellingmugs.services.MugService
 import com.benjtissot.sellingmugs.services.PrintifyService
 import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
+import kotlin.test.assertFails
 
 class PrintifyTests : AbstractDatabaseTests() {
 
@@ -27,6 +29,8 @@ class PrintifyTests : AbstractDatabaseTests() {
             // Delete the published product if it has been published
             val deletedCode = PrintifyService.deleteProduct(productId)
             assert(deletedCode == HttpStatusCode.OK)
+            assert(PrintifyService.getProduct(productId) == null)
+            assert(MugService.getMugByPrintifyId(productId) == null)
         }
     }
 
