@@ -1,5 +1,6 @@
 package com.benjtissot.sellingmugs.services
 
+import com.benjtissot.sellingmugs.apiCancelOrder
 import com.benjtissot.sellingmugs.apiGetOrder
 import com.benjtissot.sellingmugs.apiPlaceOrder
 import com.benjtissot.sellingmugs.entities.printify.order.*
@@ -15,15 +16,19 @@ class OrderService {
         suspend fun getOrder(id: String) : Order? {
             return OrderRepository.getOrder(id)
         }
-        suspend fun getOrderByPrintifyId(printifyId: String) : Order? {
-            return OrderRepository.getOrderByPrintifyId(printifyId)
-        }
 
+        /**
+         * Gets an order from Printify
+         * @param localId the local id of the Order we want to get
+         * @return the [Order]
+         */
         suspend fun getOrderFromPrintify(localId: String) : Order? {
             val httpResponse = apiGetOrder(getOrderPrintifyId(localId))
             return if (httpResponse.status == HttpStatusCode.OK){
                 val receiveOrder = httpResponse.body<ReceiveOrder>()
-                getOrderByPrintifyId(receiveOrder.id) // Printify id
+                OrderRepository.getOrder(localId)
+                    ?.let { OrderRepository.updateOrder(it.copy(status = receiveOrder.status)) }
+                OrderRepository.getOrderByPrintifyId(receiveOrder.id) // Printify id
             } else {
                 null
             }
@@ -73,8 +78,18 @@ class OrderService {
             }
         }
 
-        suspend fun cancelOrder(orderId: String) {
-            TODO("Implement")
+        /**
+         * Cancels a specific order from Printify
+         * @param orderId the locql id of the order to be cancelled
+         * @return a [HttpStatusCode] that tells us if the order was cancelled
+         */
+        suspend fun cancelOrder(orderId: String) : HttpStatusCode {
+            val printifyId = getOrderPrintifyId(orderId)
+            return if (printifyId.isEmpty()){
+                HttpStatusCode(6, "Order was not found in database")
+            } else {
+                apiCancelOrder(getOrderPrintifyId(orderId))
+            }
         }
 
         suspend fun sendOrderToProduction(orderId: String) {

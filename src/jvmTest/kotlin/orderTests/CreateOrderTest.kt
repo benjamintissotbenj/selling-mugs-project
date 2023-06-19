@@ -4,6 +4,7 @@ import AbstractDatabaseTests
 import com.benjtissot.sellingmugs.entities.Session
 import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
 import com.benjtissot.sellingmugs.entities.printify.order.AddressTo
+import com.benjtissot.sellingmugs.entities.printify.order.Order
 import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.services.CartService
 import com.benjtissot.sellingmugs.services.MugService
@@ -80,7 +81,7 @@ class CreateOrderTest : AbstractDatabaseTests() {
             // Assert that the line items are created correctly
             assert(order?.line_items?.map {it.product_id} == productIds)
             // Assert that the order is created on hold
-            assert(order?.status == "on-hold")
+            assert(order?.status == Order.STATUS_ON_HOLD)
         }
     }
 

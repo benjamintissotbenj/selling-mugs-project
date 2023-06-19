@@ -16,14 +16,20 @@ data class Order(
     val status: String,
 ) {
     companion object {
-        // Needed outside of the constructor for serialisation issues
+
+        const val STATUS_CANCELLED = "canceled" // NOT a typo, Printify status has a typo so must adapt
+        const val STATUS_ON_HOLD = "on-hold"
+        const val STATUS_PENDING = "pending"
+        const val STATUS_PAYMENT_NOT_RECEIVED = "payment-not-received"
+
+        // Needed outside the constructor for serialisation issues
         fun create(external_id: String, label: String, line_items: List<LineItem>, address_to: AddressTo,) : Order {
             return Order(
                 external_id, label, line_items, address_to,
                 shipping_method = 1, // 1 is standard, 2 is express
                 send_shipping_notification = true,
                 id = "", // Printify id
-                status = "on-hold"
+                status = STATUS_ON_HOLD
             )
         }
     }

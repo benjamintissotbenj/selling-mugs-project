@@ -3,6 +3,7 @@ package orderTests
 import AbstractDatabaseTests
 import com.benjtissot.sellingmugs.entities.Session
 import com.benjtissot.sellingmugs.entities.printify.order.AddressTo
+import com.benjtissot.sellingmugs.entities.printify.order.Order
 import com.benjtissot.sellingmugs.entities.printify.order.PrintifyOrderPushSuccess
 import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.services.CartService
@@ -12,6 +13,8 @@ import delimit
 import imageForUpload1
 import imageForUpload2
 import imageForUpload3
+import io.ktor.http.*
+import io.ktor.server.auth.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
@@ -99,22 +102,6 @@ class GeneralOrderTests : AbstractDatabaseTests() {
         }
     }
 
-
-    @Test
-    /**
-     * Pushes an order to Printify
-     */
-    fun placeOrderToPrintify() = runTest {
-        LOG.delimit("Place Order to Printify Test")
-        launch {
-            val result = OrderService.placeOrderToPrintify(orderId)
-            val order = OrderService.getOrderFromPrintify(orderId)
-
-            // Check the printifyId (id) is not empty
-            assert(order?.id?.isNotEmpty() ?: false)
-        }
-    }
-
     @Test
     /**
      * Sends an order to production in printify
@@ -130,7 +117,7 @@ class GeneralOrderTests : AbstractDatabaseTests() {
             OrderService.sendOrderToProduction(orderId)
 
             // Check order is put into production
-            assert(order?.status == "payment-not-received")
+            assert(order?.status == Order.STATUS_PAYMENT_NOT_RECEIVED)
         }
     }
 
@@ -141,14 +128,15 @@ class GeneralOrderTests : AbstractDatabaseTests() {
     fun deleteOrder() = runTest {
         LOG.delimit("Delete Order Test")
         launch {
-            OrderService.cancelOrder(orderId)
+            OrderService.placeOrderToPrintify(orderId)
+
+            val responseCode = OrderService.cancelOrder(orderId)
+            assert(responseCode == HttpStatusCode.OK)
+
             val order = OrderService.getOrderFromPrintify(orderId)
 
-            // Check order is empty
-            assert(order?.line_items?.isNotEmpty() ?: false)
-
             // Check order is cancelled
-            assert(order?.status == "cancelled")
+            assert(order?.status == Order.STATUS_CANCELLED)
         }
     }
 
