@@ -1,21 +1,30 @@
 package com.benjtissot.sellingmugs
 
 import com.benjtissot.sellingmugs.entities.printify.*
+import com.benjtissot.sellingmugs.entities.printify.order.*
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.json.Json
 
 /**
  * Commonly owned Printify API to be accessed both by the front-end and the backend
  */
 var jsonPrintifyClient = HttpClient {
     install(ContentNegotiation) {
-        json()
+        json(Json{ ignoreUnknownKeys = true })
+    }
+    install(Logging){
+        level = LogLevel.BODY
+        filter { request ->
+            !request.url.pathSegments.contains("uploads")
+        }
     }
     defaultRequest {
         url("https://fast-earth-36264.herokuapp.com/https://api.printify.com/v1/")
@@ -25,6 +34,12 @@ var jsonPrintifyClient = HttpClient {
 }
 
 const val shopId = 8965065
+
+/**
+ *
+ * IMAGE
+ *
+ */
 
 /**
  * Uploads an image to the printify account
@@ -37,6 +52,13 @@ suspend fun apiUploadImage(imageFile: ImageForUpload) : HttpResponse {
     }
     return httpResponse
 }
+
+
+/**
+ *
+ * PRODUCTS
+ *
+ */
 
 /**
  * Deletes an image to the printify account
@@ -65,7 +87,7 @@ suspend fun apiCreateProduct(mugProduct: MugProduct): HttpResponse {
 suspend fun apiPublishProduct(productId: String) : HttpStatusCode {
     return jsonPrintifyClient.post("shops/$shopId/products/$productId/publish.json"){
         contentType(ContentType.Application.Json)
-        setBody(Publish())
+        setBody(Publish.default())
     }.status
 }
 
@@ -101,4 +123,64 @@ suspend fun apiUpdateProduct(productId: String, updatedProductImage: UpdateProdu
         contentType(ContentType.Application.Json)
         setBody(updatedProductImage)
     }
+}
+
+
+/**
+ *
+ * ORDERS
+ *
+ */
+
+
+/**
+ * Gets a specific order from Printify
+ * @param orderPrintifyId the printify id of the order to get
+ * @return a [HttpResponse] object that holds all the information concerning the order if it is found
+ */
+suspend fun apiGetOrder(orderPrintifyId: String) : HttpResponse {
+    return jsonPrintifyClient.get("shops/$shopId/orders/$orderPrintifyId.json")
+}
+
+
+/**
+ * Places an order to Printify
+ * @param order the order to place to Printify
+ * @return a [PrintifyOrderPushResult] object that holds all the information concerning the status of the
+ * push order if it fails, and the printify ID if it is a success
+ */
+suspend fun apiPlaceOrder(order: Order) : PrintifyOrderPushResult {
+    val httpResponse = jsonPrintifyClient.post("shops/$shopId/orders.json"){
+        contentType(ContentType.Application.Json)
+        setBody(order)
+    }
+    val result = if (httpResponse.status == HttpStatusCode.BadRequest){
+        httpResponse.body<PrintifyOrderPushFail>()
+    } else {
+        httpResponse.body<PrintifyOrderPushSuccess>()
+    }
+    return result
+}
+
+
+/**
+ * Cancels a specific order from Printify
+ * @param orderPrintifyId the printify id of the order to be cancelled
+ * @return a [HttpStatusCode] that tells us if the order was cancelled
+ */
+suspend fun apiCancelOrder(orderPrintifyId: String) : HttpStatusCode {
+    return jsonPrintifyClient.post("shops/$shopId/orders/$orderPrintifyId/cancel.json").status
+}
+
+
+/**
+ * Calculates the shipping costs for an order from Printify
+ * @param orderToCalculateShippingCosts the formatted order to calculate shipping costs
+ * @return a [ShippingCosts] object that holds the different shipping costs (standard/express)
+ */
+suspend fun apiCalculateOrderShippingCost(orderToCalculateShippingCosts: OrderToCalculateShippingCosts) : ShippingCosts {
+    return jsonPrintifyClient.post("shops/$shopId/orders/shipping.json"){
+        contentType(ContentType.Application.Json)
+        setBody(orderToCalculateShippingCosts)
+    }.body()
 }

@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 class PrintArea(
     val variant_ids : ArrayList<Int>,
     val placeholders : ArrayList<Placeholder>,
-    val background: String = "#ffffff"
+    val background: String
 ) {
 }

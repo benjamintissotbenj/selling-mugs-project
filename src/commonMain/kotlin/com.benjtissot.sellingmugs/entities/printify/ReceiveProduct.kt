@@ -16,10 +16,10 @@ data class ReceiveProduct(
     val visible: Boolean,
     val is_locked: Boolean,
     val external: External?,
-    val blueprint_id: Int = 535,
-    val user_id: Int = 13158500,
-    val shop_id: Int = 8965065,
-    val print_provider_id: Int = 6,
+    val blueprint_id: Int,
+    val user_id: Int,
+    val shop_id: Int,
+    val print_provider_id: Int,
     var print_areas: ArrayList<PrintArea>,
     val print_details: ArrayList<String>,
     val sales_channel_properties: ArrayList<String>,
@@ -27,11 +27,12 @@ data class ReceiveProduct(
 ) {
     fun changeImage(newImage: Image) : UpdateProductImage {
         val placeholder = Placeholder("front", arrayListOf(newImage))
-        val variants = arrayListOf(Variant())
+        val variants = arrayListOf(Variant.default())
         val print_areas = arrayListOf(
             PrintArea(
                 variant_ids = variants.map { it.id } as ArrayList<Int>,
-                placeholders = arrayListOf(placeholder)
+                placeholders = arrayListOf(placeholder),
+                background = "#ffffff"
             )
         )
         return UpdateProductImage(print_areas = print_areas)

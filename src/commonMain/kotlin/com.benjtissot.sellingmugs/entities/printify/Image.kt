@@ -9,10 +9,10 @@ class Image(val id: String,
             val type: String,
             val height: Int,
             val width: Int,
-            val x: Float = 0.5f, // position of the center
-            val y: Float = 0.5f, // position of the center
-            val scale: Float = 1f, // this means scale relative to width
-            val angle: Int = 0) {
+            val x: Float, // position of the center
+            val y: Float, // position of the center
+            val scale: Float, // this means scale relative to width
+            val angle: Int) {
 }
 @Serializable
 class ImageForUploadReceive(val id: String,
@@ -25,7 +25,7 @@ class ImageForUploadReceive(val id: String,
             val upload_time: String) {
 
     fun toImage() : Image {
-        return Image(id, file_name, mime_type, height, width)
+        return Image(id, file_name, mime_type, height, width, 0.5f, 0.5f, 1f, 0)
     }
 
     /**

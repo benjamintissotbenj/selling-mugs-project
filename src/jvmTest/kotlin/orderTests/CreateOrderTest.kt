@@ -65,20 +65,22 @@ class CreateOrderTest : AbstractDatabaseTests() {
                 "TEST",
                 "selling.mugs.imperial@gmail.com",
                 "",
-                "UK",
-                "",
+                "GB",
+                "England",
                 "Exhibition Rd",
                 "South Kensington",
                 "London",
                 "SW7 2BX"
                 )
-            val orderId = OrderService.createOrderFromCart(addressTo).external_id
+            val orderId = OrderService.createOrderFromCart(addressTo, session.cartId).external_id
 
             // Assert the order has been created in the database
             val order = OrderService.getOrder(orderId)
             assert(order != null)
             // Assert that the line items are created correctly
             assert(order?.line_items?.map {it.product_id} == productIds)
+            // Assert that the order is created on hold
+            assert(order?.status == "on-hold")
         }
     }
 

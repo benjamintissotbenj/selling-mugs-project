@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 data class LineItem(
     val product_id: String,
     val quantity: Int,
-    val variant_id: Int = 69010,
+    val variant_id: Int,
 ) {
 }

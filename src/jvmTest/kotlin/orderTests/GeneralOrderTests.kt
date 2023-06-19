@@ -52,14 +52,15 @@ class GeneralOrderTests : AbstractDatabaseTests() {
                 "TEST",
                 "selling.mugs.imperial@gmail.com",
                 "",
-                "UK",
-                "",
+                "GB",
+                "England",
                 "Exhibition Rd",
                 "South Kensington",
                 "London",
                 "SW7 2BX"
             )
-            orderId = OrderService.createOrderFromCart(addressTo).external_id
+            orderId = OrderService.createOrderFromCart(addressTo, session.cartId).external_id
+            LOG.debug("The local OrderID is $orderId")
         }
     }
 
@@ -85,6 +86,7 @@ class GeneralOrderTests : AbstractDatabaseTests() {
         launch {
             val printifyOrderPushResult = OrderService.placeOrderToPrintify(orderId)
             if (printifyOrderPushResult is PrintifyOrderPushSuccess){
+                LOG.debug("The printify OrderID is ${printifyOrderPushResult.id}")
                 val order = OrderService.getOrderFromPrintify(orderId)
                 assert(order != null)
                 order?.id?.let {
@@ -94,6 +96,59 @@ class GeneralOrderTests : AbstractDatabaseTests() {
             } else {
                 fail()
             }
+        }
+    }
+
+
+    @Test
+    /**
+     * Pushes an order to Printify
+     */
+    fun placeOrderToPrintify() = runTest {
+        LOG.delimit("Place Order to Printify Test")
+        launch {
+            val result = OrderService.placeOrderToPrintify(orderId)
+            val order = OrderService.getOrderFromPrintify(orderId)
+
+            // Check the printifyId (id) is not empty
+            assert(order?.id?.isNotEmpty() ?: false)
+        }
+    }
+
+    @Test
+    /**
+     * Sends an order to production in printify
+     */
+    fun sendOrderToProduction() = runTest {
+        LOG.delimit("Send Order to Production Test")
+        launch {
+            OrderService.placeOrderToPrintify(orderId)
+            val order = OrderService.getOrderFromPrintify(orderId)
+
+            // Check order is empty
+            assert(order?.line_items?.isEmpty() ?: false)
+            OrderService.sendOrderToProduction(orderId)
+
+            // Check order is put into production
+            assert(order?.status == "payment-not-received")
+        }
+    }
+
+    @Test
+    /**
+     * Cancels an order in Printify
+     */
+    fun deleteOrder() = runTest {
+        LOG.delimit("Delete Order Test")
+        launch {
+            OrderService.cancelOrder(orderId)
+            val order = OrderService.getOrderFromPrintify(orderId)
+
+            // Check order is empty
+            assert(order?.line_items?.isNotEmpty() ?: false)
+
+            // Check order is cancelled
+            assert(order?.status == "cancelled")
         }
     }
 

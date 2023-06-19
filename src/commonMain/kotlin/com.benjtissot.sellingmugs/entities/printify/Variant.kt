@@ -3,16 +3,33 @@ package com.benjtissot.sellingmugs.entities.printify
 import kotlinx.serialization.Serializable
 
 @Serializable
-class Variant(val id: Int = 69010,
-              val sku: String = "",
-              val cost: Int =  599,
-              val price: Int = 600,
-              val title: String = "11oz",
-              val grams: Int = 320,
-              val is_enabled: Boolean = true,
-              val is_default: Boolean = true,
-              val is_available: Boolean =  true,
-              val options: ArrayList<Int> = arrayListOf(1189),
-              val quantity: Int = 1
+class Variant(val id: Int,
+              val sku: String,
+              val cost: Int,
+              val price: Int,
+              val title: String,
+              val grams: Int,
+              val is_enabled: Boolean,
+              val is_default: Boolean,
+              val is_available: Boolean,
+              val options: ArrayList<Int>,
+              val quantity: Int
 ) {
+    companion object {
+        fun default() : Variant {
+            return Variant(
+                id = 69010,
+                sku = "",
+                cost =  599,
+                price = 600,
+                title = "11oz",
+                grams = 320,
+                is_enabled = true,
+                is_default = true,
+                is_available =  true,
+                options = arrayListOf(1189),
+                quantity = 1
+            )
+        }
+    }
 }
