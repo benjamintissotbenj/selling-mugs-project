@@ -11,6 +11,7 @@ import io.ktor.client.call.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.util.logging.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.komputing.khash.sha256.extensions.sha256
 import react.FC
@@ -23,7 +24,6 @@ private val LOG = KtorSimpleLogger("loginPage.kt")
 
 
 val LoginPage = FC<NavigationProps> { props ->
-
 
     div {
         css {
@@ -72,12 +72,20 @@ val LoginPage = FC<NavigationProps> { props ->
 }
 
 suspend fun onLoginResponse(httpResponse: HttpResponse, navigateFunction: NavigateFunction){
+    LOG.debug("onLoginResponse: $httpResponse")
     when (httpResponse.status) {
         HttpStatusCode.OK -> {
             // Using local variable because otherwise update is not atomic
             val tokenString = httpResponse.body<String>()
             updateClientWithToken(tokenString)
-            navigateFunction.invoke(HOMEPAGE_PATH)
+            if (frontEndRedirect.isEmpty()){
+                navigateFunction.invoke(HOMEPAGE_PATH)
+            } else {
+                val redirectPath = frontEndRedirect
+                frontEndRedirect = ""
+                delay(100L)
+                navigateFunction.invoke(redirectPath)
+            }
         }
         HttpStatusCode.Conflict -> {
             // User exists but is not authenticated

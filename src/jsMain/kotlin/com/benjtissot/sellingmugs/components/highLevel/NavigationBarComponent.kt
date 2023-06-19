@@ -68,6 +68,7 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
                         scope.launch{
                             recordClick(props.session.clickDataId, Const.ClickType.CHECKOUT_NAV.toString())
                         }
+                        frontEndRedirect = ""
                         props.navigate.invoke(CHECKOUT_PATH)
                     }
                 }
@@ -87,6 +88,7 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
                         scope.launch{
                             recordClick(props.session.clickDataId, Const.ClickType.HOME_NAV.toString())
                         }
+                        frontEndRedirect = ""
                         props.navigate.invoke(HOMEPAGE_PATH)
                     }
                 }
@@ -106,6 +108,7 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
                         scope.launch{
                             recordClick(props.session.clickDataId, Const.ClickType.CART_NAV.toString())
                         }
+                        frontEndRedirect = ""
                         props.navigate.invoke(CART_PATH)
                     }
                 }
