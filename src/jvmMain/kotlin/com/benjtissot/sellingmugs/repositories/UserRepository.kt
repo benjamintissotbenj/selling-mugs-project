@@ -42,6 +42,13 @@ class UserRepository {
         }
 
         /**
+         * @param userId the [String] id of the user to be deleted
+         */
+        suspend fun deleteUser(userId: String) {
+            userCollection.deleteOneById(userId)
+        }
+
+        /**
          * @param user the [User] to be authenticated
          * @return a [Boolean] determining if the user is authenticated
          */

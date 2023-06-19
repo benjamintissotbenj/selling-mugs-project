@@ -99,6 +99,13 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
                             userList = getUserList()
                         }
                     }
+                    onDeleteUser = { userId ->
+                        scope.launch {
+                            deleteUser(userId)
+                            userList = getUserList()
+                        }
+                    }
+
                 }
 
             }

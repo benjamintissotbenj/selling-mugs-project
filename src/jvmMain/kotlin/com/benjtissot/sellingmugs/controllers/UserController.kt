@@ -2,6 +2,7 @@ package com.benjtissot.sellingmugs.controllers
 
 import com.benjtissot.sellingmugs.USER_INFO_MESSAGE_PATH
 import com.benjtissot.sellingmugs.USER_OBJECT_PATH
+import com.benjtissot.sellingmugs.repositories.UserRepository.Companion.deleteUser
 import com.benjtissot.sellingmugs.repositories.UserRepository.Companion.getUserList
 import com.benjtissot.sellingmugs.repositories.UserRepository.Companion.updateUser
 import io.ktor.http.*
@@ -26,6 +27,7 @@ fun Route.userRouting(){
             call.respond(HttpStatusCode.OK)
         }
         delete() {
+            deleteUser(call.receive())
             call.respond(HttpStatusCode.OK)
         }
     }

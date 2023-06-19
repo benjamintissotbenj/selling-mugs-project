@@ -1,18 +1,14 @@
 package com.benjtissot.sellingmugs.components.lists
 
-import com.benjtissot.sellingmugs.Const
-import com.benjtissot.sellingmugs.contentCenteredVertically
+import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.entities.User
-import com.benjtissot.sellingmugs.fontNormal
-import com.benjtissot.sellingmugs.justifySpaceBetween
 import csstype.*
 import emotion.react.css
 import io.ktor.util.logging.*
+import kotlinx.coroutines.launch
 import mui.icons.material.PersonOutline
-import mui.material.Icon
-import mui.material.IconSize
-import mui.material.MenuItem
-import mui.material.Select
+import mui.icons.material.Close
+import mui.material.*
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
@@ -23,6 +19,7 @@ private val LOG = KtorSimpleLogger("UserItem.kt")
 external interface UserItemProps: Props {
     var user: User
     var onChangeUserType: (User) -> Unit
+    var onDeleteUser: (String) -> Unit
 }
 
 val UserItem = FC<UserItemProps> {
@@ -32,7 +29,8 @@ val UserItem = FC<UserItemProps> {
             contentCenteredVertically()
             justifySpaceBetween()
             width = 40.vw
-            height = 10.vh
+            height = 6.vh
+            minHeight = 40.px
             padding = 1.rem
         }
 
@@ -86,6 +84,11 @@ val UserItem = FC<UserItemProps> {
                 value = Const.UserType.ADMIN.toString()
                 +Const.UserType.ADMIN.toString()
             }
+        }
+
+        IconButton {
+            Close()
+            onClick = {props.onDeleteUser(props.user.id)}
         }
     }
 

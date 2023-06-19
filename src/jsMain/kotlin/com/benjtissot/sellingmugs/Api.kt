@@ -125,6 +125,13 @@ suspend fun updateUser(user: User) : HttpResponse {
     }
 }
 
+suspend fun deleteUser(userId: String) : HttpResponse {
+    return jsonClient.delete(USER_OBJECT_PATH){
+        contentType(ContentType.Application.Json)
+        setBody(userId)
+    }
+}
+
 suspend fun getUserList() : List<User> {
     return jsonClient.get(USER_OBJECT_PATH).body()
 }
