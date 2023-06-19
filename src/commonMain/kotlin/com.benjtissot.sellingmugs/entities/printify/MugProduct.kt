@@ -7,8 +7,8 @@ class MugProduct(
     val id: String = "",
     val title: String,
     val description: String,
-    val blueprint_id: Int = 535,
-    val print_provider_id: Int = 6,
+    val blueprint_id: Int,
+    val print_provider_id: Int,
     val variants: ArrayList<Variant>,
     val print_areas: ArrayList<PrintArea>
     ) {
@@ -23,23 +23,24 @@ class MugProductInfo(
     /**
      * Creates a MugProduct from a MugProductInfo
      */
-    fun toMugProduct() : MugProduct {
+    fun toMugProduct(): MugProduct {
         val placeholder = Placeholder("front", arrayListOf(image))
-        val variants = arrayListOf(Variant())
+        val variants = arrayListOf(Variant.default())
         val print_areas = arrayListOf(
             PrintArea(
                 variant_ids = variants.map { it.id } as ArrayList<Int>,
-                placeholders = arrayListOf(placeholder)
+                placeholders = arrayListOf(placeholder),
+                background = "#ffffff"
             )
         )
 
-        val mugProduct = MugProduct(
+        return MugProduct(
             title = title,
             description = description,
             variants = variants,
-            print_areas = print_areas
+            print_areas = print_areas,
+            blueprint_id = 535,
+            print_provider_id = 6
         )
-
-        return mugProduct
     }
 }

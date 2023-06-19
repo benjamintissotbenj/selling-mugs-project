@@ -13,7 +13,7 @@ data class User(
     val email: String,
     val passwordHash: String,
     val userType: Const.UserType,
-    var questionnaireId: String
+    var addressInfoId: String
     ){
 
     companion object {

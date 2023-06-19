@@ -74,7 +74,11 @@ class PrintifyService {
         }
 
         suspend fun deleteProduct(productId: String) : HttpStatusCode {
-            return apiDeleteProduct(productId).status
+            val statusCode = apiDeleteProduct(productId).status
+            if (statusCode == HttpStatusCode.OK){
+                MugService.deleteMugByPrintifyId(productId)
+            }
+            return statusCode
         }
 
 

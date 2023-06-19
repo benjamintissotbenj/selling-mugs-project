@@ -86,6 +86,9 @@ kotlin {
                 // Client because calling printify api
                 implementation("io.ktor:ktor-client-java:$ktorVersion")
                 implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+
+                // Server call logging
+                implementation("io.ktor:ktor-client-logging:$ktorVersion")
             }
         }
 
