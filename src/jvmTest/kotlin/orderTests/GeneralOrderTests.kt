@@ -76,7 +76,8 @@ class GeneralOrderTests : AbstractDatabaseTests() {
         launch {
             val shippingCosts = OrderService.calculateOrderShippingCost(orderId)
             assert(shippingCosts != null)
-            // TODO: Assert correct prices
+            assert(shippingCosts?.standard == 817)
+            assert(shippingCosts?.express == 1000)
         }
     }
 

@@ -1,10 +1,7 @@
 package com.benjtissot.sellingmugs.services
 
-import com.benjtissot.sellingmugs.apiCancelOrder
-import com.benjtissot.sellingmugs.apiGetOrder
-import com.benjtissot.sellingmugs.apiPlaceOrder
+import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.entities.printify.order.*
-import com.benjtissot.sellingmugs.genUuid
 import com.benjtissot.sellingmugs.repositories.OrderRepository
 import com.benjtissot.sellingmugs.repositories.OrderRepository.Companion.getOrderPrintifyId
 import io.ktor.client.call.*
@@ -51,7 +48,8 @@ class OrderService {
         }
 
         suspend fun calculateOrderShippingCost(orderId: String) : ShippingCosts? {
-            TODO("Implement")
+            val order = getOrder(orderId) ?: return null
+            return apiCalculateOrderShippingCost(order.getCalculateShipping())
         }
 
 
