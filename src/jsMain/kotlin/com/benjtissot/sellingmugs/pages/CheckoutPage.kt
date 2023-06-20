@@ -3,6 +3,8 @@ package com.benjtissot.sellingmugs.pages
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.entities.printify.order.AddressTo
 import com.benjtissot.sellingmugs.entities.printify.order.Order
+import com.benjtissot.sellingmugs.entities.stripe.getPaymentLink
+import com.benjtissot.sellingmugs.entities.stripe.paramSessionId
 import csstype.vh
 import csstype.vw
 import emotion.react.css
@@ -25,7 +27,9 @@ private val LOG = KtorSimpleLogger("CheckoutPage.kt")
 val CheckoutPage = FC<NavigationProps> { props ->
 
     var order : Order? by useState(null)
-    val paymentLink : String = order?.let{"https://buy.stripe.com/3cseWd3FX7uVc6c3ce?client_reference_id=${it.external_id}"} ?: ""
+    val paymentLink : String = order?.let{ // details of the order helps identify which link to use
+        getPaymentLink(1, props.session.id)
+    } ?: ""
 
     useEffectOnce {
         scope.launch {

@@ -89,6 +89,11 @@ kotlin {
 
                 // Server call logging
                 implementation("io.ktor:ktor-client-logging:$ktorVersion")
+
+                // https://mvnrepository.com/artifact/com.stripe/stripe-java
+                implementation("com.stripe:stripe-java:22.23.1")
+                // GSON
+                implementation("com.google.code.gson:gson:2.8.5")
             }
         }
 

@@ -10,6 +10,10 @@ val sessionCollection = database.getCollection<Session>()
 class SessionRepository {
     companion object {
 
+        suspend fun getSession(id: String) : Session? {
+            return sessionCollection.findOneById(id)
+        }
+
         /**
          * Creates a [Session] in the database
          * @return the created session
