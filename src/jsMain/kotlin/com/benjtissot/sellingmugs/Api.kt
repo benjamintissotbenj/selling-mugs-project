@@ -2,6 +2,8 @@ package com.benjtissot.sellingmugs
 
 import com.benjtissot.sellingmugs.entities.*
 import com.benjtissot.sellingmugs.entities.printify.*
+import com.benjtissot.sellingmugs.entities.printify.order.AddressTo
+import com.benjtissot.sellingmugs.entities.printify.order.Order
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
@@ -191,4 +193,14 @@ suspend fun putProduct(productId: String, updatedProductImage: UpdateProductImag
  */
 suspend fun getProductPreviewImages(productId: String) : List<String> {
     return jsonClient.get("$PRINTIFY_PATH$PRODUCT_PATH/$productId$IMAGES_PATH").body()
+}
+
+/**
+ * Creates an order in the back-end containing the different products selected in the cart
+ */
+suspend fun createOrder(addressTo: AddressTo) : HttpResponse {
+    return jsonClient.post(CREATE_ORDER_PATH){
+        contentType(ContentType.Application.Json)
+        setBody(addressTo)
+    }
 }

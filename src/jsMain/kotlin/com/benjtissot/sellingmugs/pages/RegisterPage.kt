@@ -43,7 +43,7 @@ val RegisterPage = FC<NavigationProps> { props ->
                             } else {
                                 val redirectPath = frontEndRedirect
                                 frontEndRedirect = ""
-                                delay(100L)
+                                delay(200L)
                                 props.navigate.invoke(redirectPath)
                             }
                         }

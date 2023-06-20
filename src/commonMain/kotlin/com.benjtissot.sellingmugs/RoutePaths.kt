@@ -1,5 +1,7 @@
 package com.benjtissot.sellingmugs
 
+import com.benjtissot.sellingmugs.entities.printify.order.Order
+
 // Object paths
 const val SESSION_OBJECT_PATH = "/session"
 const val CLICK_DATA_OBJECT_PATH = "/click_data"
@@ -39,3 +41,4 @@ const val PUBLISH_PRODUCT_PATH = "/publish"
 const val UPLOAD_IMAGE_PATH = "/upload"
 const val PRODUCT_PATH = "/product"
 const val IMAGES_PATH = "/images"
+const val CREATE_ORDER_PATH = "${Order.path}/create"

@@ -83,7 +83,7 @@ suspend fun onLoginResponse(httpResponse: HttpResponse, navigateFunction: Naviga
             } else {
                 val redirectPath = frontEndRedirect
                 frontEndRedirect = ""
-                delay(100L)
+                delay(200L)
                 navigateFunction.invoke(redirectPath)
             }
         }
