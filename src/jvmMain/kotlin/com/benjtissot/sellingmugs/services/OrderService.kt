@@ -1,9 +1,12 @@
 package com.benjtissot.sellingmugs.services
 
 import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.entities.User
 import com.benjtissot.sellingmugs.entities.printify.order.*
 import com.benjtissot.sellingmugs.repositories.OrderRepository
 import com.benjtissot.sellingmugs.repositories.OrderRepository.Companion.getOrderPrintifyId
+import com.benjtissot.sellingmugs.repositories.SessionRepository
+import com.benjtissot.sellingmugs.repositories.UserRepository
 import io.ktor.client.call.*
 import io.ktor.http.*
 
@@ -33,17 +36,24 @@ class OrderService {
 
         /**
          * Creates an order and populates it with the correct information of what is in the cart
+         * /!\ Don't forget to update session after creating the Order
+         *
          * @param addressTo the address to which deliver the order
          * @param cartId the id of the cart to populate the order with
          * @return the [Order] created and added to the database
          */
-        suspend fun createOrderFromCart(addressTo: AddressTo, cartId: String) : Order {
+        suspend fun createOrderFromCart(addressTo: AddressTo, cartId: String, user: User) : Order {
             val cart = CartService.getCart(cartId)
             val lineItems: ArrayList<LineItem> = ArrayList(emptyList())
             cart?.let {lineItems.addAll(cart.mugCartItemList.map {LineItem(it.mug.printifyId, it.amount, 69010)})}
             val newOrder = Order.create(genUuid(), OrderRepository.getOrderNextLabel(), lineItems, addressTo)
+
             // Insert order in database
             OrderRepository.insertOrder(newOrder)
+
+            // Put orderId in user
+            UserRepository.updateUser(user.addOrderId(newOrder.external_id))
+
             return newOrder
         }
 

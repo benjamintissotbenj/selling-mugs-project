@@ -1,15 +1,15 @@
 package orderTests
 
 import AbstractDatabaseTests
+import com.benjtissot.sellingmugs.entities.LoginInfo
+import com.benjtissot.sellingmugs.entities.RegisterInfo
 import com.benjtissot.sellingmugs.entities.Session
 import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
 import com.benjtissot.sellingmugs.entities.printify.order.AddressTo
 import com.benjtissot.sellingmugs.entities.printify.order.Order
 import com.benjtissot.sellingmugs.repositories.SessionRepository
-import com.benjtissot.sellingmugs.services.CartService
-import com.benjtissot.sellingmugs.services.MugService
-import com.benjtissot.sellingmugs.services.OrderService
-import com.benjtissot.sellingmugs.services.PrintifyService
+import com.benjtissot.sellingmugs.repositories.UserRepository
+import com.benjtissot.sellingmugs.services.*
 import delimit
 import imageForUpload1
 import imageForUpload2
@@ -22,6 +22,10 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.asserter
+import kotlin.test.fail
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
+import kotlin.time.Duration.Companion.seconds
 
 class CreateOrderTest : AbstractDatabaseTests() {
 
@@ -32,10 +36,18 @@ class CreateOrderTest : AbstractDatabaseTests() {
 
 
     @Before
-    override fun before() = runTest {
+    override fun before() = runTest(timeout = 30.seconds) {
         super.before()
         launch {
             session = SessionRepository.createSession()
+            LoginService.register(
+                RegisterInfo("Test", "TEST", "123", "123"),
+                session
+            )
+            session = LoginService.login(
+                LoginInfo("123", "123"),
+                session
+            )
             // Create 3 different mugs
             LOG.debug("Creating 3 different mugs")
             productIds.add(createProductWithImage(imageForUpload1))
@@ -54,6 +66,7 @@ class CreateOrderTest : AbstractDatabaseTests() {
         }
     }
 
+    @OptIn(ExperimentalTime::class)
     @Test
     /**
      * Creates an order in database
@@ -73,15 +86,23 @@ class CreateOrderTest : AbstractDatabaseTests() {
                 "London",
                 "SW7 2BX"
                 )
-            val orderId = OrderService.createOrderFromCart(addressTo, session.cartId).external_id
 
-            // Assert the order has been created in the database
-            val order = OrderService.getOrder(orderId)
-            assert(order != null)
-            // Assert that the line items are created correctly
-            assert(order?.line_items?.map {it.product_id} == productIds)
-            // Assert that the order is created pending
-            assert(order?.status == Order.STATUS_PENDING)
+            session.user?.let { user ->
+                val orderId = OrderService.createOrderFromCart(addressTo, session.cartId, user).external_id
+                session = SessionRepository.updateSession(session.copy(orderId = orderId, user = UserRepository.getUserById(user.id)))
+
+                // Assert the order has been created in the database
+                val order = OrderService.getOrder(orderId)
+                assert(order != null)
+                // Assert that the line items are created correctly
+                assert(order?.line_items?.map {it.product_id} == productIds)
+                // Assert that the order is created pending
+                assert(order?.status == Order.STATUS_PENDING)
+                // Assert the orderID has been added to the user and the session
+                assert(session.user?.orderIds?.contains(orderId) ?: false)
+                assert(session.orderId == orderId)
+            } ?: fail()
+
         }
     }
 

@@ -13,7 +13,8 @@ data class User(
     val email: String,
     val passwordHash: String,
     val userType: Const.UserType,
-    var addressInfoId: String
+    var addressInfoId: String,
+    var orderIds: ArrayList<String>
     ){
 
     companion object {
@@ -28,12 +29,18 @@ data class User(
         fun dummy(uuid: String, seed: Int) : User {
             val seedString = seed.toString()
             return User(uuid, seedString, seedString, seedString, seedString,
-                if (seed>=2) Const.UserType.CLIENT else Const.UserType.ADMIN, seedString)
+                if (seed>=2) Const.UserType.CLIENT else Const.UserType.ADMIN, seedString,
+                ArrayList(emptyList()))
         }
     }
 
     fun getNameInitial() : String{
         return "${firstName[0]}. $lastName"
+    }
+
+    fun addOrderId(orderId: String) : User {
+        orderIds.add(orderId)
+        return this
     }
 }
 
@@ -60,7 +67,7 @@ data class RegisterInfo(
 ){
 
     fun toUser(id: String) : User {
-        return User(id, firstName, lastName, email, passwordHash, Const.UserType.CLIENT, "")
+        return User(id, firstName, lastName, email, passwordHash, Const.UserType.CLIENT, "", ArrayList(emptyList()))
     }
 
     fun toLoginInfo() : LoginInfo {

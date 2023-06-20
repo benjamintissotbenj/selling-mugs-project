@@ -35,6 +35,13 @@ class UserRepository {
         }
 
         /**
+         * @param user the [User] to be inserted
+         */
+        suspend fun getUserById(id: String): User? {
+            return userCollection.findOne(User::id eq id)
+        }
+
+        /**
          * @param user the [User] to be updated (inserted if not existent)
          */
         suspend fun updateUser(user: User) {

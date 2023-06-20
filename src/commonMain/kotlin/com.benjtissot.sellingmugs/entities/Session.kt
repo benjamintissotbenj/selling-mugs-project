@@ -11,7 +11,8 @@ data class Session(
     var lastUser: User?, // updated every time someone logs in but not wiped on logout
     var jwtToken: String,
     val clickDataId: String,
-    val cartId: String
+    val cartId: String,
+    val orderId: String? // the current order id
     ){
 
     companion object {

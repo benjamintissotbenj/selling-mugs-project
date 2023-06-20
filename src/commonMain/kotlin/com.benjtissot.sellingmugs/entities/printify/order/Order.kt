@@ -1,5 +1,6 @@
 package com.benjtissot.sellingmugs.entities.printify.order
 
+import com.benjtissot.sellingmugs.CART_OBJECT_PATH
 import io.ktor.http.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -21,6 +22,8 @@ data class Order(
         const val STATUS_ON_HOLD = "on-hold"
         const val STATUS_PENDING = "pending"
         const val STATUS_PAYMENT_NOT_RECEIVED = "payment-not-received"
+
+        const val path = CART_OBJECT_PATH
 
         // Needed outside the constructor for serialisation issues
         fun create(external_id: String, label: String, line_items: List<LineItem>, address_to: AddressTo,) : Order {

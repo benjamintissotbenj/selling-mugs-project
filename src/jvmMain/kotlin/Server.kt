@@ -97,6 +97,7 @@ fun Application.createRoutes(){
         userRouting()
         printifyRouting()
         checkRedirectRouting()
+        orderRouting()
 
         // Static to access resources (index.html, sellingmugs.js)
         static("/static") {

@@ -11,6 +11,7 @@ const val MUG_OBJECT_PATH = "/mug"
 const val TRANSACTION_OBJECT_PATH = "/transaction"
 const val CLICK_OBJECT_PATH = "/click"
 const val CART_OBJECT_PATH = "/cart"
+const val ORDER_OBJECT_PATH = "/order"
 
 // Rendering Paths
 
