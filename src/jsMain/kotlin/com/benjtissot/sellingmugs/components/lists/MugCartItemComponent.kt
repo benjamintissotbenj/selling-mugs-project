@@ -72,7 +72,7 @@ val MugCartItemComponent = FC<MugCartItemProps> {
             div {
                 // Styles for the product price
                 divDefaultCss()
-                +"£ ${props.mugCartItem.mug.price.roundToInt()}"
+                +"£ ${((props.mugCartItem.mug.price*100f).roundToInt())/100f}"
             }
             div {
                 // Styles for the product quantity
