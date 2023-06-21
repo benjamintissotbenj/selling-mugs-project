@@ -13,7 +13,7 @@ data class User(
     val email: String,
     val passwordHash: String,
     val userType: Const.UserType,
-    var addressInfoId: String,
+    var addressInfoId: String, // todo: "save cart" instead of personal info
     var orderIds: ArrayList<String>
     ){
 

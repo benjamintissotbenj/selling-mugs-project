@@ -7,6 +7,11 @@ import com.benjtissot.sellingmugs.repositories.OrderRepository
 import com.benjtissot.sellingmugs.repositories.OrderRepository.Companion.getOrderPrintifyId
 import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.repositories.UserRepository
+import com.stripe.model.Event
+import com.stripe.model.EventDataObjectDeserializer
+import com.stripe.model.StripeObject
+import com.stripe.model.checkout.Session
+import com.stripe.model.checkout.Session.CustomerDetails
 import io.ktor.client.call.*
 import io.ktor.http.*
 
@@ -76,12 +81,12 @@ class OrderService {
 
         /**
          * Places an order to Printify. In case of success, updates the "id" field of the order in the database
-         * @param orderId the local id of the order to place to Printify
+         * @param orderLocalId the local id of the order to place to Printify
          * @return a [PrintifyOrderPushResult] object that holds all the information concerning the status of the
          * push order if it fails, and the printify ID if it is a success.
          */
-        suspend fun placeOrderToPrintify(orderId: String) : PrintifyOrderPushResult {
-            val order = getOrder(orderId) ?: return PrintifyOrderPushFail.notFoundInDatabase
+        suspend fun placeOrderToPrintify(orderLocalId: String) : PrintifyOrderPushResult {
+            val order = getOrder(orderLocalId) ?: return PrintifyOrderPushFail.notFoundInDatabase
             return when (val printifyOrderPushResult = apiPlaceOrder(order)) {
                 is PrintifyOrderPushFail -> {
                     printifyOrderPushResult
@@ -111,5 +116,84 @@ class OrderService {
             }
         }
 
+
+        /****************************************************************
+         *
+         *                      Webhook handling
+         *
+         ****************************************************************/
+
+        /**
+         * Handles a Stripe webhook [Event]
+         * @return a [HttpStatusCode] to confirm there were no errors
+         */
+        suspend fun handleWebhookEvent(event: Event) : HttpStatusCode {
+            // Deserialize the nested object inside the event
+            val dataObjectDeserializer: EventDataObjectDeserializer = event.dataObjectDeserializer
+            if (!dataObjectDeserializer.getObject().isPresent) {
+                return HttpStatusCode.InternalServerError
+            }
+
+            val stripeObject = dataObjectDeserializer.getObject().get()
+            // Handle the event
+            return when (event.type) {
+                "checkout.session.completed" -> {
+                    println("Received webhook with event ${event.type} and stripe object $stripeObject")
+                    // Getting necessary information from the strip object sent
+                    handleCheckoutSessionCompleted(stripeObject as Session)
+                }
+
+                else -> {
+                    println("Unhandled event type: ${event.type}")
+                    HttpStatusCode.OK
+                }
+            }
+        }
+
+        private suspend fun handleCheckoutSessionCompleted(stripeSession: Session) : HttpStatusCode {
+            val sessionId : String? = stripeSession.clientReferenceId
+            val session = SessionRepository.getSession(sessionId ?: "") ?: return HttpStatusCode.InternalServerError
+            val user = session.user ?: return HttpStatusCode.InternalServerError
+            val addressTo = stripeSession.customerDetails.toAddressTo()
+
+            // Create order
+            val order = createOrderFromCart(addressTo, session.cartId, user)
+            SessionRepository.updateSession(
+                session.copy(orderId = order.external_id, user = UserRepository.getUserById(user.id))
+            )
+
+            // Push order to printify
+            // TODO: in case of error, notify the user in the front-end of an error in the address
+            val pushResult = placeOrderToPrintify(order.external_id)
+            if (pushResult is PrintifyOrderPushSuccess){
+                print("Order ${pushResult.id} pushed successfully")
+            } else if (pushResult is PrintifyOrderPushFail) {
+                print(pushResult.message)
+            }
+            return HttpStatusCode.OK
+        }
+
     }
+}
+
+/**
+ * Creates an [AddressTo] object from Stripe's [CustomerDetails]
+ */
+fun CustomerDetails.toAddressTo() : AddressTo {
+    val split = this.name.split(" ")
+
+    val lastName = if (split.size <= 1) "" else split[split.size-1]
+    val firstName = if (split.size <= 1) this.name else split.subList(0, split.size - 1).joinToString(" ")
+    return AddressTo(
+        firstName,
+        lastName,
+        this.email,
+        this.phone ?: "",
+        this.address.country,
+        "England",
+        this.address.line1,
+        this.address.line2 ?: "",
+        this.address.city,
+        this.address.postalCode
+    )
 }

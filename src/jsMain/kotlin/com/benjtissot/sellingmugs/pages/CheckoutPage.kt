@@ -31,6 +31,7 @@ val CheckoutPage = FC<NavigationProps> { props ->
         getPaymentLink(1, props.session.id)
     } ?: ""
 
+    // TODO put a loader, update the call.sessions session value when finally redirecting after order is confirmed
     useEffectOnce {
         scope.launch {
             // Create order from back-end
