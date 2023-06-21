@@ -31,6 +31,7 @@ external interface CreateProductProps : NavigationProps {
 val CreateProductComponent = FC<CreateProductProps> { props ->
     var uploadedImage: ImageForUploadReceive? by useState(null) // Starts blank but not empty, as to not show warning message initially
 
+    val reader = FileReader()
     // Parent to hold flex to center the box
     div {
         css {
@@ -64,24 +65,27 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
 
                 ImageDrop {
                     onImageDrop = { fileList ->
-                        LOG.debug("Image Was Dropped")
-                        LOG.debug("File List: $fileList")
-                        val imageFile = fileList[0]
-                        val reader = FileReader()
-                        reader.readAsDataURL(imageFile)
-                        reader.onload = { _ ->
-                            val uploadImage = ImageForUpload(
-                                file_name = imageFile.name,
-                                contents = selectBase64ContentFromURLData(reader.result as String)
-                            )
-                            scope.launch {
-                                val uploadReceive = uploadImage(uploadImage)
-                                uploadReceive?.let {
-                                    props.setAlert(successAlert("Image ${uploadImage.file_name} was uploaded successfully !"))
-                                } ?: let {
-                                    props.setAlert(errorAlert("Image ${uploadImage.file_name} could not be uploaded."))
+                        if (fileList.isNotEmpty()) {
+                            LOG.debug("Image Was Dropped")
+                            LOG.debug("File List: $fileList")
+
+                            val imageFile = fileList[0]
+                            reader.readAsDataURL(imageFile)
+                            reader.onload = { _ ->
+                                props.setAlert(infoAlert("Image is being uploaded"))
+                                val uploadImage = ImageForUpload(
+                                    file_name = imageFile.name,
+                                    contents = selectBase64ContentFromURLData(reader.result as String)
+                                )
+                                scope.launch {
+                                    val uploadReceive = uploadImage(uploadImage)
+                                    uploadReceive?.let {
+                                        props.setAlert(successAlert("Image ${uploadImage.file_name} was uploaded successfully !"))
+                                    } ?: let {
+                                        props.setAlert(errorAlert("Image ${uploadImage.file_name} could not be uploaded."))
+                                    }
+                                    uploadedImage = uploadReceive
                                 }
-                                uploadedImage = uploadReceive
                             }
                         }
                     }

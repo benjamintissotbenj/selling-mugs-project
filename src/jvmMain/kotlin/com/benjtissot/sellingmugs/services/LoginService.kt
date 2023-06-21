@@ -41,7 +41,7 @@ class LoginService {
                     .withAudience(audience)
                     .withIssuer(issuer)
                     .withClaim("email", loginInfo.email)
-                    .withExpiresAt(Date(System.currentTimeMillis() + 1200000)) //20min, expires after the cookies i.e. session detection
+                    .withExpiresAt(Date(System.currentTimeMillis() +3600000)) //20min, expires after the cookies i.e. session detection
                     .sign(Algorithm.HMAC256(secret))
 
                 // Setting the logged in user to authenticatedUser and jwt to token

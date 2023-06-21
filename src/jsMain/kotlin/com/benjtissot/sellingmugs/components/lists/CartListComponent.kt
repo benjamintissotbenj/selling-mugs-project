@@ -39,7 +39,7 @@ val CartListComponent = FC<CartListProps> {
             paddingBlock = 1.rem
             width = 80.vw
             maxWidth = 80.rem
-            maxHeight = 80.vh
+            maxHeight = 70.vh
         }
         props.list.forEach { mugCartItm ->
             MugCartItemComponent {
