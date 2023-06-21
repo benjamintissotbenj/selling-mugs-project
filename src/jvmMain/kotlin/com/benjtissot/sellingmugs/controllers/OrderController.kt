@@ -1,7 +1,9 @@
 package com.benjtissot.sellingmugs.controllers
 
 import com.benjtissot.sellingmugs.CREATE_ORDER_PATH
+import com.benjtissot.sellingmugs.PUSH_RESULT_PATH
 import com.benjtissot.sellingmugs.STRIPE_WEBHOOK_PATH
+import com.benjtissot.sellingmugs.entities.printify.order.Order
 import com.benjtissot.sellingmugs.entities.stripe.paramSessionId
 import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.repositories.UserRepository
@@ -26,21 +28,49 @@ import io.ktor.server.sessions.*
 fun Route.orderRouting(){
 
     val endpointSecret = "whsec_6d89463b293d6e652ae8b5777f071f01bf96324f3965baa35db692539ea58af5"
-
-    route(CREATE_ORDER_PATH) {
-        post {
-            val session = getSession()
-            if (session.user == null) {
-                // TODO: at some point, replace all those errors with custom HttpStatus Codes
-                call.respond(HttpStatusCode.InternalServerError)
+    route(Order.path) {
+        get {
+            if (!call.request.queryParameters["cartId"].isNullOrBlank()) {
+                // If we have a cartId, retrieve via cartId
+                val order = OrderService.getOrderByCartId(call.request.queryParameters["cartId"].toString())
+                if (order == null) {
+                    call.respond(HttpStatusCode.BadRequest)
+                } else {
+                    call.respond(order)
+                }
+            } else {
+                call.respond(HttpStatusCode.BadRequest)
             }
-            val order = OrderService.createOrderFromCart(call.receive(), session.cartId, session.user!!)
+        }
 
-            call.sessions.set(SessionRepository.updateSession(
-                session.copy(orderId = order.external_id, user = UserRepository.getUserById(session.user!!.id))
-            )) // update session with orderId and updated user
+        route(PUSH_RESULT_PATH){
+            get {
+                if (!call.request.queryParameters["orderId"].isNullOrBlank()) {
+                    OrderService.getOrderPushResultByOrderId(call.request.queryParameters["orderId"].toString())?.let {
+                        call.respond(it)
+                    } ?: call.respond(HttpStatusCode.BadRequest)
+                } else {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+            }
+        }
 
-            call.respond(order)
+        route(CREATE_ORDER_PATH) {
+
+            post {
+                val session = getSession()
+                if (session.user == null) {
+                    // TODO: at some point, replace all those errors with custom HttpStatus Codes
+                    call.respond(HttpStatusCode.InternalServerError)
+                }
+                val order = OrderService.createOrderFromCart(call.receive(), session.cartId, session.user!!)
+
+                call.sessions.set(SessionRepository.updateSession(
+                    session.copy(orderId = order.external_id, user = UserRepository.getUserById(session.user!!.id))
+                )) // update session with orderId and updated user
+
+                call.respond(order)
+            }
         }
     }
 

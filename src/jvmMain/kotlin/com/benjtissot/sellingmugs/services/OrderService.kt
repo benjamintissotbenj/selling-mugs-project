@@ -7,19 +7,28 @@ import com.benjtissot.sellingmugs.repositories.OrderRepository
 import com.benjtissot.sellingmugs.repositories.OrderRepository.Companion.getOrderPrintifyId
 import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.repositories.UserRepository
+import com.benjtissot.sellingmugs.repositories.orderPushResultCollection
 import com.stripe.model.Event
 import com.stripe.model.EventDataObjectDeserializer
-import com.stripe.model.StripeObject
 import com.stripe.model.checkout.Session
 import com.stripe.model.checkout.Session.CustomerDetails
 import io.ktor.client.call.*
 import io.ktor.http.*
+import org.litote.kmongo.eq
+import org.litote.kmongo.upsert
 
 class OrderService {
     companion object {
 
         suspend fun getOrder(id: String) : Order? {
             return OrderRepository.getOrder(id)
+        }
+
+        /**
+         * Retrieves the order associated to a given cart. Returns null if not found
+         */
+        suspend fun getOrderByCartId(cartId: String) : Order? {
+            return OrderRepository.getOrder(getUuidFromString(cartId))
         }
 
         /**
@@ -51,7 +60,11 @@ class OrderService {
             val cart = CartService.getCart(cartId)
             val lineItems: ArrayList<LineItem> = ArrayList(emptyList())
             cart?.let {lineItems.addAll(cart.mugCartItemList.map {LineItem(it.mug.printifyId, it.amount, 69010)})}
-            val newOrder = Order.create(genUuid(), OrderRepository.getOrderNextLabel(), lineItems, addressTo)
+            val newOrder = Order.create(
+                getUuidFromString(cartId), // allows us to recognise an order by the cart it is linked to
+                getOrderNextLabel(user), // counts the number of orders of a given user
+                lineItems,
+                addressTo)
 
             // Insert order in database
             OrderRepository.insertOrder(newOrder)
@@ -60,6 +73,13 @@ class OrderService {
             UserRepository.updateUser(user.addOrderId(newOrder.external_id))
 
             return newOrder
+        }
+
+        /**
+         * @return the next label when an order is created
+         */
+        private fun getOrderNextLabel(user : User) : String {
+            return "${user.orderIds.size + 1}"
         }
 
         /**
@@ -117,6 +137,24 @@ class OrderService {
         }
 
 
+
+        /**
+         * @param localOrderId the [Order.external_id] for which we want to retrieve the stored push result
+         * @return a [PrintifyOrderPushResult] associated with the given order id, null if none has been saved
+         */
+        suspend fun getOrderPushResultByOrderId(localOrderId : String) : PrintifyOrderPushResult? {
+            return OrderRepository.getOrderPushResultByOrderId(localOrderId)
+        }
+
+        /**
+         * @param localOrderId the [Order.external_id] for which we want to store the push result
+         * @param printifyOrderPushResult the [PrintifyOrderPushResult] to be stored
+         */
+        suspend fun saveOrderPushResult(orderId: String, printifyOrderPushResult: PrintifyOrderPushResult) {
+            OrderRepository.saveOrderPushResult(orderId, printifyOrderPushResult)
+        }
+
+
         /****************************************************************
          *
          *                      Webhook handling
@@ -162,9 +200,10 @@ class OrderService {
                 session.copy(orderId = order.external_id, user = UserRepository.getUserById(user.id))
             )
 
-            // Push order to printify
-            // TODO: in case of error, notify the user in the front-end of an error in the address
+            // Push order to printify and save result in database
             val pushResult = placeOrderToPrintify(order.external_id)
+            saveOrderPushResult(order.external_id, pushResult)
+
             if (pushResult is PrintifyOrderPushSuccess){
                 print("Order ${pushResult.id} pushed successfully")
             } else if (pushResult is PrintifyOrderPushFail) {

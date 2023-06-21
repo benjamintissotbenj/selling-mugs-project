@@ -91,9 +91,18 @@ data class PrintifyOrderPushFail (
         )
     }
 }
+// TODO: mark PrintifyOrderPushSuccess and error as sealed (caused a crash)
 @Serializable
 data class PrintifyOrderPushFailError (
     val reason: String,
     val code: Int
 ) {
+}
+
+@Serializable
+data class StoredOrderPushResult (
+    @SerialName("_id") val orderId: String,
+    val printifyOrderPushResult: PrintifyOrderPushResult
+) {
+
 }

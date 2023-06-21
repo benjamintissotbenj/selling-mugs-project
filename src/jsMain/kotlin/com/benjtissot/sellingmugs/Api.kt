@@ -4,6 +4,7 @@ import com.benjtissot.sellingmugs.entities.*
 import com.benjtissot.sellingmugs.entities.printify.*
 import com.benjtissot.sellingmugs.entities.printify.order.AddressTo
 import com.benjtissot.sellingmugs.entities.printify.order.Order
+import com.benjtissot.sellingmugs.entities.printify.order.PrintifyOrderPushResult
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
@@ -199,8 +200,21 @@ suspend fun getProductPreviewImages(productId: String) : List<String> {
  * Creates an order in the back-end containing the different products selected in the cart
  */
 suspend fun createOrder(addressTo: AddressTo) : HttpResponse {
-    return jsonClient.post(CREATE_ORDER_PATH){
+    return jsonClient.post("${Order.path}$CREATE_ORDER_PATH"){
         contentType(ContentType.Application.Json)
         setBody(addressTo)
+    }
+}
+
+/**
+ * Gets a pushResult by cart id
+ * @param cartId the [Cart.id] for which we want to retrieve the push result
+ */
+suspend fun getOrderPushResultByCartId(cartId : String) : PrintifyOrderPushResult? {
+    val httpResponse = jsonClient.get("${Order.path}?cartId=$cartId")
+    return if (httpResponse.status == HttpStatusCode.BadRequest){
+        null
+    } else {
+        httpResponse.body()
     }
 }
