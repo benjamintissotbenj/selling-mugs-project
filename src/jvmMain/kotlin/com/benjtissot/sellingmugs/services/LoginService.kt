@@ -6,9 +6,7 @@ import com.benjtissot.sellingmugs.ConfigConst
 import com.benjtissot.sellingmugs.entities.LoginInfo
 import com.benjtissot.sellingmugs.entities.RegisterInfo
 import com.benjtissot.sellingmugs.entities.Session
-import com.benjtissot.sellingmugs.entities.User
 import com.benjtissot.sellingmugs.genUuid
-import com.benjtissot.sellingmugs.repositories.OrderRepository
 import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.repositories.UserRepository
 import io.ktor.http.*

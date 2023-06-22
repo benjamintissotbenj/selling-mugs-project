@@ -1,6 +1,7 @@
 package orderTests
 
 import AbstractDatabaseTests
+import PrintifyTests
 import com.benjtissot.sellingmugs.entities.LoginInfo
 import com.benjtissot.sellingmugs.entities.RegisterInfo
 import com.benjtissot.sellingmugs.entities.Session
@@ -10,7 +11,6 @@ import com.benjtissot.sellingmugs.entities.printify.order.Order
 import com.benjtissot.sellingmugs.repositories.CartRepository
 import com.benjtissot.sellingmugs.repositories.OrderRepository
 import com.benjtissot.sellingmugs.repositories.SessionRepository
-import com.benjtissot.sellingmugs.repositories.UserRepository
 import com.benjtissot.sellingmugs.services.*
 import delimit
 import imageForUpload1
@@ -23,11 +23,9 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import kotlin.test.asserter
 import kotlin.test.fail
-import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.ExperimentalTime
 
 class CreateOrderTest : AbstractDatabaseTests() {
 

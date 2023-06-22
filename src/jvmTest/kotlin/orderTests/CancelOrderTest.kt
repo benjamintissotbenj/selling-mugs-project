@@ -4,25 +4,21 @@ import AbstractDatabaseTests
 import com.benjtissot.sellingmugs.entities.LoginInfo
 import com.benjtissot.sellingmugs.entities.RegisterInfo
 import com.benjtissot.sellingmugs.entities.Session
-import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
 import com.benjtissot.sellingmugs.entities.printify.order.AddressTo
 import com.benjtissot.sellingmugs.entities.printify.order.Order
 import com.benjtissot.sellingmugs.repositories.CartRepository
 import com.benjtissot.sellingmugs.repositories.SessionRepository
-import com.benjtissot.sellingmugs.repositories.UserRepository
 import com.benjtissot.sellingmugs.services.*
 import delimit
 import imageForUpload1
 import imageForUpload2
 import imageForUpload3
-import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import kotlin.test.asserter
 import kotlin.test.fail
 import kotlin.time.Duration.Companion.seconds
 

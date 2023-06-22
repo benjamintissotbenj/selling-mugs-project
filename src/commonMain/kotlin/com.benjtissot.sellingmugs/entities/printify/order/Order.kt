@@ -1,6 +1,5 @@
 package com.benjtissot.sellingmugs.entities.printify.order
 
-import com.benjtissot.sellingmugs.CART_OBJECT_PATH
 import com.benjtissot.sellingmugs.ORDER_OBJECT_PATH
 import io.ktor.http.*
 import kotlinx.serialization.Polymorphic
