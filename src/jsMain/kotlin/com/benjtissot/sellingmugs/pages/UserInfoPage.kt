@@ -3,6 +3,7 @@ package com.benjtissot.sellingmugs.pages
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.buttons.LogoutButtonComponent
 import com.benjtissot.sellingmugs.components.highLevel.CreateTabsComponent
+import com.benjtissot.sellingmugs.components.lists.UserOrderListComponent
 import csstype.*
 import emotion.react.css
 import io.ktor.util.logging.*
@@ -58,6 +59,10 @@ val UserInfoPage = FC<NavigationProps> { props ->
             value = "1"
             div {
                 +"List of orders"
+                UserOrderListComponent {
+                    userId = props.session.user!!.id
+                    setAlert = props.setAlert
+                }
             }
         }
     }

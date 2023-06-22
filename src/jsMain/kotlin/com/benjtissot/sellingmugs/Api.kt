@@ -2,10 +2,7 @@ package com.benjtissot.sellingmugs
 
 import com.benjtissot.sellingmugs.entities.*
 import com.benjtissot.sellingmugs.entities.printify.*
-import com.benjtissot.sellingmugs.entities.printify.order.AddressTo
-import com.benjtissot.sellingmugs.entities.printify.order.Order
-import com.benjtissot.sellingmugs.entities.printify.order.PrintifyOrderPushResult
-import com.benjtissot.sellingmugs.entities.printify.order.PushResultSerializer
+import com.benjtissot.sellingmugs.entities.printify.order.*
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
@@ -224,3 +221,17 @@ suspend fun getOrderPushResultByCartId(cartId : String) : PrintifyOrderPushResul
     }
 }
 
+/**
+ * Retrieves a user's list of orders
+ * @param userId the id of the [User] for which to retrieve the list of past [Order]s
+ * @return a [List] of [Order]s if the list exists, an empty list otherwise (shouldn't happen, but we never know)
+ */
+suspend fun getUserOrderList(userId: String) : List<Order> {
+
+    val httpResponse = jsonClient.get("${Order.path}/$userId")
+    return if (httpResponse.status == HttpStatusCode.BadRequest){
+        emptyList()
+    } else {
+        httpResponse.body()
+    }
+}

@@ -1,5 +1,6 @@
 package com.benjtissot.sellingmugs.repositories
 
+import com.benjtissot.sellingmugs.entities.User
 import com.benjtissot.sellingmugs.entities.printify.order.*
 import database
 import org.litote.kmongo.*
@@ -12,14 +13,28 @@ val orderPushFailedCollection = database.getCollection<StoredOrderPushFailed>()
 class OrderRepository {
     companion object {
 
+        /**
+         * Retrieves a user's list of orders
+         * @param userId the id of the [User] for which to retrieve the list of past [Order]s
+         * @return a [UserOrderList] if the list exists, null otherwise (shouldn't happen, but we never know)
+         */
         suspend fun getUserOrderListByUserId(userId: String) : UserOrderList? {
             return userOrderListCollection.findOneById(userId)
         }
 
+        /**
+         * Adds an [Order.external_id] to a [User]'s list of orders
+         * @param userId the id of the [User] for which to retrieve the list of past [Order]s
+         * @param orderId the local id of the [Order] to be added to the list
+         */
         suspend fun addOrderToUserOrderList(userId: String, orderId: String){
             userOrderListCollection.updateOneById(userId, push(UserOrderList::orderIds, orderId), upsert())
         }
 
+        /**
+         * Creates a user's list of orders in the database
+         * @param userOrderList the item to insert
+         */
         suspend fun insertUserOrderList(userOrderList: UserOrderList){
             userOrderListCollection.insertOne(userOrderList)
         }

@@ -5,13 +5,21 @@ import com.benjtissot.sellingmugs.PUSH_RESULT_PATH
 import com.benjtissot.sellingmugs.STRIPE_WEBHOOK_PATH
 import com.benjtissot.sellingmugs.entities.printify.order.Order
 import com.benjtissot.sellingmugs.entities.printify.order.PushResultSerializer
+import com.benjtissot.sellingmugs.entities.printify.order.UserOrderList
+import com.benjtissot.sellingmugs.entities.stripe.paramSessionId
 import com.benjtissot.sellingmugs.getUuidFromString
 import com.benjtissot.sellingmugs.repositories.CartRepository
 import com.benjtissot.sellingmugs.repositories.SessionRepository
+import com.benjtissot.sellingmugs.repositories.UserRepository
 import com.benjtissot.sellingmugs.services.OrderService
 import com.benjtissot.sellingmugs.services.SessionService.Companion.getSession
+import com.google.gson.Gson
+import com.google.gson.JsonObject
+import com.google.gson.reflect.TypeToken
 import com.stripe.exception.SignatureVerificationException
 import com.stripe.model.Event
+import com.stripe.model.EventDataObjectDeserializer
+import com.stripe.model.StripeObject
 import com.stripe.net.Webhook
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -37,6 +45,15 @@ fun Route.orderRouting(){
                 }
             } else {
                 call.respond(HttpStatusCode.BadRequest)
+            }
+        }
+
+        route("/{userId}"){
+            get {
+                val userId: String = call.parameters["userId"] ?: error("Invalid post request")
+                OrderService.getUserOrderList(userId)?.let { userOrderList ->
+                    call.respond(userOrderList.orderIds.map {OrderService.getOrder(it)})
+                } ?: call.respond(HttpStatusCode.BadRequest)
             }
         }
 

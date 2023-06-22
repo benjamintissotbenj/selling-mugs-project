@@ -157,6 +157,15 @@ class OrderService {
             return userOrderList
         }
 
+        /**
+         * Retrieves a user's list of orders
+         * @param userId the id of the [User] for which to retrieve the list of past [Order]s
+         * @return a [UserOrderList] if the list exists, null otherwise (shouldn't happen, but we never know)
+         */
+        suspend fun getUserOrderList(userId: String) : UserOrderList? {
+            return OrderRepository.getUserOrderListByUserId(userId)
+        }
+
         /****************************************************************
          *
          *                      Webhook handling
