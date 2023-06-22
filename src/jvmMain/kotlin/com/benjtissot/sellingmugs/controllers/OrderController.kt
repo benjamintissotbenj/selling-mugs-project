@@ -4,7 +4,10 @@ import com.benjtissot.sellingmugs.CREATE_ORDER_PATH
 import com.benjtissot.sellingmugs.PUSH_RESULT_PATH
 import com.benjtissot.sellingmugs.STRIPE_WEBHOOK_PATH
 import com.benjtissot.sellingmugs.entities.printify.order.Order
+import com.benjtissot.sellingmugs.entities.printify.order.PushResultSerializer
 import com.benjtissot.sellingmugs.entities.stripe.paramSessionId
+import com.benjtissot.sellingmugs.getUuidFromString
+import com.benjtissot.sellingmugs.repositories.CartRepository
 import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.repositories.UserRepository
 import com.benjtissot.sellingmugs.services.OrderService
@@ -23,6 +26,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
+import kotlinx.serialization.json.Json
 
 
 fun Route.orderRouting(){
@@ -45,9 +49,13 @@ fun Route.orderRouting(){
 
         route(PUSH_RESULT_PATH){
             get {
-                if (!call.request.queryParameters["orderId"].isNullOrBlank()) {
-                    OrderService.getOrderPushResultByOrderId(call.request.queryParameters["orderId"].toString())?.let {
-                        call.respond(it)
+                if (!call.request.queryParameters["cartId"].isNullOrBlank()) {
+                    val orderId = getUuidFromString(call.request.queryParameters["cartId"]!!)
+                    OrderService.getOrderPushResultByOrderId(orderId)?.let {
+                        // Trick to update call session from database session (needed when order goes through)
+                        call.sessions.set(SessionRepository.getSession(getSession().id))
+
+                        call.respond(Json.encodeToString(PushResultSerializer, it))
                     } ?: call.respond(HttpStatusCode.BadRequest)
                 } else {
                     call.respond(HttpStatusCode.BadRequest)
@@ -66,7 +74,7 @@ fun Route.orderRouting(){
                 val order = OrderService.createOrderFromCart(call.receive(), session.cartId, session.user!!)
 
                 call.sessions.set(SessionRepository.updateSession(
-                    session.copy(orderId = order.external_id, user = UserRepository.getUserById(session.user!!.id))
+                    session.copy(orderId = order.external_id, cartId = CartRepository.createCart().id)
                 )) // update session with orderId and updated user
 
                 call.respond(order)

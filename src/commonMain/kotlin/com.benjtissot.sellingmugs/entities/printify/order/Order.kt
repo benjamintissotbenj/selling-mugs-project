@@ -3,8 +3,12 @@ package com.benjtissot.sellingmugs.entities.printify.order
 import com.benjtissot.sellingmugs.CART_OBJECT_PATH
 import com.benjtissot.sellingmugs.ORDER_OBJECT_PATH
 import io.ktor.http.*
+import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonContentPolymorphicSerializer
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonObject
 
 @Serializable
 data class Order(
@@ -44,6 +48,15 @@ data class Order(
 
 
 @Serializable
+data class UserOrderList (
+    @SerialName("_id") val userId: String,
+    val orderIds: List<String>,
+){
+
+}
+
+
+@Serializable
 data class ReceiveOrder(
     val id: String, // Printify id
     val status: String,
@@ -64,7 +77,13 @@ data class ShippingCosts(
     val express: Int,
 ) {
 }
-
+object PushResultSerializer : JsonContentPolymorphicSerializer<PrintifyOrderPushResult>(PrintifyOrderPushResult::class) {
+    override fun selectDeserializer(element: JsonElement) = when {
+        "id" in element.jsonObject -> PrintifyOrderPushSuccess.serializer()
+        else -> PrintifyOrderPushFail.serializer()
+    }
+}
+@Polymorphic
 interface PrintifyOrderPushResult {
 
 }
@@ -91,7 +110,7 @@ data class PrintifyOrderPushFail (
         )
     }
 }
-// TODO: mark PrintifyOrderPushSuccess and error as sealed (caused a crash)
+
 @Serializable
 data class PrintifyOrderPushFailError (
     val reason: String,
@@ -100,9 +119,17 @@ data class PrintifyOrderPushFailError (
 }
 
 @Serializable
-data class StoredOrderPushResult (
+class StoredOrderPushSuccess (
     @SerialName("_id") val orderId: String,
-    val printifyOrderPushResult: PrintifyOrderPushResult
+    val printifyOrderPushSuccess: PrintifyOrderPushSuccess
+) {
+
+}
+
+@Serializable
+class StoredOrderPushFailed (
+    @SerialName("_id") val orderId: String,
+    val printifyOrderPushFail: PrintifyOrderPushFail
 ) {
 
 }

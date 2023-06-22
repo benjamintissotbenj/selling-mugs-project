@@ -1,21 +1,28 @@
 package com.benjtissot.sellingmugs.repositories
 
-import com.benjtissot.sellingmugs.entities.Cart
-import com.benjtissot.sellingmugs.entities.printify.order.Order
-import com.benjtissot.sellingmugs.entities.printify.order.PrintifyOrderPushResult
-import com.benjtissot.sellingmugs.entities.printify.order.StoredOrderPushResult
-import com.benjtissot.sellingmugs.genUuid
+import com.benjtissot.sellingmugs.entities.printify.order.*
 import database
-import org.litote.kmongo.MongoOperator
-import org.litote.kmongo.and
-import org.litote.kmongo.eq
-import org.litote.kmongo.upsert
+import org.litote.kmongo.*
 
 val orderCollection = database.getCollection<Order>()
-val orderPushResultCollection = database.getCollection<StoredOrderPushResult>()
+val userOrderListCollection = database.getCollection<UserOrderList>()
+val orderPushSuccessCollection = database.getCollection<StoredOrderPushSuccess>()
+val orderPushFailedCollection = database.getCollection<StoredOrderPushFailed>()
 
 class OrderRepository {
     companion object {
+
+        suspend fun getUserOrderListByUserId(userId: String) : UserOrderList? {
+            return userOrderListCollection.findOneById(userId)
+        }
+
+        suspend fun addOrderToUserOrderList(userId: String, orderId: String){
+            userOrderListCollection.updateOneById(userId, push(UserOrderList::orderIds, orderId), upsert())
+        }
+
+        suspend fun insertUserOrderList(userOrderList: UserOrderList){
+            userOrderListCollection.insertOne(userOrderList)
+        }
 
 
         /**
@@ -57,21 +64,31 @@ class OrderRepository {
          * @param localOrderId the [Order.external_id] for which we want to retrieve the stored push result
          */
         suspend fun getOrderPushResultByOrderId(localOrderId : String) : PrintifyOrderPushResult? {
-            return orderPushResultCollection.findOne(
-                StoredOrderPushResult::orderId eq localOrderId
-            )?.printifyOrderPushResult
+            return (
+                    orderPushSuccessCollection.findOne(StoredOrderPushSuccess::orderId eq localOrderId)?.printifyOrderPushSuccess
+                        ?: orderPushFailedCollection.findOne(StoredOrderPushFailed::orderId eq localOrderId)?.printifyOrderPushFail
+                    )
         }
 
         /**
          * @param localOrderId the [Order.external_id] for which we want to store the push result
          * @param printifyOrderPushResult the [PrintifyOrderPushResult] to be stored
          */
-        suspend fun saveOrderPushResult(orderId: String, printifyOrderPushResult: PrintifyOrderPushResult) {
-            orderPushResultCollection.updateOneById(
-                orderId,
-                StoredOrderPushResult(orderId, printifyOrderPushResult),
-                upsert()
-            )
+        suspend fun saveOrderPushResult(localOrderId: String, printifyOrderPushResult: PrintifyOrderPushResult) {
+            if (printifyOrderPushResult is PrintifyOrderPushSuccess) {
+                orderPushSuccessCollection.updateOneById(
+                    localOrderId,
+                    StoredOrderPushSuccess(localOrderId, printifyOrderPushResult),
+                    upsert()
+                )
+            } else if (printifyOrderPushResult is PrintifyOrderPushFail) {
+                orderPushFailedCollection.updateOneById(
+                    localOrderId,
+                    StoredOrderPushFailed(localOrderId, printifyOrderPushResult),
+                    upsert()
+                )
+            }
+
         }
 
     }

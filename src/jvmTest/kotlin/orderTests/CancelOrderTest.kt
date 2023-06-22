@@ -7,7 +7,9 @@ import com.benjtissot.sellingmugs.entities.Session
 import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
 import com.benjtissot.sellingmugs.entities.printify.order.AddressTo
 import com.benjtissot.sellingmugs.entities.printify.order.Order
+import com.benjtissot.sellingmugs.repositories.CartRepository
 import com.benjtissot.sellingmugs.repositories.SessionRepository
+import com.benjtissot.sellingmugs.repositories.UserRepository
 import com.benjtissot.sellingmugs.services.*
 import delimit
 import imageForUpload1
@@ -72,7 +74,14 @@ class CancelOrderTest : AbstractDatabaseTests() {
                 "London",
                 "SW7 2BX"
             )
-            session.user?.let {orderId =  OrderService.createOrderFromCart(addressTo, session.cartId, it).external_id }
+            session.user?.let {
+                orderId =  OrderService.createOrderFromCart(addressTo, session.cartId, it).external_id
+
+                session = SessionRepository.updateSession(
+                    session.copy(orderId = orderId,
+                        cartId = CartRepository.createCart().id)
+                )
+            }
             LOG.debug("The local OrderID is $orderId")
         }
     }
@@ -99,6 +108,11 @@ class CancelOrderTest : AbstractDatabaseTests() {
             session.user?.let {
                 val orderId = OrderService.createOrderFromCart(addressTo, session.cartId, it).external_id
 
+
+                session = SessionRepository.updateSession(
+                    session.copy(orderId = orderId,
+                        cartId = CartRepository.createCart().id)
+                )
                 // Assert the order has been created in the database
                 val order = OrderService.getOrder(orderId)
                 assert(order != null)

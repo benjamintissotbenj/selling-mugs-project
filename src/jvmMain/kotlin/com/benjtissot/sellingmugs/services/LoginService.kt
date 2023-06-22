@@ -8,6 +8,7 @@ import com.benjtissot.sellingmugs.entities.RegisterInfo
 import com.benjtissot.sellingmugs.entities.Session
 import com.benjtissot.sellingmugs.entities.User
 import com.benjtissot.sellingmugs.genUuid
+import com.benjtissot.sellingmugs.repositories.OrderRepository
 import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.repositories.UserRepository
 import io.ktor.http.*
@@ -71,6 +72,7 @@ class LoginService {
                 // If user is not found, insert with new UUID
                 registerInfo.toUser(id = genUuid()).also {
                     UserRepository.insertUser(it)
+                    OrderService.createUserOrderList(it.id)
                     return login(registerInfo.toLoginInfo(), session)
                 }
             }

@@ -7,7 +7,9 @@ import com.benjtissot.sellingmugs.entities.Session
 import com.benjtissot.sellingmugs.entities.printify.order.AddressTo
 import com.benjtissot.sellingmugs.entities.printify.order.Order
 import com.benjtissot.sellingmugs.entities.printify.order.PrintifyOrderPushSuccess
+import com.benjtissot.sellingmugs.repositories.CartRepository
 import com.benjtissot.sellingmugs.repositories.SessionRepository
+import com.benjtissot.sellingmugs.repositories.UserRepository
 import com.benjtissot.sellingmugs.services.*
 import delimit
 import imageForUpload1
@@ -75,6 +77,11 @@ class GeneralOrderTests : AbstractDatabaseTests() {
             session.user?.let {
                 orderId = OrderService.createOrderFromCart(addressTo, session.cartId, it).external_id
                 LOG.debug("The local OrderID is $orderId")
+
+                session = SessionRepository.updateSession(
+                    session.copy(orderId = orderId,
+                        cartId = CartRepository.createCart().id)
+                )
             }
 
         }

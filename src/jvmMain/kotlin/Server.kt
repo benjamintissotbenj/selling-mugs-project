@@ -56,8 +56,6 @@ fun Application.module() {
         }
         val port = environment.config.propertyOrNull("ktor.deployment.port")?.getString() ?: "9090"
 
-
-
         // Provides authentication via JWT
         installAuthentication()
 

@@ -3,20 +3,17 @@ package com.benjtissot.sellingmugs.services
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.entities.User
 import com.benjtissot.sellingmugs.entities.printify.order.*
-import com.benjtissot.sellingmugs.repositories.OrderRepository
+import com.benjtissot.sellingmugs.repositories.*
 import com.benjtissot.sellingmugs.repositories.OrderRepository.Companion.getOrderPrintifyId
-import com.benjtissot.sellingmugs.repositories.SessionRepository
-import com.benjtissot.sellingmugs.repositories.UserRepository
-import com.benjtissot.sellingmugs.repositories.orderPushResultCollection
 import com.stripe.model.Event
 import com.stripe.model.EventDataObjectDeserializer
 import com.stripe.model.checkout.Session
 import com.stripe.model.checkout.Session.CustomerDetails
 import io.ktor.client.call.*
 import io.ktor.http.*
-import org.litote.kmongo.eq
-import org.litote.kmongo.upsert
+import io.ktor.util.logging.*
 
+private val LOG = KtorSimpleLogger("OrderService.kt")
 class OrderService {
     companion object {
 
@@ -62,15 +59,15 @@ class OrderService {
             cart?.let {lineItems.addAll(cart.mugCartItemList.map {LineItem(it.mug.printifyId, it.amount, 69010)})}
             val newOrder = Order.create(
                 getUuidFromString(cartId), // allows us to recognise an order by the cart it is linked to
-                getOrderNextLabel(user), // counts the number of orders of a given user
+                getOrderNextLabel(user.id), // counts the number of orders of a given user
                 lineItems,
                 addressTo)
 
             // Insert order in database
             OrderRepository.insertOrder(newOrder)
 
-            // Put orderId in user
-            UserRepository.updateUser(user.addOrderId(newOrder.external_id))
+            // Adds order to the list
+            OrderRepository.addOrderToUserOrderList(user.id, newOrder.external_id)
 
             return newOrder
         }
@@ -78,8 +75,8 @@ class OrderService {
         /**
          * @return the next label when an order is created
          */
-        private fun getOrderNextLabel(user : User) : String {
-            return "${user.orderIds.size + 1}"
+        private suspend fun getOrderNextLabel(userId : String) : String {
+            return "${(OrderRepository.getUserOrderListByUserId(userId)?.orderIds?.size ?: 0) + 1}"
         }
 
         /**
@@ -154,6 +151,11 @@ class OrderService {
             OrderRepository.saveOrderPushResult(orderId, printifyOrderPushResult)
         }
 
+        suspend fun createUserOrderList(userId: String) : UserOrderList {
+            val userOrderList = UserOrderList(userId, emptyList())
+            OrderRepository.insertUserOrderList(userOrderList)
+            return userOrderList
+        }
 
         /****************************************************************
          *
@@ -194,11 +196,15 @@ class OrderService {
             val user = session.user ?: return HttpStatusCode.InternalServerError
             val addressTo = stripeSession.customerDetails.toAddressTo()
 
+            LOG.debug("cartId to create order is ${session.cartId}")
             // Create order
             val order = createOrderFromCart(addressTo, session.cartId, user)
-            SessionRepository.updateSession(
-                session.copy(orderId = order.external_id, user = UserRepository.getUserById(user.id))
+            // Updates session with a new cart, updated order id and updated user
+            val newSession = SessionRepository.updateSession(
+                session.copy(orderId = order.external_id,
+                    cartId = CartRepository.createCart().id)
             )
+            LOG.debug("After session update, new cartId  is ${newSession.cartId}")
 
             // Push order to printify and save result in database
             val pushResult = placeOrderToPrintify(order.external_id)

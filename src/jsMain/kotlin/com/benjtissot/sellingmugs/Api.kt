@@ -5,6 +5,7 @@ import com.benjtissot.sellingmugs.entities.printify.*
 import com.benjtissot.sellingmugs.entities.printify.order.AddressTo
 import com.benjtissot.sellingmugs.entities.printify.order.Order
 import com.benjtissot.sellingmugs.entities.printify.order.PrintifyOrderPushResult
+import com.benjtissot.sellingmugs.entities.printify.order.PushResultSerializer
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
@@ -14,6 +15,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.util.logging.*
+import kotlinx.serialization.json.Json
 
 private val LOG = KtorSimpleLogger("Api.kt")
 
@@ -211,10 +213,14 @@ suspend fun createOrder(addressTo: AddressTo) : HttpResponse {
  * @param cartId the [Cart.id] for which we want to retrieve the push result
  */
 suspend fun getOrderPushResultByCartId(cartId : String) : PrintifyOrderPushResult? {
-    val httpResponse = jsonClient.get("${Order.path}?cartId=$cartId")
+    val httpResponse = jsonClient.get("${Order.path}$PUSH_RESULT_PATH?cartId=$cartId")
     return if (httpResponse.status == HttpStatusCode.BadRequest){
         null
     } else {
-        httpResponse.body()
+        val pushResultString = httpResponse.body<String>()
+        LOG.debug("Push result string is $pushResultString")
+        val decoded = Json.decodeFromString(PushResultSerializer, pushResultString)
+        decoded
     }
 }
+

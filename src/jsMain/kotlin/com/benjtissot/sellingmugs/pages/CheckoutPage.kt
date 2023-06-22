@@ -15,7 +15,10 @@ import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.browser.window
 import kotlinx.coroutines.launch
+import kotlinx.js.timers.Timeout
+import kotlinx.js.timers.clearInterval
 import kotlinx.js.timers.setInterval
+import mui.icons.material.Check
 import mui.icons.material.Payment
 import mui.material.Backdrop
 import mui.material.IconButton
@@ -34,13 +37,38 @@ val CheckoutPage = FC<NavigationProps> { props ->
     var cart: Cart? by useState(null)
     var orderPushResult: PrintifyOrderPushResult? by useState(null)
     var paymentPageOpened by useState(false)
-
+    var getOrderPushResultTimeout: Timeout? = null
 
     useEffectOnce {
         scope.launch {
             val cartTemp = getCart()
+            // in case there was a refresh, still show the information about the order being pushed
+            orderPushResult = getOrderPushResultByCartId(cartTemp.id)
             cart = cartTemp
         }
+    }
+
+    useEffect {
+        if (paymentPageOpened) {
+            if (orderPushResult == null){
+                // Every 2 seconds, check for the order result to be saved in the backend
+                getOrderPushResultTimeout = setInterval({
+                    scope.launch {
+                        val pushResultTemp = getOrderPushResultByCartId(cart!!.id)
+                        if (pushResultTemp != null) {
+                            getOrderPushResultTimeout?.let { clearInterval(it) }
+                            // TODO check timing on this
+                            props.updateSession()
+                            orderPushResult = pushResultTemp
+                        }
+                    }
+                }, 2000)
+            } else {
+                getOrderPushResultTimeout?.let { clearInterval(it) }
+            }
+
+        }
+
     }
 
     cart?.let {
@@ -72,14 +100,15 @@ val CheckoutPage = FC<NavigationProps> { props ->
     }
 
     if (paymentPageOpened){
-        useEffect {
-            // Every 2 seconds, check for the order result to be saved in the backend
-            setInterval({
+
+        IconButton {
+            Check()
+            +"I have paid"
+            onClick = {
                 scope.launch {
                     orderPushResult = getOrderPushResultByCartId(cart!!.id)
                 }
-            }, 2000)
-
+            }
         }
 
         if (orderPushResult == null){

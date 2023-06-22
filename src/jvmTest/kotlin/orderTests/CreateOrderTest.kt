@@ -7,6 +7,8 @@ import com.benjtissot.sellingmugs.entities.Session
 import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
 import com.benjtissot.sellingmugs.entities.printify.order.AddressTo
 import com.benjtissot.sellingmugs.entities.printify.order.Order
+import com.benjtissot.sellingmugs.repositories.CartRepository
+import com.benjtissot.sellingmugs.repositories.OrderRepository
 import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.repositories.UserRepository
 import com.benjtissot.sellingmugs.services.*
@@ -89,8 +91,10 @@ class CreateOrderTest : AbstractDatabaseTests() {
 
             session.user?.let { user ->
                 val orderId = OrderService.createOrderFromCart(addressTo, session.cartId, user).external_id
-                session = SessionRepository.updateSession(session.copy(orderId = orderId, user = UserRepository.getUserById(user.id)))
-
+                session = SessionRepository.updateSession(
+                    session.copy(orderId = orderId,
+                        cartId = CartRepository.createCart().id)
+                )
                 // Assert the order has been created in the database
                 val order = OrderService.getOrder(orderId)
                 assert(order != null)
@@ -99,7 +103,7 @@ class CreateOrderTest : AbstractDatabaseTests() {
                 // Assert that the order is created pending
                 assert(order?.status == Order.STATUS_PENDING)
                 // Assert the orderID has been added to the user and the session
-                assert(session.user?.orderIds?.contains(orderId) ?: false)
+                assert(session.user?.id?.let { OrderRepository.getUserOrderListByUserId(it)?.orderIds?.contains(orderId) } ?: false)
                 assert(session.orderId == orderId)
             } ?: fail()
 
