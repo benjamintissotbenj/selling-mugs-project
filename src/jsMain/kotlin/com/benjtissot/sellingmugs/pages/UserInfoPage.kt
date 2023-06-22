@@ -2,6 +2,7 @@ package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.buttons.LogoutButtonComponent
+import com.benjtissot.sellingmugs.components.highLevel.CreateTabsComponent
 import csstype.pct
 import csstype.vh
 import emotion.react.css
@@ -26,8 +27,6 @@ private val LOG = KtorSimpleLogger("UserInfoPage.kt")
 @Suppress("UNUSED_EXPRESSION")
 val UserInfoPage = FC<NavigationProps> { props ->
 
-    var tabValue by useState(0)
-
     useEffectOnce {
         scope.launch {
         }
@@ -36,45 +35,9 @@ val UserInfoPage = FC<NavigationProps> { props ->
     div {
 
     }
-    TabContext {
 
-        value = tabValue.toString()
-
-        Box {
-            sx {
-                "{ borderBottom: 1, borderColor: 'divider' }"
-            }
-            Tabs {
-                value = tabValue
-                onChange = { _, newValue ->
-                    tabValue = newValue
-                }
-                Tab {
-                    css {
-                        width = 30.pct
-                        height = 10.vh
-                    }
-                    label = div.create{+"Tab 1"}
-                    ariaControls = "simple-tabpanel-0"
-                }
-                Tab {
-                    css {
-                        width = 30.pct
-                        height = 10.vh
-                    }
-                    label = div.create{+"Tab 2"}
-                    ariaControls = "simple-tabpanel-1"
-                }
-                Tab {
-                    css {
-                        width = 30.pct
-                        height = 10.vh
-                    }
-                    label = div.create{+"Tab 3"}
-                    ariaControls = "simple-tabpanel-2"
-                }
-            }
-        }
+    CreateTabsComponent {
+        labels = listOf("Tab 1", "Tab 2", "Tab 3")
 
         TabPanel {
             value = "0"
