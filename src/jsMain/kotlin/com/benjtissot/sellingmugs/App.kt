@@ -65,7 +65,7 @@ val App = FC<Props> {
                 }
                 Route {
                     path = USER_INFO_PATH
-                    element = BasicPage.create{
+                    element = AuthenticatedPage.create{
                         session = sessionApp!!
                         updateSession = updateSessionApp
                         setAlert = {alertState -> setAlert(alertState)}

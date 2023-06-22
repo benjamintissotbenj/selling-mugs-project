@@ -3,7 +3,7 @@ package com.benjtissot.sellingmugs.pages
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.highLevel.FooterComponent
 import com.benjtissot.sellingmugs.components.highLevel.NavigationBarComponent
-import csstype.Overflow
+import csstype.*
 import emotion.react.css
 import io.ktor.client.call.*
 import io.ktor.http.*
@@ -33,7 +33,9 @@ val BasicPage = FC<BasicPageProps> { props ->
     }
     div {
         css {
-            mainPageDiv()
+            boxSizing = BoxSizing.borderBox
+            height = 88.vh
+            width = 100.vw
             overflowY = Overflow.scroll
         }
         props.internalPage {

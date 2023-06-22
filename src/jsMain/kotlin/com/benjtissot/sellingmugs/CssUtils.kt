@@ -144,12 +144,6 @@ fun PropertiesBuilder.justifySpaceBetween() {
     justifyContent = JustifyContent.spaceBetween
 }
 
-fun PropertiesBuilder.mainPageDiv() {
-    height = 88.vh
-    width = 100.vw
-}
-
-
 fun PropertiesBuilder.boxShade() {
     borderRadius = 2.vh
     boxShadow = BoxShadow(0.px, 0.px, blurRadius = 2.px, spreadRadius = 1.px, NamedColor.gray)

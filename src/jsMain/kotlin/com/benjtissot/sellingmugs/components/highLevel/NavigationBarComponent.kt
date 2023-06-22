@@ -22,7 +22,8 @@ import react.useState
 
 private val LOG = KtorSimpleLogger("NavigationBarComponent.kt")
 
-external interface NavigationBarProps : NavigationProps {
+external interface NavigationBarProps : NavigationProps,
+    react.dom.html.HTMLAttributes<org.w3c.dom.HTMLDivElement> {
 }
 
 val NavigationBarComponent = FC<NavigationBarProps> { props ->
@@ -31,9 +32,9 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
         css {
             justifySpaceBetween()
             minHeight = 40.px
+            height = 8.vh
             backgroundColor = Color("#333")
             alignItems = AlignItems.center
-            height = 8.vh
         }
 
         h1 {

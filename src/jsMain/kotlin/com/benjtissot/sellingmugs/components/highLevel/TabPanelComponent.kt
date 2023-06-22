@@ -2,9 +2,7 @@ package com.benjtissot.sellingmugs.components.highLevel
 
 import com.benjtissot.sellingmugs.AlertState
 import com.benjtissot.sellingmugs.hideAlert
-import csstype.pct
-import csstype.px
-import csstype.vh
+import csstype.*
 import emotion.react.css
 import mui.lab.TabContext
 import mui.lab.TabPanel
@@ -15,9 +13,10 @@ import react.dom.aria.ariaControls
 import react.dom.html.ReactHTML.div
 
 
-external interface CreateTabsProps : PropsWithChildren,
-    react.dom.html.HTMLAttributes<org.w3c.dom.HTMLDivElement> {
+external interface CreateTabsProps : PropsWithChildren {
     var labels : List<String>
+    var height: Height
+    var width: Width
 }
 
 
@@ -26,35 +25,50 @@ val CreateTabsComponent = FC <CreateTabsProps> { props ->
     var tabValue by useState(0)
     val numberOfTabs = props.labels.size
 
-    TabContext {
+    div {
+        css {
+            height = props.height
+            width = props.width
+        }
 
-        value = tabValue.toString()
+        TabContext {
 
-        Box {
-            sx {
-                "{ borderBottom: 1, borderColor: 'divider' }"
-            }
-            Tabs {
-                value = tabValue
-                onChange = { _, newValue ->
-                    tabValue = newValue
+            value = tabValue.toString()
+
+            Box {
+                sx {
+                    "{ borderBottom: 1, borderColor: 'divider' }"
                 }
-                for (i: Int in 0 until numberOfTabs){
-                    Tab {
-                        css {
-                            width = (100f/numberOfTabs).pct
-                            height = 5.vh
-                            minHeight = 40.px
+                Tabs {
+                    variant = TabsVariant.fullWidth
+                    value = tabValue
+                    onChange = { _, newValue ->
+                        tabValue = newValue
+                    }
+                    for (i: Int in 0 until numberOfTabs){
+                        Tab {
+                            css {
+                                boxSizing = BoxSizing.borderBox
+                                width = (100f/numberOfTabs).pct
+                                height = 5.pct
+                                minHeight = 40.px
+                            }
+                            label = div.create{+props.labels[i]}
+                            ariaControls = "simple-tabpanel-$i"
                         }
-                        label = div.create{+props.labels[i]}
-                        ariaControls = "simple-tabpanel-$i"
                     }
                 }
             }
-        }
 
-        // Render children tabs
-        +props.children
+            // Render children tabs
+            div {
+                css {
+                    width = 100.pct
+                    height = 95.pct
+                }
+                +props.children
+            }
+        }
     }
 }
 
