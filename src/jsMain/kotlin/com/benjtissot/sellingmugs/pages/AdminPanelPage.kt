@@ -10,6 +10,7 @@ import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
 import mui.icons.material.AddCircle
 import mui.icons.material.Person
+import mui.icons.material.PersonOutline
 import mui.material.*
 import react.FC
 import react.dom.html.ReactHTML.div
@@ -19,9 +20,8 @@ import react.useState
 
 private val LOG = KtorSimpleLogger("AdminPanelPage.kt")
 
-val AdminPanelPage = FC<SessionPageProps> { props ->
+val AdminPanelPage = FC<NavigationProps> { props ->
 
-    val navigateAdmin = useNavigate()
     var message by useState("")
     useEffectOnce {
         scope.launch {
@@ -51,6 +51,16 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
                 }
                 +"Hello Admin Page"
                 +"Extra message $message"
+            }
+
+            IconButton {
+                div {
+                    +"Open User Info"
+                }
+                PersonOutline()
+                onClick = {
+                    props.navigate.invoke(USER_INFO_PATH)
+                }
             }
 
             if (!productPopupOpen){
@@ -106,7 +116,7 @@ val AdminPanelPage = FC<SessionPageProps> { props ->
             LogoutButtonComponent {
                 session = props.session
                 updateSession = props.updateSession
-                navigate = navigateAdmin
+                navigate = props.navigate
             }
 
         } else {

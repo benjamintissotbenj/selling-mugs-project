@@ -1,7 +1,7 @@
 package com.benjtissot.sellingmugs.components.createProduct
 
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.components.PopupHeaderComponent
+import com.benjtissot.sellingmugs.components.highLevel.PopupHeaderComponent
 import com.benjtissot.sellingmugs.components.forms.CreateProductForm
 import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
 import com.benjtissot.sellingmugs.entities.printify.ImageForUploadReceive

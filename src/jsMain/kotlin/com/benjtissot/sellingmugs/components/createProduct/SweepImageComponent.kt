@@ -1,15 +1,13 @@
-package com.benjtissot.sellingmugs.components
+package com.benjtissot.sellingmugs.components.createProduct
 
 import com.benjtissot.sellingmugs.contentCenteredVertically
 import csstype.*
 import emotion.react.css
 import mui.icons.material.ChevronLeft
 import mui.icons.material.ChevronRight
-import mui.material.Button
 import mui.material.IconButton
 import react.FC
 import react.Props
-import react.dom.html.ReactHTML
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.img
 import react.useState

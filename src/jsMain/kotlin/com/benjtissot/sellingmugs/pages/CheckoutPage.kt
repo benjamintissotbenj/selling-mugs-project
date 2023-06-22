@@ -1,7 +1,7 @@
 package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.NavigationProps
-import com.benjtissot.sellingmugs.components.LoadingComponent
+import com.benjtissot.sellingmugs.components.highLevel.LoadingComponent
 import com.benjtissot.sellingmugs.entities.Cart
 import com.benjtissot.sellingmugs.entities.printify.order.PrintifyOrderPushResult
 import com.benjtissot.sellingmugs.entities.stripe.getCheckoutAmount

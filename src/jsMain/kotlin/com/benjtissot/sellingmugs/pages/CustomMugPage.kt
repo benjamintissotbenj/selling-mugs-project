@@ -1,8 +1,8 @@
 package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.components.EditImageOnTemplateComponent
-import com.benjtissot.sellingmugs.components.SweepImageComponent
+import com.benjtissot.sellingmugs.components.createProduct.EditImageOnTemplateComponent
+import com.benjtissot.sellingmugs.components.createProduct.SweepImageComponent
 import com.benjtissot.sellingmugs.components.createProduct.ImageDrop
 import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
 import com.benjtissot.sellingmugs.entities.printify.ImageForUploadReceive
