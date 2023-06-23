@@ -104,13 +104,13 @@ class OrderService {
          */
         suspend fun placeOrderToPrintify(orderLocalId: String) : PrintifyOrderPushResult {
             val order = getOrder(orderLocalId) ?: return PrintifyOrderPushFail.notFoundInDatabase
-            return when (val printifyOrderPushResult = apiPlaceOrder(order)) {
+            return when (val printifyOrderPushResult = apiPlaceOrder(order.copy(status = Order.STATUS_ON_HOLD))) {
                 is PrintifyOrderPushFail -> {
                     printifyOrderPushResult
                 }
                 is PrintifyOrderPushSuccess -> {
                     // Get printifyId and store it in Order Object
-                    OrderRepository.updateOrder(order.copy(id = printifyOrderPushResult.id))
+                    OrderRepository.updateOrder(order.copy(id = printifyOrderPushResult.id, status = Order.STATUS_ON_HOLD))
                     printifyOrderPushResult
                 }
                 else -> {

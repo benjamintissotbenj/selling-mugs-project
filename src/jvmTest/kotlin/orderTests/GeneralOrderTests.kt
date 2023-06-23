@@ -115,8 +115,10 @@ class GeneralOrderTests : AbstractDatabaseTests() {
                 assert(order != null)
                 order?.id?.let {
                     assert(it.isNotBlank())
-                    assert(it == printifyOrderPushResult.id)
-                } // assert that printify id is not null
+                    assert(it == printifyOrderPushResult.id)// assert that printify id is not null
+                }
+                // Assert that the order is placed on-hold (hasn't been placed to printify)
+                assert(order?.status == Order.STATUS_ON_HOLD)
             } else {
                 fail()
             }
@@ -127,8 +129,8 @@ class GeneralOrderTests : AbstractDatabaseTests() {
     /**
      * Cancels an order in Printify
      */
-    fun deleteOrder() = runTest {
-        LOG.delimit("Delete Order Test")
+    fun cancelOrder() = runTest {
+        LOG.delimit("Cancel Order Test")
         launch {
             OrderService.placeOrderToPrintify(orderId)
 

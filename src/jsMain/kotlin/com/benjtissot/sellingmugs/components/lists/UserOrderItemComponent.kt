@@ -84,7 +84,7 @@ val UserOrderItemComponent = FC<UserOrderItemProps> { props ->
                     padding = 16.px
                     marginRight = 2.vw
                 }
-                disabled = props.order.status != Order.STATUS_CANCELLED
+                disabled = props.order.status != Order.STATUS_ON_HOLD
                 onClick = { props.onClickCancel(props.order) }
                 +"Cancel"
             }

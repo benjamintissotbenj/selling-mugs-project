@@ -98,8 +98,8 @@ class CreateOrderTest : AbstractDatabaseTests() {
                 assert(order != null)
                 // Assert that the line items are created correctly
                 assert(order?.line_items?.map {it.product_id} == productIds)
-                // Assert that the order is created pending
-                assert(order?.status == Order.STATUS_PENDING)
+                // Assert that the order is created pending (hasn't been placed to printify)
+                assert(order?.status == Order.STATUS_ON_HOLD)
                 // Assert the orderID has been added to the user and the session
                 assert(session.user?.id?.let { OrderRepository.getUserOrderListByUserId(it)?.orderIds?.contains(orderId) } ?: false)
                 assert(session.orderId == orderId)
