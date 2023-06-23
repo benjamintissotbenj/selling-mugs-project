@@ -22,7 +22,7 @@ val FooterComponent = FC<FooterProps> { props ->
             position = Position.absolute
             bottom = 0.px
             left = 0.px
-            backgroundColor = Color(Const.ColorCode.BACKGROUND_BLUE.code())
+            backgroundColor = Color(Const.ColorCode.BACKGROUND_GREY.code())
         }
 
         h1 {

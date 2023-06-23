@@ -166,6 +166,23 @@ class OrderService {
             return OrderRepository.getUserOrderListByUserId(userId)
         }
 
+        /**
+         * Retrieves a list of [MugCartItem]s depending on an [Order.line_items] for display
+         * @param orderId the local id of the [Order]
+         * @return a [List] of [MugCartItem] corresponding to the order's [Order.line_items]
+         */
+        suspend fun getOrderLineItemsAsMugCartItems(orderId: String) : List<MugCartItem> {
+            val order = OrderRepository.getOrder(orderId)
+            return order?.line_items?.mapNotNull { line_item ->
+                MugRepository.getMugByPrintifyId(line_item.product_id)?.let {
+                    MugCartItem(
+                        it,
+                        line_item.quantity
+                    )
+                }
+            } ?: emptyList()
+        }
+
         /****************************************************************
          *
          *                      Webhook handling

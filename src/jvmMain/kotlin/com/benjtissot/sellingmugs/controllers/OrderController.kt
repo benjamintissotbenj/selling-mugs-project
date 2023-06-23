@@ -1,13 +1,10 @@
 package com.benjtissot.sellingmugs.controllers
 
-import com.benjtissot.sellingmugs.CREATE_ORDER_PATH
-import com.benjtissot.sellingmugs.PUSH_RESULT_PATH
-import com.benjtissot.sellingmugs.STRIPE_WEBHOOK_PATH
+import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.entities.printify.order.Order
 import com.benjtissot.sellingmugs.entities.printify.order.PushResultSerializer
 import com.benjtissot.sellingmugs.entities.printify.order.UserOrderList
 import com.benjtissot.sellingmugs.entities.stripe.paramSessionId
-import com.benjtissot.sellingmugs.getUuidFromString
 import com.benjtissot.sellingmugs.repositories.CartRepository
 import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.repositories.UserRepository
@@ -45,6 +42,16 @@ fun Route.orderRouting(){
                 }
             } else {
                 call.respond(HttpStatusCode.BadRequest)
+            }
+        }
+
+        route(MugCartItem.path){
+            get {
+                if (!call.request.queryParameters["orderId"].isNullOrBlank()) {
+                    call.respond(OrderService.getOrderLineItemsAsMugCartItems(call.request.queryParameters["orderId"].toString()))
+                } else {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
             }
         }
 

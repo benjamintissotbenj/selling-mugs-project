@@ -235,3 +235,19 @@ suspend fun getUserOrderList(userId: String) : List<Order> {
         httpResponse.body()
     }
 }
+
+
+
+/**
+ * Retrieves a list of [MugCartItem]s depending on an [Order.line_items] for display
+ * @param orderId the local id of the [Order]
+ * @return a [List] of [MugCartItem] corresponding to the order's [Order.line_items]
+ */
+suspend fun getOrderLineItemsAsMugCartItems(orderId: String) : List<MugCartItem> {
+    val httpResponse = jsonClient.get("${Order.path}${MugCartItem.path}?orderId=$orderId")
+    return if (httpResponse.status == HttpStatusCode.BadRequest){
+        emptyList()
+    } else {
+        httpResponse.body()
+    }
+}

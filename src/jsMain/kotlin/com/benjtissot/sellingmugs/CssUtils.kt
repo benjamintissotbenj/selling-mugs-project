@@ -190,3 +190,36 @@ fun PropertiesBuilder.submitFileStyle(){
     width = 100.pct
     cursor = Cursor.pointer
 }
+
+fun PropertiesBuilder.card(){
+    width = 100.pct
+    display = Display.flex
+    flexDirection = FlexDirection.column
+    alignItems = AlignItems.center
+    borderRadius = 2.vh
+    overflow = Overflow.hidden
+    maskImage = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);" as MaskImage /* this fixes the overflow:hidden in Chrome/Opera */
+
+}
+
+fun PropertiesBuilder.cardTopHalf(){
+    divDefaultHorizontalCss()
+    justifySpaceBetween()
+    boxSizing = BoxSizing.borderBox
+    width = 100.pct
+    display = Display.flex
+    alignItems = AlignItems.center
+    borderColor = Color(Const.ColorCode.BACKGROUND_GREY_DARKER.code())
+    backgroundColor = Color(Const.ColorCode.BACKGROUND_GREY_DARKER.code())
+}
+
+fun PropertiesBuilder.cardBottomHalf(){
+    divDefaultHorizontalCss()
+    justifySpaceBetween()
+    boxSizing = BoxSizing.borderBox
+    width = 100.pct
+    display = Display.flex
+    alignItems = AlignItems.center
+    borderColor = Color(Const.ColorCode.BACKGROUND_GREY_DARKER.code())
+    backgroundColor = Color(Const.ColorCode.BACKGROUND_GREY_DARK.code())
+}

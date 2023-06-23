@@ -60,7 +60,7 @@ val UserOrderListComponent = FC<UserOrderListProps> { props ->
             css {
                 display = Display.flex
                 flexDirection = FlexDirection.column
-                overflowY = Overflow.scroll
+                overflowY = "auto".unsafeCast<Overflow>()
                 scrollBehavior = ScrollBehavior.smooth
                 paddingBlock = 1.rem
                 boxSizing = BoxSizing.borderBox

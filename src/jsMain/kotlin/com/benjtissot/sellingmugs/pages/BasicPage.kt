@@ -36,7 +36,7 @@ val BasicPage = FC<BasicPageProps> { props ->
             boxSizing = BoxSizing.borderBox
             height = 88.vh
             width = 100.vw
-            overflowY = Overflow.scroll
+            overflowY = "auto".unsafeCast<Overflow>()
         }
         props.internalPage {
             session = props.session

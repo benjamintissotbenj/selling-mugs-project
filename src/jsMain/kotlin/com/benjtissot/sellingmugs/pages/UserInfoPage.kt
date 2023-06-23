@@ -70,6 +70,7 @@ val UserInfoPage = FC<NavigationProps> { props ->
             display = Display.flex
             flexDirection = FlexDirection.rowReverse
             height = 4.pct
+            overflow = Overflow.hidden
         }
         LogoutButtonComponent {
             session = props.session

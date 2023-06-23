@@ -27,6 +27,7 @@ val CreateTabsComponent = FC <CreateTabsProps> { props ->
 
     div {
         css {
+            boxSizing = BoxSizing.borderBox
             height = props.height
             width = props.width
         }
@@ -63,6 +64,7 @@ val CreateTabsComponent = FC <CreateTabsProps> { props ->
             // Render children tabs
             div {
                 css {
+                    boxSizing = BoxSizing.borderBox
                     width = 100.pct
                     height = 95.pct
                 }

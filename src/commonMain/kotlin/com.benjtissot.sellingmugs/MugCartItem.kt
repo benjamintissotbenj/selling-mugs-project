@@ -6,7 +6,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class MugCartItem(
-    @SerialName("_id") val id: String,
     val mug: Mug,
     var amount: Int,
 ){
