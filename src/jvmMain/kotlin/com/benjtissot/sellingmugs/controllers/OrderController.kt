@@ -52,7 +52,7 @@ fun Route.orderRouting(){
             get {
                 val userId: String = call.parameters["userId"] ?: error("Invalid post request")
                 OrderService.getUserOrderList(userId)?.let { userOrderList ->
-                    call.respond(userOrderList.orderIds.map {OrderService.getOrder(it)})
+                    call.respond(userOrderList.orderIds.map {OrderService.getOrderFromPrintify(it)})
                 } ?: call.respond(HttpStatusCode.BadRequest)
             }
         }

@@ -26,6 +26,8 @@ class Const {
         BLUE("#00adf1"),
         DARK_BLUE("#0088d0"),
         BACKGROUND_BLUE("#f7f7f7"),
+        BACKGROUND_BLUE_DARK("#77f7f7"),
+        GREY_DELIMITER("#777777"),
         RED("#ff0b00"),
         ;
         fun code(): String {

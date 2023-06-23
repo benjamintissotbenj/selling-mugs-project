@@ -18,7 +18,7 @@ private val LOG = KtorSimpleLogger("AuthenticatedPage.kt")
 
 external interface AuthenticatedPageProps : SessionPageProps {
     var internalPage : FC<NavigationProps>
-    var internalPagePath: String
+    var internalPagePath: String?
 }
 val AuthenticatedPage = FC<AuthenticatedPageProps> { props ->
 
@@ -31,7 +31,7 @@ val AuthenticatedPage = FC<AuthenticatedPageProps> { props ->
             val loggedInValue = loggedInResponse.status != HttpStatusCode.Unauthorized && (loggedInResponse.body<String>() == "true")
 
             if (!loggedInValue) {
-                frontEndRedirect = props.internalPagePath
+                frontEndRedirect = props.internalPagePath ?: HOMEPAGE_PATH
                 navigateAuthenticated.invoke(LOGIN_PATH)
             }
             loggedIn = loggedInValue

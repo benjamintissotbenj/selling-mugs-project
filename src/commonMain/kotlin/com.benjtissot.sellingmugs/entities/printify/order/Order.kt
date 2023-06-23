@@ -2,12 +2,29 @@ package com.benjtissot.sellingmugs.entities.printify.order
 
 import com.benjtissot.sellingmugs.ORDER_OBJECT_PATH
 import io.ktor.http.*
+import kotlinx.datetime.Instant
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonContentPolymorphicSerializer
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonObject
+import com.benjtissot.sellingmugs.entities.printify.customParseToInstant
+import kotlinx.datetime.Clock
+
+fun Instant.customParse(isoString: String) : Instant {
+    return Instant.parse(isoString.replace(" ", "T"))
+}
+object InstantSerializer : KSerializer<Instant> {
+    override val descriptor = PrimitiveSerialDescriptor("Instant", PrimitiveKind.STRING)
+    override fun serialize(encoder: Encoder, value: Instant) = encoder.encodeString(value.toString())
+    override fun deserialize(decoder: Decoder): Instant = customParseToInstant(decoder.decodeString())
+}
 
 @Serializable
 data class Order(
@@ -19,6 +36,8 @@ data class Order(
     val send_shipping_notification: Boolean,
     val id: String, // Printify id
     val status: String,
+    @Serializable(InstantSerializer::class)
+    val created_at: Instant,
 ) {
     companion object {
 
@@ -36,7 +55,8 @@ data class Order(
                 shipping_method = 1, // 1 is standard, 2 is express
                 send_shipping_notification = true,
                 id = "", // Printify id
-                status = STATUS_PENDING
+                status = STATUS_PENDING,
+                Clock.System.now()
             )
         }
     }
@@ -59,6 +79,8 @@ data class UserOrderList (
 data class ReceiveOrder(
     val id: String, // Printify id
     val status: String,
+    @Serializable(InstantSerializer::class)
+    val created_at: Instant,
 ){
 
 }

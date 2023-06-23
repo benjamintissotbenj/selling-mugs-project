@@ -20,7 +20,7 @@ external interface UserOrderListProps: Props {
 
 val UserOrderListComponent = FC<UserOrderListProps> { props ->
 
-    var orderList : List<Order> by useState(emptyList())
+    var orderList : List<Order>? by useState(null)
 
     useEffectOnce {
         scope.launch {
@@ -28,39 +28,53 @@ val UserOrderListComponent = FC<UserOrderListProps> { props ->
         }
     }
 
-    header {
-        css {
-            width = 100.pct
+    if (orderList.isNullOrEmpty()){
+        div {
+            css {
+                contentCenteredVertically()
+                contentCenteredHorizontally()
+            }
+            if (orderList == null){
+                +"Data is loading, please wait."
+            } else {
+                +"You haven't ordered anything yet !"
+            }
+        }
+    } else {
+        header {
+            css {
+                width = 100.pct
+                height = 4.pct
+            }
+            div {
+                css {
+                    fontBig()
+                    marginLeft = 10.vw
+                }
+                +"Your orders"
+            }
+
+            // TODO : put a button to filter according to a given period of time
         }
         div {
             css {
-                fontBig()
-                marginLeft = 10.vw
+                display = Display.flex
+                flexDirection = FlexDirection.column
+                overflowY = Overflow.scroll
+                scrollBehavior = ScrollBehavior.smooth
+                paddingBlock = 1.rem
+                boxSizing = BoxSizing.borderBox
+                width = 100.pct
+                height = 95.pct
             }
-            +"Your orders"
-        }
-    }
-    div {
-        css {
-            display = Display.flex
-            flexDirection = FlexDirection.column
-            overflowY = Overflow.scroll
-            scrollBehavior = ScrollBehavior.smooth
-            paddingBlock = 1.rem
-            width = 80.vw
-            maxWidth = 80.rem
-            maxHeight = 70.vh
-        }
-        orderList.forEach { order ->
-            UserOrderItemComponent {
-                this.order = order
-                onClickCancel = { mugCartItem ->
-                    props.setAlert(errorAlert("Cancelling order of label ${order.label}"))
+            orderList!!.forEach { order ->
+                UserOrderItemComponent {
+                    this.order = order
+                    onClickCancel = { order ->
+                        props.setAlert(errorAlert("Cancelling order of label ${order.label}"))
+                    }
                 }
             }
         }
-
     }
-
-
 }

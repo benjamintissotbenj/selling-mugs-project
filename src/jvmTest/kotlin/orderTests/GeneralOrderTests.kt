@@ -145,17 +145,16 @@ class GeneralOrderTests : AbstractDatabaseTests() {
 
     @After
     override fun after() = runTest {
+        super.after()
         launch {
+            // Cancels the order created in printify
+            LOG.debug("Cancelling order $orderId")
+            OrderService.cancelOrder(orderId)
             productIds.forEach {
-                // Cancels the order created in printify
-                LOG.debug("Cancelling order $orderId")
-                OrderService.cancelOrder(orderId)
-
                 // Delete the published product if it has been published
                 LOG.debug("Deleting product $it")
                 PrintifyService.deleteProduct(it)
             }
-            super.after()
         }
     }
 

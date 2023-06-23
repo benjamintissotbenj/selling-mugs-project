@@ -70,6 +70,7 @@ val App = FC<Props> {
                         updateSession = updateSessionApp
                         setAlert = {alertState -> setAlert(alertState)}
                         internalPage = UserInfoPage
+                        internalPagePath = USER_INFO_PATH
                     }
                 }
                 Route {

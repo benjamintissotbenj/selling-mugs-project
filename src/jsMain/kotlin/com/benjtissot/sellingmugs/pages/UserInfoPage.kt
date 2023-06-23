@@ -57,13 +57,11 @@ val UserInfoPage = FC<NavigationProps> { props ->
                 height = 100.pct
             }
             value = "1"
-            div {
-                +"List of orders"
-                UserOrderListComponent {
-                    userId = props.session.user!!.id
-                    setAlert = props.setAlert
-                }
+            UserOrderListComponent {
+                userId = props.session.user!!.id
+                setAlert = props.setAlert
             }
+
         }
     }
 

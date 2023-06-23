@@ -76,7 +76,7 @@ suspend fun onLoginResponse(httpResponse: HttpResponse, navigateFunction: Naviga
             // Using local variable because otherwise update is not atomic
             val tokenString = httpResponse.body<String>()
             updateClientWithToken(tokenString)
-            if (frontEndRedirect.isEmpty()){
+            if (frontEndRedirect.isBlank()){
                 navigateFunction.invoke(HOMEPAGE_PATH)
             } else {
                 val redirectPath = frontEndRedirect

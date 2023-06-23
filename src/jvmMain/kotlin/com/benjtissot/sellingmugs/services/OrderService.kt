@@ -38,7 +38,7 @@ class OrderService {
             return if (httpResponse.status == HttpStatusCode.OK){
                 val receiveOrder = httpResponse.body<ReceiveOrder>()
                 OrderRepository.getOrder(localId)
-                    ?.let { OrderRepository.updateOrder(it.copy(status = receiveOrder.status)) }
+                    ?.let { OrderRepository.updateOrder(it.copy(status = receiveOrder.status, created_at = receiveOrder.created_at)) }
                 OrderRepository.getOrderByPrintifyId(receiveOrder.id) // Printify id
             } else {
                 null
