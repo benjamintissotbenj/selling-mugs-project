@@ -144,10 +144,12 @@ val UserOrderListComponent = FC<UserOrderListProps> { props ->
                     Const.ORDER_FILTER_SIX_MONTHS -> order.created_at.monthsUntil(Clock.System.now(), TimeZone.currentSystemDefault()) <= 6
                     else -> false
                 }
-            }.forEach { order ->
+            }.reversed( // We want the items to appear from most recent to oldest
+            ).forEach { order ->
                 UserOrderItemComponent {
                     this.order = order
                     onClickCancel = { order ->
+                        // TODO: create a popup to confirm, as this is a bit too easy to cancel an order
                         scope.launch {
                             val statusCode = cancelOrder(order.external_id)
                             when (statusCode.value) {
