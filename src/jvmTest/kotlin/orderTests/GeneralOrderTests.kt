@@ -118,7 +118,7 @@ class GeneralOrderTests : AbstractDatabaseTests() {
                     assert(it == printifyOrderPushResult.id)// assert that printify id is not null
                 }
                 // Assert that the order is placed on-hold (hasn't been placed to printify)
-                assert(order?.status == Order.STATUS_ON_HOLD)
+                assert(order?.status == Order.STATUS_PENDING)
             } else {
                 fail()
             }

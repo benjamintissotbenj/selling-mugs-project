@@ -251,3 +251,11 @@ suspend fun getOrderLineItemsAsMugCartItems(orderId: String) : List<MugCartItem>
         httpResponse.body()
     }
 }
+
+/**
+ * Cancels an order in Printify
+ * @param localOrderId the local id of the Order to cancel
+ */
+suspend fun cancelOrder(localOrderId: String) : HttpStatusCode {
+    return jsonClient.post("${Order.path}/$localOrderId$CANCEL_ORDER_PATH").status
+}

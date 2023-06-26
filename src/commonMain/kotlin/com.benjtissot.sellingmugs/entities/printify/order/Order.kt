@@ -40,7 +40,6 @@ data class Order(
     val created_at: Instant,
 ) {
     companion object {
-        // TODO: change the logic to push as pending (and inform users they have 1 day to cancel blablabla)
         const val STATUS_CANCELLED = "canceled" // NOT a typo, Printify status has a typo so must adapt
         const val STATUS_ON_HOLD = "on-hold"
         const val STATUS_PENDING = "pending"

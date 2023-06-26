@@ -32,6 +32,8 @@ val UserOrderItemComponent = FC<UserOrderItemProps> { props ->
     div {
         css {
             card()
+            marginTop = 1.vh
+            marginBottom = 1.vh
         }
 
         // Main info

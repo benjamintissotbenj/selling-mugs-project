@@ -1,6 +1,8 @@
 package com.benjtissot.sellingmugs.components.highLevel
 
 import com.benjtissot.sellingmugs.AlertState
+import com.benjtissot.sellingmugs.fontBig
+import com.benjtissot.sellingmugs.fontNormalPlus
 import com.benjtissot.sellingmugs.hideAlert
 import csstype.*
 import emotion.react.css
@@ -27,6 +29,7 @@ val CreateTabsComponent = FC <CreateTabsProps> { props ->
 
     div {
         css {
+            overflow = Overflow.hidden
             boxSizing = BoxSizing.borderBox
             height = props.height
             width = props.width
@@ -54,7 +57,14 @@ val CreateTabsComponent = FC <CreateTabsProps> { props ->
                                 height = 5.pct
                                 minHeight = 40.px
                             }
-                            label = div.create{+props.labels[i]}
+                            label = div.create{
+                                css {
+                                    fontNormalPlus()
+                                    textTransform = "initial".unsafeCast<TextTransform>()
+                                    fontWeight = FontWeight.bold
+                                }
+                                +props.labels[i]
+                            }
                             ariaControls = "simple-tabpanel-$i"
                         }
                     }

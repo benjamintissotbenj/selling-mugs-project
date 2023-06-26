@@ -45,6 +45,13 @@ fun Route.orderRouting(){
             }
         }
 
+        route("/{localOrderId}$CANCEL_ORDER_PATH"){
+            get {
+                val localOrderId: String = call.parameters["localOrderId"] ?: error("Invalid post request")
+                call.respond(OrderService.cancelOrder(localOrderId))
+            }
+        }
+
         route(MugCartItem.path){
             get {
                 if (!call.request.queryParameters["orderId"].isNullOrBlank()) {
@@ -59,7 +66,7 @@ fun Route.orderRouting(){
             get {
                 val userId: String = call.parameters["userId"] ?: error("Invalid post request")
                 OrderService.getUserOrderList(userId)?.let { userOrderList ->
-                    call.respond(userOrderList.orderIds.map {OrderService.getOrderFromPrintify(it)})
+                    call.respond(userOrderList.orderIds.mapNotNull { OrderService.getOrderFromPrintify(it) })
                 } ?: call.respond(HttpStatusCode.BadRequest)
             }
         }

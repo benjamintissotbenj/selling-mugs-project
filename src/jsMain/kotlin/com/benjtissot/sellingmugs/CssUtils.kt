@@ -94,6 +94,9 @@ fun PropertiesBuilder.fontSmall(){
 fun PropertiesBuilder.fontNormal(){
     fontSize = 1.rem
 }
+fun PropertiesBuilder.fontNormalPlus(){
+    fontSize = 1.25.rem
+}
 fun PropertiesBuilder.fontBig(){
     fontSize = 1.5.rem
 }
@@ -197,7 +200,7 @@ fun PropertiesBuilder.card(){
     flexDirection = FlexDirection.column
     alignItems = AlignItems.center
     borderRadius = 2.vh
-    overflow = Overflow.hidden
+    // This allows for the card to look like a card without the "Overflow: hidden" attribute
     maskImage = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);" as MaskImage /* this fixes the overflow:hidden in Chrome/Opera */
 
 }
@@ -222,4 +225,11 @@ fun PropertiesBuilder.cardBottomHalf(){
     alignItems = AlignItems.center
     borderColor = Color(Const.ColorCode.BACKGROUND_GREY_DARKER.code())
     backgroundColor = Color(Const.ColorCode.BACKGROUND_GREY_DARK.code())
+}
+
+fun PropertiesBuilder.tabPanel(){
+    overflow = Overflow.hidden
+    boxSizing = BoxSizing.borderBox
+    width = 100.pct
+    height = 100.pct
 }

@@ -41,6 +41,7 @@ class OrderService {
                     ?.let { OrderRepository.updateOrder(it.copy(status = receiveOrder.status, created_at = receiveOrder.created_at)) }
                 OrderRepository.getOrderByPrintifyId(receiveOrder.id) // Printify id
             } else {
+
                 null
             }
         }
@@ -104,13 +105,13 @@ class OrderService {
          */
         suspend fun placeOrderToPrintify(orderLocalId: String) : PrintifyOrderPushResult {
             val order = getOrder(orderLocalId) ?: return PrintifyOrderPushFail.notFoundInDatabase
-            return when (val printifyOrderPushResult = apiPlaceOrder(order.copy(status = Order.STATUS_ON_HOLD))) {
+            return when (val printifyOrderPushResult = apiPlaceOrder(order.copy(status = Order.STATUS_PENDING))) {
                 is PrintifyOrderPushFail -> {
                     printifyOrderPushResult
                 }
                 is PrintifyOrderPushSuccess -> {
                     // Get printifyId and store it in Order Object
-                    OrderRepository.updateOrder(order.copy(id = printifyOrderPushResult.id, status = Order.STATUS_ON_HOLD))
+                    OrderRepository.updateOrder(order.copy(id = printifyOrderPushResult.id, status = Order.STATUS_PENDING))
                     printifyOrderPushResult
                 }
                 else -> {
@@ -129,7 +130,7 @@ class OrderService {
             return if (printifyId.isEmpty()){
                 HttpStatusCode(6, "Order was not found in database")
             } else {
-                apiCancelOrder(getOrderPrintifyId(orderId))
+                apiCancelOrder(printifyId)
             }
         }
 

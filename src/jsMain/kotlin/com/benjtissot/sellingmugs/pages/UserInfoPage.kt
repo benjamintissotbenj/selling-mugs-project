@@ -34,7 +34,7 @@ val UserInfoPage = FC<NavigationProps> { props ->
     }
 
     CreateTabsComponent {
-        height = 95.pct
+        height = 94.pct
         width = 100.pct
         labels = listOf("User Information", "Orders")
 
@@ -52,9 +52,7 @@ val UserInfoPage = FC<NavigationProps> { props ->
 
         TabPanel {
             css {
-                boxSizing = BoxSizing.borderBox
-                width = 100.pct
-                height = 100.pct
+                tabPanel()
             }
             value = "1"
             UserOrderListComponent {
@@ -69,8 +67,7 @@ val UserInfoPage = FC<NavigationProps> { props ->
         css {
             display = Display.flex
             flexDirection = FlexDirection.rowReverse
-            height = 4.pct
-            overflow = Overflow.hidden
+            height = 6.pct
         }
         LogoutButtonComponent {
             session = props.session

@@ -5,6 +5,11 @@ import com.benjtissot.sellingmugs.entities.printify.order.Order
 import csstype.*
 import emotion.react.css
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.monthsUntil
+import mui.material.MenuItem
+import mui.material.Select
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
@@ -21,6 +26,7 @@ external interface UserOrderListProps: Props {
 val UserOrderListComponent = FC<UserOrderListProps> { props ->
 
     var orderList : List<Order>? by useState(null)
+    var filterSelector : String by useState(Const.ORDER_FILTER_THREE_MONTHS)
 
     useEffectOnce {
         scope.launch {
@@ -41,20 +47,71 @@ val UserOrderListComponent = FC<UserOrderListProps> { props ->
             }
         }
     } else {
+        // Create alert if there is a problem with an order
+
+
         header {
             css {
                 width = 100.pct
                 height = 4.pct
+                display = Display.flex
+                justifyContent = JustifyContent.spaceBetween
+                alignItems = AlignItems.center
             }
             div {
                 css {
-                    fontBig()
+                    fontNormalPlus()
                     marginLeft = 10.vw
                 }
                 +"Your orders"
             }
 
-            // TODO : put a button to filter according to a given period of time
+            div {
+                css {
+                    display = Display.flex
+                    flexDirection = FlexDirection.row
+                    marginRight = 5.vw
+                }
+                div {
+                    css {
+                        contentCenteredVertically()
+                        marginRight = 3.vh
+                    }
+                    +"See orders :"
+                }
+
+                Select {
+                    // Attributes
+                    css {
+                        width = 20.vw
+                        height = 5.vh
+                        color = NamedColor.white
+                        fontNormal()
+                    }
+
+                    value = filterSelector
+                    onChange = { event, _ ->
+                        filterSelector = event.target.value
+                    }
+
+
+                    // Children, in the selector
+
+                    MenuItem {
+                        value = Const.ORDER_FILTER_THREE_MONTHS
+                        +Const.ORDER_FILTER_THREE_MONTHS
+                    }
+                    MenuItem {
+                        value = Const.ORDER_FILTER_SIX_MONTHS
+                        +Const.ORDER_FILTER_SIX_MONTHS
+                    }
+                    MenuItem {
+                        value = Const.ORDER_FILTER_ALL
+                        +Const.ORDER_FILTER_ALL
+                    }
+                }
+            }
+
         }
         div {
             css {
@@ -62,16 +119,32 @@ val UserOrderListComponent = FC<UserOrderListProps> { props ->
                 flexDirection = FlexDirection.column
                 overflowY = "auto".unsafeCast<Overflow>()
                 scrollBehavior = ScrollBehavior.smooth
-                paddingBlock = 1.rem
+                paddingBlock = 1.vh
                 boxSizing = BoxSizing.borderBox
                 width = 100.pct
                 height = 95.pct
             }
-            orderList!!.forEach { order ->
+            orderList!!.filter {order ->
+                when (filterSelector){
+                    Const.ORDER_FILTER_ALL -> true
+                    Const.ORDER_FILTER_THREE_MONTHS -> order.created_at.monthsUntil(Clock.System.now(), TimeZone.currentSystemDefault()) <= 3
+                    Const.ORDER_FILTER_SIX_MONTHS -> order.created_at.monthsUntil(Clock.System.now(), TimeZone.currentSystemDefault()) <= 6
+                    else -> false
+                }
+            }.forEach { order ->
                 UserOrderItemComponent {
                     this.order = order
                     onClickCancel = { order ->
-                        props.setAlert(errorAlert("Cancelling order of label ${order.label}"))
+                        scope.launch {
+                            val statusCode = cancelOrder(order.external_id)
+                            when (statusCode.value) {
+                                6 -> props.setAlert(errorAlert("Order was not found"))
+                                200 -> props.setAlert(successAlert("Order was cancelled successfully !"))
+                                else -> props.setAlert(errorAlert("Something went wrong"))
+                            }
+                            orderList = getUserOrderList(props.userId)
+                        }
+
                     }
                 }
             }

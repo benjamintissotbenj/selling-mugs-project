@@ -27,11 +27,17 @@ class Const {
         DARK_BLUE("#0088d0"),
         BACKGROUND_GREY("#f7f7f7"),
         BACKGROUND_GREY_DARK("#f0f0f0"),
-        BACKGROUND_GREY_DARKER("#eaeaea"),
+        BACKGROUND_GREY_DARKER("#e0e0e0"),
         RED("#ff0b00"),
         ;
         fun code(): String {
             return colourCode
         }
+    }
+
+    companion object {
+        val ORDER_FILTER_ALL = "All"
+        val ORDER_FILTER_SIX_MONTHS = "< 6 months"
+        val ORDER_FILTER_THREE_MONTHS = "< 3 months"
     }
 }
