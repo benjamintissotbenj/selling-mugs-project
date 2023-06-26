@@ -1,21 +1,18 @@
 package com.benjtissot.sellingmugs.controllers
 
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.entities.printify.order.*
-import com.benjtissot.sellingmugs.entities.stripe.paramSessionId
+import com.benjtissot.sellingmugs.entities.printify.order.Order
+import com.benjtissot.sellingmugs.entities.printify.order.PushResultSerializer
+import com.benjtissot.sellingmugs.entities.printify.order.StoredOrderPushFailed
 import com.benjtissot.sellingmugs.repositories.CartRepository
 import com.benjtissot.sellingmugs.repositories.OrderRepository
 import com.benjtissot.sellingmugs.repositories.SessionRepository
-import com.benjtissot.sellingmugs.repositories.UserRepository
 import com.benjtissot.sellingmugs.services.OrderService
 import com.benjtissot.sellingmugs.services.SessionService.Companion.getSession
-import com.google.gson.Gson
-import com.google.gson.JsonObject
-import com.google.gson.reflect.TypeToken
+import com.stripe.Stripe
 import com.stripe.exception.SignatureVerificationException
 import com.stripe.model.Event
-import com.stripe.model.EventDataObjectDeserializer
-import com.stripe.model.StripeObject
+import com.stripe.model.Refund
 import com.stripe.net.Webhook
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -45,9 +42,24 @@ fun Route.orderRouting(){
         }
 
         route("/{localOrderId}$CANCEL_ORDER_PATH"){
-            get {
+            post {
                 val localOrderId: String = call.parameters["localOrderId"] ?: error("Invalid post request")
-                call.respond(OrderService.cancelOrder(localOrderId))
+
+                val httpStatusCancel = OrderService.cancelOrder(localOrderId)
+                if (httpStatusCancel != HttpStatusCode.OK) {
+                    call.respond(httpStatusCancel)
+                }
+
+                // If cancellation happened correctly and refund too, all is good
+                call.respond(OrderService.refundOrder(localOrderId))
+            }
+        }
+
+        // Used to refund an order if order was cancelled but not refunded properly
+        route("/{localOrderId}$REFUND_ORDER_PATH"){
+            post {
+                val localOrderId: String = call.parameters["localOrderId"] ?: error("Invalid post request")
+                call.respond(OrderService.refundOrder(localOrderId))
             }
         }
 

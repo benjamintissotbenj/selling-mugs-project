@@ -57,7 +57,7 @@ val UserOrderListComponent = FC<UserOrderListProps> { props ->
                     card()
                     backgroundColor = NamedColor.red
                 }
-                +"Order Id is ${orderPushFail.orderId} and Message is ${orderPushFail.printifyOrderPushFail.message}"
+                +"Order ${orderPushFail.orderId} failed because : ${orderPushFail.printifyOrderPushFail.errors.reason}"
             }
         }
 
@@ -131,7 +131,8 @@ val UserOrderListComponent = FC<UserOrderListProps> { props ->
                 flexDirection = FlexDirection.column
                 overflowY = "auto".unsafeCast<Overflow>()
                 scrollBehavior = ScrollBehavior.smooth
-                paddingBlock = 1.vh
+                paddingTop = 1.vh
+                paddingBottom = 5.vh
                 boxSizing = BoxSizing.borderBox
                 width = 100.pct
                 height = 95.pct
@@ -151,6 +152,7 @@ val UserOrderListComponent = FC<UserOrderListProps> { props ->
                             val statusCode = cancelOrder(order.external_id)
                             when (statusCode.value) {
                                 6 -> props.setAlert(errorAlert("Order was not found"))
+                                10 -> props.setAlert(errorAlert("Order was cancelled but not refunded correctly. Please retry."))
                                 200 -> props.setAlert(successAlert("Order was cancelled successfully !"))
                                 else -> props.setAlert(errorAlert("Something went wrong"))
                             }

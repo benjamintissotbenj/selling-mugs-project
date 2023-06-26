@@ -5,12 +5,16 @@ import com.benjtissot.sellingmugs.entities.User
 import com.benjtissot.sellingmugs.entities.printify.order.*
 import com.benjtissot.sellingmugs.repositories.*
 import com.benjtissot.sellingmugs.repositories.OrderRepository.Companion.getOrderPrintifyId
+import com.stripe.Stripe
 import com.stripe.model.Event
 import com.stripe.model.EventDataObjectDeserializer
+import com.stripe.model.Refund
 import com.stripe.model.checkout.Session
 import com.stripe.model.checkout.Session.CustomerDetails
 import io.ktor.client.call.*
 import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.response.*
 import io.ktor.util.logging.*
 
 private val LOG = KtorSimpleLogger("OrderService.kt")
@@ -134,6 +138,38 @@ class OrderService {
             }
         }
 
+        /**
+         * Refunds an order
+         * @return the status returned by Stripe API
+         */
+        suspend fun refundOrder(localOrderId: String) : HttpStatusCode {
+            // Refund the order
+            Stripe.apiKey = "sk_test_51NKkLwJx7XjXUQ19LtK4VmklHiyn9fM0iTKKJOHD2OCc22UY2juDrf2g81W5NK1ZmzCpQrx9jBaV2BC3HuzEhghw00WIrj1t1h"
+
+            val paymentIntentId = OrderService.getOrderStripePaymentIntent(localOrderId)
+            if (paymentIntentId == ""){
+                return HttpStatusCode(10, "Cannot refund if payment intent does not exist")
+            }
+            val params: MutableMap<String, Any> = HashMap()
+            params["payment_intent"] = paymentIntentId
+
+            val refund = Refund.create(params)
+            return if (refund.status != "succeeded"){
+                saveOrderPushResult(localOrderId, PrintifyOrderPushFail(refund.status, 10, "Refund failed", PrintifyOrderPushFailError(refund.failureReason, 10)), paymentIntentId)
+                HttpStatusCode(10, "Refund did not succeed")
+            } else {
+                HttpStatusCode.OK
+            }
+        }
+
+
+        /**
+         * @param localOrderId the [Order.external_id] for which we want to retrieve the stored push result
+         * @return a [String], the payment intent associated with an order
+         */
+        suspend fun getOrderStripePaymentIntent(localOrderId: String) : String {
+            return OrderRepository.getOrderStripePaymentIntent(localOrderId)
+        }
 
 
         /**
@@ -148,8 +184,8 @@ class OrderService {
          * @param localOrderId the [Order.external_id] for which we want to store the push result
          * @param printifyOrderPushResult the [PrintifyOrderPushResult] to be stored
          */
-        suspend fun saveOrderPushResult(orderId: String, printifyOrderPushResult: PrintifyOrderPushResult) {
-            OrderRepository.saveOrderPushResult(orderId, printifyOrderPushResult)
+        suspend fun saveOrderPushResult(localOrderId: String, printifyOrderPushResult: PrintifyOrderPushResult, paymentIntentId: String) {
+            OrderRepository.saveOrderPushResult(localOrderId, printifyOrderPushResult, paymentIntentId)
         }
 
         suspend fun createUserOrderList(userId: String) : UserOrderList {
@@ -222,6 +258,7 @@ class OrderService {
             val session = SessionRepository.getSession(sessionId ?: "") ?: return HttpStatusCode.InternalServerError
             val user = session.user ?: return HttpStatusCode.InternalServerError
             val addressTo = stripeSession.customerDetails.toAddressTo()
+            val paymentIntentId = stripeSession.paymentIntent
 
             LOG.debug("cartId to create order is ${session.cartId}")
             // Create order
@@ -235,12 +272,12 @@ class OrderService {
 
             // Push order to printify and save result in database
             val pushResult = placeOrderToPrintify(order.external_id)
-            saveOrderPushResult(order.external_id, pushResult)
+            saveOrderPushResult(order.external_id, pushResult, paymentIntentId)
 
             if (pushResult is PrintifyOrderPushSuccess){
                 print("Order ${pushResult.id} pushed successfully")
             } else if (pushResult is PrintifyOrderPushFail) {
-                print(pushResult.message)
+                print("${pushResult.message} because ${pushResult.errors.reason}")
             }
             return HttpStatusCode.OK
         }

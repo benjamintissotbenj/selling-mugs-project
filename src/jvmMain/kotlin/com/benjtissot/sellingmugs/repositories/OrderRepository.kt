@@ -86,6 +86,16 @@ class OrderRepository {
         }
 
         /**
+         * @param localOrderId the [Order.external_id] for which we want to retrieve the paymentIntent id
+         */
+        suspend fun getOrderStripePaymentIntent(localOrderId : String) : String {
+            return (
+                    orderPushSuccessCollection.findOne(StoredOrderPushSuccess::orderId eq localOrderId)?.paymentIntentId
+                        ?: orderPushFailedCollection.findOne(StoredOrderPushFailed::orderId eq localOrderId)?.paymentIntentId
+                    ) ?: ""
+        }
+
+        /**
          * @param localOrderId the [Order.external_id] for which we want to retrieve the stored push result
          */
         suspend fun getStoredOrderPushFailByOrderId(localOrderId : String) : StoredOrderPushFailed? {
@@ -96,17 +106,17 @@ class OrderRepository {
          * @param localOrderId the [Order.external_id] for which we want to store the push result
          * @param printifyOrderPushResult the [PrintifyOrderPushResult] to be stored
          */
-        suspend fun saveOrderPushResult(localOrderId: String, printifyOrderPushResult: PrintifyOrderPushResult) {
+        suspend fun saveOrderPushResult(localOrderId: String, printifyOrderPushResult: PrintifyOrderPushResult, paymentIntentId: String) {
             if (printifyOrderPushResult is PrintifyOrderPushSuccess) {
                 orderPushSuccessCollection.updateOneById(
                     localOrderId,
-                    StoredOrderPushSuccess(localOrderId, printifyOrderPushResult),
+                    StoredOrderPushSuccess(localOrderId, printifyOrderPushResult, paymentIntentId),
                     upsert()
                 )
             } else if (printifyOrderPushResult is PrintifyOrderPushFail) {
                 orderPushFailedCollection.updateOneById(
                     localOrderId,
-                    StoredOrderPushFailed(localOrderId, printifyOrderPushResult),
+                    StoredOrderPushFailed(localOrderId, printifyOrderPushResult, paymentIntentId),
                     upsert()
                 )
             }

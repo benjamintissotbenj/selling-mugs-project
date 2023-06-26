@@ -141,7 +141,8 @@ data class PrintifyOrderPushFailError (
 @Serializable
 class StoredOrderPushSuccess (
     @SerialName("_id") val orderId: String,
-    val printifyOrderPushSuccess: PrintifyOrderPushSuccess
+    val printifyOrderPushSuccess: PrintifyOrderPushSuccess,
+    val paymentIntentId : String,
 ) {
 
 }
@@ -149,7 +150,8 @@ class StoredOrderPushSuccess (
 @Serializable
 class StoredOrderPushFailed (
     @SerialName("_id") val orderId: String,
-    val printifyOrderPushFail: PrintifyOrderPushFail
+    val printifyOrderPushFail: PrintifyOrderPushFail,
+    val paymentIntentId : String,
 ) {
 
 }
