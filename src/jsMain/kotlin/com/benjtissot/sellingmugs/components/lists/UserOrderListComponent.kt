@@ -2,6 +2,8 @@ package com.benjtissot.sellingmugs.components.lists
 
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.entities.printify.order.Order
+import com.benjtissot.sellingmugs.entities.printify.order.PrintifyOrderPushFail
+import com.benjtissot.sellingmugs.entities.printify.order.StoredOrderPushFailed
 import csstype.*
 import emotion.react.css
 import kotlinx.coroutines.launch
@@ -26,11 +28,13 @@ external interface UserOrderListProps: Props {
 val UserOrderListComponent = FC<UserOrderListProps> { props ->
 
     var orderList : List<Order>? by useState(null)
+    var orderPushFails : List<StoredOrderPushFailed> by useState(emptyList())
     var filterSelector : String by useState(Const.ORDER_FILTER_THREE_MONTHS)
 
     useEffectOnce {
         scope.launch {
             orderList = getUserOrderList(props.userId)
+            orderPushFails = getOrderPushFailsByUser(props.userId)
         }
     }
 
@@ -47,7 +51,15 @@ val UserOrderListComponent = FC<UserOrderListProps> { props ->
             }
         }
     } else {
-        // Create alert if there is a problem with an order
+        orderPushFails.forEach { orderPushFail ->
+            div {
+                css {
+                    card()
+                    backgroundColor = NamedColor.red
+                }
+                +"Order Id is ${orderPushFail.orderId} and Message is ${orderPushFail.printifyOrderPushFail.message}"
+            }
+        }
 
 
         header {

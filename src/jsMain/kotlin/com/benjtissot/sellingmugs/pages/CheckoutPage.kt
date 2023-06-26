@@ -3,6 +3,7 @@ package com.benjtissot.sellingmugs.pages
 import com.benjtissot.sellingmugs.NavigationProps
 import com.benjtissot.sellingmugs.components.highLevel.LoadingComponent
 import com.benjtissot.sellingmugs.entities.Cart
+import com.benjtissot.sellingmugs.entities.printify.order.PrintifyOrderPushFail
 import com.benjtissot.sellingmugs.entities.printify.order.PrintifyOrderPushResult
 import com.benjtissot.sellingmugs.entities.stripe.getCheckoutAmount
 import com.benjtissot.sellingmugs.entities.stripe.getPaymentLink
@@ -112,6 +113,15 @@ val CheckoutPage = FC<NavigationProps> { props ->
                 open = paymentPageOpened && orderPushResult == null
             }
         } else {
+            // Check result + show alert when issue pushing
+            if (orderPushResult is PrintifyOrderPushFail) {
+                div {
+                    +"The order failed"
+                }
+                div {
+                    +((orderPushResult as PrintifyOrderPushFail).message)
+                }
+            }
             div {
                 +"The push result has successfully been saved"
             }

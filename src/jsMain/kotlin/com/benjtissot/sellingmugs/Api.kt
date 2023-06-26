@@ -209,8 +209,34 @@ suspend fun createOrder(addressTo: AddressTo) : HttpResponse {
  * Gets a pushResult by cart id
  * @param cartId the [Cart.id] for which we want to retrieve the push result
  */
+suspend fun getOrderPushFailsByUser(userId : String) : List<StoredOrderPushFailed> {
+    val httpResponse = jsonClient.get("${Order.path}$PUSH_FAIL_PATH?userId=$userId")
+    return if (httpResponse.status == HttpStatusCode.BadRequest){
+        emptyList()
+    } else {
+        httpResponse.body()
+    }
+}
+
+/**
+ * Gets a pushResult by cart id
+ * @param cartId the [Cart.id] for which we want to retrieve the push result
+ */
 suspend fun getOrderPushResultByCartId(cartId : String) : PrintifyOrderPushResult? {
     val httpResponse = jsonClient.get("${Order.path}$PUSH_RESULT_PATH?cartId=$cartId")
+    return getOrderPushResultFromResponse(httpResponse)
+}
+
+/**
+ * Gets a pushResult by cart id
+ * @param cartId the [Cart.id] for which we want to retrieve the push result
+ */
+suspend fun getOrderPushResultByOrderId(orderId : String) : PrintifyOrderPushResult? {
+    val httpResponse = jsonClient.get("${Order.path}$PUSH_RESULT_PATH?orderId=$orderId")
+    return getOrderPushResultFromResponse(httpResponse)
+}
+
+suspend fun getOrderPushResultFromResponse(httpResponse: HttpResponse) : PrintifyOrderPushResult? {
     return if (httpResponse.status == HttpStatusCode.BadRequest){
         null
     } else {

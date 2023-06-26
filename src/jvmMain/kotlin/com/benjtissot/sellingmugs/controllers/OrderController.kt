@@ -1,11 +1,10 @@
 package com.benjtissot.sellingmugs.controllers
 
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.entities.printify.order.Order
-import com.benjtissot.sellingmugs.entities.printify.order.PushResultSerializer
-import com.benjtissot.sellingmugs.entities.printify.order.UserOrderList
+import com.benjtissot.sellingmugs.entities.printify.order.*
 import com.benjtissot.sellingmugs.entities.stripe.paramSessionId
 import com.benjtissot.sellingmugs.repositories.CartRepository
+import com.benjtissot.sellingmugs.repositories.OrderRepository
 import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.repositories.UserRepository
 import com.benjtissot.sellingmugs.services.OrderService
@@ -71,10 +70,32 @@ fun Route.orderRouting(){
             }
         }
 
+        route(PUSH_FAIL_PATH){
+            get {
+                if (!call.request.queryParameters["userId"].isNullOrBlank()) {
+                    val userId = call.request.queryParameters["userId"]!!
+                    val userOrderPushFails : List<StoredOrderPushFailed> = OrderService.getUserOrderList(userId)?.orderIds?.mapNotNull { orderId ->
+                        OrderRepository.getStoredOrderPushFailByOrderId(orderId)
+                    } ?: emptyList()
+                    call.respond(userOrderPushFails)
+                } else {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+            }
+        }
+
         route(PUSH_RESULT_PATH){
             get {
                 if (!call.request.queryParameters["cartId"].isNullOrBlank()) {
                     val orderId = getUuidFromString(call.request.queryParameters["cartId"]!!)
+                    OrderService.getOrderPushResultByOrderId(orderId)?.let {
+                        // Trick to update call session from database session (needed when order goes through)
+                        call.sessions.set(SessionRepository.getSession(getSession().id))
+
+                        call.respond(Json.encodeToString(PushResultSerializer, it))
+                    } ?: call.respond(HttpStatusCode.BadRequest)
+                } else if (!call.request.queryParameters["orderId"].isNullOrBlank()) {
+                    val orderId = call.request.queryParameters["orderId"]!!
                     OrderService.getOrderPushResultByOrderId(orderId)?.let {
                         // Trick to update call session from database session (needed when order goes through)
                         call.sessions.set(SessionRepository.getSession(getSession().id))

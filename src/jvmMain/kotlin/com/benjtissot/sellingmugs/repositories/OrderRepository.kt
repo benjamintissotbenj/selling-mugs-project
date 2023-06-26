@@ -86,6 +86,13 @@ class OrderRepository {
         }
 
         /**
+         * @param localOrderId the [Order.external_id] for which we want to retrieve the stored push result
+         */
+        suspend fun getStoredOrderPushFailByOrderId(localOrderId : String) : StoredOrderPushFailed? {
+            return orderPushFailedCollection.findOne(StoredOrderPushFailed::orderId eq localOrderId)
+        }
+
+        /**
          * @param localOrderId the [Order.external_id] for which we want to store the push result
          * @param printifyOrderPushResult the [PrintifyOrderPushResult] to be stored
          */
