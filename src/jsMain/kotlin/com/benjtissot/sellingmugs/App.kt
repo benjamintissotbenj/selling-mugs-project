@@ -16,6 +16,7 @@ import react.router.dom.BrowserRouter
 private val LOG = KtorSimpleLogger("App.kt")
 
 val scope = MainScope()
+var frontEndRedirect = ""
 
 val App = FC<Props> {
     var sessionApp: Session? by useState(null)
@@ -59,15 +60,17 @@ val App = FC<Props> {
                         updateSession = updateSessionApp
                         setAlert = {alertState -> setAlert(alertState)}
                         internalPage = CheckoutPage
+                        internalPagePath = CHECKOUT_PATH
                     }
                 }
                 Route {
                     path = USER_INFO_PATH
-                    element = BasicPage.create{
+                    element = AuthenticatedPage.create{
                         session = sessionApp!!
                         updateSession = updateSessionApp
                         setAlert = {alertState -> setAlert(alertState)}
                         internalPage = UserInfoPage
+                        internalPagePath = USER_INFO_PATH
                     }
                 }
                 Route {
@@ -77,6 +80,7 @@ val App = FC<Props> {
                         updateSession = updateSessionApp
                         setAlert = {alertState -> setAlert(alertState)}
                         internalPage = AdminPanelPage
+                        internalPagePath = ADMIN_PANEL_PATH
                     }
                 }
                 Route {

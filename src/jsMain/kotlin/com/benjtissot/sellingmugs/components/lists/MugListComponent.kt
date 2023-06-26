@@ -23,7 +23,7 @@ val MugListComponent = FC<MugListProps> {
     div {
         css {
             display = Display.flex
-            overflowX = Overflow.scroll
+            overflowX = "auto".unsafeCast<Overflow>()
             scrollBehavior = ScrollBehavior.smooth
             paddingBlock = 1.rem
         }

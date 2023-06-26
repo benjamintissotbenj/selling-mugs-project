@@ -13,18 +13,17 @@ import kotlin.math.roundToInt
 
 external interface MugCartItemProps: Props {
     var mugCartItem: MugCartItem
-    var onRemove: (MugCartItem) -> Unit
+    var onRemove: ((MugCartItem) -> Unit)?
 }
 
-val MugCartItemComponent = FC<MugCartItemProps> {
-        props ->
+val MugCartItemComponent = FC<MugCartItemProps> { props ->
     div {
         css {
             divDefaultHorizontalCss()
             justifySpaceBetween()
             display = Display.flex
             alignItems = AlignItems.center
-            padding =16.px
+            padding = 16.px
             borderBottom = 1.px
         }
 
@@ -72,7 +71,7 @@ val MugCartItemComponent = FC<MugCartItemProps> {
             div {
                 // Styles for the product price
                 divDefaultCss()
-                +"£ ${props.mugCartItem.mug.price.roundToInt()}"
+                +"£ ${((props.mugCartItem.mug.price*100f).roundToInt())/100f}"
             }
             div {
                 // Styles for the product quantity
@@ -82,12 +81,17 @@ val MugCartItemComponent = FC<MugCartItemProps> {
                 }
                 +"Quantity: ${props.mugCartItem.amount}"
             }
-            button {
-                // Styles for the remove button
-                divDefaultCss()
-                onClick = { props.onRemove(props.mugCartItem) }
-                +"Remove"
+
+            // Allows us to display a cart simply for information purposes
+            props.onRemove?.let {
+                button {
+                    // Styles for the remove button
+                    divDefaultCss()
+                    onClick = { it(props.mugCartItem) }
+                    +"Remove"
+                }
             }
+
         }
 
 

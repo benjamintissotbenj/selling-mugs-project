@@ -1,5 +1,6 @@
 package com.benjtissot.sellingmugs.controllers
 
+import com.benjtissot.sellingmugs.CHECKOUT_PATH
 import com.benjtissot.sellingmugs.LOGIN_BACKEND_PATH
 import com.benjtissot.sellingmugs.LOGOUT_PATH
 import com.benjtissot.sellingmugs.REGISTER_PATH
@@ -8,6 +9,7 @@ import com.benjtissot.sellingmugs.services.BadCredentialsException
 import com.benjtissot.sellingmugs.services.LoginService.Companion.login
 import com.benjtissot.sellingmugs.services.LoginService.Companion.logout
 import com.benjtissot.sellingmugs.services.LoginService.Companion.register
+import com.benjtissot.sellingmugs.services.SessionService.Companion.getSession
 import com.benjtissot.sellingmugs.services.UserAlreadyExistsException
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -18,6 +20,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.ktor.util.logging.*
+import redirectPath
 import java.util.*
 
 private val LOG = KtorSimpleLogger("LoginController.kt")
@@ -32,16 +35,17 @@ fun Route.loginRouting(){
             }
         }
         post {
-            call.sessions.get<Session>()?.let {
-                try{
-                    call.sessions.set(login(call.receive(), it))
-                    call.respond(HttpStatusCode.OK)
-                } catch (badCred : BadCredentialsException){
-                    call.respond(HttpStatusCode.Conflict)
-                } catch (e: Exception){
-                    call.respond(HttpStatusCode.InternalServerError)
-                }
+
+            try{
+                call.sessions.set(login(call.receive(), getSession()))
+                call.respond(HttpStatusCode.OK)
+            } catch (badCred : BadCredentialsException){
+                call.respond(HttpStatusCode.Conflict)
+            } catch (e: Exception){
+                e.printStackTrace()
+                call.respond(HttpStatusCode.InternalServerError)
             }
+
         }
         delete() {
             call.respond(HttpStatusCode.OK)
@@ -49,18 +53,18 @@ fun Route.loginRouting(){
     }
 
     route(REGISTER_PATH) {
+
         post {
-            call.sessions.get<Session>()?.let {
-                try{
-                    call.sessions.set(register(call.receive(), it))
-                    call.respond(HttpStatusCode.OK)
-                } catch (alreadyExists : UserAlreadyExistsException){
-                    call.respond(HttpStatusCode.Conflict)
-                } catch (e: Exception){
-                    call.respond(HttpStatusCode.InternalServerError)
-                }
+            try{
+                call.sessions.set(register(call.receive(), getSession()))
+                call.respond(HttpStatusCode.OK)
+            } catch (alreadyExists : UserAlreadyExistsException){
+                call.respond(HttpStatusCode.Conflict)
+            } catch (e: Exception){
+                call.respond(HttpStatusCode.InternalServerError)
             }
         }
+
         delete() {
             call.respond(HttpStatusCode.OK)
         }

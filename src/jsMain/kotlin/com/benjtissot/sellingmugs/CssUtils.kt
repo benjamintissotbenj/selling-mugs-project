@@ -94,6 +94,9 @@ fun PropertiesBuilder.fontSmall(){
 fun PropertiesBuilder.fontNormal(){
     fontSize = 1.rem
 }
+fun PropertiesBuilder.fontNormalPlus(){
+    fontSize = 1.25.rem
+}
 fun PropertiesBuilder.fontBig(){
     fontSize = 1.5.rem
 }
@@ -144,12 +147,6 @@ fun PropertiesBuilder.justifySpaceBetween() {
     justifyContent = JustifyContent.spaceBetween
 }
 
-fun PropertiesBuilder.mainPageDiv() {
-    height = 88.vh
-    width = 100.vw
-}
-
-
 fun PropertiesBuilder.boxShade() {
     borderRadius = 2.vh
     boxShadow = BoxShadow(0.px, 0.px, blurRadius = 2.px, spreadRadius = 1.px, NamedColor.gray)
@@ -195,4 +192,44 @@ fun PropertiesBuilder.submitFileStyle(){
     height = 100.pct
     width = 100.pct
     cursor = Cursor.pointer
+}
+
+fun PropertiesBuilder.card(){
+    width = 100.pct
+    display = Display.flex
+    flexDirection = FlexDirection.column
+    alignItems = AlignItems.center
+    borderRadius = 2.vh
+    // This allows for the card to look like a card without the "Overflow: hidden" attribute
+    maskImage = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);" as MaskImage /* this fixes the overflow:hidden in Chrome/Opera */
+
+}
+
+fun PropertiesBuilder.cardTopHalf(){
+    divDefaultHorizontalCss()
+    justifySpaceBetween()
+    boxSizing = BoxSizing.borderBox
+    width = 100.pct
+    display = Display.flex
+    alignItems = AlignItems.center
+    borderColor = Color(Const.ColorCode.BACKGROUND_GREY_DARKER.code())
+    backgroundColor = Color(Const.ColorCode.BACKGROUND_GREY_DARKER.code())
+}
+
+fun PropertiesBuilder.cardBottomHalf(){
+    divDefaultHorizontalCss()
+    justifySpaceBetween()
+    boxSizing = BoxSizing.borderBox
+    width = 100.pct
+    display = Display.flex
+    alignItems = AlignItems.center
+    borderColor = Color(Const.ColorCode.BACKGROUND_GREY_DARKER.code())
+    backgroundColor = Color(Const.ColorCode.BACKGROUND_GREY_DARK.code())
+}
+
+fun PropertiesBuilder.tabPanel(){
+    overflow = Overflow.hidden
+    boxSizing = BoxSizing.borderBox
+    width = 100.pct
+    height = 100.pct
 }

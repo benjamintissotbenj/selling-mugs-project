@@ -1,15 +1,16 @@
 package orderTests
 
 import AbstractDatabaseTests
+import com.benjtissot.sellingmugs.entities.LoginInfo
+import com.benjtissot.sellingmugs.entities.RegisterInfo
 import com.benjtissot.sellingmugs.entities.Session
 import com.benjtissot.sellingmugs.entities.printify.order.AddressTo
 import com.benjtissot.sellingmugs.entities.printify.order.Order
 import com.benjtissot.sellingmugs.entities.printify.order.PrintifyOrderPushSuccess
+import com.benjtissot.sellingmugs.repositories.CartRepository
 import com.benjtissot.sellingmugs.repositories.SessionRepository
-import com.benjtissot.sellingmugs.services.CartService
-import com.benjtissot.sellingmugs.services.MugService
-import com.benjtissot.sellingmugs.services.OrderService
-import com.benjtissot.sellingmugs.services.PrintifyService
+import com.benjtissot.sellingmugs.repositories.UserRepository
+import com.benjtissot.sellingmugs.services.*
 import delimit
 import imageForUpload1
 import imageForUpload2
@@ -23,6 +24,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.fail
+import kotlin.time.Duration.Companion.seconds
 
 class GeneralOrderTests : AbstractDatabaseTests() {
 
@@ -34,10 +36,18 @@ class GeneralOrderTests : AbstractDatabaseTests() {
 
 
     @Before
-    override fun before() = runTest {
+    override fun before() = runTest(timeout = 30.seconds) {
         super.before()
         launch {
             session = SessionRepository.createSession()
+            LoginService.register(
+                RegisterInfo("Test", "TEST", "123", "123"),
+                session
+            )
+            session = LoginService.login(
+                LoginInfo("123", "123"),
+                session
+            )
             // Create 3 different mugs
             LOG.debug("Creating 3 different mugs")
             productIds.add(CreateOrderTest.createProductWithImage(imageForUpload1))
@@ -64,8 +74,16 @@ class GeneralOrderTests : AbstractDatabaseTests() {
                 "London",
                 "SW7 2BX"
             )
-            orderId = OrderService.createOrderFromCart(addressTo, session.cartId).external_id
-            LOG.debug("The local OrderID is $orderId")
+            session.user?.let {
+                orderId = OrderService.createOrderFromCart(addressTo, session.cartId, it).external_id
+                LOG.debug("The local OrderID is $orderId")
+
+                session = SessionRepository.updateSession(
+                    session.copy(orderId = orderId,
+                        cartId = CartRepository.createCart().id)
+                )
+            }
+
         }
     }
 
@@ -97,8 +115,10 @@ class GeneralOrderTests : AbstractDatabaseTests() {
                 assert(order != null)
                 order?.id?.let {
                     assert(it.isNotBlank())
-                    assert(it == printifyOrderPushResult.id)
-                } // assert that printify id is not null
+                    assert(it == printifyOrderPushResult.id)// assert that printify id is not null
+                }
+                // Assert that the order is placed on-hold (hasn't been placed to printify)
+                assert(order?.status == Order.STATUS_PENDING)
             } else {
                 fail()
             }
@@ -109,8 +129,8 @@ class GeneralOrderTests : AbstractDatabaseTests() {
     /**
      * Cancels an order in Printify
      */
-    fun deleteOrder() = runTest {
-        LOG.delimit("Delete Order Test")
+    fun cancelOrder() = runTest {
+        LOG.delimit("Cancel Order Test")
         launch {
             OrderService.placeOrderToPrintify(orderId)
 
@@ -127,17 +147,16 @@ class GeneralOrderTests : AbstractDatabaseTests() {
 
     @After
     override fun after() = runTest {
+        super.after()
         launch {
+            // Cancels the order created in printify
+            LOG.debug("Cancelling order $orderId")
+            OrderService.cancelOrder(orderId)
             productIds.forEach {
-                // Cancels the order created in printify
-                LOG.debug("Cancelling order $orderId")
-                OrderService.cancelOrder(orderId)
-
                 // Delete the published product if it has been published
                 LOG.debug("Deleting product $it")
                 PrintifyService.deleteProduct(it)
             }
-            super.after()
         }
     }
 

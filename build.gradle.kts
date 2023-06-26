@@ -5,7 +5,7 @@ val serializationVersion = "1.3.3"
 val ktorVersion = "2.0.3"
 val logbackVersion = "1.2.11"
 val kotlinWrappersVersion = "1.0.0-pre.354"
-val kmongoVersion = "4.5.0"
+val kmongoVersion = "4.9.0"
 
 plugins {
     kotlin("multiplatform") version "1.7.20-Beta"
@@ -50,6 +50,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
                 implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
             }
         }
 
@@ -89,6 +90,11 @@ kotlin {
 
                 // Server call logging
                 implementation("io.ktor:ktor-client-logging:$ktorVersion")
+
+                // https://mvnrepository.com/artifact/com.stripe/stripe-java
+                implementation("com.stripe:stripe-java:22.23.1")
+                // GSON
+                implementation("com.google.code.gson:gson:2.8.5")
             }
         }
 

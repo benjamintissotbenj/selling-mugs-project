@@ -54,7 +54,7 @@ class ImageForUpload(var file_name: String = "", var contents: String = "", var 
 @Serializable
 class ImageForProduct(
     var src: String,
-    var variant_ids: List<String>,
+    var variant_ids: List<Int>,
     var position: String,
     var is_default: Boolean,
     var is_selected_for_publishing: Boolean

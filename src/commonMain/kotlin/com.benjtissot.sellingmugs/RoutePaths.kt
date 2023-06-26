@@ -1,5 +1,7 @@
 package com.benjtissot.sellingmugs
 
+import com.benjtissot.sellingmugs.entities.printify.order.Order
+
 // Object paths
 const val SESSION_OBJECT_PATH = "/session"
 const val CLICK_DATA_OBJECT_PATH = "/click_data"
@@ -11,6 +13,7 @@ const val MUG_OBJECT_PATH = "/mug"
 const val TRANSACTION_OBJECT_PATH = "/transaction"
 const val CLICK_OBJECT_PATH = "/click"
 const val CART_OBJECT_PATH = "/cart"
+const val ORDER_OBJECT_PATH = "/order"
 
 // Rendering Paths
 
@@ -38,3 +41,9 @@ const val PUBLISH_PRODUCT_PATH = "/publish"
 const val UPLOAD_IMAGE_PATH = "/upload"
 const val PRODUCT_PATH = "/product"
 const val IMAGES_PATH = "/images"
+const val CREATE_ORDER_PATH = "/create"
+const val STRIPE_WEBHOOK_PATH = "/stripe/webhook"
+const val PUSH_RESULT_PATH = "/push_result"
+const val PUSH_FAIL_PATH = "/push_fail"
+const val CANCEL_ORDER_PATH = "/cancel"
+const val REFUND_ORDER_PATH = "/refund"

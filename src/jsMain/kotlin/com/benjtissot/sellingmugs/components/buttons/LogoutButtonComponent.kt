@@ -4,6 +4,8 @@ import com.benjtissot.sellingmugs.HOMEPAGE_PATH
 import com.benjtissot.sellingmugs.NavigationProps
 import com.benjtissot.sellingmugs.logout
 import com.benjtissot.sellingmugs.scope
+import csstype.*
+import emotion.react.css
 import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
@@ -20,6 +22,11 @@ external interface LogoutButtonProps : NavigationProps {
 
 val LogoutButtonComponent = FC<LogoutButtonProps> { props ->
     IconButton{
+        css {
+            boxSizing = BoxSizing.borderBox
+            padding = 0.px
+            minHeight = 20.px
+        }
         ReactHTML.div {
             +"Logout"
         }

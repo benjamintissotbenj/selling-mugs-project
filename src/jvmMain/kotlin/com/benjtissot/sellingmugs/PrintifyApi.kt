@@ -186,11 +186,10 @@ suspend fun apiCalculateOrderShippingCost(orderToCalculateShippingCosts: OrderTo
 }
 
 
-
 /**
  * Sends an order to production in Printify
- * @param orderPrintifyId the printify id of the order to be cancelled
- * @return a [HttpStatusCode] that tells us if the order was cancelled
+ * @param orderPrintifyId the printify id of the order to be sent to production
+ * @return a [HttpStatusCode] that tells us if the order was sent to production
  */
 suspend fun apiSendOrderToProduction(orderPrintifyId: String) : HttpResponse {
     return jsonPrintifyClient.post("shops/$shopId/orders/$orderPrintifyId/send_to_production.json")

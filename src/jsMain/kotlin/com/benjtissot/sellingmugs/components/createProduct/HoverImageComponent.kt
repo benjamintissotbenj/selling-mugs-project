@@ -1,4 +1,4 @@
-package com.benjtissot.sellingmugs.components
+package com.benjtissot.sellingmugs.components.createProduct
 
 import csstype.*
 import emotion.react.css

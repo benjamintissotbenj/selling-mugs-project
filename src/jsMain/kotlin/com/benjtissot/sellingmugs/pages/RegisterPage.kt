@@ -2,18 +2,16 @@ package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.forms.RegisterFormComponent
-import com.benjtissot.sellingmugs.components.highLevel.FooterComponent
-import com.benjtissot.sellingmugs.components.highLevel.NavigationBarComponent
 import csstype.*
 import emotion.react.css
 import io.ktor.client.call.*
 import io.ktor.http.*
 import io.ktor.util.logging.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import react.FC
 import react.dom.html.ReactHTML
 import react.dom.html.ReactHTML.div
-import react.router.useNavigate
 
 private val LOG = KtorSimpleLogger("loginPage.kt")
 
@@ -30,13 +28,21 @@ val RegisterPage = FC<NavigationProps> { props ->
                 scope.launch {
                     val httpResponse = register(registerInfo)
                     when (httpResponse.status) {
-                        HttpStatusCode.OK -> { // User is now registered, token is in response
+                        HttpStatusCode.OK -> {
+                            props.updateSession()
+                            // User is now registered, token is in response
                             // Using local variable because otherwise update is not atomic
                             val tokenString = httpResponse.body<String>()
                             LOG.debug("Creating new client with new token $tokenString")
                             updateClientWithToken(tokenString)
-                            props.navigate.invoke(HOMEPAGE_PATH)
-                            props.updateSession()
+                            if (frontEndRedirect.isEmpty()){
+                                props.navigate.invoke(HOMEPAGE_PATH)
+                            } else {
+                                val redirectPath = frontEndRedirect
+                                frontEndRedirect = ""
+                                delay(200L)
+                                props.navigate.invoke(redirectPath)
+                            }
                         }
 
                         HttpStatusCode.Conflict -> { // User already existed

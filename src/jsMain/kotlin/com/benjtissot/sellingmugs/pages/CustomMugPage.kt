@@ -1,8 +1,8 @@
 package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.components.EditImageOnTemplateComponent
-import com.benjtissot.sellingmugs.components.SweepImageComponent
+import com.benjtissot.sellingmugs.components.createProduct.EditImageOnTemplateComponent
+import com.benjtissot.sellingmugs.components.createProduct.SweepImageComponent
 import com.benjtissot.sellingmugs.components.createProduct.ImageDrop
 import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
 import com.benjtissot.sellingmugs.entities.printify.ImageForUploadReceive
@@ -79,7 +79,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
 
                                     uploadedImage = uploadReceive
 
-                                    val mugProductInfo = MugProductInfo("Custom ${uploadReceive.id}", "", it.toImage())
+                                    val mugProductInfo = MugProductInfo("Custom ImageID-${uploadReceive.id}", "", it.toImage())
                                     val httpResponse = createProduct(mugProductInfo)
                                     val productId = httpResponse.body<String>()
 
@@ -89,6 +89,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
                                     } else {
                                         publishProduct(productId)
                                         props.setAlert(successAlert("Mug with image ${uploadImage.file_name} was created successfully !"))
+                                        // LOG.debug("Mug with image ${uploadImage.file_name} was created successfully with id $productId")
                                         receiveProduct = getProduct(productId)
                                         loading = false
                                     }

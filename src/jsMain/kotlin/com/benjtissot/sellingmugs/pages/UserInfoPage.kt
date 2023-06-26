@@ -2,50 +2,78 @@ package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.buttons.LogoutButtonComponent
-import com.benjtissot.sellingmugs.components.highLevel.FooterComponent
-import com.benjtissot.sellingmugs.components.highLevel.NavigationBarComponent
+import com.benjtissot.sellingmugs.components.highLevel.CreateTabsComponent
+import com.benjtissot.sellingmugs.components.lists.UserOrderListComponent
+import csstype.*
 import emotion.react.css
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
-import mui.icons.material.Refresh
-import mui.material.IconButton
+import mui.lab.TabContext
+import mui.lab.TabPanel
+import mui.lab.TabPanelClasses
+import mui.material.Box
+import mui.material.Tab
+import mui.material.Tabs
+import mui.system.sx
 import react.FC
+import react.create
+import react.dom.aria.ariaControls
 import react.dom.html.ReactHTML.div
-import react.router.useNavigate
 import react.useEffectOnce
 import react.useState
 
 private val LOG = KtorSimpleLogger("UserInfoPage.kt")
 
 
+@Suppress("UNUSED_EXPRESSION")
 val UserInfoPage = FC<NavigationProps> { props ->
 
-    var message by useState("")
     useEffectOnce {
         scope.launch {
-            message = getUserInfo()
+        }
+    }
+
+    CreateTabsComponent {
+        height = 94.pct
+        width = 100.pct
+        labels = listOf("User Information", "Orders")
+
+        TabPanel {
+            css {
+                boxSizing = BoxSizing.borderBox
+                width = 100.pct
+                height = 100.pct
+            }
+            value = "0"
+            div {
+                +"Display user information here"
+            }
+        }
+
+        TabPanel {
+            css {
+                tabPanel()
+            }
+            value = "1"
+            UserOrderListComponent {
+                userId = props.session.user!!.id
+                setAlert = props.setAlert
+            }
+
         }
     }
 
     div {
-        divDefaultCss()
-        +"Hello User Info Component"
-        +"Extra message $message"
-    }
-
-    IconButton {
-        Refresh()
-        onClick = {
-            scope.launch {
-                message = getUserInfo()
-            }
+        css {
+            display = Display.flex
+            flexDirection = FlexDirection.rowReverse
+            height = 6.pct
         }
-    }
-
-    LogoutButtonComponent {
-        session = props.session
-        updateSession = props.updateSession
-        navigate = props.navigate
+        LogoutButtonComponent {
+            session = props.session
+            updateSession = props.updateSession
+            navigate = props.navigate
+        }
     }
 
 }

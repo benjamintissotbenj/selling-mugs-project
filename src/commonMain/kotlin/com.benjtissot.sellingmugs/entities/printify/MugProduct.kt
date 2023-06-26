@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 class MugProduct(
-    val id: String = "",
+    val id: String,
     val title: String,
     val description: String,
     val blueprint_id: Int,
@@ -35,6 +35,7 @@ class MugProductInfo(
         )
 
         return MugProduct(
+            id = "",
             title = title,
             description = description,
             variants = variants,

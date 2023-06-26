@@ -55,7 +55,7 @@ class ProductOption(
 
 @Serializable
 class ProductOptionValues (
-    val id: String,
+    val id: Int,
     val title: String
     ){
 

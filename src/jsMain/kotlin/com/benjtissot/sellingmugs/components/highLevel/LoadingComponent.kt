@@ -1,4 +1,4 @@
-package com.benjtissot.sellingmugs.components
+package com.benjtissot.sellingmugs.components.highLevel
 
 import com.benjtissot.sellingmugs.*
 import csstype.Color
@@ -7,7 +7,6 @@ import emotion.react.css
 import mui.lab.LoadingButton
 import mui.material.Backdrop
 import mui.material.ButtonColor
-import mui.material.CircularProgress
 import mui.system.sx
 import react.FC
 import react.Props

@@ -10,6 +10,10 @@ val sessionCollection = database.getCollection<Session>()
 class SessionRepository {
     companion object {
 
+        suspend fun getSession(id: String) : Session? {
+            return sessionCollection.findOneById(id)
+        }
+
         /**
          * Creates a [Session] in the database
          * @return the created session
@@ -18,7 +22,7 @@ class SessionRepository {
             // A session will always have empty clickdata and empty cart
             val clickData = ClickDataRepository.createClickData()
             val cart = CartRepository.createCart()
-            val newSession = Session(genUuid(), null, null, "", clickData.id, cart.id)
+            val newSession = Session(genUuid(), null, null, "", clickData.id, cart.id, null)
             sessionCollection.insertOne(newSession)
             return newSession
         }

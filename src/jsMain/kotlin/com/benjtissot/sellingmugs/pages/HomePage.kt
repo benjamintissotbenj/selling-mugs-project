@@ -1,9 +1,7 @@
 package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.components.HoverImageComponent
-import com.benjtissot.sellingmugs.components.highLevel.FooterComponent
-import com.benjtissot.sellingmugs.components.highLevel.NavigationBarComponent
+import com.benjtissot.sellingmugs.components.createProduct.HoverImageComponent
 import com.benjtissot.sellingmugs.components.lists.MugListComponent
 import com.benjtissot.sellingmugs.entities.Mug
 import csstype.*
@@ -11,8 +9,6 @@ import emotion.react.css
 import kotlinx.coroutines.launch
 import react.FC
 import react.dom.html.ReactHTML.div
-import react.dom.html.ReactHTML.img
-import react.router.useNavigate
 import react.useEffectOnce
 import react.useState
 

@@ -2,6 +2,7 @@ package com.benjtissot.sellingmugs
 
 import com.benjtissot.sellingmugs.entities.*
 import com.benjtissot.sellingmugs.entities.printify.*
+import com.benjtissot.sellingmugs.entities.printify.order.*
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
@@ -11,6 +12,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.util.logging.*
+import kotlinx.serialization.json.Json
 
 private val LOG = KtorSimpleLogger("Api.kt")
 
@@ -198,4 +200,95 @@ suspend fun putProduct(productId: String, updatedProductImage: UpdateProductImag
  */
 suspend fun getProductPreviewImages(productId: String) : List<String> {
     return jsonClient.get("$PRINTIFY_PATH$PRODUCT_PATH/$productId$IMAGES_PATH").body()
+}
+
+/**
+ * Creates an order in the back-end containing the different products selected in the cart
+ */
+suspend fun createOrder(addressTo: AddressTo) : HttpResponse {
+    return jsonClient.post("${Order.path}$CREATE_ORDER_PATH"){
+        contentType(ContentType.Application.Json)
+        setBody(addressTo)
+    }
+}
+
+/**
+ * Gets a pushResult by cart id
+ * @param cartId the [Cart.id] for which we want to retrieve the push result
+ */
+suspend fun getOrderPushFailsByUser(userId : String) : List<StoredOrderPushFailed> {
+    val httpResponse = jsonClient.get("${Order.path}$PUSH_FAIL_PATH?userId=$userId")
+    return if (httpResponse.status == HttpStatusCode.BadRequest){
+        emptyList()
+    } else {
+        httpResponse.body()
+    }
+}
+
+/**
+ * Gets a pushResult by cart id
+ * @param cartId the [Cart.id] for which we want to retrieve the push result
+ */
+suspend fun getOrderPushResultByCartId(cartId : String) : PrintifyOrderPushResult? {
+    val httpResponse = jsonClient.get("${Order.path}$PUSH_RESULT_PATH?cartId=$cartId")
+    return getOrderPushResultFromResponse(httpResponse)
+}
+
+/**
+ * Gets a pushResult by cart id
+ * @param cartId the [Cart.id] for which we want to retrieve the push result
+ */
+suspend fun getOrderPushResultByOrderId(orderId : String) : PrintifyOrderPushResult? {
+    val httpResponse = jsonClient.get("${Order.path}$PUSH_RESULT_PATH?orderId=$orderId")
+    return getOrderPushResultFromResponse(httpResponse)
+}
+
+suspend fun getOrderPushResultFromResponse(httpResponse: HttpResponse) : PrintifyOrderPushResult? {
+    return if (httpResponse.status == HttpStatusCode.BadRequest){
+        null
+    } else {
+        val pushResultString = httpResponse.body<String>()
+        LOG.debug("Push result string is $pushResultString")
+        val decoded = Json.decodeFromString(PushResultSerializer, pushResultString)
+        decoded
+    }
+}
+
+/**
+ * Retrieves a user's list of orders
+ * @param userId the id of the [User] for which to retrieve the list of past [Order]s
+ * @return a [List] of [Order]s if the list exists, an empty list otherwise (shouldn't happen, but we never know)
+ */
+suspend fun getUserOrderList(userId: String) : List<Order> {
+
+    val httpResponse = jsonClient.get("${Order.path}/$userId")
+    return if (httpResponse.status == HttpStatusCode.BadRequest){
+        emptyList()
+    } else {
+        httpResponse.body()
+    }
+}
+
+
+
+/**
+ * Retrieves a list of [MugCartItem]s depending on an [Order.line_items] for display
+ * @param orderId the local id of the [Order]
+ * @return a [List] of [MugCartItem] corresponding to the order's [Order.line_items]
+ */
+suspend fun getOrderLineItemsAsMugCartItems(orderId: String) : List<MugCartItem> {
+    val httpResponse = jsonClient.get("${Order.path}${MugCartItem.path}?orderId=$orderId")
+    return if (httpResponse.status == HttpStatusCode.BadRequest){
+        emptyList()
+    } else {
+        httpResponse.body()
+    }
+}
+
+/**
+ * Cancels an order in Printify
+ * @param localOrderId the local id of the Order to cancel
+ */
+suspend fun cancelOrder(localOrderId: String) : HttpStatusCode {
+    return jsonClient.post("${Order.path}/$localOrderId$CANCEL_ORDER_PATH").status
 }

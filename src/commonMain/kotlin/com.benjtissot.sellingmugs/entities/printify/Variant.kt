@@ -21,7 +21,7 @@ class Variant(val id: Int,
                 id = 69010,
                 sku = "",
                 cost =  599,
-                price = 600,
+                price = 720, // 6£ + 20% VAT
                 title = "11oz",
                 grams = 320,
                 is_enabled = true,

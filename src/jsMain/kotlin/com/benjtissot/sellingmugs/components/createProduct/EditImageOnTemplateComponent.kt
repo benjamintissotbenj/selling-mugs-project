@@ -1,6 +1,9 @@
-package com.benjtissot.sellingmugs.components
+package com.benjtissot.sellingmugs.components.createProduct
 
 import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.components.marksPosSlider
+import com.benjtissot.sellingmugs.components.marksRotateSlider
+import com.benjtissot.sellingmugs.components.marksScaleSlider
 import com.benjtissot.sellingmugs.entities.printify.Image
 import com.benjtissot.sellingmugs.entities.printify.ImageForUploadReceive
 import com.benjtissot.sellingmugs.entities.printify.ReceiveProduct

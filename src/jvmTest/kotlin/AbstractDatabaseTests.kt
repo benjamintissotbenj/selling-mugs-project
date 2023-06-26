@@ -18,7 +18,7 @@ abstract class AbstractDatabaseTests {
 
     @Before
     open fun before(){
-        LOG.delimit("Test start")
+        LOG.delimit("Test preparation start")
         clearDatabase()
     }
 

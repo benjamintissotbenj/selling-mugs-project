@@ -1,11 +1,14 @@
 package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.components.highLevel.FooterComponent
-import com.benjtissot.sellingmugs.components.highLevel.NavigationBarComponent
 import com.benjtissot.sellingmugs.components.lists.CartListComponent
 import com.benjtissot.sellingmugs.entities.Cart
-import csstype.*
+import com.benjtissot.sellingmugs.entities.stripe.getTotalProductPrice
+import com.benjtissot.sellingmugs.entities.stripe.getTotalShippingPrice
+import csstype.Display
+import csstype.FlexDirection
+import csstype.pct
+import csstype.px
 import emotion.react.css
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
@@ -13,7 +16,6 @@ import mui.icons.material.Payment
 import mui.material.IconButton
 import react.FC
 import react.dom.html.ReactHTML.div
-import react.router.useNavigate
 import react.useEffectOnce
 import react.useState
 
@@ -29,6 +31,7 @@ val CartPage = FC<NavigationProps> { props ->
         }
     }
     cart?.let {
+        val amountOfMugs = it.mugCartItemList.sumOf { item -> item.amount }
         div {
             css {
                 contentCenteredHorizontally()
@@ -48,6 +51,12 @@ val CartPage = FC<NavigationProps> { props ->
                     width = 100.pct
                     display = Display.flex
                     flexDirection = FlexDirection.rowReverse
+                }
+                div {
+                    +"Total product price (with VAT): ${getTotalProductPrice(amountOfMugs)}"
+                }
+                div {
+                    +"Total shipping price (with VAT): ${getTotalShippingPrice(amountOfMugs)}"
                 }
                 IconButton {
                     div {

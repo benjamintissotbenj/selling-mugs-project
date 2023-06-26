@@ -7,7 +7,8 @@ import react.Props
 import react.dom.html.ReactHTML.h1
 import react.dom.html.ReactHTML.nav
 
-external interface FooterProps : Props {
+external interface FooterProps : Props,
+    react.dom.html.HTMLAttributes<org.w3c.dom.HTMLDivElement> {
 }
 
 val FooterComponent = FC<FooterProps> { props ->
@@ -17,12 +18,11 @@ val FooterComponent = FC<FooterProps> { props ->
             justifyContent = JustifyContent.spaceBetween
             alignItems = AlignItems.center
             height = 4.vh
-            borderRadius = 4.vw
+            width = 100.pct
             position = Position.absolute
             bottom = 0.px
             left = 0.px
-            width = 100.pct
-            backgroundColor = Color(Const.ColorCode.BACKGROUND_BLUE.code())
+            backgroundColor = Color(Const.ColorCode.BACKGROUND_GREY.code())
         }
 
         h1 {
