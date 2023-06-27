@@ -30,6 +30,7 @@ val LoadingComponent = FC<LoadingProps> { props ->
                 fontBig()
                 boxNormalSmall()
                 boxBlueShade()
+                color = Color(Const.ColorCode.BACKGROUND_GREY_DARKER.code())
             }
             +"Please Wait"
             LoadingButton {

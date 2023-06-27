@@ -9,9 +9,13 @@ import emotion.react.css
 import kotlinx.coroutines.launch
 import mui.icons.material.ArrowDropDown
 import mui.icons.material.ArrowDropUp
+import mui.lab.LoadingButton
+import mui.material.ButtonColor
 import mui.material.Card
 import mui.material.IconButton
 import mui.material.Size
+import org.w3c.dom.HTMLButtonElement
+import org.w3c.dom.events.MouseEvent
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.button
@@ -21,7 +25,8 @@ import react.useState
 
 external interface UserOrderItemProps: Props {
     var order: Order
-    var onClickCancel: (Order) -> Unit
+    var onClickCancel: (Order, HTMLButtonElement) -> Unit
+    var cancelling: Boolean
 }
 
 val UserOrderItemComponent = FC<UserOrderItemProps> { props ->
@@ -87,8 +92,22 @@ val UserOrderItemComponent = FC<UserOrderItemProps> { props ->
                     marginRight = 2.vw
                 }
                 disabled = props.order.status != Order.STATUS_ON_HOLD
-                onClick = { props.onClickCancel(props.order) }
-                +"Cancel"
+                onClick = { event -> props.onClickCancel(props.order, event.currentTarget) }
+                if (!props.cancelling){
+                    +"Cancel"
+                } else {
+                    LoadingButton {
+                        css {
+                            boxSizing = BoxSizing.borderBox
+                            margin = 16.px
+                            width = 100.pct
+                            height = 100.pct
+                            color = Color(Const.ColorCode.BLUE.code())
+                        }
+                        color = ButtonColor.inherit
+                        loading = true
+                    }
+                }
             }
 
 

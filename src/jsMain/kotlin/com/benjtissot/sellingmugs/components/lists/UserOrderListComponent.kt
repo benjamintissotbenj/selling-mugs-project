@@ -10,8 +10,9 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.monthsUntil
-import mui.material.MenuItem
-import mui.material.Select
+import mui.material.*
+import mui.system.sx
+import org.w3c.dom.HTMLButtonElement
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
@@ -30,6 +31,8 @@ val UserOrderListComponent = FC<UserOrderListProps> { props ->
     var orderList : List<Order>? by useState(null)
     var orderPushFails : List<StoredOrderPushFailed> by useState(emptyList())
     var filterSelector : String by useState(Const.ORDER_FILTER_THREE_MONTHS)
+    var popupTarget : HTMLButtonElement? by useState(null)
+    var orderToCancel : Order? by useState(null)
 
     useEffectOnce {
         scope.launch {
@@ -148,19 +151,98 @@ val UserOrderListComponent = FC<UserOrderListProps> { props ->
             ).forEach { order ->
                 UserOrderItemComponent {
                     this.order = order
-                    onClickCancel = { order ->
-                        // TODO: create a popup to confirm, as this is a bit too easy to cancel an order
-                        scope.launch {
-                            val statusCode = cancelOrder(order.external_id)
-                            when (statusCode.value) {
-                                6 -> props.setAlert(errorAlert("Order was not found"))
-                                10 -> props.setAlert(errorAlert("Order was cancelled but not refunded correctly. Please retry."))
-                                200 -> props.setAlert(successAlert("Order was cancelled successfully !"))
-                                else -> props.setAlert(errorAlert("Something went wrong"))
-                            }
-                            orderList = getUserOrderList(props.userId)
-                        }
+                    onClickCancel = { order, popupAnchor ->
+                        // TODO: add every payment link
+                        orderToCancel = order
+                        popupTarget = popupAnchor
+                    }
+                    cancelling = (order.id == orderToCancel?.id) && order.status != Order.STATUS_CANCELLED
+                }
+            }
+        }
 
+        ConfirmCancelPopup {
+            this.popupTarget = popupTarget
+            this.orderToCancel = orderToCancel
+            onClickCancel = {
+                orderToCancel = null
+                popupTarget = null
+            }
+            onClickConfirm = {
+                scope.launch {
+                    orderToCancel ?.let {
+                        val statusCode = cancelOrder(it.external_id)
+                        when (statusCode.value) {
+                            6 -> props.setAlert(errorAlert("Order was not found"))
+                            10 -> props.setAlert(errorAlert("Order was cancelled but not refunded correctly. Please retry."))
+                            200 -> props.setAlert(successAlert("Order was cancelled successfully !"))
+                            else -> props.setAlert(errorAlert("Something went wrong"))
+                        }
+                        orderList = getUserOrderList(props.userId)
+                        orderToCancel = null
+                    }
+                }
+                popupTarget = null
+            }
+        }
+
+    }
+}
+
+external interface ConfirmCancelPopupProps: Props {
+    var popupTarget : HTMLButtonElement?
+    var orderToCancel : Order?
+    var onClickCancel : () -> Unit
+    var onClickConfirm : () -> Unit
+}
+
+val ConfirmCancelPopup = FC<ConfirmCancelPopupProps> { props ->
+
+    Popper {
+        css {
+            border = 2.px
+            borderColor = Color(Const.ColorCode.BACKGROUND_GREY_DARKEST.code())
+        }
+        open = (props.popupTarget != null)
+        anchorEl = props.popupTarget
+        Box {
+            css {
+                border = 2.px
+                borderColor = Color(Const.ColorCode.BACKGROUND_GREY_DARKEST.code())
+                paddingTop = 1.vw
+                paddingBottom = 1.vw
+                paddingLeft = 2.vw
+                paddingRight = 2.vw
+                boxSizing = BoxSizing.borderBox
+                width = 25.vw
+                height = 15.vh
+                display = Display.flex
+                flexDirection = FlexDirection.column
+                alignItems = AlignItems.center
+                justifyContent = JustifyContent.spaceBetween
+                backgroundColor = Color(Const.ColorCode.BACKGROUND_GREY_EVEN_DARKER.code())
+            }
+            +"Please confirm you wish to cancel your order ${props.orderToCancel?.label ?: ""} : "
+            div {
+                css {
+                    display = Display.flex
+                    flexDirection = FlexDirection.row
+                    justifyContent = JustifyContent.spaceBetween
+                    padding = 2.vw
+                    boxSizing = BoxSizing.borderBox
+                    width = 100.pct
+                }
+                Button {
+                    +"Close"
+                    onClick = {
+                        props.onClickCancel()
+                    }
+                }
+
+                Button {
+                    +"Confirm"
+                    onClick = {
+                        props.onClickConfirm()
                     }
                 }
             }

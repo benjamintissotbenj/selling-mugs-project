@@ -28,6 +28,8 @@ class Const {
         BACKGROUND_GREY("#f7f7f7"),
         BACKGROUND_GREY_DARK("#f0f0f0"),
         BACKGROUND_GREY_DARKER("#e0e0e0"),
+        BACKGROUND_GREY_EVEN_DARKER("#d0d0d0"),
+        BACKGROUND_GREY_DARKEST("#c0c0c0"),
         RED("#ff0b00"),
         ;
         fun code(): String {
