@@ -106,11 +106,8 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
                 IconButton {
                     size = Size.small
                     color = IconButtonColor.primary
-                    Badge {
-                        badgeContent = div.create{+"0"}
-                        color = BadgeColor.primary
-                        ShoppingCart()
-                    }
+                    ShoppingCart()
+
                     onClick = {
                         scope.launch{
                             recordClick(props.session.clickDataId, Const.ClickType.CART_NAV.toString())
