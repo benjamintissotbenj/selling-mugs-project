@@ -22,16 +22,18 @@ external interface UserItemProps: Props {
     var onDeleteUser: (String) -> Unit
 }
 
-val UserItem = FC<UserItemProps> {
-        props ->
+val UserItem = FC<UserItemProps> { props ->
+
+    var userType by useState(props.user.userType.toString())
+
     div {
         css {
             contentCenteredVertically()
             justifySpaceBetween()
             width = 90.pct
-            height = 6.vh
+            height = 16.pct
             minHeight = 40.px
-            padding = 1.rem
+            padding = 2.pct
         }
 
         Icon {
@@ -42,13 +44,20 @@ val UserItem = FC<UserItemProps> {
         div {
             css {
                 fontNormal()
+                display = Display.flex
+                flexDirection = FlexDirection.column
+                alignItems = AlignItems.start
             }
-            +props.user.getNameInitial()
+            div {
+                +props.user.getNameInitial()
+            }
+            div {
+                css {
+                    fontSmall()
+                }
+                +props.user.email
+            }
         }
-
-        var userType by useState(props.user.userType.toString())
-
-
 
         Select {
             // Attributes

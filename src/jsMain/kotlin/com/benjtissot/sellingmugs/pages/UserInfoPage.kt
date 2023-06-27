@@ -1,6 +1,7 @@
 package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.components.UserInfoComponent
 import com.benjtissot.sellingmugs.components.buttons.LogoutButtonComponent
 import com.benjtissot.sellingmugs.components.highLevel.CreateTabsComponent
 import com.benjtissot.sellingmugs.components.lists.UserOrderListComponent
@@ -45,8 +46,8 @@ val UserInfoPage = FC<NavigationProps> { props ->
                 height = 100.pct
             }
             value = "0"
-            div {
-                +"Display user information here"
+            UserInfoComponent {
+                user = props.session.user!!
             }
         }
 

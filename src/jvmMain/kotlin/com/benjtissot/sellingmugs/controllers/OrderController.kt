@@ -82,6 +82,15 @@ fun Route.orderRouting(){
             }
         }
 
+        route("/{userId}$USER_ORDER_COUNT_PATH"){
+            get {
+                val userId: String = call.parameters["userId"] ?: error("Invalid post request")
+                OrderService.getUserOrderList(userId)?.let { userOrderList ->
+                    call.respond(userOrderList.orderIds.size)
+                } ?: call.respond(HttpStatusCode.BadRequest)
+            }
+        }
+
         route(PUSH_FAIL_PATH){
             get {
                 if (!call.request.queryParameters["userId"].isNullOrBlank()) {

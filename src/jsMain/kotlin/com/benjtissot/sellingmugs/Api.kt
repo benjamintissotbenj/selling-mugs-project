@@ -256,6 +256,20 @@ suspend fun getOrderPushResultFromResponse(httpResponse: HttpResponse) : Printif
 
 /**
  * Retrieves a user's list of orders
+ * @param userId the id of the [User] for which to retrieve the count of past [Order]s
+ * @return the count of a user's orders
+ */
+suspend fun getUserOrderCount(userId: String) : Int {
+    val httpResponse = jsonClient.get("${Order.path}/$userId$USER_ORDER_COUNT_PATH")
+    return if (httpResponse.status == HttpStatusCode.BadRequest){
+        0
+    } else {
+        httpResponse.body()
+    }
+}
+
+/**
+ * Retrieves a user's list of orders
  * @param userId the id of the [User] for which to retrieve the list of past [Order]s
  * @return a [List] of [Order]s if the list exists, an empty list otherwise (shouldn't happen, but we never know)
  */

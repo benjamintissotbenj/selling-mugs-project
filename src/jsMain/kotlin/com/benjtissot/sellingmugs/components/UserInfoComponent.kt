@@ -1,0 +1,79 @@
+package com.benjtissot.sellingmugs.components
+
+import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.components.highLevel.PopupHeaderComponent
+import com.benjtissot.sellingmugs.components.forms.CreateProductForm
+import com.benjtissot.sellingmugs.entities.User
+import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
+import com.benjtissot.sellingmugs.entities.printify.ImageForUploadReceive
+import com.benjtissot.sellingmugs.entities.printify.MugProductInfo
+import com.benjtissot.sellingmugs.pages.selectBase64ContentFromURLData
+import csstype.*
+import emotion.react.css
+import io.ktor.client.call.*
+import io.ktor.http.*
+import io.ktor.util.logging.*
+import kotlinx.coroutines.launch
+import mui.material.Button
+import org.w3c.files.FileReader
+import react.FC
+import react.dom.html.ReactHTML.div
+import react.dom.html.ReactHTML.img
+import react.router.useNavigate
+import react.useEffectOnce
+import react.useState
+
+
+private val LOG = KtorSimpleLogger("UserInfoComponent.kt")
+
+external interface UserInfoProps : NavigationProps {
+    var user: User
+}
+
+val UserInfoComponent = FC<UserInfoProps> { props ->
+
+    var numberOfOrders by useState(0)
+
+    useEffectOnce {
+        scope.launch {
+            numberOfOrders = getUserOrderCount(props.user.id)
+        }
+    }
+
+    div {
+        css {
+            display = Display.flex
+            flexDirection = FlexDirection.row
+            width = 100.pct
+        }
+        div {
+            css {
+                fontNormalPlus()
+                display = Display.flex
+                flexDirection = FlexDirection.column
+                width = 50.pct
+                padding = 2.vw
+                boxSizing = BoxSizing.borderBox
+            }
+            div {
+                +"Name : ${props.user.firstName} ${props.user.lastName.uppercase()}"
+            }
+            div {
+                +"Email : ${props.user.email}"
+            }
+            div {
+                +"Number of orders : $numberOfOrders"
+            }
+        }
+
+        div {
+            css {
+                width = 50.pct
+                padding = 2.vw
+                boxSizing = BoxSizing.borderBox
+            }
+            +"Address information coming soon"
+        }
+    }
+
+}
