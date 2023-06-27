@@ -28,7 +28,7 @@ val UserItem = FC<UserItemProps> {
         css {
             contentCenteredVertically()
             justifySpaceBetween()
-            width = 40.vw
+            width = 90.pct
             height = 6.vh
             minHeight = 40.px
             padding = 1.rem

@@ -13,10 +13,12 @@ import io.ktor.client.call.*
 import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
+import mui.material.Button
 import org.w3c.files.FileReader
 import react.FC
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.img
+import react.router.useNavigate
 import react.useState
 
 
@@ -37,7 +39,11 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
         css {
             display = Display.flex
             flexDirection = FlexDirection.column
-            width = 100.pct
+            height = 100.pct
+            width = 50.pct
+            boxSizing = BoxSizing.borderBox
+            paddingLeft = 2.vw
+            paddingRight = 2.vw
         }
 
 
@@ -49,12 +55,17 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
                 boxNormalNormal()
                 boxShade()
                 center()
+                width = 95.pct
                 padding = 1.vh
             }
 
-            PopupHeaderComponent {
-                onClickClose = { props.onClickClose() }
-                title = "Create a product"
+            div {
+                css {
+                    fontBig()
+                    contentCenteredVertically()
+                    contentCenteredHorizontally()
+                }
+                +"Create a product"
             }
 
             // Container for the centered content INSIDE the box
@@ -128,6 +139,13 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
                         }
                     }
                     deleteFieldsOnSubmit = (uploadedImage!=null)
+                }
+
+                Button {
+                    +"Advanced"
+                    onClick = {
+                        props.navigate.invoke(CUSTOM_MUG_PATH)
+                    }
                 }
             }
 

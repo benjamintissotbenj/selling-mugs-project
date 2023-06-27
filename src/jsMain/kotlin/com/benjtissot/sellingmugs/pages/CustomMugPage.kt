@@ -74,7 +74,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
                                 contents = selectBase64ContentFromURLData(reader.result as String)
                             )
                             scope.launch{
-                                val uploadReceive = uploadImage(uploadImage, public = false)
+                                val uploadReceive = uploadImage(uploadImage, public = props.session.user?.userType == Const.UserType.ADMIN)
                                 uploadReceive?.let {
 
                                     uploadedImage = uploadReceive

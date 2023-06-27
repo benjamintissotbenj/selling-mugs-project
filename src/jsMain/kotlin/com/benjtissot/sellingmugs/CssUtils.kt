@@ -65,6 +65,7 @@ fun PropsWithClassName.formInputCss(widthValue: Width, minimumWidth: MinWidth, b
     css {
         backColor?.let { backgroundColor = it }
         frontColor?.let { color = it }
+        boxSizing = BoxSizing.borderBox
         padding = 1.vh
         marginBottom = 1.vh
         width = widthValue
