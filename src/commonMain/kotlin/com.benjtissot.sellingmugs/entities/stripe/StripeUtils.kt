@@ -6,11 +6,25 @@ val paramSessionId = "client_reference_id"
 val prefilledEmail = "prefilled_email"
 
 /**
- * Gets the correct payment link depending on the amount of mugs
+ * Gets the correct payment link for real orders depending on the amount of mugs
  * @param sessionId the id of the current session, to be linked when the payment goes through
  * @param email the user email to be pre-filled in payment page
  */
 fun getPaymentLink(amountOfMugs: Int, sessionId: String, email: String = "") : String {
+    val baseLink = when (amountOfMugs) {
+        1 -> "https://buy.stripe.com/test_aEU8yDeis99s9ZS146"
+        2 -> "https://buy.stripe.com/test_dR62af3DOfxQ7RK3cf"
+        else -> return ""
+    }
+    return "$baseLink?locale=en&$paramSessionId=$sessionId" + if (email.isNotBlank()) "&$prefilledEmail=$email" else email
+}
+
+/**
+ * Gets the correct test payment link depending on the amount of mugs
+ * @param sessionId the id of the current session, to be linked when the payment goes through
+ * @param email the user email to be pre-filled in payment page
+ */
+fun getPaymentTestLink(amountOfMugs: Int, sessionId: String, email: String = "") : String {
     val baseLink = when (amountOfMugs) {
         1 -> "https://buy.stripe.com/test_aEU8yDeis99s9ZS146"
         2 -> "https://buy.stripe.com/test_dR62af3DOfxQ7RK3cf"

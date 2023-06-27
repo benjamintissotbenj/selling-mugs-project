@@ -1,6 +1,7 @@
 package com.benjtissot.sellingmugs.components.lists
 
 import com.benjtissot.sellingmugs.entities.Mug
+import com.benjtissot.sellingmugs.fontBig
 import csstype.*
 import emotion.react.css
 import react.FC
@@ -18,7 +19,16 @@ external interface MugListProps: Props {
 val MugListComponent = FC<MugListProps> {
         props ->
     header {
-        +props.title
+        css {
+            width = 100.pct
+        }
+        div {
+            css {
+                fontBig()
+                marginLeft = 10.vw
+            }
+            +props.title
+        }
     }
     div {
         css {

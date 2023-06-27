@@ -10,10 +10,10 @@ import kotlinx.coroutines.launch
 import mui.icons.material.Home
 import mui.icons.material.Search
 import mui.icons.material.ShoppingCart
-import mui.material.IconButton
-import mui.material.IconButtonColor
+import mui.material.*
 import mui.material.Size
 import react.FC
+import react.create
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.h1
 import react.dom.html.ReactHTML.nav
@@ -27,6 +27,8 @@ external interface NavigationBarProps : NavigationProps,
 }
 
 val NavigationBarComponent = FC<NavigationBarProps> { props ->
+
+    // TODO : Cart item count for the badge
 
     nav {
         css {
@@ -104,7 +106,11 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
                 IconButton {
                     size = Size.small
                     color = IconButtonColor.primary
-                    ShoppingCart()
+                    Badge {
+                        badgeContent = div.create{+"0"}
+                        color = BadgeColor.primary
+                        ShoppingCart()
+                    }
                     onClick = {
                         scope.launch{
                             recordClick(props.session.clickDataId, Const.ClickType.CART_NAV.toString())

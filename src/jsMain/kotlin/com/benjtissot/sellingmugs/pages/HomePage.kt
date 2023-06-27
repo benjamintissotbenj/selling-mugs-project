@@ -48,6 +48,7 @@ val Homepage = FC<NavigationProps> { props ->
 
         div {
             css {
+                padding = 5.vw
                 contentCenteredHorizontally()
             }
             +"Customize your own mug !"
