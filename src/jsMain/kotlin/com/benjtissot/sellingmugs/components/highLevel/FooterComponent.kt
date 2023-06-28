@@ -4,6 +4,7 @@ import csstype.*
 import emotion.react.css
 import react.FC
 import react.Props
+import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.h1
 import react.dom.html.ReactHTML.nav
 
@@ -12,7 +13,7 @@ external interface FooterProps : Props,
 }
 
 val FooterComponent = FC<FooterProps> { props ->
-    nav {
+    div {
         css {
             display = Display.flex
             justifyContent = JustifyContent.spaceBetween
@@ -20,12 +21,12 @@ val FooterComponent = FC<FooterProps> { props ->
             height = 4.vh
             width = 100.pct
             position = Position.absolute
+            zIndex = "0".unsafeCast<ZIndex>()
             bottom = 0.px
             left = 0.px
             backgroundColor = Color(Const.ColorCode.BACKGROUND_GREY.code())
         }
-
-        h1 {
+        div {
             css {
                 color = NamedColor.black
                 fontSize = 3.vh
@@ -33,6 +34,5 @@ val FooterComponent = FC<FooterProps> { props ->
             }
             +"Footer"
         }
-
     }
 }

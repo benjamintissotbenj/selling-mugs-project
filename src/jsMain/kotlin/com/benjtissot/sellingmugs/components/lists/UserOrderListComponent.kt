@@ -1,6 +1,8 @@
 package com.benjtissot.sellingmugs.components.lists
 
 import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.components.popups.ConfirmOrderCancelPopup
+import com.benjtissot.sellingmugs.components.popups.ConfirmOrderCancelPopupProps
 import com.benjtissot.sellingmugs.entities.printify.order.Order
 import com.benjtissot.sellingmugs.entities.printify.order.PrintifyOrderPushFail
 import com.benjtissot.sellingmugs.entities.printify.order.StoredOrderPushFailed
@@ -161,7 +163,7 @@ val UserOrderListComponent = FC<UserOrderListProps> { props ->
             }
         }
 
-        ConfirmCancelPopup {
+        ConfirmOrderCancelPopup {
             this.popupTarget = popupTarget
             this.orderToCancel = orderToCancel
             onClickCancel = {
@@ -186,66 +188,5 @@ val UserOrderListComponent = FC<UserOrderListProps> { props ->
             }
         }
 
-    }
-}
-
-external interface ConfirmCancelPopupProps: Props {
-    var popupTarget : HTMLButtonElement?
-    var orderToCancel : Order?
-    var onClickCancel : () -> Unit
-    var onClickConfirm : () -> Unit
-}
-
-val ConfirmCancelPopup = FC<ConfirmCancelPopupProps> { props ->
-
-    Popper {
-        css {
-            border = 2.px
-            borderColor = Color(Const.ColorCode.BACKGROUND_GREY_DARKEST.code())
-        }
-        open = (props.popupTarget != null)
-        anchorEl = props.popupTarget
-        Box {
-            css {
-                border = 2.px
-                borderColor = Color(Const.ColorCode.BACKGROUND_GREY_DARKEST.code())
-                paddingTop = 1.vw
-                paddingBottom = 1.vw
-                paddingLeft = 2.vw
-                paddingRight = 2.vw
-                boxSizing = BoxSizing.borderBox
-                width = 25.vw
-                height = 15.vh
-                display = Display.flex
-                flexDirection = FlexDirection.column
-                alignItems = AlignItems.center
-                justifyContent = JustifyContent.spaceBetween
-                backgroundColor = Color(Const.ColorCode.BACKGROUND_GREY_EVEN_DARKER.code())
-            }
-            +"Please confirm you wish to cancel your order ${props.orderToCancel?.label ?: ""} : "
-            div {
-                css {
-                    display = Display.flex
-                    flexDirection = FlexDirection.row
-                    justifyContent = JustifyContent.spaceBetween
-                    padding = 2.vw
-                    boxSizing = BoxSizing.borderBox
-                    width = 100.pct
-                }
-                Button {
-                    +"Close"
-                    onClick = {
-                        props.onClickCancel()
-                    }
-                }
-
-                Button {
-                    +"Confirm"
-                    onClick = {
-                        props.onClickConfirm()
-                    }
-                }
-            }
-        }
     }
 }

@@ -35,7 +35,6 @@ val RegisterFormComponent = FC<RegisterFormProps> { props ->
     val submitHandler: FormEventHandler<HTMLFormElement> = {
         it.preventDefault()
         val errorList = ArrayList<RegisterFormError>(emptyList())
-        // Todo: put in better checks
         if (password.length < 6) errorList.add(PasswordLengthError())
         if (password != confirmPassword) errorList.add(PasswordMatchError())
         if (email.split("@").size < 2 || email.split("@")[1].split(".").size < 2) errorList.add(InvalidEmailError())

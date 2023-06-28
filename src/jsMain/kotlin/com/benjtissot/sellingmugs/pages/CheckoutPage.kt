@@ -2,7 +2,9 @@ package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.highLevel.LoadingComponent
+import com.benjtissot.sellingmugs.components.popups.ConfirmCheckoutPopup
 import com.benjtissot.sellingmugs.entities.Cart
+import com.benjtissot.sellingmugs.entities.printify.order.Order
 import com.benjtissot.sellingmugs.entities.printify.order.PrintifyOrderPushFail
 import com.benjtissot.sellingmugs.entities.printify.order.PrintifyOrderPushResult
 import com.benjtissot.sellingmugs.entities.printify.order.PrintifyOrderPushSuccess
@@ -11,6 +13,7 @@ import csstype.*
 import emotion.react.css
 import io.ktor.util.logging.*
 import kotlinx.browser.window
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.js.timers.Timeout
 import kotlinx.js.timers.clearInterval
@@ -18,12 +21,12 @@ import kotlinx.js.timers.setInterval
 import mui.icons.material.Check
 import mui.icons.material.Payment
 import mui.material.Box
+import mui.material.Button
 import mui.material.IconButton
-import react.FC
+import mui.material.Popper
+import org.w3c.dom.HTMLButtonElement
+import react.*
 import react.dom.html.ReactHTML.div
-import react.useEffect
-import react.useEffectOnce
-import react.useState
 
 private val LOG = KtorSimpleLogger("CheckoutPage.kt")
 
@@ -33,6 +36,8 @@ val CheckoutPage = FC<NavigationProps> { props ->
     var orderPushResult: PrintifyOrderPushResult? by useState(null)
     var paymentPageOpened by useState(false)
     var getOrderPushResultTimeout: Timeout? = null
+    var popupTarget : HTMLButtonElement? by useState(null)
+
 
     useEffectOnce {
         scope.launch {
@@ -58,6 +63,7 @@ val CheckoutPage = FC<NavigationProps> { props ->
                                 is PrintifyOrderPushFail -> props.setAlert(errorAlert("The order could not be placed : ${pushResultTemp.errors.reason}"))
                                 else -> {}
                             }
+                            paymentPageOpened = true
                             orderPushResult = pushResultTemp
                         }
                     }
@@ -158,37 +164,67 @@ val CheckoutPage = FC<NavigationProps> { props ->
                         flexDirection = FlexDirection.column
                         alignItems = AlignItems.start
                     }
-                    // Test pay
-                    IconButton {
-                        disabled = (amountOfMugs == 0)
-                        Payment()
+                    // Warning about ordering less than 10 mugs
+                    if (amountOfMugs > 10) {
                         div {
-                            +"Test Pay £${getCheckoutAmount(amountOfMugs)} with Stripe"
+                            css {
+                                color = NamedColor.red
+                                paddingBlock = 1.vh
+                                fontSmall()
+                            }
+                            +"You can only buy 10 mugs at a time"
                         }
-                        onClick = {
-                            paymentPageOpened = true
-                            window.open(
-                                getPaymentTestLink(amountOfMugs, props.session.id, props.session.user?.email ?: ""),
-                                "_blank"
-                            )
+                    } else {
+                        // Test pay
+                        IconButton {
+                            disabled = (amountOfMugs == 0)
+                            Payment()
+                            div {
+                                +"Test Pay £${getCheckoutAmount(amountOfMugs)} with Stripe"
+                            }
+                            onClick = {
+                                paymentPageOpened = true
+                                scope.launch {
+                                    delay(25L)
+                                    window.open(
+                                        getPaymentTestLink(amountOfMugs, props.session.id, props.session.user?.email ?: ""),
+                                        "_blank"
+                                    )
+                                }
+                            }
                         }
-                        formTarget = "_blank"
-                    }
-                    // Real pay
-                    IconButton {
-                        disabled = true // todo: implement
-                        Payment()
-                        div {
-                            +"Pay £${getCheckoutAmount(amountOfMugs)} with Stripe"
+
+                        // Real pay
+                        IconButton {
+                            disabled = (amountOfMugs == 0)
+                            Payment()
+                            div {
+                                +"Pay £${getCheckoutAmount(amountOfMugs)} with Stripe"
+                            }
+                            onClick = { event ->
+                                popupTarget = event.currentTarget
+                            }
                         }
-                        onClick = {
-                            paymentPageOpened = true
-                            window.open(
-                                getPaymentLink(amountOfMugs, props.session.id, props.session.user?.email ?: ""),
-                                "_blank"
-                            )
+
+                        ConfirmCheckoutPopup {
+                            this.popupTarget = popupTarget
+                            this.amountOfMugs = amountOfMugs
+                            this.onClickCancel = {
+                                popupTarget = null
+                            }
+                            this.onClickConfirm = {
+                                paymentPageOpened = true
+                                scope.launch {
+                                    delay(25L)
+                                    window.open(
+                                        getPaymentLink(amountOfMugs, props.session.id, props.session.user?.email ?: ""),
+                                        "_blank"
+                                    )
+                                }
+                                popupTarget = null
+                            }
                         }
-                        formTarget = "_blank"
+
                     }
                 }
             }
@@ -198,6 +234,10 @@ val CheckoutPage = FC<NavigationProps> { props ->
             when (orderPushResult) {
                 null -> LoadingComponent {
                     open = paymentPageOpened && orderPushResult == null
+                    onClickClose = {
+                        getOrderPushResultTimeout?.let { clearInterval(it) }
+                        paymentPageOpened = false
+                    }
                 }
                 is PrintifyOrderPushFail -> div {
                     +"The order failed with message ${(orderPushResult as PrintifyOrderPushFail).message}. You can edit this in your profile page."
