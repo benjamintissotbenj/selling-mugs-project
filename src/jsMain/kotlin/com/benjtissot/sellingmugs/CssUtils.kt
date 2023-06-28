@@ -43,14 +43,12 @@ fun PropsWithClassName.formLabelGroupDivCss(){
         padding = 1.vh
     }
 }
-fun PropsWithClassName.formLabelCss(){
-    css {
-        fontSize = 2.vh
-        marginBottom = 1.vh
-        maxWidth = 50.rem
-        width = 20.vw
-        minWidth = 180.px
-    }
+fun PropertiesBuilder.formLabel(){
+    fontSize = 2.vh
+    marginBottom = 1.vh
+    maxWidth = 50.rem
+    width = 20.vw
+    minWidth = 180.px
 }
 
 fun PropsWithClassName.formInputCss(){

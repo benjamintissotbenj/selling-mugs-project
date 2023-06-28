@@ -53,11 +53,11 @@ val CartPage = FC<NavigationProps> { props ->
                             flexDirection = FlexDirection.rowReverse
                         }
                         IconButton {
+                            css {
+                                marginRight = 5.vw
+                                fontBig()
+                            }
                             div {
-                                css {
-                                    fontBig()
-                                    marginRight = 5.vw
-                                }
                                 +"Checkout"
                             }
                             Payment()

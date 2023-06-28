@@ -28,8 +28,6 @@ external interface NavigationBarProps : NavigationProps,
 
 val NavigationBarComponent = FC<NavigationBarProps> { props ->
 
-    // TODO : Cart item count for the badge
-
     nav {
         css {
             justifySpaceBetween()
@@ -54,27 +52,6 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
                 display = Display.flex
                 margin = 0.px
                 padding = 0.px
-            }
-
-
-            // Search (TODO: actually Checkout right now)
-            div {
-                css {
-                    verticalAlign = VerticalAlign.middle
-                    marginRight = 2.vw
-                }
-                IconButton {
-                    size = Size.small
-                    color = IconButtonColor.primary
-                    Search()
-                    onClick = {
-                        scope.launch{
-                            recordClick(props.session.clickDataId, Const.ClickType.CHECKOUT_NAV.toString())
-                        }
-                        frontEndRedirect = ""
-                        props.navigate.invoke(CHECKOUT_PATH)
-                    }
-                }
             }
 
             // Homepage

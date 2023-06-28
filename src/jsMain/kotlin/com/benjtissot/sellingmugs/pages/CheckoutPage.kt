@@ -52,8 +52,12 @@ val CheckoutPage = FC<NavigationProps> { props ->
                         val pushResultTemp = getOrderPushResultByCartId(cart!!.id)
                         if (pushResultTemp != null) {
                             getOrderPushResultTimeout?.let { clearInterval(it) }
-                            // TODO check timing on this
                             props.updateSession()
+                            when (pushResultTemp) {
+                                is PrintifyOrderPushSuccess -> props.setAlert(successAlert("The order has been placed successfully !"))
+                                is PrintifyOrderPushFail -> props.setAlert(errorAlert("The order could not be placed : ${pushResultTemp.errors.reason}"))
+                                else -> {}
+                            }
                             orderPushResult = pushResultTemp
                         }
                     }
@@ -73,17 +77,14 @@ val CheckoutPage = FC<NavigationProps> { props ->
             height = 100.pct
             boxSizing = BoxSizing.borderBox
         }
-        cart?.let {
-            /* TODO: infos to give
-            * test vs actual payment
-            */
 
+        cart?.let {
             Box {
                 css {
                     backgroundColor = Color(Const.ColorCode.LIGHT_BLUE.code())
                     borderRadius = 2.vw
                     borderColor = Color(Const.ColorCode.BLUE.code())
-                    margin = 5.vw
+                    marginTop = 5.vw
                     padding = 5.vw
                     width = 80.pct
                     height = 50.pct
@@ -199,10 +200,10 @@ val CheckoutPage = FC<NavigationProps> { props ->
                     open = paymentPageOpened && orderPushResult == null
                 }
                 is PrintifyOrderPushFail -> div {
-                    +"The order failed with message ${(orderPushResult as PrintifyOrderPushFail).message}"
+                    +"The order failed with message ${(orderPushResult as PrintifyOrderPushFail).message}. You can edit this in your profile page."
                 }
                 is PrintifyOrderPushSuccess -> div {
-                    +"The push result has successfully been saved"
+                    +"The order has been placed successfully !"
                 }
             }
         }

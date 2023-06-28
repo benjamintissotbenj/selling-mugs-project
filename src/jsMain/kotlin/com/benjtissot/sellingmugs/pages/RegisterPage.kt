@@ -46,10 +46,12 @@ val RegisterPage = FC<NavigationProps> { props ->
                         }
 
                         HttpStatusCode.Conflict -> { // User already existed
+                            props.setAlert(errorAlert("User already exists ! Please login."))
                             LOG.error("User already exists")
                         }
 
                         else -> {
+                            props.setAlert(errorAlert("Something went wrong."))
                             LOG.error("Something went wrong")
                         }
                     }

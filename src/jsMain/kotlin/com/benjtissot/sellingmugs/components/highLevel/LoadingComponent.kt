@@ -2,6 +2,7 @@ package com.benjtissot.sellingmugs.components.highLevel
 
 import com.benjtissot.sellingmugs.*
 import csstype.Color
+import csstype.NamedColor
 import csstype.px
 import emotion.react.css
 import mui.lab.LoadingButton
@@ -31,6 +32,7 @@ val LoadingComponent = FC<LoadingProps> { props ->
                 boxNormalSmall()
                 boxBlueShade()
                 color = Color(Const.ColorCode.BACKGROUND_GREY_DARKER.code())
+                backgroundColor = NamedColor.white
             }
             +"Please Wait"
             LoadingButton {
