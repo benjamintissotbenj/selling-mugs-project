@@ -1,6 +1,7 @@
 package com.benjtissot.sellingmugs.components.popups
 
 import com.benjtissot.sellingmugs.Const
+import com.benjtissot.sellingmugs.components.lists.mugItemHeight
 import com.benjtissot.sellingmugs.entities.printify.order.Order
 import com.benjtissot.sellingmugs.popupBoxDefault
 import csstype.*
@@ -9,6 +10,7 @@ import mui.material.Box
 import mui.material.Button
 import mui.material.Popper
 import org.w3c.dom.HTMLButtonElement
+import org.w3c.dom.HTMLDivElement
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML
@@ -101,3 +103,28 @@ val ConfirmOrderCancelPopup = FC<ConfirmOrderCancelPopupProps> { props ->
     }
 }
 
+
+external interface MugDetailsPopupProps: Props {
+    var popupTarget : HTMLDivElement?
+}
+
+val MugDetailsPopup = FC<MugDetailsPopupProps> { props ->
+    Popper {
+        css {
+            border = 2.px
+            borderColor = Color(Const.ColorCode.BACKGROUND_GREY_DARKEST.code())
+        }
+        open = (props.popupTarget != null)
+        anchorEl = props.popupTarget
+        Box {
+            css {
+                popupBoxDefault()
+                marginTop = - mugItemHeight
+                width = 30.vw
+                height = 30.vw
+            }
+            +"This is a popup for mug details"
+
+        }
+    }
+}
