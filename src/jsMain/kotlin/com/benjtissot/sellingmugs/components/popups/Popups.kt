@@ -1,7 +1,8 @@
 package com.benjtissot.sellingmugs.components.popups
 
 import com.benjtissot.sellingmugs.Const
-import com.benjtissot.sellingmugs.components.lists.mugItemHeight
+import com.benjtissot.sellingmugs.boxShade
+import com.benjtissot.sellingmugs.components.createProduct.SweepImageComponent
 import com.benjtissot.sellingmugs.entities.Mug
 import com.benjtissot.sellingmugs.entities.printify.order.Order
 import com.benjtissot.sellingmugs.fontSmall
@@ -157,17 +158,19 @@ val MugDetailsPopup = FC<MugDetailsPopupProps> { props ->
             Box {
                 css {
                     popupBoxDefault()
-                    marginTop = - mugItemHeight
-                    width = 25.vw
-                    height = 30.vw
+                    boxShade()
+                    overflow = Overflow.hidden
+                    backgroundColor = NamedColor.white
+                    marginTop = (-10).rem
+                    width = 40.vh
+                    height = 50.vh
                 }
-                img {
-                    css {
-                        width = 8.rem
-                        height = 8.rem
-                        margin = 1.rem
-                    }
-                    src = mug.getBestPictureSrc()
+
+                SweepImageComponent {
+                    height = 10.rem
+                    width = 10.rem
+                    srcList = mug.getAllPictureSrcs()
+                    refresh = false
                 }
                 div {
                     +mug.name
@@ -179,8 +182,9 @@ val MugDetailsPopup = FC<MugDetailsPopupProps> { props ->
                     +mug.description
                 }
                 div {
-                    +"£${mug.price}"
-                }
+                        +"£${mug.price}"
+                    }
+
             }
         }
     }

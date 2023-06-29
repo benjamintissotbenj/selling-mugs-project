@@ -56,6 +56,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
                 width = 20.vw
                 height = 20.vw
                 srcList = productPreviewImageSources
+                refresh = true
             }
 
             ImageDrop {

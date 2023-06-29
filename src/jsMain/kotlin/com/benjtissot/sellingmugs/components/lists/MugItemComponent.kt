@@ -10,7 +10,6 @@ import react.*
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.img
 
-val mugItemHeight = 15.rem
 external interface MugItemProps: Props {
     var mug: Mug
     var onItemClick: (Mug) -> Unit
@@ -37,7 +36,7 @@ val MugItemComponent = FC<MugItemProps> {
         css {
             alignContent = AlignContent.center
             width = 10.rem
-            height = mugItemHeight
+            height = 15.rem
             padding = 1.rem
         }
         div {
@@ -46,6 +45,7 @@ val MugItemComponent = FC<MugItemProps> {
                     width = 8.rem
                     height = 8.rem
                     margin = 1.rem
+                    boxSizing = BoxSizing.borderBox
                 }
                 src = props.mug.getBestPictureSrc()
             }
@@ -64,6 +64,9 @@ val MugItemComponent = FC<MugItemProps> {
             }
             div {
                 css {
+                    width = 100.pct
+                    paddingInline = 5.pct
+                    boxSizing = BoxSizing.borderBox
                     textOverflow = TextOverflow.ellipsis
                     whiteSpace = WhiteSpace.nowrap
                 }
