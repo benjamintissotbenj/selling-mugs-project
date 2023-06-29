@@ -3,12 +3,11 @@ package com.benjtissot.sellingmugs.pages
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.createProduct.HoverImageComponent
 import com.benjtissot.sellingmugs.components.lists.MugListComponent
-import com.benjtissot.sellingmugs.components.popups.MugDetailsPopup
 import com.benjtissot.sellingmugs.entities.Mug
-import csstype.*
+import csstype.rem
+import csstype.vw
 import emotion.react.css
 import kotlinx.coroutines.launch
-import org.w3c.dom.HTMLButtonElement
 import react.FC
 import react.dom.html.ReactHTML.div
 import react.useEffectOnce
@@ -66,10 +65,6 @@ val Homepage = FC<NavigationProps> { props ->
                 }
             }
         }
-
-    }
-
-    MugDetailsPopup {
 
     }
 

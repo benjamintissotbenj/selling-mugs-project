@@ -27,6 +27,16 @@ val MugListComponent = FC<MugListProps> {
     var popupTarget : HTMLDivElement? by useState(null)
     var mugShowDetails : Mug? by useState(null)
 
+
+    MugDetailsPopup {
+        this.popupTarget = popupTarget
+        this.onMouseLeavePopup = {
+            mugShowDetails = null
+            popupTarget = null
+        }
+        this.mug = mugShowDetails
+    }
+
     header {
         css {
             width = 100.pct
@@ -54,17 +64,9 @@ val MugListComponent = FC<MugListProps> {
                     mugShowDetails = mug
                     popupTarget = target
                 }
-                this.onMouseLeaveItem = {
-                    mugShowDetails = null
-                    popupTarget = null
-                }
             }
         }
 
-    }
-
-    MugDetailsPopup {
-        this.popupTarget = popupTarget
     }
 
 

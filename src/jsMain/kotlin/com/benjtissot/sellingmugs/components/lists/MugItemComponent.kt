@@ -15,7 +15,6 @@ external interface MugItemProps: Props {
     var mug: Mug
     var onItemClick: (Mug) -> Unit
     var onMouseEnterItem: (Mug, HTMLDivElement) -> Unit
-    var onMouseLeaveItem: () -> Unit
 }
 
 val MugItemComponent = FC<MugItemProps> {
@@ -26,18 +25,12 @@ val MugItemComponent = FC<MugItemProps> {
     useEffect {
         val hoverZone = hoverZoneRef.current
 
-
         val handleMouseEnter: (Event) -> Unit = { event ->
             event.preventDefault()
             props.onMouseEnterItem(props.mug, event.currentTarget as HTMLDivElement)
         }
-        val handleMouseLeave: (Event) -> Unit = { event ->
-            event.preventDefault()
-            props.onMouseLeaveItem()
-        }
 
         hoverZone?.addEventListener("mouseenter", handleMouseEnter)
-        hoverZone?.addEventListener("mouseleave", handleMouseLeave)
     }
 
     div {
@@ -47,15 +40,18 @@ val MugItemComponent = FC<MugItemProps> {
             height = mugItemHeight
             padding = 1.rem
         }
-        ref = hoverZoneRef
-        img {
-            css {
-                width = 8.rem
-                height = 8.rem
-                padding = 1.rem
+        div {
+            img {
+                css {
+                    width = 8.rem
+                    height = 8.rem
+                    margin = 1.rem
+                }
+                src = props.mug.getBestPictureSrc()
             }
-            src = props.mug.artwork.previewURLs.let {if (it.isNotEmpty()) it[0] else props.mug.artwork.imageURL}
+            ref = hoverZoneRef
         }
+
 
         div {
             css {
