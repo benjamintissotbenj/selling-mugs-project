@@ -106,7 +106,7 @@ suspend fun apiPublishingSuccessfulProduct(productId: String) : HttpStatusCode {
 /**
  * Gets a product from the store
  * @param productId the printify id of the product to get
- * @return a [ReceiveProduct] object that holds all the information concerning the product
+ * @return a [HttpResponse] object that holds all the information concerning the product
  */
 suspend fun apiGetProduct(productId: String) : HttpResponse {
     return jsonPrintifyClient.get("shops/$shopId/products/$productId.json")
@@ -116,7 +116,7 @@ suspend fun apiGetProduct(productId: String) : HttpResponse {
  * Updates a product from the store
  * @param productId the printify id of the product to get
  * @param updatedProduct the product to be updated
- * @return a [ReceiveProduct] object that holds all the information concerning the product
+ * @return a [HttpResponse] object that holds all the information concerning the product
  */
 suspend fun apiUpdateProduct(productId: String, updatedProductImage: UpdateProductImage) : HttpResponse {
     return jsonPrintifyClient.put("shops/$shopId/products/$productId.json"){

@@ -59,6 +59,7 @@ val AdminPanelPage = FC<NavigationProps> { props ->
 
                 CreateProductComponent {
                     setAlert = props.setAlert
+                    navigate = props.navigate
                     onProductCreatedSuccess = { productId, productName ->
                         setAlert(successAlert( "Product $productName created successfully !"))
                         LOG.debug("Created product $productId")

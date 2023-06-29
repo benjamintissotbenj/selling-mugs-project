@@ -50,6 +50,15 @@ class PrintifyService {
             val productId = httpResponse.body<JsonObject>().get("id").toString().removeSurrounding("\"")
             val artwork = ArtworkService.findArtworkByPrintifyId(mugProductInfo.image.id)
             artwork?.let {
+                // Update the artwork and the mug with the preview images from printify
+                if (artwork.previewURLs.isEmpty()) {
+                    MugService.getMugByArtwork(artwork)?.copy(
+                        artwork = ArtworkService.updateArtwork(artwork.copy(previewURLs = getProductPreviewImages(productId)))
+                    )?.let {
+                        MugRepository.updateMug(it)
+                    }
+                }
+
                 val mug = Mug(getUuidFromString(productId), productId, mugProduct.title, mugProduct.description, mugProduct.variants[0].price/100f, artwork)
                 MugRepository.updateMug(mug)
                 return productId
@@ -90,7 +99,7 @@ class PrintifyService {
         suspend fun getProduct(productId: String): ReceiveProduct? {
             val httpResponse = apiGetProduct(productId)
             return if (httpResponse.status == HttpStatusCode.OK){
-                httpResponse.body()
+                httpResponse.body<ReceiveProduct>()
             } else {
                 null
             }
