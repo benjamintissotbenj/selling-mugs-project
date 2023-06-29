@@ -40,6 +40,7 @@ val Homepage = FC<NavigationProps> { props ->
             onItemClick = { mug ->
                 scope.launch {
                     // Adding the mug to the cart
+                    // TODO : redirect towards mug page or open a popup or something
                     addMugToCart(mug)
                     mugList = getMugList() // updates client
                 }
