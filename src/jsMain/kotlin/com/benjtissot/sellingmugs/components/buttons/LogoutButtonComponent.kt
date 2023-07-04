@@ -1,9 +1,6 @@
 package com.benjtissot.sellingmugs.components.buttons
 
-import com.benjtissot.sellingmugs.HOMEPAGE_PATH
-import com.benjtissot.sellingmugs.NavigationProps
-import com.benjtissot.sellingmugs.logout
-import com.benjtissot.sellingmugs.scope
+import com.benjtissot.sellingmugs.*
 import csstype.*
 import emotion.react.css
 import io.ktor.http.*
@@ -28,10 +25,16 @@ val LogoutButtonComponent = FC<LogoutButtonProps> { props ->
             minHeight = 20.px
         }
         ReactHTML.div {
+            css {
+                marginRight = 1.vh
+            }
             +"Logout"
         }
         PersonRemove()
         onClick = {
+            scope.launch {
+                recordClick(props.session.clickDataId, Const.ClickType.LOGOUT.type)
+            }
             scope.launch {
                 val httpResponse = logout()
 

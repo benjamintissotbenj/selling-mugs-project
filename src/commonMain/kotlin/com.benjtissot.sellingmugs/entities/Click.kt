@@ -2,13 +2,15 @@ package com.benjtissot.sellingmugs.entities
 
 import com.benjtissot.sellingmugs.CLICK_OBJECT_PATH
 import com.benjtissot.sellingmugs.Const
+import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class Click(
     @SerialName("_id") val id: String,
-    val type : Const.ClickType
+    val type : Const.ClickType,
+    val time : Instant
     ){
 
     companion object {

@@ -82,7 +82,7 @@ val CartPage = FC<NavigationProps> { props ->
                                 paddingBlock = 1.vh
                                 fontSmall()
                             }
-                            +"You can only buy 10 mugs at a time"
+                            +"You can only buy a maximum of 10 mugs at a time"
                         }
                     }
                 }

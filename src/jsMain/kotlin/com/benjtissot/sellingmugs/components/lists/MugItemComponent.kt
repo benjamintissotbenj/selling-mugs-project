@@ -23,12 +23,10 @@ val MugItemComponent = FC<MugItemProps> {
 
     useEffect {
         val hoverZone = hoverZoneRef.current
-
         val handleMouseEnter: (Event) -> Unit = { event ->
             event.preventDefault()
             props.onMouseEnterItem(props.mug, event.currentTarget as HTMLDivElement)
         }
-
         hoverZone?.addEventListener("mouseenter", handleMouseEnter)
     }
 

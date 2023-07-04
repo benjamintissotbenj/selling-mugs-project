@@ -22,7 +22,6 @@ val Homepage = FC<NavigationProps> { props ->
     val navigateFun = props.navigate
     var mugList by useState(emptyList<Mug>())
 
-
     var popupTarget : HTMLDivElement? by useState(null)
     var mugShowDetails : Mug? by useState(null)
 
@@ -49,20 +48,26 @@ val Homepage = FC<NavigationProps> { props ->
             popupTarget = null
         }
         this.mug = mugShowDetails
+        this.onClickAddToCart = { mug ->
+            scope.launch {
+                recordClick(props.session.clickDataId, Const.ClickType.ADD_MUG_TO_CART.type)
+            }
+            // Add product to cart
+            scope.launch {
+                mug?.let {
+                    addMugToCart(it)
+                    props.setAlert(successAlert("Mug added to card !"))
+                } ?: let {
+                    props.setAlert(errorAlert())
+                }
+            }
+        }
     }
 
     div {
         MugListComponent {
             list = mugList
             title = "Best for you"
-            onItemClick = { mug ->
-                scope.launch {
-                    // Adding the mug to the cart
-                    // TODO : redirect towards mug page or open a popup or something
-                    addMugToCart(mug)
-                    mugList = getMugList() // updates client
-                }
-            }
             onMouseEnterItem = { mug, target ->
                 mugShowDetails = mug
                 popupTarget = target
@@ -82,6 +87,9 @@ val Homepage = FC<NavigationProps> { props ->
                 srcMain = "https://images.printify.com/api/catalog/5e440fbfd897db313b1987d1.jpg?s=320"
                 srcHover = "https://images.printify.com/api/catalog/6358ee8d99b22ccab005e8a7.jpg?s=320"
                 onClick = {
+                    scope.launch {
+                        recordClick(props.session.clickDataId, Const.ClickType.CUSTOM_MUG_OPEN_PAGE.type)
+                    }
                     props.navigate.invoke(CUSTOM_MUG_PATH)
                 }
             }

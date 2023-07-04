@@ -19,6 +19,7 @@ external interface CreateTabsProps : PropsWithChildren {
     var labels : List<String>
     var height: Height
     var width: Width
+    var onClickTab: (Int) -> Unit
 }
 
 
@@ -47,7 +48,8 @@ val CreateTabsComponent = FC <CreateTabsProps> { props ->
                     variant = TabsVariant.fullWidth
                     value = tabValue
                     onChange = { _, newValue ->
-                        tabValue = newValue
+                        props.onClickTab(newValue as Int)
+                        tabValue = newValue as Int
                     }
                     for (i: Int in 0 until numberOfTabs){
                         Tab {

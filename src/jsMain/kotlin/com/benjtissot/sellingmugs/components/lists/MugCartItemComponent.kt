@@ -37,7 +37,7 @@ val MugCartItemComponent = FC<MugCartItemProps> { props ->
             }
             // Product image
             img {
-                src = props.mugCartItem.mug.artwork.imageURL
+                src = props.mugCartItem.mug.getBestPictureSrc()
                 // Styles for the product image
                 css {
                     width = 80.px

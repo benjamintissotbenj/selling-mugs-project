@@ -10,12 +10,27 @@ class Const {
         }
     }
     enum class ClickType(var type: String) {
-        SEARCH_NAV("SEARCH_NAV"),
         HOME_NAV("HOME_NAV"),
-        USER_INFO_NAV("USER_INFO_NAV"),
-        CHECKOUT_NAV("CHECKOUT_NAV"),
+        PROFILE_NAV("PROFILE_NAV"),
         CART_NAV("CART_NAV"),
-        CHECKOUT_CART("CHECKOUT_CART"),;
+        CHECKOUT_CART("CHECKOUT_CART"),
+        LOGIN("LOGIN"),
+        REGISTER("REGISTER"),
+        LOGOUT("LOGOUT"),
+        USER_INFO_TAB("USER_INFO_TAB"),
+        USER_INFO_ORDER_TAB("USER_INFO_ORDER_TAB"),
+        SHOW_ORDER_DETAILS("SHOW_ORDER_DETAILS"),
+        CANCEL_ORDER("CANCEL_ORDER"),
+        ADD_MUG_TO_CART("ADD_MUG_TO_CART"),
+        TEST_PAY("TEST_PAY"),
+        REAL_PAY_POPUP("REAL_PAY_POPUP"),
+        CLOSE_WAITING_FOR_PAYMENT("CLOSE_WAITING_FOR_PAYMENT"),
+        CONFIRM_REAL_PAY("CONFIRM_REAL_PAY"),
+        CUSTOM_MUG_OPEN_PAGE("CUSTOM_MUG_OPEN_PAGE"),
+        CUSTOM_MUG_UPLOAD_IMAGE("CUSTOM_MUG_UPLOAD_IMAGE"),
+        CUSTOM_MUG_REFRESH_PREVIEW("CUSTOM_MUG_REFRESH_PREVIEW"),
+        CUSTOM_MUG_ADD_TO_CART("CUSTOM_MUG_ADD_TO_CART"),
+        ;
 
         override fun toString(): String {
             return type

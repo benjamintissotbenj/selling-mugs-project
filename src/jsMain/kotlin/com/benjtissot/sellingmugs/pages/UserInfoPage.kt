@@ -38,6 +38,16 @@ val UserInfoPage = FC<NavigationProps> { props ->
         height = 94.pct
         width = 100.pct
         labels = listOf("User Information", "Orders")
+        onClickTab = { value ->
+            when (value) {
+                0 -> scope.launch {
+                        recordClick(props.session.clickDataId, Const.ClickType.USER_INFO_TAB.type)
+                    }
+                1 -> scope.launch {
+                        recordClick(props.session.clickDataId, Const.ClickType.USER_INFO_ORDER_TAB.type)
+                    }
+            }
+        }
 
         TabPanel {
             css {
@@ -69,6 +79,7 @@ val UserInfoPage = FC<NavigationProps> { props ->
             display = Display.flex
             flexDirection = FlexDirection.rowReverse
             height = 6.pct
+            marginRight = 1.vw
         }
         LogoutButtonComponent {
             session = props.session

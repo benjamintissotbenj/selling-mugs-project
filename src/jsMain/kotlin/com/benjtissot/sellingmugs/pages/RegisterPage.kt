@@ -26,6 +26,9 @@ val RegisterPage = FC<NavigationProps> { props ->
         RegisterFormComponent {
             onSubmit = { registerInfo ->
                 scope.launch {
+                    recordClick(props.session.clickDataId, Const.ClickType.REGISTER.type)
+                }
+                scope.launch {
                     val httpResponse = register(registerInfo)
                     when (httpResponse.status) {
                         HttpStatusCode.OK -> {
