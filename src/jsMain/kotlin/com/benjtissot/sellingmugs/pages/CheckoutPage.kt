@@ -172,7 +172,7 @@ val CheckoutPage = FC<NavigationProps> { props ->
                                 paddingBlock = 1.vh
                                 fontSmall()
                             }
-                            +"You can only buy 10 mugs at a time"
+                            +"You can only buy a maximum of 10 mugs at a time"
                         }
                     } else {
                         // Test pay
@@ -183,6 +183,9 @@ val CheckoutPage = FC<NavigationProps> { props ->
                                 +"Test Pay £${getCheckoutAmount(amountOfMugs)} with Stripe"
                             }
                             onClick = {
+                                scope.launch {
+                                    recordClick(props.session.clickDataId, Const.ClickType.TEST_PAY.type)
+                                }
                                 paymentPageOpened = true
                                 scope.launch {
                                     delay(25L)
@@ -213,6 +216,9 @@ val CheckoutPage = FC<NavigationProps> { props ->
                                 popupTarget = null
                             }
                             this.onClickConfirm = {
+                                scope.launch {
+                                    recordClick(props.session.clickDataId, Const.ClickType.REAL_PAY.type)
+                                }
                                 paymentPageOpened = true
                                 scope.launch {
                                     delay(25L)

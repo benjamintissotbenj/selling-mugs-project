@@ -119,24 +119,11 @@ external interface MugDetailsPopupProps: Props {
 
 val MugDetailsPopup = FC<MugDetailsPopupProps> { props ->
 
-    val hoverZoneRef = useRef<Element>(null)
-
-    useEffect {
-        val hoverZone = hoverZoneRef.current
-
-        val handleMouseLeave: (Event) -> Unit = { event ->
-            event.preventDefault()
-            props.onMouseLeavePopup()
-        }
-
-        hoverZone?.addEventListener("mouseleave", handleMouseLeave)
-    }
     Popper {
         css {
             border = 2.px
             borderColor = Color(Const.ColorCode.BACKGROUND_GREY_DARKEST.code())
         }
-        ref = hoverZoneRef
         open = (props.popupTarget != null)
         anchorEl = props.popupTarget
         if (props.mug == null){
@@ -158,9 +145,12 @@ val MugDetailsPopup = FC<MugDetailsPopupProps> { props ->
                     boxShade()
                     overflow = Overflow.hidden
                     backgroundColor = NamedColor.white
-                    marginTop = (-10).rem
+                    marginTop = (-11).rem
                     width = 40.vh
                     height = 50.vh
+                }
+                onMouseLeave = {
+                    props.onMouseLeavePopup()
                 }
 
                 SweepImageComponent {

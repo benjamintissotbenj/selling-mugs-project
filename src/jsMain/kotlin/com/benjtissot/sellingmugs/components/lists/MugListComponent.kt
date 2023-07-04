@@ -15,6 +15,7 @@ external interface MugListProps: Props {
     var list: List<Mug>
     var title: String
     var onMouseEnterItem: (Mug, HTMLDivElement) -> Unit
+    var onMouseLeaveList: () -> Unit
 }
 
 val MugListComponent = FC<MugListProps> {
@@ -39,6 +40,9 @@ val MugListComponent = FC<MugListProps> {
             overflowX = "auto".unsafeCast<Overflow>()
             scrollBehavior = ScrollBehavior.smooth
             paddingBlock = 1.rem
+        }
+        onMouseLeave = {
+            props.onMouseLeaveList()
         }
         props.list.forEach { mugItm ->
             MugItemComponent {

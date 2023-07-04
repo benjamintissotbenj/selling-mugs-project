@@ -20,6 +20,9 @@ class Const {
         USER_INFO_TAB("USER_INFO_TAB"),
         USER_INFO_ORDER_TAB("USER_INFO_ORDER_TAB"),
         ADD_MUG_TO_CART("ADD_MUG_TO_CART"),
+        CUSTOMISED_MUG("CUSTOMISED_MUG"),
+        TEST_PAY("TEST_PAY"),
+        REAL_PAY("REAL_PAY"),
         ;
 
         override fun toString(): String {
