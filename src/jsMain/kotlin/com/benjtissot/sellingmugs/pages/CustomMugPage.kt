@@ -52,7 +52,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
                 marginLeft = 2.vw
                 contentCenteredHorizontally()
             }
-            
+
             SweepImageComponent {
                 width = 20.vw
                 height = 20.vw

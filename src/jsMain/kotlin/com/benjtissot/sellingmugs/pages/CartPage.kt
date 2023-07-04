@@ -1,13 +1,9 @@
 package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.components.forms.PasswordLengthError
 import com.benjtissot.sellingmugs.components.lists.CartListComponent
 import com.benjtissot.sellingmugs.entities.Cart
-import com.benjtissot.sellingmugs.entities.stripe.getTotalProductPrice
-import com.benjtissot.sellingmugs.entities.stripe.getTotalShippingPrice
 import csstype.*
-import emotion.css.css
 import emotion.react.css
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
@@ -68,7 +64,7 @@ val CartPage = FC<NavigationProps> { props ->
                         Payment()
                         onClick = {
                             scope.launch {
-                                recordClick(props.session.clickDataId, Const.ClickType.CHECKOUT_CART.toString())
+                                recordClick(props.session.clickDataId, Const.ClickType.CART_CHECKOUT.toString())
                             }
                             props.navigate.invoke(CHECKOUT_PATH)
                         }
@@ -101,6 +97,9 @@ val CartPage = FC<NavigationProps> { props ->
                     }
                     +"See available mugs"
                     onClick = {
+                        scope.launch {
+                            recordClick(props.session.clickDataId, Const.ClickType.CART_SEE_AVAILABLE_MUGS.type)
+                        }
                         props.navigate.invoke(HOMEPAGE_PATH)
                     }
                 }
