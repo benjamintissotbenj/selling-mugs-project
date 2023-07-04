@@ -19,11 +19,12 @@ external interface SweepImageProps: Props {
     var width: Width?
     var height: Height?
     var srcList: List<String>
+    var refresh: Boolean
 }
 
 val SweepImageComponent = FC<SweepImageProps> { props ->
     var index by useState(0)
-    val sweep = props.srcList.isNotEmpty()
+    val sweep = props.srcList.isNotEmpty() || index < 0
 
     div {
         css {
@@ -55,7 +56,7 @@ val SweepImageComponent = FC<SweepImageProps> { props ->
                             bottom = 0.px
                             visibility = if (i == index) Visibility.visible else Visibility.collapse
                         }
-                        src = "${props.srcList[i]}?${random.nextInt()}"
+                        src = props.srcList[i] + if (props.refresh) "?${random.nextInt()}" else ""
                     }
                 }
             }

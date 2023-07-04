@@ -10,10 +10,10 @@ import kotlinx.coroutines.launch
 import mui.icons.material.Home
 import mui.icons.material.Search
 import mui.icons.material.ShoppingCart
-import mui.material.IconButton
-import mui.material.IconButtonColor
+import mui.material.*
 import mui.material.Size
 import react.FC
+import react.create
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.h1
 import react.dom.html.ReactHTML.nav
@@ -54,27 +54,6 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
                 padding = 0.px
             }
 
-
-            // Search (TODO: actually Checkout right now)
-            div {
-                css {
-                    verticalAlign = VerticalAlign.middle
-                    marginRight = 2.vw
-                }
-                IconButton {
-                    size = Size.small
-                    color = IconButtonColor.primary
-                    Search()
-                    onClick = {
-                        scope.launch{
-                            recordClick(props.session.clickDataId, Const.ClickType.CHECKOUT_NAV.toString())
-                        }
-                        frontEndRedirect = ""
-                        props.navigate.invoke(CHECKOUT_PATH)
-                    }
-                }
-            }
-
             // Homepage
             div {
                 css {
@@ -105,6 +84,7 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
                     size = Size.small
                     color = IconButtonColor.primary
                     ShoppingCart()
+
                     onClick = {
                         scope.launch{
                             recordClick(props.session.clickDataId, Const.ClickType.CART_NAV.toString())

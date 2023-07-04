@@ -56,6 +56,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
                 width = 20.vw
                 height = 20.vw
                 srcList = productPreviewImageSources
+                refresh = true
             }
 
             ImageDrop {
@@ -74,11 +75,11 @@ val CustomMugPage = FC<NavigationProps> { props ->
                                 contents = selectBase64ContentFromURLData(reader.result as String)
                             )
                             scope.launch{
-                                val uploadReceive = uploadImage(uploadImage, public = false)
+                                val uploadReceive = uploadImage(uploadImage, public = props.session.user?.userType == Const.UserType.ADMIN)
                                 uploadReceive?.let {
 
                                     uploadedImage = uploadReceive
-
+                                    // TODO allow admin to set name and description
                                     val mugProductInfo = MugProductInfo("Custom ImageID-${uploadReceive.id}", "", it.toImage())
                                     val httpResponse = createProduct(mugProductInfo)
                                     val productId = httpResponse.body<String>()

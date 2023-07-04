@@ -203,16 +203,6 @@ suspend fun getProductPreviewImages(productId: String) : List<String> {
 }
 
 /**
- * Creates an order in the back-end containing the different products selected in the cart
- */
-suspend fun createOrder(addressTo: AddressTo) : HttpResponse {
-    return jsonClient.post("${Order.path}$CREATE_ORDER_PATH"){
-        contentType(ContentType.Application.Json)
-        setBody(addressTo)
-    }
-}
-
-/**
  * Gets a pushResult by cart id
  * @param cartId the [Cart.id] for which we want to retrieve the push result
  */
@@ -251,6 +241,20 @@ suspend fun getOrderPushResultFromResponse(httpResponse: HttpResponse) : Printif
         LOG.debug("Push result string is $pushResultString")
         val decoded = Json.decodeFromString(PushResultSerializer, pushResultString)
         decoded
+    }
+}
+
+/**
+ * Retrieves a user's list of orders
+ * @param userId the id of the [User] for which to retrieve the count of past [Order]s
+ * @return the count of a user's orders
+ */
+suspend fun getUserOrderCount(userId: String) : Int {
+    val httpResponse = jsonClient.get("${Order.path}/$userId$USER_ORDER_COUNT_PATH")
+    return if (httpResponse.status == HttpStatusCode.BadRequest){
+        0
+    } else {
+        httpResponse.body()
     }
 }
 

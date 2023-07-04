@@ -25,7 +25,7 @@ val CartListComponent = FC<CartListProps> {
         div {
             css {
                 fontBig()
-                marginLeft = 10.rem
+                marginLeft = 10.vw
             }
             +props.title
         }

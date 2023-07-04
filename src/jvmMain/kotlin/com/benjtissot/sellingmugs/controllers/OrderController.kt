@@ -41,25 +41,28 @@ fun Route.orderRouting(){
             }
         }
 
-        route("/{localOrderId}$CANCEL_ORDER_PATH"){
-            post {
-                val localOrderId: String = call.parameters["localOrderId"] ?: error("Invalid post request")
+        route("/{localOrderId}"){
 
-                val httpStatusCancel = OrderService.cancelOrder(localOrderId)
-                if (httpStatusCancel != HttpStatusCode.OK) {
-                    call.respond(httpStatusCancel)
+            route(CANCEL_ORDER_PATH) {
+                post {
+                    val localOrderId: String = call.parameters["localOrderId"] ?: error("Invalid post request")
+
+                    val httpStatusCancel = OrderService.cancelOrder(localOrderId)
+                    if (httpStatusCancel != HttpStatusCode.OK) {
+                        call.respond(httpStatusCancel)
+                    }
+
+                    // If cancellation happened correctly and refund too, all is good
+                    call.respond(OrderService.refundOrder(localOrderId))
                 }
-
-                // If cancellation happened correctly and refund too, all is good
-                call.respond(OrderService.refundOrder(localOrderId))
             }
-        }
 
-        // Used to refund an order if order was cancelled but not refunded properly
-        route("/{localOrderId}$REFUND_ORDER_PATH"){
-            post {
-                val localOrderId: String = call.parameters["localOrderId"] ?: error("Invalid post request")
-                call.respond(OrderService.refundOrder(localOrderId))
+            // Used to refund an order if order was cancelled but not refunded properly
+            route(REFUND_ORDER_PATH){
+                post {
+                    val localOrderId: String = call.parameters["localOrderId"] ?: error("Invalid post request")
+                    call.respond(OrderService.refundOrder(localOrderId))
+                }
             }
         }
 
@@ -80,7 +83,17 @@ fun Route.orderRouting(){
                     call.respond(userOrderList.orderIds.mapNotNull { OrderService.getOrderFromPrintify(it) })
                 } ?: call.respond(HttpStatusCode.BadRequest)
             }
+
+            route(USER_ORDER_COUNT_PATH){
+                get {
+                    val userId: String = call.parameters["userId"] ?: error("Invalid post request")
+                    OrderService.getUserOrderList(userId)?.let { userOrderList ->
+                        call.respond(userOrderList.orderIds.size)
+                    } ?: call.respond(HttpStatusCode.BadRequest)
+                }
+            }
         }
+
 
         route(PUSH_FAIL_PATH){
             get {
@@ -117,24 +130,6 @@ fun Route.orderRouting(){
                 } else {
                     call.respond(HttpStatusCode.BadRequest)
                 }
-            }
-        }
-
-        route(CREATE_ORDER_PATH) {
-
-            post {
-                val session = getSession()
-                if (session.user == null) {
-                    // TODO: at some point, replace all those errors with custom HttpStatus Codes
-                    call.respond(HttpStatusCode.InternalServerError)
-                }
-                val order = OrderService.createOrderFromCart(call.receive(), session.cartId, session.user!!)
-
-                call.sessions.set(SessionRepository.updateSession(
-                    session.copy(orderId = order.external_id, cartId = CartRepository.createCart().id)
-                )) // update session with orderId and updated user
-
-                call.respond(order)
             }
         }
     }

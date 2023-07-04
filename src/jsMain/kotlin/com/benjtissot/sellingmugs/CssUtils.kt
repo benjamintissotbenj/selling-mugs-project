@@ -43,14 +43,12 @@ fun PropsWithClassName.formLabelGroupDivCss(){
         padding = 1.vh
     }
 }
-fun PropsWithClassName.formLabelCss(){
-    css {
-        fontSize = 2.vh
-        marginBottom = 1.vh
-        maxWidth = 50.rem
-        width = 20.vw
-        minWidth = 180.px
-    }
+fun PropertiesBuilder.formLabel(){
+    fontSize = 2.vh
+    marginBottom = 1.vh
+    maxWidth = 50.rem
+    width = 20.vw
+    minWidth = 180.px
 }
 
 fun PropsWithClassName.formInputCss(){
@@ -65,6 +63,7 @@ fun PropsWithClassName.formInputCss(widthValue: Width, minimumWidth: MinWidth, b
     css {
         backColor?.let { backgroundColor = it }
         frontColor?.let { color = it }
+        boxSizing = BoxSizing.borderBox
         padding = 1.vh
         marginBottom = 1.vh
         width = widthValue
@@ -232,4 +231,21 @@ fun PropertiesBuilder.tabPanel(){
     boxSizing = BoxSizing.borderBox
     width = 100.pct
     height = 100.pct
+}
+
+fun PropertiesBuilder.popupBoxDefault(){
+    border = 2.px
+    borderColor = Color(Const.ColorCode.BACKGROUND_GREY_DARKEST.code())
+    paddingTop = 1.vw
+    paddingBottom = 1.vw
+    paddingLeft = 2.vw
+    paddingRight = 2.vw
+    boxSizing = BoxSizing.borderBox
+    width = 25.vw
+    height = 15.vh
+    display = Display.flex
+    flexDirection = FlexDirection.column
+    alignItems = AlignItems.center
+    justifyContent = JustifyContent.spaceBetween
+    backgroundColor = Color(Const.ColorCode.BACKGROUND_GREY_EVEN_DARKER.code())
 }

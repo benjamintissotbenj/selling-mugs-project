@@ -6,6 +6,7 @@ import csstype.Color
 import csstype.NamedColor
 import csstype.px
 import csstype.vw
+import emotion.react.css
 import org.w3c.dom.HTMLFormElement
 import org.w3c.dom.HTMLInputElement
 import react.FC
@@ -53,7 +54,7 @@ val LoginFormComponent = FC<LoginFormProps> { props ->
 
                 // Email
                 label {
-                    formLabelCss()
+                    css { formLabel() }
                     +"Email"
                     input {
                         formInputCss()
@@ -66,7 +67,7 @@ val LoginFormComponent = FC<LoginFormProps> { props ->
 
                 // Password
                 label {
-                    formLabelCss()
+                    css { formLabel() }
                     +"Password"
                     input {
                         formInputCss()

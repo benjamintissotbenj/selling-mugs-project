@@ -3,10 +3,13 @@ package com.benjtissot.sellingmugs.pages
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.createProduct.HoverImageComponent
 import com.benjtissot.sellingmugs.components.lists.MugListComponent
+import com.benjtissot.sellingmugs.components.popups.MugDetailsPopup
 import com.benjtissot.sellingmugs.entities.Mug
-import csstype.*
+import csstype.rem
+import csstype.vw
 import emotion.react.css
 import kotlinx.coroutines.launch
+import org.w3c.dom.HTMLDivElement
 import react.FC
 import react.dom.html.ReactHTML.div
 import react.useEffectOnce
@@ -18,6 +21,11 @@ var checkRedirect: String? = null
 val Homepage = FC<NavigationProps> { props ->
     val navigateFun = props.navigate
     var mugList by useState(emptyList<Mug>())
+
+
+    var popupTarget : HTMLDivElement? by useState(null)
+    var mugShowDetails : Mug? by useState(null)
+
 
     // At first initialisation, get the list
     // Alternative is useState when we want to persist something across re-renders
@@ -33,6 +41,16 @@ val Homepage = FC<NavigationProps> { props ->
         }
     }
 
+    // Declare popup top level
+    MugDetailsPopup {
+        this.popupTarget = popupTarget
+        this.onMouseLeavePopup = {
+            mugShowDetails = null
+            popupTarget = null
+        }
+        this.mug = mugShowDetails
+    }
+
     div {
         MugListComponent {
             list = mugList
@@ -40,14 +58,20 @@ val Homepage = FC<NavigationProps> { props ->
             onItemClick = { mug ->
                 scope.launch {
                     // Adding the mug to the cart
+                    // TODO : redirect towards mug page or open a popup or something
                     addMugToCart(mug)
                     mugList = getMugList() // updates client
                 }
+            }
+            onMouseEnterItem = { mug, target ->
+                mugShowDetails = mug
+                popupTarget = target
             }
         }
 
         div {
             css {
+                padding = 5.vw
                 contentCenteredHorizontally()
             }
             +"Customize your own mug !"

@@ -28,17 +28,10 @@ val PopupHeaderComponent = FC<PopupHeaderProps> { props ->
             gridTemplateColumns = "1fr repeat(3, auto) 1fr".unsafeCast<GridTemplateColumns>()
             justifyItems = JustifyItems.center
             marginBottom = 1.vh
+            width = 100.pct
         }
 
-        // Close button
-        IconButton {
-            css {
-                marginRight = "auto".unsafeCast<MarginRight>()
-            }
-            CloseRounded()
-            size = Size.small
-            onClick = {props.onClickClose()}
-        }
+        div {+""}
 
         div {
             css {
@@ -46,6 +39,17 @@ val PopupHeaderComponent = FC<PopupHeaderProps> { props ->
                 contentCenteredVertically()
             }
             +props.title
+        }
+
+        // Close button
+
+        IconButton {
+            css {
+                marginLeft = "auto".unsafeCast<MarginLeft>()
+            }
+            CloseRounded()
+            size = Size.small
+            onClick = {props.onClickClose()}
         }
     }
 }

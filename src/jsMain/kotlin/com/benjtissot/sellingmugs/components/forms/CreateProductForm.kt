@@ -50,7 +50,7 @@ val CreateProductForm = FC<CreateProductFormProps> { props ->
 
                 // First Name
                 label {
-                    formLabelCss()
+                    css { formLabel() }
                     +"Title"
                     input {
                         formInputCss()
@@ -64,7 +64,7 @@ val CreateProductForm = FC<CreateProductFormProps> { props ->
 
                 // Last Name
                 label {
-                    formLabelCss()
+                    css { formLabel() }
                     +"Description of the product"
                     input {
                         formInputCss()

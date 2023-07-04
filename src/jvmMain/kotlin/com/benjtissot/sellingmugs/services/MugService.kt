@@ -1,6 +1,7 @@
 package com.benjtissot.sellingmugs.services
 
 import com.benjtissot.sellingmugs.controllers.mugCollection
+import com.benjtissot.sellingmugs.entities.Artwork
 import com.benjtissot.sellingmugs.entities.Mug
 import com.benjtissot.sellingmugs.repositories.MugRepository
 import org.litote.kmongo.eq
@@ -18,6 +19,10 @@ class MugService {
 
         suspend fun getMugByPrintifyId(printifyId: String): Mug? {
             return MugRepository.getMugByPrintifyId(printifyId)
+        }
+
+        suspend fun getMugByArtwork(artwork: Artwork): Mug? {
+            return MugRepository.getMugByArtwork(artwork)
         }
 
         suspend fun deleteMug(id: String){

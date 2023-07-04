@@ -16,8 +16,9 @@ class ArtworkService {
             artworkCollection.insertOne(artwork)
         }
 
-        suspend fun updateArtwork(artwork: Artwork){
+        suspend fun updateArtwork(artwork: Artwork) : Artwork {
             artworkCollection.updateOneById(artwork.id, artwork, upsert())
+            return artwork
         }
 
         suspend fun findArtworkByPrintifyId(printifyId: String) : Artwork? {

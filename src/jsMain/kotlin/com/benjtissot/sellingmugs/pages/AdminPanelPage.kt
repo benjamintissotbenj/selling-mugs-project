@@ -5,6 +5,7 @@ import com.benjtissot.sellingmugs.components.buttons.LogoutButtonComponent
 import com.benjtissot.sellingmugs.components.createProduct.CreateProductComponent
 import com.benjtissot.sellingmugs.components.lists.ManageUsersComponent
 import com.benjtissot.sellingmugs.entities.User
+import csstype.*
 import emotion.react.css
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
@@ -22,10 +23,8 @@ private val LOG = KtorSimpleLogger("AdminPanelPage.kt")
 
 val AdminPanelPage = FC<NavigationProps> { props ->
 
-    var message by useState("")
     useEffectOnce {
         scope.launch {
-            message = getUserInfo()
         }
     }
     var productPopupOpen by useState(false)
@@ -42,40 +41,25 @@ val AdminPanelPage = FC<NavigationProps> { props ->
     div {
         css {
             contentCenteredHorizontally()
+            width = 100.pct
+            height = 95.pct
+            paddingTop = 2.vh
+            boxSizing = BoxSizing.borderBox
         }
 
         if ((props.session.user?.userType ?: Const.UserType.CLIENT) == Const.UserType.ADMIN){
+
             div {
                 css {
-                    fontNormal()
+                    justifySpaceBetween()
+                    flexDirection = FlexDirection.row
+                    height = 80.pct
+                    width = 100.pct
                 }
-                +"Hello Admin Page"
-                +"Extra message $message"
-            }
 
-            IconButton {
-                div {
-                    +"Open User Info"
-                }
-                PersonOutline()
-                onClick = {
-                    props.navigate.invoke(USER_INFO_PATH)
-                }
-            }
-
-            if (!productPopupOpen){
-                IconButton {
-                    div {
-                        +"Create Product"
-                    }
-                    AddCircle()
-                    onClick = {
-                        productPopupOpen = true
-                    }
-                }
-            } else {
-                CreateProductComponent{
+                CreateProductComponent {
                     setAlert = props.setAlert
+                    navigate = props.navigate
                     onProductCreatedSuccess = { productId, productName ->
                         setAlert(successAlert( "Product $productName created successfully !"))
                         LOG.debug("Created product $productId")
@@ -88,19 +72,7 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                         productPopupOpen = false
                     }
                 }
-            }
 
-            if (!usersPopupOpen){
-                IconButton {
-                    div {
-                        +"Manage users"
-                    }
-                    Person()
-                    onClick = {
-                        usersPopupOpen = true
-                    }
-                }
-            } else {
                 ManageUsersComponent {
                     this.userList = userList
                     onChangeUserType = { user ->
@@ -115,17 +87,34 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                             userList = getUserList()
                         }
                     }
-
+                }
+            }
+            div {
+                css {
+                    justifySpaceBetween()
+                    width = 100.pct
+                    boxSizing = BoxSizing.borderBox
+                    paddingLeft = 5.vw
+                    paddingRight = 5.vw
+                    flexDirection = FlexDirection.row
                 }
 
-            }
+                IconButton {
+                    div {
+                        +"Open User Info"
+                    }
+                    PersonOutline()
+                    onClick = {
+                        props.navigate.invoke(USER_INFO_PATH)
+                    }
+                }
 
-            LogoutButtonComponent {
-                session = props.session
-                updateSession = props.updateSession
-                navigate = props.navigate
+                LogoutButtonComponent {
+                    session = props.session
+                    updateSession = props.updateSession
+                    navigate = props.navigate
+                }
             }
-
         } else {
             div {
                 divDefaultCss()
