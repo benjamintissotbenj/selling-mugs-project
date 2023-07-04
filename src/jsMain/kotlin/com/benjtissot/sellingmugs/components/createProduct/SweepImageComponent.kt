@@ -20,6 +20,7 @@ external interface SweepImageProps: Props {
     var height: Height?
     var srcList: List<String>
     var refresh: Boolean
+    var marginTop: MarginTop?
 }
 
 val SweepImageComponent = FC<SweepImageProps> { props ->
@@ -29,6 +30,7 @@ val SweepImageComponent = FC<SweepImageProps> { props ->
     div {
         css {
             contentCenteredVertically()
+            props.marginTop?.let { marginTop = it }
         }
 
         if (sweep) {
