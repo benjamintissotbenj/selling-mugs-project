@@ -23,9 +23,8 @@ import react.useEffectOnce
 import react.useState
 
 
-external interface UserOrderListProps: Props {
+external interface UserOrderListProps: NavigationProps {
     var userId: String
-    var setAlert: (AlertState) -> Unit
 }
 
 val UserOrderListComponent = FC<UserOrderListProps> { props ->
@@ -60,6 +59,8 @@ val UserOrderListComponent = FC<UserOrderListProps> { props ->
             div {
                 css {
                     card()
+                    margin = 1.vh
+                    padding = 1.vh
                     backgroundColor = NamedColor.red
                 }
                 +"Order ${orderPushFail.orderId} failed because : ${orderPushFail.printifyOrderPushFail.errors.reason}"
@@ -154,9 +155,16 @@ val UserOrderListComponent = FC<UserOrderListProps> { props ->
                 UserOrderItemComponent {
                     this.order = order
                     onClickCancel = { order, popupAnchor ->
-                        // TODO: add every payment link
+                        scope.launch {
+                            recordClick(props.session.clickDataId, Const.ClickType.CANCEL_ORDER.type)
+                        }
                         orderToCancel = order
                         popupTarget = popupAnchor
+                    }
+                    onClickShowDetails = {
+                        scope.launch {
+                            recordClick(props.session.clickDataId, Const.ClickType.SHOW_ORDER_DETAILS.type)
+                        }
                     }
                     cancelling = (order.id == orderToCancel?.id) && order.status != Order.STATUS_CANCELLED
                 }

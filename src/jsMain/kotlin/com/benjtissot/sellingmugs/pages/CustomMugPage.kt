@@ -64,6 +64,9 @@ val CustomMugPage = FC<NavigationProps> { props ->
                 width = 30.vw
                 onImageDrop = { fileList ->
                     if (fileList.isNotEmpty()) {
+                        scope.launch {
+                            recordClick(props.session.clickDataId, Const.ClickType.CUSTOM_MUG_UPLOAD_IMAGE.type)
+                        }
                         reader.abort()
                         val imageFile = fileList[0]
                         droppedImageName = imageFile.name
@@ -80,7 +83,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
 
                                     uploadedImage = uploadReceive
                                     // TODO allow admin to set name and description
-                                    val mugProductInfo = MugProductInfo("Custom ImageID-${uploadReceive.id}", "", it.toImage())
+                                    val mugProductInfo = MugProductInfo("Custom Mug - ${uploadReceive.id}", "", it.toImage())
                                     val httpResponse = createProduct(mugProductInfo)
                                     val productId = httpResponse.body<String>()
 
@@ -116,7 +119,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
                     }
                     onClick = {
                         scope.launch {
-                            recordClick(props.session.clickDataId, Const.ClickType.ADD_MUG_TO_CART.type)
+                            recordClick(props.session.clickDataId, Const.ClickType.CUSTOM_MUG_ADD_TO_CART.type)
                         }
                         // Add product to cart
                         scope.launch {
@@ -154,6 +157,9 @@ val CustomMugPage = FC<NavigationProps> { props ->
                     this.uploadedImage = uploadedImage
                     this.receiveProduct = receiveProduct
                     this.updateProduct = {
+                        scope.launch {
+                            recordClick(props.session.clickDataId, Const.ClickType.CUSTOM_MUG_REFRESH_PREVIEW.type)
+                        }
                         props.setAlert(infoAlert("Updating preview images"))
                         receiveProduct = it
                     }

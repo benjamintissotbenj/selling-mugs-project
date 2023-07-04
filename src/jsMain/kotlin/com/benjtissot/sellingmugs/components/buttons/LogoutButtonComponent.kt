@@ -25,6 +25,9 @@ val LogoutButtonComponent = FC<LogoutButtonProps> { props ->
             minHeight = 20.px
         }
         ReactHTML.div {
+            css {
+                marginRight = 1.vh
+            }
             +"Logout"
         }
         PersonRemove()

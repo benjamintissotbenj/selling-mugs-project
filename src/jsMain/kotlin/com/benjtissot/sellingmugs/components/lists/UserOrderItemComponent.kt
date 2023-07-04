@@ -27,6 +27,7 @@ external interface UserOrderItemProps: Props {
     var order: Order
     var onClickCancel: (Order, HTMLButtonElement) -> Unit
     var cancelling: Boolean
+    var onClickShowDetails : () -> Unit
 }
 
 val UserOrderItemComponent = FC<UserOrderItemProps> { props ->
@@ -139,6 +140,7 @@ val UserOrderItemComponent = FC<UserOrderItemProps> { props ->
                     }
                     ArrowDropDown()
                     onClick = {
+                        props.onClickShowDetails()
                         if (mugCartItemsFromOrder.isEmpty()){
                             scope.launch {
                                 mugCartItemsFromOrder = getOrderLineItemsAsMugCartItems(props.order.external_id)

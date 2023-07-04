@@ -4,7 +4,6 @@ import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.highLevel.LoadingComponent
 import com.benjtissot.sellingmugs.components.popups.ConfirmCheckoutPopup
 import com.benjtissot.sellingmugs.entities.Cart
-import com.benjtissot.sellingmugs.entities.printify.order.Order
 import com.benjtissot.sellingmugs.entities.printify.order.PrintifyOrderPushFail
 import com.benjtissot.sellingmugs.entities.printify.order.PrintifyOrderPushResult
 import com.benjtissot.sellingmugs.entities.printify.order.PrintifyOrderPushSuccess
@@ -18,12 +17,9 @@ import kotlinx.coroutines.launch
 import kotlinx.js.timers.Timeout
 import kotlinx.js.timers.clearInterval
 import kotlinx.js.timers.setInterval
-import mui.icons.material.Check
 import mui.icons.material.Payment
 import mui.material.Box
-import mui.material.Button
 import mui.material.IconButton
-import mui.material.Popper
 import org.w3c.dom.HTMLButtonElement
 import react.*
 import react.dom.html.ReactHTML.div
@@ -205,6 +201,9 @@ val CheckoutPage = FC<NavigationProps> { props ->
                                 +"Pay £${getCheckoutAmount(amountOfMugs)} with Stripe"
                             }
                             onClick = { event ->
+                                scope.launch {
+                                    recordClick(props.session.clickDataId, Const.ClickType.REAL_PAY_POPUP.type)
+                                }
                                 popupTarget = event.currentTarget
                             }
                         }
@@ -217,7 +216,7 @@ val CheckoutPage = FC<NavigationProps> { props ->
                             }
                             this.onClickConfirm = {
                                 scope.launch {
-                                    recordClick(props.session.clickDataId, Const.ClickType.REAL_PAY.type)
+                                    recordClick(props.session.clickDataId, Const.ClickType.CONFIRM_REAL_PAY.type)
                                 }
                                 paymentPageOpened = true
                                 scope.launch {
@@ -241,6 +240,9 @@ val CheckoutPage = FC<NavigationProps> { props ->
                 null -> LoadingComponent {
                     open = paymentPageOpened && orderPushResult == null
                     onClickClose = {
+                        scope.launch {
+                            recordClick(props.session.clickDataId, Const.ClickType.CLOSE_WAITING_FOR_PAYMENT.type)
+                        }
                         getOrderPushResultTimeout?.let { clearInterval(it) }
                         paymentPageOpened = false
                     }

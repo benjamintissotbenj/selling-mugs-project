@@ -79,6 +79,7 @@ val UserInfoPage = FC<NavigationProps> { props ->
             display = Display.flex
             flexDirection = FlexDirection.rowReverse
             height = 6.pct
+            marginRight = 1.vw
         }
         LogoutButtonComponent {
             session = props.session

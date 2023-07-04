@@ -9,13 +9,9 @@ import csstype.rem
 import csstype.vw
 import emotion.react.css
 import kotlinx.coroutines.launch
-import kotlinx.js.timers.Timeout
-import kotlinx.js.timers.clearInterval
-import kotlinx.js.timers.setInterval
 import org.w3c.dom.HTMLDivElement
 import react.FC
 import react.dom.html.ReactHTML.div
-import react.useEffect
 import react.useEffectOnce
 import react.useState
 
@@ -26,9 +22,6 @@ val Homepage = FC<NavigationProps> { props ->
     val navigateFun = props.navigate
     var mugList by useState(emptyList<Mug>())
 
-
-    var closePopupTimeout: Timeout? = null
-    var leftList by useState(true)
     var popupTarget : HTMLDivElement? by useState(null)
     var mugShowDetails : Mug? by useState(null)
 
@@ -46,22 +39,6 @@ val Homepage = FC<NavigationProps> { props ->
             }
         }
     }
-/*
-    useEffect {
-        if (popupTarget != null) {
-            if (closePopupTimeout == null) {
-                closePopupTimeout = setInterval({
-                    if (leftList){
-                        closePopupTimeout?.let {clearInterval(it)}
-                        popupTarget = null
-                        mugShowDetails = null
-                    }
-                }, 1000)
-            }
-        } else {
-            closePopupTimeout?.let { clearInterval(it) }
-        }
-    }*/
 
     // Declare popup top level
     MugDetailsPopup {
@@ -92,12 +69,8 @@ val Homepage = FC<NavigationProps> { props ->
             list = mugList
             title = "Best for you"
             onMouseEnterItem = { mug, target ->
-                leftList = false
                 mugShowDetails = mug
                 popupTarget = target
-            }
-            onMouseLeaveList = {
-                leftList = true
             }
         }
 
@@ -115,7 +88,7 @@ val Homepage = FC<NavigationProps> { props ->
                 srcHover = "https://images.printify.com/api/catalog/6358ee8d99b22ccab005e8a7.jpg?s=320"
                 onClick = {
                     scope.launch {
-                        recordClick(props.session.clickDataId, Const.ClickType.CUSTOMISED_MUG.type)
+                        recordClick(props.session.clickDataId, Const.ClickType.CUSTOM_MUG_OPEN_PAGE.type)
                     }
                     props.navigate.invoke(CUSTOM_MUG_PATH)
                 }
