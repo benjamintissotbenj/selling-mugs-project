@@ -107,13 +107,29 @@ class PrintifyService {
 
 
         /**
+         * Updates a product's image from the store
+         * @param productId the printify id of the product to get
+         * @param updatedProduct the product to be updated
+         * @return a [ReceiveProduct] object that holds all the information concerning the product
+         */
+        suspend fun putProductImage(productId: String, updatedProductImage: UpdateProductImage): ReceiveProduct? {
+            val httpResponse = apiUpdateProduct(productId, updatedProductImage)
+            return if (httpResponse.status == HttpStatusCode.OK){
+                httpResponse.body()
+            } else {
+                null
+            }
+        }
+
+
+        /**
          * Updates a product from the store
          * @param productId the printify id of the product to get
          * @param updatedProduct the product to be updated
          * @return a [ReceiveProduct] object that holds all the information concerning the product
          */
-        suspend fun putProduct(productId: String,  updatedProductImage: UpdateProductImage): ReceiveProduct? {
-            val httpResponse = apiUpdateProduct(productId, updatedProductImage)
+        suspend fun putProductTitleDesc(productId: String,  updatedProductTitleDesc: UpdateProductTitleDesc): ReceiveProduct? {
+            val httpResponse = apiUpdateProduct(productId, updatedProductTitleDesc)
             return if (httpResponse.status == HttpStatusCode.OK){
                 httpResponse.body()
             } else {

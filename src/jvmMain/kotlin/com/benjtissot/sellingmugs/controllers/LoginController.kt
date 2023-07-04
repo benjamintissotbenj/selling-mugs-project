@@ -34,11 +34,12 @@ fun Route.loginRouting(){
                 call.respond((principal?.expiresAt?.after(Date(System.currentTimeMillis())) ?: false).toString())
             }
         }
-        post {
 
+        // Logging in should respond the JWT token
+        post {
             try{
                 call.sessions.set(login(call.receive(), getSession()))
-                call.respond(HttpStatusCode.OK)
+                call.respond(call.sessions.get<Session>()?.jwtToken ?: "")
             } catch (badCred : BadCredentialsException){
                 call.respond(HttpStatusCode.Conflict)
             } catch (e: Exception){

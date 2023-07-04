@@ -45,6 +45,12 @@ data class UpdateProductImage(
 ){}
 
 @Serializable
+data class UpdateProductTitleDesc(
+    val title: String,
+    val description: String,
+){}
+
+@Serializable
 class ProductOption(
     val name: String,
     val type: String,

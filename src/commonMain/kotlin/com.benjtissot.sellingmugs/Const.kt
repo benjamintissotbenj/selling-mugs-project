@@ -13,7 +13,7 @@ class Const {
         HOME_NAV("HOME_NAV"),
         PROFILE_NAV("PROFILE_NAV"),
         CART_NAV("CART_NAV"),
-        CHECKOUT_CART("CHECKOUT_CART"),
+        CART_CHECKOUT("CART_CHECKOUT"),
         LOGIN("LOGIN"),
         REGISTER("REGISTER"),
         LOGOUT("LOGOUT"),
@@ -30,6 +30,7 @@ class Const {
         CUSTOM_MUG_UPLOAD_IMAGE("CUSTOM_MUG_UPLOAD_IMAGE"),
         CUSTOM_MUG_REFRESH_PREVIEW("CUSTOM_MUG_REFRESH_PREVIEW"),
         CUSTOM_MUG_ADD_TO_CART("CUSTOM_MUG_ADD_TO_CART"),
+        CART_SEE_AVAILABLE_MUGS("CART_SEE_AVAILABLE_MUGS"),
         ;
 
         override fun toString(): String {
@@ -57,5 +58,11 @@ class Const {
         val ORDER_FILTER_ALL = "All"
         val ORDER_FILTER_SIX_MONTHS = "< 6 months"
         val ORDER_FILTER_THREE_MONTHS = "< 3 months"
+
+        // Query params
+        val updateType = "updateType"
+        val titleDesc = "titleDesc"
+        val image = "image"
+
     }
 }
