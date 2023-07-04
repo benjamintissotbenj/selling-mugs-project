@@ -168,7 +168,6 @@ tasks {
             jvmTarget = "1.8"
         }
     }
-    create("stage").dependsOn("installDist")
 }
 
 
