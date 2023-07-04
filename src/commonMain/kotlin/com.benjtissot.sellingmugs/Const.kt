@@ -57,5 +57,11 @@ class Const {
         val ORDER_FILTER_ALL = "All"
         val ORDER_FILTER_SIX_MONTHS = "< 6 months"
         val ORDER_FILTER_THREE_MONTHS = "< 3 months"
+
+        // Query params
+        val updateType = "updateType"
+        val titleDesc = "titleDesc"
+        val image = "image"
+
     }
 }

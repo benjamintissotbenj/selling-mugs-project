@@ -1,5 +1,8 @@
 package com.benjtissot.sellingmugs
 
+import com.benjtissot.sellingmugs.Const.Companion.image
+import com.benjtissot.sellingmugs.Const.Companion.titleDesc
+import com.benjtissot.sellingmugs.Const.Companion.updateType
 import com.benjtissot.sellingmugs.entities.*
 import com.benjtissot.sellingmugs.entities.printify.*
 import com.benjtissot.sellingmugs.entities.printify.order.*
@@ -188,9 +191,22 @@ suspend fun getProduct(productId: String) : ReceiveProduct {
  * @return a [ReceiveProduct] object that holds all the information concerning the product
  */
 suspend fun putProduct(productId: String, updatedProductImage: UpdateProductImage) : ReceiveProduct {
-    return jsonClient.put("$PRINTIFY_PATH$PRODUCT_PATH/$productId") {
+    return jsonClient.put("$PRINTIFY_PATH$PRODUCT_PATH/$productId?$updateType=$image") {
         contentType(ContentType.Application.Json)
         setBody(updatedProductImage)
+    }.body()
+}
+
+/**
+ * Updates a product from the store
+ * @param productId the printify id of the product to get
+ * @param updatedProduct the product to be updated
+ * @return a [ReceiveProduct] object that holds all the information concerning the product
+ */
+suspend fun putProduct(productId: String, updatedProductTitleDesc: UpdateProductTitleDesc) : ReceiveProduct {
+    return jsonClient.put("$PRINTIFY_PATH$PRODUCT_PATH/$productId?$updateType=$titleDesc") {
+        contentType(ContentType.Application.Json)
+        setBody(updatedProductTitleDesc)
     }.body()
 }
 

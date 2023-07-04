@@ -49,9 +49,6 @@ val Homepage = FC<NavigationProps> { props ->
         }
         this.mug = mugShowDetails
         this.onClickAddToCart = { mug ->
-            scope.launch {
-                recordClick(props.session.clickDataId, Const.ClickType.ADD_MUG_TO_CART.type)
-            }
             // Add product to cart
             scope.launch {
                 mug?.let {
@@ -60,6 +57,7 @@ val Homepage = FC<NavigationProps> { props ->
                 } ?: let {
                     props.setAlert(errorAlert())
                 }
+                recordClick(props.session.clickDataId, Const.ClickType.ADD_MUG_TO_CART.type)
             }
         }
     }

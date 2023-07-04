@@ -4,10 +4,8 @@ import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.createProduct.EditImageOnTemplateComponent
 import com.benjtissot.sellingmugs.components.createProduct.SweepImageComponent
 import com.benjtissot.sellingmugs.components.createProduct.ImageDrop
-import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
-import com.benjtissot.sellingmugs.entities.printify.ImageForUploadReceive
-import com.benjtissot.sellingmugs.entities.printify.MugProductInfo
-import com.benjtissot.sellingmugs.entities.printify.ReceiveProduct
+import com.benjtissot.sellingmugs.components.forms.CreateProductForm
+import com.benjtissot.sellingmugs.entities.printify.*
 import csstype.*
 import emotion.react.css
 import io.ktor.client.call.*
@@ -50,6 +48,8 @@ val CustomMugPage = FC<NavigationProps> { props ->
         div {
             css {
                 width = 33.pct
+                height = 100.pct
+                marginLeft = 2.vw
                 contentCenteredHorizontally()
             }
             SweepImageComponent {
@@ -106,6 +106,29 @@ val CustomMugPage = FC<NavigationProps> { props ->
                 }
             }
 
+            if (props.session.user?.userType == Const.UserType.ADMIN) {
+                CreateProductForm {
+                    onSubmit = { title, description ->
+                        scope.launch {// Data processing to create the product in Printify store
+                            uploadedImage?.let {
+                                scope.launch {
+                                    receiveProduct = receiveProduct?.let {
+                                        putProduct(it.id, UpdateProductTitleDesc(title = title, description = description))
+                                    }
+                                }
+                                props.setAlert(infoAlert("Updating title and description"))
+
+                            }?:let{
+                                props.setAlert(errorAlert("Please upload an image before creating a product"))
+                                return@launch
+                            }
+
+                        }
+                    }
+                    deleteFieldsOnSubmit = false
+                }
+            }
+
 
             receiveProduct?.let {
                 IconButton {
@@ -118,9 +141,6 @@ val CustomMugPage = FC<NavigationProps> { props ->
                         +"Add to cart"
                     }
                     onClick = {
-                        scope.launch {
-                            recordClick(props.session.clickDataId, Const.ClickType.CUSTOM_MUG_ADD_TO_CART.type)
-                        }
                         // Add product to cart
                         scope.launch {
                             val mug = getMugByPrintifyId(receiveProduct!!.id)
@@ -130,6 +150,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
                             } ?: let {
                                 props.setAlert(errorAlert())
                             }
+                            recordClick(props.session.clickDataId, Const.ClickType.CUSTOM_MUG_ADD_TO_CART.type)
                         }
                     }
                 }

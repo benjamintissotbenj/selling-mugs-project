@@ -118,10 +118,10 @@ suspend fun apiGetProduct(productId: String) : HttpResponse {
  * @param updatedProduct the product to be updated
  * @return a [HttpResponse] object that holds all the information concerning the product
  */
-suspend fun apiUpdateProduct(productId: String, updatedProductImage: UpdateProductImage) : HttpResponse {
+suspend fun apiUpdateProduct(productId: String, updatedProduct: Any) : HttpResponse {
     return jsonPrintifyClient.put("shops/$shopId/products/$productId.json"){
         contentType(ContentType.Application.Json)
-        setBody(updatedProductImage)
+        setBody(updatedProduct)
     }
 }
 
