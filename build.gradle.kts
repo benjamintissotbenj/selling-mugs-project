@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.config.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 val kotlinVersion = "1.7.20-Beta"
