@@ -34,7 +34,7 @@ class ImageForUploadReceive(val id: String,
      * @param public determines if the artwork should be public or not. Get it from the HTTP request
      */
     fun toArtwork(uuidGen: (String) -> String, public: Boolean = true) : Artwork {
-        return Artwork(uuidGen(id), id, preview_url, public)
+        return Artwork(uuidGen(id), id, preview_url, emptyList(), public)
     }
     
     override fun toString() : String {

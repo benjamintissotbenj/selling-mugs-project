@@ -12,6 +12,15 @@ data class Mug(@SerialName("_id") val id: String,
                val price: Float,
                var artwork: Artwork){
 
+    fun getBestPictureSrc() : String {
+        return artwork.previewURLs.let {if (it.isEmpty()) artwork.imageURL else it[0]}
+    }
+
+    fun getAllPictureSrcs() : List<String> {
+        var srcArrayList = ArrayList(artwork.previewURLs)
+        srcArrayList.add(artwork.imageURL)
+        return srcArrayList.toList()
+    }
     companion object {
         // Idea is that we don't need to define a route and requests in strings. Any changes only need to come from the models
         // then the client and the server are adjusted automatically

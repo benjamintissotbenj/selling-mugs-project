@@ -15,7 +15,7 @@ data class ReceiveProduct(
     val updated_at: String,
     val visible: Boolean,
     val is_locked: Boolean,
-    val external: External?,
+    val external: External? = null,
     val blueprint_id: Int,
     val user_id: Int,
     val shop_id: Int,
