@@ -38,6 +38,16 @@ val UserInfoPage = FC<NavigationProps> { props ->
         height = 94.pct
         width = 100.pct
         labels = listOf("User Information", "Orders")
+        onClickTab = { value ->
+            when (value) {
+                0 -> scope.launch {
+                        recordClick(props.session.clickDataId, Const.ClickType.USER_INFO_TAB.type)
+                    }
+                1 -> scope.launch {
+                        recordClick(props.session.clickDataId, Const.ClickType.USER_INFO_ORDER_TAB.type)
+                    }
+            }
+        }
 
         TabPanel {
             css {

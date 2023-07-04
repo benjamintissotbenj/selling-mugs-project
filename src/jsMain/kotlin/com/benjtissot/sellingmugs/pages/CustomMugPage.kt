@@ -115,6 +115,9 @@ val CustomMugPage = FC<NavigationProps> { props ->
                         +"Add to cart"
                     }
                     onClick = {
+                        scope.launch {
+                            recordClick(props.session.clickDataId, Const.ClickType.ADD_MUG_TO_CART.type)
+                        }
                         // Add product to cart
                         scope.launch {
                             val mug = getMugByPrintifyId(receiveProduct!!.id)

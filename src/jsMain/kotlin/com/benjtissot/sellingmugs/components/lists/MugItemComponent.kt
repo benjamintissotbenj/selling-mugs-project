@@ -12,7 +12,6 @@ import react.dom.html.ReactHTML.img
 
 external interface MugItemProps: Props {
     var mug: Mug
-    var onItemClick: (Mug) -> Unit
     var onMouseEnterItem: (Mug, HTMLDivElement) -> Unit
 }
 
@@ -76,7 +75,6 @@ val MugItemComponent = FC<MugItemProps> {
                 +"£${props.mug.price}"
             }
         }
-        onClick = {props.onItemClick(props.mug)}
     }
 
 

@@ -32,6 +32,9 @@ val LoginPage = FC<NavigationProps> { props ->
             onSubmit = { email, clearPassword ->
                 val hashedPassword = clearPassword.sha256().toString()
                 scope.launch {
+                    recordClick(props.session.clickDataId, Const.ClickType.LOGIN.type)
+                }
+                scope.launch {
                     val loginInfo = LoginInfo(email, hashedPassword)
                     val httpResponse = login(loginInfo)
                     props.updateSession()
@@ -61,7 +64,6 @@ val LoginPage = FC<NavigationProps> { props ->
                 }
                 +"Register now"
                 onClick = {
-                    LOG.debug("Click on Register")
                     props.navigate.invoke(REGISTER_PATH)
                 }
             }

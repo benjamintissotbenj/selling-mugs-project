@@ -10,12 +10,17 @@ class Const {
         }
     }
     enum class ClickType(var type: String) {
-        SEARCH_NAV("SEARCH_NAV"),
         HOME_NAV("HOME_NAV"),
-        USER_INFO_NAV("USER_INFO_NAV"),
-        CHECKOUT_NAV("CHECKOUT_NAV"),
+        PROFILE_NAV("PROFILE_NAV"),
         CART_NAV("CART_NAV"),
-        CHECKOUT_CART("CHECKOUT_CART"),;
+        CHECKOUT_CART("CHECKOUT_CART"),
+        LOGIN("LOGIN"),
+        REGISTER("REGISTER"),
+        LOGOUT("LOGOUT"),
+        USER_INFO_TAB("USER_INFO_TAB"),
+        USER_INFO_ORDER_TAB("USER_INFO_ORDER_TAB"),
+        ADD_MUG_TO_CART("ADD_MUG_TO_CART"),
+        ;
 
         override fun toString(): String {
             return type

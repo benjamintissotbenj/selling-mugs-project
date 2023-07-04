@@ -4,6 +4,7 @@ import com.benjtissot.sellingmugs.*
 import csstype.VerticalAlign
 import csstype.vw
 import emotion.react.css
+import kotlinx.coroutines.launch
 import mui.icons.material.AccountCircle
 import mui.icons.material.AccountCircleOutlined
 import mui.material.IconButton
@@ -42,6 +43,9 @@ val LoginButton = FC<LoginButtonProps> { props ->
                 }
                 AccountCircleOutlined()
                 onClick = {
+                    scope.launch {
+                        recordClick(props.session.clickDataId, Const.ClickType.PROFILE_NAV.toString())
+                    }
                     if ((props.session.user?.userType ?: Const.UserType.CLIENT) == Const.UserType.ADMIN){
                         props.navigate.invoke(ADMIN_PANEL_PATH)
                     } else {

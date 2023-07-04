@@ -1,19 +1,15 @@
 package com.benjtissot.sellingmugs.components.popups
 
-import com.benjtissot.sellingmugs.Const
-import com.benjtissot.sellingmugs.boxShade
+import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.createProduct.SweepImageComponent
 import com.benjtissot.sellingmugs.entities.Mug
 import com.benjtissot.sellingmugs.entities.printify.order.Order
-import com.benjtissot.sellingmugs.fontSmall
-import com.benjtissot.sellingmugs.popupBoxDefault
 import csstype.*
 import emotion.react.css
+import kotlinx.coroutines.launch
+import mui.icons.material.AddShoppingCart
 import mui.lab.LoadingButton
-import mui.material.Box
-import mui.material.Button
-import mui.material.ButtonColor
-import mui.material.Popper
+import mui.material.*
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLDivElement
@@ -118,6 +114,7 @@ external interface MugDetailsPopupProps: Props {
     var popupTarget : HTMLDivElement?
     var onMouseLeavePopup : () -> Unit
     var mug: Mug?
+    var onClickAddToCart: (Mug?) -> Unit
 }
 
 val MugDetailsPopup = FC<MugDetailsPopupProps> { props ->
@@ -182,9 +179,21 @@ val MugDetailsPopup = FC<MugDetailsPopupProps> { props ->
                     +mug.description
                 }
                 div {
-                        +"£${mug.price}"
+                    +"£${mug.price}"
+                }
+                IconButton {
+                    AddShoppingCart()
+                    div {
+                        css {
+                            fontNormal()
+                            margin = 2.vw
+                        }
+                        +"Add to cart"
                     }
-
+                    onClick = {
+                        props.onClickAddToCart(props.mug!!)
+                    }
+                }
             }
         }
     }

@@ -49,20 +49,26 @@ val Homepage = FC<NavigationProps> { props ->
             popupTarget = null
         }
         this.mug = mugShowDetails
+        this.onClickAddToCart = { mug ->
+            scope.launch {
+                recordClick(props.session.clickDataId, Const.ClickType.ADD_MUG_TO_CART.type)
+            }
+            // Add product to cart
+            scope.launch {
+                mug?.let {
+                    addMugToCart(it)
+                    props.setAlert(successAlert("Mug added to card !"))
+                } ?: let {
+                    props.setAlert(errorAlert())
+                }
+            }
+        }
     }
 
     div {
         MugListComponent {
             list = mugList
             title = "Best for you"
-            onItemClick = { mug ->
-                scope.launch {
-                    // Adding the mug to the cart
-                    // TODO : redirect towards mug page or open a popup or something
-                    addMugToCart(mug)
-                    mugList = getMugList() // updates client
-                }
-            }
             onMouseEnterItem = { mug, target ->
                 mugShowDetails = mug
                 popupTarget = target
