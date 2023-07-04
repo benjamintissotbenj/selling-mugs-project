@@ -55,14 +55,19 @@ class Const {
     }
 
     companion object {
-        val ORDER_FILTER_ALL = "All"
-        val ORDER_FILTER_SIX_MONTHS = "< 6 months"
-        val ORDER_FILTER_THREE_MONTHS = "< 3 months"
+        // Environment Variable names
+        const val PORT = "PORT"
+        const val HOST = "HOST"
+
+        // Filter Order
+        const val ORDER_FILTER_ALL = "All"
+        const val ORDER_FILTER_SIX_MONTHS = "< 6 months"
+        const val ORDER_FILTER_THREE_MONTHS = "< 3 months"
 
         // Query params
-        val updateType = "updateType"
-        val titleDesc = "titleDesc"
-        val image = "image"
+        const val updateType = "updateType"
+        const val titleDesc = "titleDesc"
+        const val image = "image"
 
     }
 }

@@ -29,7 +29,7 @@ var jsonPrintifyClient = HttpClient {
     defaultRequest {
         url("https://fast-earth-36264.herokuapp.com/https://api.printify.com/v1/")
         header("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzN2Q0YmQzMDM1ZmUxMWU5YTgwM2FiN2VlYjNjY2M5NyIsImp0aSI6IjVkZDc2OTg0YmJjMWNiZTA0MDNmZjYyNTZiMjdmNWIyZmNkN2U5MjFmNTU3ZGNiOTQ2NmUxOGRmNGYzZGVjZWQwMGQyYWNkMWRhM2FjNjc2IiwiaWF0IjoxNjg0OTE2MjE4LjY0NDU1NCwibmJmIjoxNjg0OTE2MjE4LjY0NDU1NiwiZXhwIjoxNzE2NTM4NjE4LjYzNjg1OCwic3ViIjoiMTMxNTg1MDAiLCJzY29wZXMiOlsic2hvcHMubWFuYWdlIiwic2hvcHMucmVhZCIsImNhdGFsb2cucmVhZCIsIm9yZGVycy5yZWFkIiwib3JkZXJzLndyaXRlIiwicHJvZHVjdHMucmVhZCIsInByb2R1Y3RzLndyaXRlIiwid2ViaG9va3MucmVhZCIsIndlYmhvb2tzLndyaXRlIiwidXBsb2Fkcy5yZWFkIiwidXBsb2Fkcy53cml0ZSIsInByaW50X3Byb3ZpZGVycy5yZWFkIl19.AYWhOEIO1GzGNbihnmJvq0CBVQ7_iw05T6-q2PMjQ4BvaHiVugTPKrQHmSh7QooY2f_x3RVwzWpd7QLy0hA")
-        header("origin", "localhost:9090")  // needed for this to work, TODO change this when production lol
+        header("origin", "${System.getenv(Const.HOST)}:${System.getenv(Const.PORT).toInt()}")  // needed for this to work, TODO change this when production lol
     }
 }
 
@@ -99,7 +99,7 @@ suspend fun apiPublishProduct(productId: String) : HttpStatusCode {
 suspend fun apiPublishingSuccessfulProduct(productId: String) : HttpStatusCode {
     return jsonPrintifyClient.post("shops/$shopId/products/$productId/publishing_succeeded.json"){
         contentType(ContentType.Application.Json)
-        setBody(PublishSucceed(External(productId, "localhost:9090")))
+        setBody(PublishSucceed(External(productId, "${System.getenv(Const.HOST)}:${System.getenv(Const.PORT).toInt()}")))
     }.status
 }
 

@@ -2,6 +2,7 @@ import ch.qos.logback.classic.LoggerContext
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.benjtissot.sellingmugs.ConfigConst
+import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.HOMEPAGE_PATH
 import com.benjtissot.sellingmugs.controllers.*
 import com.benjtissot.sellingmugs.entities.Session
@@ -35,7 +36,7 @@ private val LOG = KtorSimpleLogger("Server.kt")
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 fun Application.module() {
-    embeddedServer(Netty, 9090) {
+    embeddedServer(Netty, System.getenv(Const.PORT).toInt()) {
         // Automatic content conversion from the requests, based on the headers (content-type and accept)
         // Basically delegates json (de)serialisation to the KTOR framework
         install(ContentNegotiation) {
@@ -54,7 +55,6 @@ fun Application.module() {
         install(Compression) {
             gzip()
         }
-        val port = environment.config.propertyOrNull("ktor.deployment.port")?.getString() ?: "9090"
 
         // Provides authentication via JWT
         installAuthentication()

@@ -3,8 +3,8 @@ package com.benjtissot.sellingmugs
 class ConfigConst {
     companion object {
         const val SECRET = "secret"
-        const val ISSUER = "http://0.0.0.0:9090/"
-        const val AUDIENCE = "http://0.0.0.0:9090/hello"
+        val ISSUER = "${System.getenv(Const.HOST)}:${System.getenv(Const.PORT).toInt()}/"
+        val AUDIENCE = "${System.getenv(Const.HOST)}:${System.getenv(Const.PORT).toInt()}/"
         const val REALM = "Access to 'hello'"
     }
 }
