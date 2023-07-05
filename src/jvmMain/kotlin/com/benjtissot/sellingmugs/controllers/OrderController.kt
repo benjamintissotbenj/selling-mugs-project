@@ -134,6 +134,7 @@ fun Route.orderRouting(){
         }
     }
 
+    // TODO : create the real webhook for production (heroku)
     route(STRIPE_WEBHOOK_PATH) {
         post {
             val payload: String = call.receiveText()

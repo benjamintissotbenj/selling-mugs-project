@@ -63,6 +63,7 @@ val Homepage = FC<NavigationProps> { props ->
     }
 
     div {
+        // TODO: improve the muglist component, integrate the Customizable mug better
         MugListComponent {
             list = mugList
             title = "Best for you"
