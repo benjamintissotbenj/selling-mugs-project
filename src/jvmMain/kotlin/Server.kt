@@ -2,7 +2,6 @@ import ch.qos.logback.classic.LoggerContext
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.benjtissot.sellingmugs.ConfigConst
-import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.HOMEPAGE_PATH
 import com.benjtissot.sellingmugs.controllers.*
 import com.benjtissot.sellingmugs.entities.Session
@@ -116,18 +115,6 @@ fun Application.createRoutes(){
         // Static to access resources (index.html, sellingmugs.js)
         static("/static") {
             resources("")
-        }
-        // Accessing the icon for the browser
-        get("/favicon.ico") {
-            call.respondFile(File(URI(this::class.java.classLoader.getResource("static/icon.jpg")?.toString()?:""))) {
-                ContentType.Image.JPEG
-            }
-        }
-        // Accessing the icon for the browser
-        get("/print_template.png") {
-            call.respondFile(File(URI(this::class.java.classLoader.getResource("static/print_template_mug.png")?.toString()?:""))) {
-                ContentType.Image.PNG
-            }
         }
 
         // Any other route redirects to homepage

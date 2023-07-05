@@ -297,7 +297,7 @@ val ImageOnTemplateComponent = FC<ImageOnTemplateProps> { props ->
                 height = (props.templateWidth/2).vw
                 zIndex = "3".unsafeCast<ZIndex>()
             }
-            src = "/print_template.png"
+            src = "static/print_template_mug.png"
         }
 
         // Image in the foreground
