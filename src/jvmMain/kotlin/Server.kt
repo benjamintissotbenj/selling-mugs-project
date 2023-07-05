@@ -6,6 +6,7 @@ import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.HOMEPAGE_PATH
 import com.benjtissot.sellingmugs.controllers.*
 import com.benjtissot.sellingmugs.entities.Session
+import com.mongodb.ConnectionString
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -27,8 +28,18 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.net.URI
 
+// Connection String for MongoDB in Heroku
+val connectionString: ConnectionString? = System.getenv("MONGODB_URI")?.let {
+    ConnectionString("$it?retryWrites=false")
+}
 
-var client = KMongo.createClient().coroutine
+val client =
+    if (connectionString != null) {
+        KMongo.createClient(connectionString).coroutine
+    } else {
+        KMongo.createClient().coroutine
+    }
+
 var database = client.getDatabase("debug")
 var redirectPath = ""
 
