@@ -30,7 +30,7 @@ import java.net.URI
 
 // Connection String for MongoDB in Heroku
 val connectionString: ConnectionString? = System.getenv("MONGODB_URI")?.let {
-    ConnectionString("$it?retryWrites=false")
+    ConnectionString(it)
 }
 
 val client =
