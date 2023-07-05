@@ -35,6 +35,9 @@ kotlin {
     }
     js {
         browser {
+            dceTask {
+                dceOptions.devMode = true
+            }
             binaries.executable()
             webpackTask {
             }
