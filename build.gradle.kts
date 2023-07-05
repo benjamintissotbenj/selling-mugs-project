@@ -185,6 +185,7 @@ distributions {
 
 // Alias "installDist" as "stage" (for cloud providers)
 tasks.create("stage") {
+    dependsOn(tasks.getByName("build"))
     dependsOn(tasks.getByName("installDist"))
 }
 
