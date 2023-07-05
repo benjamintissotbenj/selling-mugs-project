@@ -18,6 +18,7 @@ import imageForUpload3
 import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.util.logging.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -139,6 +140,7 @@ class GeneralOrderTests : AbstractDatabaseTests() {
 
             val order = OrderService.getOrderFromPrintify(orderId)
 
+            delay(200L)
             // Check order is cancelled
             assert(order?.status == Order.STATUS_CANCELLED)
         }
