@@ -36,7 +36,7 @@ private val LOG = KtorSimpleLogger("Server.kt")
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 fun Application.module() {
-    embeddedServer(Netty, System.getenv(Const.PORT).toInt()) {
+    embeddedServer(Netty, ConfigConst.PORT) {
         // Automatic content conversion from the requests, based on the headers (content-type and accept)
         // Basically delegates json (de)serialisation to the KTOR framework
         install(ContentNegotiation) {

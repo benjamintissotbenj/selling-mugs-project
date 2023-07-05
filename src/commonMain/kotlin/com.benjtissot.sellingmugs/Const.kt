@@ -56,8 +56,8 @@ class Const {
 
     companion object {
         // Environment Variable names
-        const val PORT = "PORT"
-        const val HOST = "HOST"
+        const val PORT_STRING = "PORT"
+        const val HOST_STRING = "HOST"
 
         // Filter Order
         const val ORDER_FILTER_ALL = "All"
