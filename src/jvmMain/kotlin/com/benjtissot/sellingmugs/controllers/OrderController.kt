@@ -142,7 +142,6 @@ fun Route.orderRouting(){
 
 
     // TODO : handle payment refused (i.e. notify user in front-end)
-    // TODO: check all test orders are recorded as test orders
     route(STRIPE_WEBHOOK_PATH) {
         post {
             val payload: String = call.receiveText()

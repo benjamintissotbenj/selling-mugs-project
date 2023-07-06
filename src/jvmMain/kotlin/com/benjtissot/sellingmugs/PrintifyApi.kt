@@ -34,7 +34,7 @@ var jsonPrintifyClient : HttpClient = HttpClient {
 }
 
 
-const val shopId = 8965065
+const val shopId = 8965065 // TODO : env var for shopid and create another shop for production ?
 
 /**
  *
