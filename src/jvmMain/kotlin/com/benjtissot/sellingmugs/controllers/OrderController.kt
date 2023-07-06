@@ -4,15 +4,12 @@ import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.entities.printify.order.Order
 import com.benjtissot.sellingmugs.entities.printify.order.PushResultSerializer
 import com.benjtissot.sellingmugs.entities.printify.order.StoredOrderPushFailed
-import com.benjtissot.sellingmugs.repositories.CartRepository
 import com.benjtissot.sellingmugs.repositories.OrderRepository
 import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.services.OrderService
 import com.benjtissot.sellingmugs.services.SessionService.Companion.getSession
-import com.stripe.Stripe
 import com.stripe.exception.SignatureVerificationException
 import com.stripe.model.Event
-import com.stripe.model.Refund
 import com.stripe.net.Webhook
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -25,7 +22,9 @@ import kotlinx.serialization.json.Json
 
 fun Route.orderRouting(){
 
-    val endpointSecret = "whsec_6d89463b293d6e652ae8b5777f071f01bf96324f3965baa35db692539ea58af5"
+    val endpointSecretTest = System.getenv("STRIPE_WEBHOOK_SECRET_TEST")
+    val endpointSecretReal = System.getenv("STRIPE_WEBHOOK_SECRET_REAL")
+
     route(Order.path) {
         get {
             if (!call.request.queryParameters["cartId"].isNullOrBlank()) {
@@ -135,6 +134,7 @@ fun Route.orderRouting(){
     }
 
     // TODO : create the real webhook for production (heroku)
+    // TODO : handle payment refused
     route(STRIPE_WEBHOOK_PATH) {
         post {
             val payload: String = call.receiveText()
@@ -142,11 +142,18 @@ fun Route.orderRouting(){
 
             val event: Event? = try {
                 Webhook.constructEvent(
-                    payload, sigHeader, endpointSecret
+                    payload, sigHeader, endpointSecretTest
                 )
             } catch (e: SignatureVerificationException) {
+                // Invalid test signature
+                println("test Signature Verification Exception, now checking for Real payment")
+                Webhook.constructEvent(
+                    payload, sigHeader, endpointSecretTest
+                )
+                null
+            } catch (e: SignatureVerificationException) {
                 // Invalid signature
-                println("Signature Verification Exception")
+                println("Signature Verification Exception, real payment signature invalid too")
                 null
             } catch (e: Exception) {
                 // Invalid payload
