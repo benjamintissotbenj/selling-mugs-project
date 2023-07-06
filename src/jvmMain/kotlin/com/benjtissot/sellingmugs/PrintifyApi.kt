@@ -16,40 +16,20 @@ import kotlinx.serialization.json.Json
 /**
  * Back-end owned Printify API
  */
-var jsonPrintifyClient : HttpClient = try {
-    HttpClient {
-        install(ContentNegotiation) {
-            json(Json{ ignoreUnknownKeys = true })
-        }
-        install(Logging){
-            level = LogLevel.BODY
-            filter { request ->
-                !request.url.pathSegments.contains("uploads")
-            }
-        }
-        defaultRequest {
-            url("https://fast-earth-36264.herokuapp.com/https://api.printify.com/v1/")
-            header("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzN2Q0YmQzMDM1ZmUxMWU5YTgwM2FiN2VlYjNjY2M5NyIsImp0aSI6IjVkZDc2OTg0YmJjMWNiZTA0MDNmZjYyNTZiMjdmNWIyZmNkN2U5MjFmNTU3ZGNiOTQ2NmUxOGRmNGYzZGVjZWQwMGQyYWNkMWRhM2FjNjc2IiwiaWF0IjoxNjg0OTE2MjE4LjY0NDU1NCwibmJmIjoxNjg0OTE2MjE4LjY0NDU1NiwiZXhwIjoxNzE2NTM4NjE4LjYzNjg1OCwic3ViIjoiMTMxNTg1MDAiLCJzY29wZXMiOlsic2hvcHMubWFuYWdlIiwic2hvcHMucmVhZCIsImNhdGFsb2cucmVhZCIsIm9yZGVycy5yZWFkIiwib3JkZXJzLndyaXRlIiwicHJvZHVjdHMucmVhZCIsInByb2R1Y3RzLndyaXRlIiwid2ViaG9va3MucmVhZCIsIndlYmhvb2tzLndyaXRlIiwidXBsb2Fkcy5yZWFkIiwidXBsb2Fkcy53cml0ZSIsInByaW50X3Byb3ZpZGVycy5yZWFkIl19.AYWhOEIO1GzGNbihnmJvq0CBVQ7_iw05T6-q2PMjQ4BvaHiVugTPKrQHmSh7QooY2f_x3RVwzWpd7QLy0hA")
-            header("origin", "${ConfigConst.HOST}:${ConfigConst.PORT}")  // needed for this to work,
+var jsonPrintifyClient : HttpClient = HttpClient {
+    install(ContentNegotiation) {
+        json(Json{ ignoreUnknownKeys = true })
+    }
+    install(Logging){
+        level = LogLevel.BODY
+        filter { request ->
+            !request.url.pathSegments.contains("uploads")
         }
     }
-} catch (e: Exception) {
-    e.printStackTrace()
-    HttpClient {
-        install(ContentNegotiation) {
-            json(Json{ ignoreUnknownKeys = true })
-        }
-        install(Logging){
-            level = LogLevel.BODY
-            filter { request ->
-                !request.url.pathSegments.contains("uploads")
-            }
-        }
-        defaultRequest {
-            url("https://api.printify.com/v1/")
-            header("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzN2Q0YmQzMDM1ZmUxMWU5YTgwM2FiN2VlYjNjY2M5NyIsImp0aSI6IjVkZDc2OTg0YmJjMWNiZTA0MDNmZjYyNTZiMjdmNWIyZmNkN2U5MjFmNTU3ZGNiOTQ2NmUxOGRmNGYzZGVjZWQwMGQyYWNkMWRhM2FjNjc2IiwiaWF0IjoxNjg0OTE2MjE4LjY0NDU1NCwibmJmIjoxNjg0OTE2MjE4LjY0NDU1NiwiZXhwIjoxNzE2NTM4NjE4LjYzNjg1OCwic3ViIjoiMTMxNTg1MDAiLCJzY29wZXMiOlsic2hvcHMubWFuYWdlIiwic2hvcHMucmVhZCIsImNhdGFsb2cucmVhZCIsIm9yZGVycy5yZWFkIiwib3JkZXJzLndyaXRlIiwicHJvZHVjdHMucmVhZCIsInByb2R1Y3RzLndyaXRlIiwid2ViaG9va3MucmVhZCIsIndlYmhvb2tzLndyaXRlIiwidXBsb2Fkcy5yZWFkIiwidXBsb2Fkcy53cml0ZSIsInByaW50X3Byb3ZpZGVycy5yZWFkIl19.AYWhOEIO1GzGNbihnmJvq0CBVQ7_iw05T6-q2PMjQ4BvaHiVugTPKrQHmSh7QooY2f_x3RVwzWpd7QLy0hA")
-            header("origin", "${ConfigConst.HOST}:${ConfigConst.PORT}")  // needed for this to work,
-        }
+    defaultRequest {
+        url("https://fast-earth-36264.herokuapp.com/https://api.printify.com/v1/")
+        header("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzN2Q0YmQzMDM1ZmUxMWU5YTgwM2FiN2VlYjNjY2M5NyIsImp0aSI6IjVkZDc2OTg0YmJjMWNiZTA0MDNmZjYyNTZiMjdmNWIyZmNkN2U5MjFmNTU3ZGNiOTQ2NmUxOGRmNGYzZGVjZWQwMGQyYWNkMWRhM2FjNjc2IiwiaWF0IjoxNjg0OTE2MjE4LjY0NDU1NCwibmJmIjoxNjg0OTE2MjE4LjY0NDU1NiwiZXhwIjoxNzE2NTM4NjE4LjYzNjg1OCwic3ViIjoiMTMxNTg1MDAiLCJzY29wZXMiOlsic2hvcHMubWFuYWdlIiwic2hvcHMucmVhZCIsImNhdGFsb2cucmVhZCIsIm9yZGVycy5yZWFkIiwib3JkZXJzLndyaXRlIiwicHJvZHVjdHMucmVhZCIsInByb2R1Y3RzLndyaXRlIiwid2ViaG9va3MucmVhZCIsIndlYmhvb2tzLndyaXRlIiwidXBsb2Fkcy5yZWFkIiwidXBsb2Fkcy53cml0ZSIsInByaW50X3Byb3ZpZGVycy5yZWFkIl19.AYWhOEIO1GzGNbihnmJvq0CBVQ7_iw05T6-q2PMjQ4BvaHiVugTPKrQHmSh7QooY2f_x3RVwzWpd7QLy0hA")
+        header("origin", "${ConfigConst.HOST}:${ConfigConst.PORT}")  // needed for this to work,
     }
 }
 

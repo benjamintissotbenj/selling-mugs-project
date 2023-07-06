@@ -134,6 +134,7 @@ fun Route.orderRouting(){
     }
 
     // TODO : create the real webhook for production (heroku)
+    // TODO : create different webhook for tests and for real
     // TODO : handle payment refused
     route(STRIPE_WEBHOOK_PATH) {
         post {
@@ -148,7 +149,7 @@ fun Route.orderRouting(){
                 // Invalid test signature
                 println("test Signature Verification Exception, now checking for Real payment")
                 Webhook.constructEvent(
-                    payload, sigHeader, endpointSecretTest
+                    payload, sigHeader, endpointSecretReal
                 )
                 null
             } catch (e: SignatureVerificationException) {

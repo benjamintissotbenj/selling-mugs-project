@@ -144,7 +144,13 @@ class OrderService {
          */
         suspend fun refundOrder(localOrderId: String) : HttpStatusCode {
             // Refund the order
-            Stripe.apiKey = "sk_test_51NKkLwJx7XjXUQ19LtK4VmklHiyn9fM0iTKKJOHD2OCc22UY2juDrf2g81W5NK1ZmzCpQrx9jBaV2BC3HuzEhghw00WIrj1t1h"
+            // Get the correct apiKey based on if the order was a test order or a real order
+            // TODO get this right
+            Stripe.apiKey = if (System.getenv("ORG_GRADLE_PROJECT_isProduction")?.toBoolean() == true){
+                System.getenv("STRIPE_API_KEY_TEST")
+            } else {
+                System.getenv("STRIPE_API_KEY_REAL")
+            }
 
             val paymentIntentId = OrderService.getOrderStripePaymentIntent(localOrderId)
             if (paymentIntentId == ""){
