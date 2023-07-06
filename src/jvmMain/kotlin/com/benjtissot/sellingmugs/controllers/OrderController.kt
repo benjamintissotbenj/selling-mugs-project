@@ -113,20 +113,15 @@ fun Route.orderRouting(){
 
         route(PUSH_RESULT_PATH){
             get {
-                if (!call.request.queryParameters["cartId"].isNullOrBlank()) {
-                    val orderId = getUuidFromString(call.request.queryParameters["cartId"]!!)
-                    OrderService.getOrderPushResultByOrderId(orderId)?.let {
-                        // Trick to update call session from database session (needed when order goes through)
-                        call.sessions.set(SessionRepository.getSession(getSession().id))
-                        val pushResultString = Json.encodeToString(PushResultSerializer, it)
-                        LOG.debug("Order push result found : $pushResultString")
-                        call.respond(pushResultString)
-                    } ?: run {
-                        LOG.debug("No order push result found for orderId $orderId calculated from cartId ${call.request.queryParameters["cartId"]}")
-                        call.respond(HttpStatusCode.BadRequest)
-                    }
+                val orderId = if (!call.request.queryParameters["cartId"].isNullOrBlank()){
+                    getUuidFromString(call.request.queryParameters["cartId"]!!)
                 } else if (!call.request.queryParameters["orderId"].isNullOrBlank()) {
-                    val orderId = call.request.queryParameters["orderId"]!!
+                    call.request.queryParameters["orderId"]!!
+                } else {
+                    ""
+                }
+
+                if (orderId.isNotEmpty()){
                     OrderService.getOrderPushResultByOrderId(orderId)?.let {
                         // Trick to update call session from database session (needed when order goes through)
                         call.sessions.set(SessionRepository.getSession(getSession().id))
@@ -147,13 +142,14 @@ fun Route.orderRouting(){
 
 
     // TODO : handle payment refused (i.e. notify user in front-end)
+    // TODO: check all test orders are recorded as test orders
     route(STRIPE_WEBHOOK_PATH) {
         post {
             val payload: String = call.receiveText()
             val sigHeader: String = call.request.header("Stripe-Signature") ?: ""
 
             val event: Event? = OrderService.constructEvent(payload, sigHeader, endpointSecretReal)
-            println("Constructed event is $event")
+            println("Constructed stripe event")
             val httpStatusCode = event?.let {OrderService.handleWebhookEvent(it)} ?: call.respond(HttpStatusCode.BadRequest)
             call.respond(httpStatusCode)
 
@@ -166,7 +162,7 @@ fun Route.orderRouting(){
             val sigHeader: String = call.request.header("Stripe-Signature") ?: ""
 
             val event: Event? = OrderService.constructEvent(payload, sigHeader, endpointSecretTest)
-            println("Constructed test event is $event")
+            println("Constructed test stripe event")
             val httpStatusCode = event?.let {OrderService.handleWebhookEvent(it, testOrder = true)} ?: call.respond(HttpStatusCode.BadRequest)
             call.respond(httpStatusCode)
 

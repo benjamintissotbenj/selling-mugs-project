@@ -70,8 +70,8 @@ class OrderService {
                 lineItems,
                 addressTo)
 
-            // Insert order in database
-            OrderRepository.insertOrder(newOrder)
+            // Upsert order in database
+            OrderRepository.updateOrder(newOrder)
 
             // Adds order to the list
             OrderRepository.addOrderToUserOrderList(user.id, newOrder.external_id)
@@ -148,7 +148,10 @@ class OrderService {
         suspend fun refundOrder(localOrderId: String) : HttpStatusCode {
             // Refund the order
             // Get the correct apiKey based on if the order was a test order or a real order
-            Stripe.apiKey = if (OrderService.getOrder(localOrderId)?.isTestOrder() == false){
+            val order = getOrder(localOrderId)
+            val isTestOrder = OrderService.getOrder(localOrderId)?.isTestOrder()
+            LOG.debug("Refunding order of localId $localOrderId with value testOrder : $isTestOrder and label ${order?.label ?: "LABEL NOT FOUND"}")
+            Stripe.apiKey = if (isTestOrder == false){
                 System.getenv("STRIPE_API_KEY_REAL")
             } else {
                 System.getenv("STRIPE_API_KEY_TEST")
@@ -284,7 +287,7 @@ class OrderService {
             val addressTo = stripeSession.customerDetails.toAddressTo()
             val paymentIntentId = stripeSession.paymentIntent
 
-            LOG.debug("cartId to create order is ${session.cartId}")
+            LOG.debug("cartId to create order is ${session.cartId}. Test Order ?= $testOrder")
             // Create order
             val order = createOrderFromCart(addressTo, session.cartId, user, testOrder)
             // Updates session with a new cart, updated order id and updated user

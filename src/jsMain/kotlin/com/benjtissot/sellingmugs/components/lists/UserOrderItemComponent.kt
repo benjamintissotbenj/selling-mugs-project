@@ -52,8 +52,10 @@ val UserOrderItemComponent = FC<UserOrderItemProps> { props ->
                 css {
                     fontNormal()
                     padding = 16.px
-                    marginLeft = 2.vw
+                    boxSizing = BoxSizing.borderBox
+                    marginInline = 2.vw
                     fontWeight = FontWeight.bold
+                    width = 15.vw
                 }
                 +"Order ${props.order.label}"
             }
@@ -62,6 +64,8 @@ val UserOrderItemComponent = FC<UserOrderItemProps> { props ->
             div {
                 css {
                     fontNormal()
+                    contentCenteredHorizontally()
+                    width = 20.vw
                     padding = 16.px
                 }
                 +"Order made on ${props.order.created_at.toPrettyFormat()}"
@@ -71,7 +75,11 @@ val UserOrderItemComponent = FC<UserOrderItemProps> { props ->
             div {
                 css {
                     fontNormal()
+                    contentCenteredHorizontally()
+                    width = 15.vw
                     padding = 16.px
+                    boxSizing = BoxSizing.borderBox
+                    marginInline = 2.vw
                 }
                 +props.order.status
             }
@@ -80,7 +88,11 @@ val UserOrderItemComponent = FC<UserOrderItemProps> { props ->
             div {
                 css {
                     fontNormal()
+                    contentCenteredHorizontally()
+                    width = 5.vw
                     padding = 16.px
+                    boxSizing = BoxSizing.borderBox
+                    marginInline = 2.vw
                 }
                 +"£${getCheckoutAmount(props.order.line_items.size)}"
             }
@@ -89,8 +101,11 @@ val UserOrderItemComponent = FC<UserOrderItemProps> { props ->
             button {
                 css {
                     fontNormal()
+                    contentCenteredHorizontally()
                     padding = 16.px
-                    marginRight = 2.vw
+                    width = 10.vw
+                    boxSizing = BoxSizing.borderBox
+                    marginInline = 2.vw
                 }
                 disabled = props.order.status != Order.STATUS_ON_HOLD
                 onClick = { event -> props.onClickCancel(props.order, event.currentTarget) }
