@@ -88,7 +88,7 @@ class CreateOrderTest : AbstractDatabaseTests() {
                 )
 
             session.user?.let { user ->
-                val orderId = OrderService.createOrderFromCart(addressTo, session.cartId, user).external_id
+                val orderId = OrderService.createOrderFromCart(addressTo, session.cartId, user, testOrder = true).external_id
                 session = SessionRepository.updateSession(
                     session.copy(orderId = orderId,
                         cartId = CartRepository.createCart().id)

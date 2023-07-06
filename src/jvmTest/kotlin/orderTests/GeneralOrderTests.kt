@@ -76,7 +76,7 @@ class GeneralOrderTests : AbstractDatabaseTests() {
                 "SW7 2BX"
             )
             session.user?.let {
-                orderId = OrderService.createOrderFromCart(addressTo, session.cartId, it).external_id
+                orderId = OrderService.createOrderFromCart(addressTo, session.cartId, it, testOrder = true).external_id
                 LOG.debug("The local OrderID is $orderId")
 
                 session = SessionRepository.updateSession(

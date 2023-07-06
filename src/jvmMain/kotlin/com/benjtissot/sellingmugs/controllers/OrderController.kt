@@ -133,36 +133,29 @@ fun Route.orderRouting(){
         }
     }
 
-    // TODO : create the real webhook for production (heroku)
-    // TODO : create different webhook for tests and for real
-    // TODO : handle payment refused
+    
+    // TODO : handle payment refused (i.e. notify user in front-end)
     route(STRIPE_WEBHOOK_PATH) {
         post {
             val payload: String = call.receiveText()
             val sigHeader: String = call.request.header("Stripe-Signature") ?: ""
 
-            val event: Event? = try {
-                Webhook.constructEvent(
-                    payload, sigHeader, endpointSecretTest
-                )
-            } catch (e: SignatureVerificationException) {
-                // Invalid test signature
-                println("test Signature Verification Exception, now checking for Real payment")
-                Webhook.constructEvent(
-                    payload, sigHeader, endpointSecretReal
-                )
-                null
-            } catch (e: SignatureVerificationException) {
-                // Invalid signature
-                println("Signature Verification Exception, real payment signature invalid too")
-                null
-            } catch (e: Exception) {
-                // Invalid payload
-                println("Invalid Payload")
-                null
-            }
+            val event: Event? = OrderService.constructEvent(payload, sigHeader, endpointSecretReal)
             println("Constructed event is $event")
             val httpStatusCode = event?.let {OrderService.handleWebhookEvent(it)} ?: call.respond(HttpStatusCode.BadRequest)
+            call.respond(httpStatusCode)
+
+        }
+    }
+
+    route(STRIPE_WEBHOOK_TEST_PATH) {
+        post {
+            val payload: String = call.receiveText()
+            val sigHeader: String = call.request.header("Stripe-Signature") ?: ""
+
+            val event: Event? = OrderService.constructEvent(payload, sigHeader, endpointSecretTest)
+            println("Constructed test event is $event")
+            val httpStatusCode = event?.let {OrderService.handleWebhookEvent(it, testOrder = true)} ?: call.respond(HttpStatusCode.BadRequest)
             call.respond(httpStatusCode)
 
         }
