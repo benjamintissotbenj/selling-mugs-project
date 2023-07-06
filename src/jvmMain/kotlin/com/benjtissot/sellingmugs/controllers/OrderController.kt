@@ -17,8 +17,11 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
+import io.ktor.util.logging.*
 import kotlinx.serialization.json.Json
 
+
+private val LOG = KtorSimpleLogger("OrderController.kt")
 
 fun Route.orderRouting(){
 
@@ -115,25 +118,34 @@ fun Route.orderRouting(){
                     OrderService.getOrderPushResultByOrderId(orderId)?.let {
                         // Trick to update call session from database session (needed when order goes through)
                         call.sessions.set(SessionRepository.getSession(getSession().id))
-
-                        call.respond(Json.encodeToString(PushResultSerializer, it))
-                    } ?: call.respond(HttpStatusCode.BadRequest)
+                        val pushResultString = Json.encodeToString(PushResultSerializer, it)
+                        LOG.debug("Order push result found : $pushResultString")
+                        call.respond(pushResultString)
+                    } ?: run {
+                        LOG.debug("No order push result found for orderId $orderId calculated from cartId ${call.request.queryParameters["cartId"]}")
+                        call.respond(HttpStatusCode.BadRequest)
+                    }
                 } else if (!call.request.queryParameters["orderId"].isNullOrBlank()) {
                     val orderId = call.request.queryParameters["orderId"]!!
                     OrderService.getOrderPushResultByOrderId(orderId)?.let {
                         // Trick to update call session from database session (needed when order goes through)
                         call.sessions.set(SessionRepository.getSession(getSession().id))
-
-                        call.respond(Json.encodeToString(PushResultSerializer, it))
-                    } ?: call.respond(HttpStatusCode.BadRequest)
+                        val pushResultString = Json.encodeToString(PushResultSerializer, it)
+                        LOG.debug("Order push result found : $pushResultString")
+                        call.respond(pushResultString)
+                    } ?: run {
+                        LOG.debug("No order push result found for orderId $orderId")
+                        call.respond(HttpStatusCode.BadRequest)
+                    }
                 } else {
+                    LOG.trace("No orderId or cartId provided")
                     call.respond(HttpStatusCode.BadRequest)
                 }
             }
         }
     }
 
-    
+
     // TODO : handle payment refused (i.e. notify user in front-end)
     route(STRIPE_WEBHOOK_PATH) {
         post {

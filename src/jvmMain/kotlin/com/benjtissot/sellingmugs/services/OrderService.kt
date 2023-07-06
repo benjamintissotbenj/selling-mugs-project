@@ -241,7 +241,7 @@ class OrderService {
                 )
             } catch (e: SignatureVerificationException) {
                 // Invalid signature
-                println("Signature Verification Exception, real payment signature invalid too")
+                println("Signature Verification Exception, payment signature invalid")
                 null
             } catch (e: Exception) {
                 // Invalid payload
@@ -299,9 +299,9 @@ class OrderService {
             saveOrderPushResult(order.external_id, pushResult, paymentIntentId)
 
             if (pushResult is PrintifyOrderPushSuccess){
-                print("Order ${pushResult.id} pushed successfully")
+                println("Order ${pushResult.id} pushed successfully")
             } else if (pushResult is PrintifyOrderPushFail) {
-                print("${pushResult.message} because ${pushResult.errors.reason}")
+                println("${pushResult.message} because ${pushResult.errors.reason}")
             }
             return HttpStatusCode.OK
         }

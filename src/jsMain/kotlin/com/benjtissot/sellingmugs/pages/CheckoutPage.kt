@@ -195,7 +195,7 @@ val CheckoutPage = FC<NavigationProps> { props ->
 
                         // Real pay
                         IconButton {
-                            disabled = (amountOfMugs == 0)
+                            disabled = (amountOfMugs == 0) // TODO disable when payment has gone through too
                             Payment()
                             div {
                                 +"Pay £${getCheckoutAmount(amountOfMugs)} with Stripe"
