@@ -1,6 +1,6 @@
 <configuration>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="RouteTraceFilter"/>
+        <filter class="com.benjtissot.sellingmugs.RouteTraceFilter"/>
         <encoder>
             <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
         </encoder>

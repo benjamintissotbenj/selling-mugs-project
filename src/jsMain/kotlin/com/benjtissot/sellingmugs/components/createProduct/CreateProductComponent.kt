@@ -46,7 +46,7 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
             paddingRight = 2.vw
         }
 
-
+        // TODO : fetch images when and update artwork when object is created
 
         // Box
         div {
