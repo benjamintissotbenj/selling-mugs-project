@@ -39,7 +39,7 @@ val client =
         KMongo.createClient().coroutine
     }
 
-var database = client.getDatabase("debug")
+var database = client.getDatabase("debug") //TODO: get env variable for db name
 var redirectPath = ""
 
 private val LOG = KtorSimpleLogger("Server.kt")
