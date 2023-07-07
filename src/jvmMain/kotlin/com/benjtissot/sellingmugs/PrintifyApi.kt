@@ -34,8 +34,8 @@ var jsonPrintifyClient : HttpClient = HttpClient {
 }
 
 
-const val shopId = 8965065 // TODO : env var for shopid and create another shop for production ?
-
+var shopId = System.getenv("PRINTIFY_STORE_ID")?.toInt() ?: 8965065
+// TODO change " " variables into const variables in Const folder
 /**
  *
  * IMAGE

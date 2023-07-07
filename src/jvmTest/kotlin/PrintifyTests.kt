@@ -9,11 +9,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import kotlin.test.assertFails
+import kotlin.time.Duration.Companion.seconds
 
 class PrintifyTests : AbstractDatabaseTests() {
 
     @Test
-    fun managingProduct() = runTest {
+    fun managingProduct() = runTest(timeout = 30.seconds) {
         LOG.debug("Information")
         launch {
             LOG.debug("Information in coroutine")
