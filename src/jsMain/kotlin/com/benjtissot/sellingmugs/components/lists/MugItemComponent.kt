@@ -66,6 +66,7 @@ val MugItemComponent = FC<MugItemProps> {
                     paddingInline = 5.pct
                     boxSizing = BoxSizing.borderBox
                     textOverflow = TextOverflow.ellipsis
+                    overflow = Overflow.hidden
                     whiteSpace = WhiteSpace.nowrap
                 }
                 +props.mug.name
