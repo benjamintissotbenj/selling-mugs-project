@@ -1,6 +1,7 @@
 package com.benjtissot.sellingmugs.controllers
 
 import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.entities.printify.ReceiveProduct
 import com.benjtissot.sellingmugs.entities.printify.UpdateProductImage
 import com.benjtissot.sellingmugs.entities.printify.UpdateProductTitleDesc
 import com.benjtissot.sellingmugs.services.PrintifyService
@@ -67,15 +68,23 @@ fun Route.printifyRouting(){
                         when (call.request.queryParameters[Const.updateType]) {
                             Const.titleDesc -> {
                                 val updateProductTitleDesc: UpdateProductTitleDesc? = try {
-                                    call.receive()
+                                    call.receive<UpdateProductTitleDesc>()
                                 } catch (e: ContentTransformationException) {
+                                    e.printStackTrace()
+                                    null
+                                }  catch (e: Exception){
+                                    LOG.error("Fails at titleDesc level with error message ${e.message}")
                                     e.printStackTrace()
                                     null
                                 }
                                 LOG.debug("Updating title and desc : $updateProductTitleDesc")
                                 updateProductTitleDesc?.let {
                                     PrintifyService.putProductTitleDesc(productId, updateProductTitleDesc)?.let {
-                                        call.respond(it)
+                                        try {
+                                            call.respond(it as ReceiveProduct)
+                                        } catch (e: Exception) {
+                                            LOG.error("Could not respond successfully at titleDesc level with error $e, message ${e.message}")
+                                        }
                                     } ?: let {
                                         call.respond(HttpStatusCode.BadRequest)
                                     }
@@ -84,14 +93,22 @@ fun Route.printifyRouting(){
 
                             Const.image -> {
                                 val updateProductImage: UpdateProductImage? = try {
-                                    call.receive()
+                                    call.receive<UpdateProductImage>()
                                 } catch (e: ContentTransformationException) {
+                                    e.printStackTrace()
+                                    null
+                                } catch (e: Exception){
+                                    LOG.error("Fails at image level with error message ${e.message}")
                                     e.printStackTrace()
                                     null
                                 }
                                 updateProductImage?.let {
                                     PrintifyService.putProductImage(productId, updateProductImage)?.let {
-                                        call.respond(it)
+                                        try {
+                                            call.respond(it as ReceiveProduct)
+                                        } catch (e: Exception) {
+                                            LOG.error("Could not respond successfully at image level with error $e, message ${e.message}")
+                                        }
                                     } ?: let {
                                         call.respond(HttpStatusCode.BadRequest)
                                     }
