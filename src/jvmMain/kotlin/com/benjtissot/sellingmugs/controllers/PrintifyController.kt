@@ -1,6 +1,7 @@
 package com.benjtissot.sellingmugs.controllers
 
 import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.entities.printify.UpdateProductImage
 import com.benjtissot.sellingmugs.entities.printify.UpdateProductTitleDesc
 import com.benjtissot.sellingmugs.services.PrintifyService
 import com.benjtissot.sellingmugs.services.PrintifyService.Companion.getProductPreviewImages
@@ -63,18 +64,35 @@ fun Route.printifyRouting(){
                 if (!call.request.queryParameters[Const.updateType].isNullOrBlank()) {
                     when (call.request.queryParameters[Const.updateType]) {
                         Const.titleDesc -> {
-                            val updateProductTitleDesc : UpdateProductTitleDesc = call.receive()
+                            val updateProductTitleDesc : UpdateProductTitleDesc? = try {
+                                call.receive()
+                            } catch (e : ContentTransformationException){
+                                e.printStackTrace()
+                                null
+                            }
                             LOG.debug("Updating title and desc : $updateProductTitleDesc")
-                            PrintifyService.putProductTitleDesc(productId, updateProductTitleDesc)?.let {
-                                call.respond(it)
-                            } ?: let {
-                                call.respond(HttpStatusCode.BadRequest)
+                            updateProductTitleDesc?.let {
+                                PrintifyService.putProductTitleDesc(productId, updateProductTitleDesc)?.let {
+                                    call.respond(it)
+                                } ?: let {
+                                    call.respond(HttpStatusCode.BadRequest)
+                                }
                             }
                         }
-                        Const.image -> PrintifyService.putProductImage(productId, call.receive())?.let {
-                            call.respond(it)
-                        } ?: let {
-                            call.respond(HttpStatusCode.BadRequest)
+                        Const.image -> {
+                            val updateProductImage : UpdateProductImage? = try {
+                                call.receive()
+                            } catch (e : ContentTransformationException){
+                                e.printStackTrace()
+                                null
+                            }
+                            updateProductImage?.let {
+                                PrintifyService.putProductImage(productId, updateProductImage)?.let {
+                                    call.respond(it)
+                                } ?: let {
+                                    call.respond(HttpStatusCode.BadRequest)
+                                }
+                            }
                         }
                         else -> call.respond(HttpStatusCode.BadRequest)
                     }

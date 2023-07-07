@@ -24,6 +24,7 @@ import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.ktor.util.logging.*
 import org.litote.kmongo.coroutine.coroutine
+import org.litote.kmongo.json
 import org.litote.kmongo.reactivestreams.KMongo
 import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
@@ -66,7 +67,7 @@ fun Application.module() {
             format { call ->
                 val status = call.response.status()
                 val httpMethod = call.request.httpMethod.value
-                "$httpMethod method on ${call.request.path()}, \nStatus: $status}"
+                "$httpMethod method on ${call.request.path()}, query params ${call.request.queryParameters.json}, Status: $status"
             }
         }
 
