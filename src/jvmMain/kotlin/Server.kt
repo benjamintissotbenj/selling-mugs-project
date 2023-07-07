@@ -14,9 +14,11 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.engine.*
 import io.ktor.server.http.content.*
 import io.ktor.server.netty.*
+import io.ktor.server.plugins.callloging.*
 import io.ktor.server.plugins.compression.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
@@ -24,6 +26,7 @@ import io.ktor.util.logging.*
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
 import org.slf4j.LoggerFactory
+import org.slf4j.event.Level
 import java.io.File
 import java.net.URI
 
@@ -51,6 +54,21 @@ fun Application.module() {
         // Basically delegates json (de)serialisation to the KTOR framework
         install(ContentNegotiation) {
             json()
+        }
+
+        // Install logging of the calls made to this server
+        // Idea is to log only bad requests
+        install(CallLogging) {
+            level = Level.INFO
+            filter { call ->
+                call.response.status() != HttpStatusCode.OK
+            }
+            format { call ->
+                val status = call.response.status()
+                val httpMethod = call.request.httpMethod.value
+                val userAgent = call.request.headers["User-Agent"]
+                "$httpMethod method on ${call.request.path()}, \nStatus: $status}"
+            }
         }
 
         // Cross Origin Resource Sharing, handles calls to arbitrary JS clients

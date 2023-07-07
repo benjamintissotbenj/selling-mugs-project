@@ -92,8 +92,9 @@ kotlin {
                 implementation("io.ktor:ktor-client-java:$ktorVersion")
                 implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
 
-                // Server call logging
+                // Client loggind and Server call logging
                 implementation("io.ktor:ktor-client-logging:$ktorVersion")
+                implementation("io.ktor:ktor-server-call-logging:$ktorVersion")
 
                 // https://mvnrepository.com/artifact/com.stripe/stripe-java
                 implementation("com.stripe:stripe-java:22.23.1")

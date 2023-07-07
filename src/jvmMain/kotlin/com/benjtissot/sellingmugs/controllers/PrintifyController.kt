@@ -70,7 +70,8 @@ fun Route.printifyRouting(){
                         }
                         else -> call.respond(HttpStatusCode.BadRequest)
                     }
-
+                } else {
+                    call.respond(HttpStatusCode(400, "No updateType value in update product put request"))
                 }
             }
 
