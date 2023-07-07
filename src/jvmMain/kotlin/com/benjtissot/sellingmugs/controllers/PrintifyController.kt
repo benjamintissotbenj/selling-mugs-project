@@ -59,45 +59,53 @@ fun Route.printifyRouting(){
             }
 
             put {
-                val productId : String = call.parameters["productId"] ?: error("No productId value in update product put request")
-                LOG.debug("Putting an update with update type ${call.request.queryParameters[Const.updateType]}")
-                if (!call.request.queryParameters[Const.updateType].isNullOrBlank()) {
-                    when (call.request.queryParameters[Const.updateType]) {
-                        Const.titleDesc -> {
-                            val updateProductTitleDesc : UpdateProductTitleDesc? = try {
-                                call.receive()
-                            } catch (e : ContentTransformationException){
-                                e.printStackTrace()
-                                null
-                            }
-                            LOG.debug("Updating title and desc : $updateProductTitleDesc")
-                            updateProductTitleDesc?.let {
-                                PrintifyService.putProductTitleDesc(productId, updateProductTitleDesc)?.let {
-                                    call.respond(it)
-                                } ?: let {
-                                    call.respond(HttpStatusCode.BadRequest)
+                try {
+                    val productId: String =
+                        call.parameters["productId"] ?: error("No productId value in update product put request")
+                    LOG.debug("Putting an update with update type ${call.request.queryParameters[Const.updateType]}")
+                    if (!call.request.queryParameters[Const.updateType].isNullOrBlank()) {
+                        when (call.request.queryParameters[Const.updateType]) {
+                            Const.titleDesc -> {
+                                val updateProductTitleDesc: UpdateProductTitleDesc? = try {
+                                    call.receive()
+                                } catch (e: ContentTransformationException) {
+                                    e.printStackTrace()
+                                    null
+                                }
+                                LOG.debug("Updating title and desc : $updateProductTitleDesc")
+                                updateProductTitleDesc?.let {
+                                    PrintifyService.putProductTitleDesc(productId, updateProductTitleDesc)?.let {
+                                        call.respond(it)
+                                    } ?: let {
+                                        call.respond(HttpStatusCode.BadRequest)
+                                    }
                                 }
                             }
-                        }
-                        Const.image -> {
-                            val updateProductImage : UpdateProductImage? = try {
-                                call.receive()
-                            } catch (e : ContentTransformationException){
-                                e.printStackTrace()
-                                null
-                            }
-                            updateProductImage?.let {
-                                PrintifyService.putProductImage(productId, updateProductImage)?.let {
-                                    call.respond(it)
-                                } ?: let {
-                                    call.respond(HttpStatusCode.BadRequest)
+
+                            Const.image -> {
+                                val updateProductImage: UpdateProductImage? = try {
+                                    call.receive()
+                                } catch (e: ContentTransformationException) {
+                                    e.printStackTrace()
+                                    null
+                                }
+                                updateProductImage?.let {
+                                    PrintifyService.putProductImage(productId, updateProductImage)?.let {
+                                        call.respond(it)
+                                    } ?: let {
+                                        call.respond(HttpStatusCode.BadRequest)
+                                    }
                                 }
                             }
+
+                            else -> call.respond(HttpStatusCode.BadRequest)
                         }
-                        else -> call.respond(HttpStatusCode.BadRequest)
+                    } else {
+                        call.respond(HttpStatusCode(400, "No updateType value in update product put request"))
                     }
-                } else {
-                    call.respond(HttpStatusCode(400, "No updateType value in update product put request"))
+                } catch (e : Exception) {
+                    e.printStackTrace()
+                    call.respond(HttpStatusCode.InternalServerError)
                 }
             }
 
