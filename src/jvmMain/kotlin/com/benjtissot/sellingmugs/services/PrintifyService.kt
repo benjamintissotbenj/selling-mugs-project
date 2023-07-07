@@ -110,7 +110,7 @@ class PrintifyService {
          * @return a [ReceiveProduct] object that holds all the information concerning the product
          */
         suspend fun putProductImage(productId: String, updatedProductImage: UpdateProductImage): ReceiveProduct? {
-            val httpResponse = apiUpdateProduct(productId, updatedProductImage)
+            val httpResponse = apiUpdateProductImage(productId, updatedProductImage)
             return if (httpResponse.status == HttpStatusCode.OK){
                 MugService.getMugByPrintifyId(productId)?.artwork?.let {
                     MugService.updateArtworkImage(it, productId)
@@ -133,7 +133,7 @@ class PrintifyService {
             val prependedUpdatedTitleDesc = if (System.getenv("ORG_GRADLE_PROJECT_isProduction")?.toBoolean() != true) { // includes null
                 updatedProductTitleDesc.copy(title = "Test ${updatedProductTitleDesc.title}")
             } else {updatedProductTitleDesc}
-            val httpResponse = apiUpdateProduct(productId, prependedUpdatedTitleDesc)
+            val httpResponse = apiUpdateProductTitleDesc(productId, prependedUpdatedTitleDesc)
             LOG.debug("Printify API response : $httpResponse")
             return if (httpResponse.status == HttpStatusCode.OK){
                 MugService.getMugByPrintifyId(productId)?.let {

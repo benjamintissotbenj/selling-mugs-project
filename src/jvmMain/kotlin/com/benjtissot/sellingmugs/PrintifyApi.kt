@@ -116,13 +116,26 @@ suspend fun apiGetProduct(productId: String) : HttpResponse {
 /**
  * Updates a product from the store
  * @param productId the printify id of the product to get
- * @param updatedProduct the product to be updated
+ * @param updatedProductImage the product to be updated
  * @return a [HttpResponse] object that holds all the information concerning the product
  */
-suspend fun apiUpdateProduct(productId: String, updatedProduct: Any) : HttpResponse {
+suspend fun apiUpdateProductImage(productId: String, updatedProductImage: UpdateProductImage) : HttpResponse {
     return jsonPrintifyClient.put("shops/$shopId/products/$productId.json"){
         contentType(ContentType.Application.Json)
-        setBody(updatedProduct)
+        setBody(updatedProductImage)
+    }
+}
+
+/**
+ * Updates a product from the store
+ * @param productId the printify id of the product to get
+ * @param updatedProductTitleDesc the product to be updated
+ * @return a [HttpResponse] object that holds all the information concerning the product
+ */
+suspend fun apiUpdateProductTitleDesc(productId: String, updatedProductTitleDesc: UpdateProductTitleDesc) : HttpResponse {
+    return jsonPrintifyClient.put("shops/$shopId/products/$productId.json"){
+        contentType(ContentType.Application.Json)
+        setBody(updatedProductTitleDesc)
     }
 }
 
