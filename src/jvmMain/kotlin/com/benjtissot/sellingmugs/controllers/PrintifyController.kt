@@ -1,7 +1,6 @@
 package com.benjtissot.sellingmugs.controllers
 
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.entities.printify.ReceiveProduct
 import com.benjtissot.sellingmugs.entities.printify.UpdateProductImage
 import com.benjtissot.sellingmugs.entities.printify.UpdateProductTitleDesc
 import com.benjtissot.sellingmugs.services.PrintifyService
@@ -66,52 +65,17 @@ fun Route.printifyRouting(){
                     LOG.debug("Putting an update with update type ${call.request.queryParameters[Const.updateType]}")
                     if (!call.request.queryParameters[Const.updateType].isNullOrBlank()) {
                         when (call.request.queryParameters[Const.updateType]) {
-                            Const.titleDesc -> {
-                                val updateProductTitleDesc: UpdateProductTitleDesc? = try {
-                                    call.receive<UpdateProductTitleDesc>()
-                                } catch (e: ContentTransformationException) {
-                                    e.printStackTrace()
-                                    null
-                                }  catch (e: Exception){
-                                    LOG.error("Fails at titleDesc level with error message ${e.message}")
-                                    e.printStackTrace()
-                                    null
-                                }
-                                LOG.debug("Updating title and desc : $updateProductTitleDesc")
-                                updateProductTitleDesc?.let {
-                                    PrintifyService.putProductTitleDesc(productId, updateProductTitleDesc)?.let {
-                                        try {
-                                            call.respond(it as ReceiveProduct)
-                                        } catch (e: Exception) {
-                                            LOG.error("Could not respond successfully at titleDesc level with error $e, message ${e.message}")
-                                        }
-                                    } ?: let {
-                                        call.respond(HttpStatusCode.BadRequest)
-                                    }
+                            Const.titleDesc -> { PrintifyService.putProductTitleDesc(productId, call.receive())?.let {
+                                    call.respond(it)
+                                } ?: let {
+                                    call.respond(HttpStatusCode.BadRequest)
                                 }
                             }
 
-                            Const.image -> {
-                                val updateProductImage: UpdateProductImage? = try {
-                                    call.receive<UpdateProductImage>()
-                                } catch (e: ContentTransformationException) {
-                                    e.printStackTrace()
-                                    null
-                                } catch (e: Exception){
-                                    LOG.error("Fails at image level with error message ${e.message}")
-                                    e.printStackTrace()
-                                    null
-                                }
-                                updateProductImage?.let {
-                                    PrintifyService.putProductImage(productId, updateProductImage)?.let {
-                                        try {
-                                            call.respond(it as ReceiveProduct)
-                                        } catch (e: Exception) {
-                                            LOG.error("Could not respond successfully at image level with error $e, message ${e.message}")
-                                        }
-                                    } ?: let {
-                                        call.respond(HttpStatusCode.BadRequest)
-                                    }
+                            Const.image -> { PrintifyService.putProductImage(productId, call.receive())?.let {
+                                    call.respond(it)
+                                } ?: let {
+                                    call.respond(HttpStatusCode.BadRequest)
                                 }
                             }
 
@@ -122,7 +86,6 @@ fun Route.printifyRouting(){
                     }
                 } catch (e : Exception) {
                     e.printStackTrace()
-                    LOG.error("Error Message is ${e.message}")
                     call.respond(HttpStatusCode.InternalServerError)
                 }
             }

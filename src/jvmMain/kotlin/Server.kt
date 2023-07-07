@@ -76,6 +76,7 @@ fun Application.module() {
             allowMethod(HttpMethod.Get)
             allowMethod(HttpMethod.Post)
             allowMethod(HttpMethod.Delete)
+            allowMethod(HttpMethod.Put)
             allowHeader(HttpHeaders.AccessControlAllowOrigin)
             allowHeader(HttpHeaders.AccessControlAllowHeaders)
             allowHeader(HttpHeaders.AccessControlAllowCredentials)
