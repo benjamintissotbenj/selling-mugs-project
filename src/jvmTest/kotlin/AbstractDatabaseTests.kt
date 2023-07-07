@@ -54,7 +54,7 @@ abstract class AbstractDatabaseTests {
             deactivateMongoDriverLogs()
 
             setupScope()
-            database = client.getDatabase(System.getenv("MONGODB_DBNAME") ?: "test")
+            database = client.getDatabase("test")
             LOG.delimit("FINISH INIT")
         }
 
