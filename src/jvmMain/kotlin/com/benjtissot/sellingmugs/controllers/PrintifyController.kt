@@ -54,7 +54,7 @@ fun Route.printifyRouting(){
             }
 
             put {
-                val productId : String = call.parameters["productId"] ?: error("Invalid public value in post request")
+                val productId : String = call.parameters["productId"] ?: error("No productId value in update product put request")
 
                 if (!call.request.queryParameters[Const.updateType].isNullOrBlank()) {
                     when (call.request.queryParameters[Const.updateType]) {

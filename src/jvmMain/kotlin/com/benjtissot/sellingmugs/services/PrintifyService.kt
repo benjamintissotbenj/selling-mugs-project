@@ -33,6 +33,7 @@ class PrintifyService {
                 return null
             }
             val receivedImage = httpResponse.body<ImageForUploadReceive>()
+
             ArtworkService.updateArtwork(receivedImage.toArtwork({str -> getUuidFromString(str)},  public))
             return receivedImage
         }
@@ -52,11 +53,7 @@ class PrintifyService {
             artwork?.let {
                 // Update the artwork and the mug with the preview images from printify
                 if (artwork.previewURLs.isEmpty()) {
-                    MugService.getMugByArtwork(artwork)?.copy(
-                        artwork = ArtworkService.updateArtwork(artwork.copy(previewURLs = getProductPreviewImages(productId)))
-                    )?.let {
-                        MugRepository.updateMug(it)
-                    }
+                    MugService.updateArtworkImage(artwork, productId)
                 }
 
                 val mug = Mug(getUuidFromString(productId), productId, mugProduct.title, mugProduct.description, mugProduct.variants[0].price/100f, artwork)
@@ -115,6 +112,9 @@ class PrintifyService {
         suspend fun putProductImage(productId: String, updatedProductImage: UpdateProductImage): ReceiveProduct? {
             val httpResponse = apiUpdateProduct(productId, updatedProductImage)
             return if (httpResponse.status == HttpStatusCode.OK){
+                MugService.getMugByPrintifyId(productId)?.artwork?.let {
+                    MugService.updateArtworkImage(it, productId)
+                }
                 httpResponse.body()
             } else {
                 null
@@ -129,8 +129,15 @@ class PrintifyService {
          * @return a [ReceiveProduct] object that holds all the information concerning the product
          */
         suspend fun putProductTitleDesc(productId: String,  updatedProductTitleDesc: UpdateProductTitleDesc): ReceiveProduct? {
-            val httpResponse = apiUpdateProduct(productId, updatedProductTitleDesc)
+            // Prepend the title with "Test" whenever not in production
+            val prependedUpdatedTitleDesc = if (System.getenv("ORG_GRADLE_PROJECT_isProduction")?.toBoolean() != true) { // includes null
+                updatedProductTitleDesc.copy(title = "Test ${updatedProductTitleDesc.title}")
+            } else {updatedProductTitleDesc}
+            val httpResponse = apiUpdateProduct(productId, prependedUpdatedTitleDesc)
             return if (httpResponse.status == HttpStatusCode.OK){
+                MugService.getMugByPrintifyId(productId)?.let {
+                    MugRepository.updateMug(it.copy(name = prependedUpdatedTitleDesc.title, description = prependedUpdatedTitleDesc.description))
+                }
                 httpResponse.body()
             } else {
                 null
@@ -140,11 +147,11 @@ class PrintifyService {
 
         /**
          * Gets the preview images sources for a product from the store
-         * @param productId the printify id of the product to get
+         * @param printifyProductId the printify id of the product to get
          * @return a [List]<[String]> object that holds all the preview images for the product
          */
-        suspend fun getProductPreviewImages(productId: String): List<String> {
-            val httpResponse = apiGetProduct(productId)
+        suspend fun getProductPreviewImages(printifyProductId: String): List<String> {
+            val httpResponse = apiGetProduct(printifyProductId)
             return if (httpResponse.status == HttpStatusCode.OK){
                 val receiveProduct = httpResponse.body<ReceiveProduct>()
                 receiveProduct.images.map { img -> img.src }
