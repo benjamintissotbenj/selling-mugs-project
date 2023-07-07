@@ -11,7 +11,7 @@ import java.util.logging.Logger
 
 fun Route.clickRouting(){
 
-    val LOG = Logger.getLogger(this.javaClass.name)
+    //val LOG = Logger.getLogger(this.javaClass.name)
 
     // updating a ClickData because we add a click of type click_type
     route ("$CLICK_OBJECT_PATH/{click_data_id}/{click_type}") {

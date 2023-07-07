@@ -134,9 +134,11 @@ class PrintifyService {
                 updatedProductTitleDesc.copy(title = "Test ${updatedProductTitleDesc.title}")
             } else {updatedProductTitleDesc}
             val httpResponse = apiUpdateProduct(productId, prependedUpdatedTitleDesc)
+            LOG.debug("Printify API response : $httpResponse")
             return if (httpResponse.status == HttpStatusCode.OK){
                 MugService.getMugByPrintifyId(productId)?.let {
-                    MugRepository.updateMug(it.copy(name = prependedUpdatedTitleDesc.title, description = prependedUpdatedTitleDesc.description))
+                    val updatedMug = MugRepository.updateMug(it.copy(name = prependedUpdatedTitleDesc.title, description = prependedUpdatedTitleDesc.description))
+                    LOG.debug("Updated local mug is ${updatedMug.name}")
                 }
                 httpResponse.body()
             } else {

@@ -1,6 +1,7 @@
 package com.benjtissot.sellingmugs.controllers
 
 import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.entities.printify.UpdateProductTitleDesc
 import com.benjtissot.sellingmugs.services.PrintifyService
 import com.benjtissot.sellingmugs.services.PrintifyService.Companion.getProductPreviewImages
 import io.ktor.http.*
@@ -8,7 +9,10 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.util.logging.*
 import java.lang.Boolean.valueOf
+
+private val LOG = KtorSimpleLogger("PrintifyController.kt")
 
 fun Route.printifyRouting(){
 
@@ -55,13 +59,17 @@ fun Route.printifyRouting(){
 
             put {
                 val productId : String = call.parameters["productId"] ?: error("No productId value in update product put request")
-
+                LOG.debug("Putting an update with update type ${call.request.queryParameters[Const.updateType]}")
                 if (!call.request.queryParameters[Const.updateType].isNullOrBlank()) {
                     when (call.request.queryParameters[Const.updateType]) {
-                        Const.titleDesc -> PrintifyService.putProductTitleDesc(productId, call.receive())?.let {
-                            call.respond(it)
-                        } ?: let {
-                            call.respond(HttpStatusCode.BadRequest)
+                        Const.titleDesc -> {
+                            val updateProductTitleDesc : UpdateProductTitleDesc = call.receive()
+                            LOG.debug("Updating title and desc : $updateProductTitleDesc")
+                            PrintifyService.putProductTitleDesc(productId, updateProductTitleDesc)?.let {
+                                call.respond(it)
+                            } ?: let {
+                                call.respond(HttpStatusCode.BadRequest)
+                            }
                         }
                         Const.image -> PrintifyService.putProductImage(productId, call.receive())?.let {
                             call.respond(it)

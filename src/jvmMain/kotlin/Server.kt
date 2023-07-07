@@ -66,7 +66,6 @@ fun Application.module() {
             format { call ->
                 val status = call.response.status()
                 val httpMethod = call.request.httpMethod.value
-                val userAgent = call.request.headers["User-Agent"]
                 "$httpMethod method on ${call.request.path()}, \nStatus: $status}"
             }
         }
@@ -112,9 +111,7 @@ fun Application.module() {
 }
 
 fun Application.createRoutes(){
-    val routing = routing {
-
-
+    routing {
         // Routing to the controllers
         homepageRouting()
         sessionRouting()
@@ -187,7 +184,7 @@ fun Application.installAuthentication(){
                 }
             }
             // What to do if token is not valid
-            challenge { defaultScheme, realm ->
+            challenge { _, _ ->
                 call.respond(HttpStatusCode.Unauthorized)
             }
         }

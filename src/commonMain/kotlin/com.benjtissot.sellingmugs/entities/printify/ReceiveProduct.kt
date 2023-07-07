@@ -48,7 +48,11 @@ data class UpdateProductImage(
 data class UpdateProductTitleDesc(
     val title: String,
     val description: String,
-){}
+){
+    override fun toString(): String {
+        return "[UpdateProductTitleDesc { title:\"$title\", description:\"$description\"}]"
+    }
+}
 
 @Serializable
 class ProductOption(
