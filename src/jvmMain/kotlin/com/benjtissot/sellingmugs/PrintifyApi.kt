@@ -34,7 +34,7 @@ var jsonPrintifyClient : HttpClient = HttpClient {
 }
 
 
-var shopId = System.getenv("PRINTIFY_STORE_ID")?.toInt() ?: 8965065
+var shopId = System.getenv(Const.PRINTIFY_STORE_ID_STRING)?.toInt() ?: 8965065
 // TODO change " " variables into const variables in Const folder
 /**
  *

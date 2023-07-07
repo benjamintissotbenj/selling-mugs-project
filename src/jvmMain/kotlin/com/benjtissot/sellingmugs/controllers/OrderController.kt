@@ -25,14 +25,14 @@ private val LOG = KtorSimpleLogger("OrderController.kt")
 
 fun Route.orderRouting(){
 
-    val endpointSecretTest = System.getenv("STRIPE_WEBHOOK_SECRET_TEST")
-    val endpointSecretReal = System.getenv("STRIPE_WEBHOOK_SECRET_REAL")
+    val endpointSecretTest = System.getenv(Const.STRIPE_WEBHOOK_SECRET_TEST_STRING)
+    val endpointSecretReal = System.getenv(Const.STRIPE_WEBHOOK_SECRET_REAL_STRING)
 
     route(Order.path) {
         get {
-            if (!call.request.queryParameters["cartId"].isNullOrBlank()) {
+            if (!call.request.queryParameters[Const.cartId].isNullOrBlank()) {
                 // If we have a cartId, retrieve via cartId
-                val order = OrderService.getOrderByCartId(call.request.queryParameters["cartId"].toString())
+                val order = OrderService.getOrderByCartId(call.request.queryParameters[Const.cartId].toString())
                 if (order == null) {
                     call.respond(HttpStatusCode.BadRequest)
                 } else {
@@ -43,11 +43,11 @@ fun Route.orderRouting(){
             }
         }
 
-        route("/{localOrderId}"){
+        route("/{${Const.localOrderId}}"){
 
             route(CANCEL_ORDER_PATH) {
                 post {
-                    val localOrderId: String = call.parameters["localOrderId"] ?: error("Invalid post request")
+                    val localOrderId: String = call.parameters[Const.localOrderId] ?: error("Invalid post request")
 
                     val httpStatusCancel = OrderService.cancelOrder(localOrderId)
                     if (httpStatusCancel != HttpStatusCode.OK) {
@@ -62,7 +62,7 @@ fun Route.orderRouting(){
             // Used to refund an order if order was cancelled but not refunded properly
             route(REFUND_ORDER_PATH){
                 post {
-                    val localOrderId: String = call.parameters["localOrderId"] ?: error("Invalid post request")
+                    val localOrderId: String = call.parameters[Const.localOrderId] ?: error("Invalid post request")
                     call.respond(OrderService.refundOrder(localOrderId))
                 }
             }
@@ -70,17 +70,17 @@ fun Route.orderRouting(){
 
         route(MugCartItem.path){
             get {
-                if (!call.request.queryParameters["orderId"].isNullOrBlank()) {
-                    call.respond(OrderService.getOrderLineItemsAsMugCartItems(call.request.queryParameters["orderId"].toString()))
+                if (!call.request.queryParameters[Const.orderId].isNullOrBlank()) {
+                    call.respond(OrderService.getOrderLineItemsAsMugCartItems(call.request.queryParameters[Const.orderId].toString()))
                 } else {
                     call.respond(HttpStatusCode.BadRequest)
                 }
             }
         }
 
-        route("/{userId}"){
+        route("/{${Const.userId}}"){
             get {
-                val userId: String = call.parameters["userId"] ?: error("Invalid post request")
+                val userId: String = call.parameters[Const.userId] ?: error("Invalid post request")
                 OrderService.getUserOrderList(userId)?.let { userOrderList ->
                     call.respond(userOrderList.orderIds.mapNotNull { OrderService.getOrderFromPrintify(it) })
                 } ?: call.respond(HttpStatusCode.BadRequest)
@@ -88,7 +88,7 @@ fun Route.orderRouting(){
 
             route(USER_ORDER_COUNT_PATH){
                 get {
-                    val userId: String = call.parameters["userId"] ?: error("Invalid post request")
+                    val userId: String = call.parameters[Const.userId] ?: error("Invalid post request")
                     OrderService.getUserOrderList(userId)?.let { userOrderList ->
                         call.respond(userOrderList.orderIds.size)
                     } ?: call.respond(HttpStatusCode.BadRequest)
@@ -99,8 +99,8 @@ fun Route.orderRouting(){
 
         route(PUSH_FAIL_PATH){
             get {
-                if (!call.request.queryParameters["userId"].isNullOrBlank()) {
-                    val userId = call.request.queryParameters["userId"]!!
+                if (!call.request.queryParameters[Const.userId].isNullOrBlank()) {
+                    val userId = call.request.queryParameters[Const.userId]!!
                     val userOrderPushFails : List<StoredOrderPushFailed> = OrderService.getUserOrderList(userId)?.orderIds?.mapNotNull { orderId ->
                         OrderRepository.getStoredOrderPushFailByOrderId(orderId)
                     } ?: emptyList()
@@ -113,10 +113,10 @@ fun Route.orderRouting(){
 
         route(PUSH_RESULT_PATH){
             get {
-                val orderId = if (!call.request.queryParameters["cartId"].isNullOrBlank()){
-                    getUuidFromString(call.request.queryParameters["cartId"]!!)
-                } else if (!call.request.queryParameters["orderId"].isNullOrBlank()) {
-                    call.request.queryParameters["orderId"]!!
+                val orderId = if (!call.request.queryParameters[Const.cartId].isNullOrBlank()){
+                    getUuidFromString(call.request.queryParameters[Const.cartId]!!)
+                } else if (!call.request.queryParameters[Const.orderId].isNullOrBlank()) {
+                    call.request.queryParameters[Const.orderId]!!
                 } else {
                     ""
                 }

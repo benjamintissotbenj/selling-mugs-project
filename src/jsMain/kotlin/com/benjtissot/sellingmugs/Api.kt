@@ -223,7 +223,7 @@ suspend fun getProductPreviewImages(productId: String) : List<String> {
  * @param cartId the [Cart.id] for which we want to retrieve the push result
  */
 suspend fun getOrderPushFailsByUser(userId : String) : List<StoredOrderPushFailed> {
-    val httpResponse = jsonClient.get("${Order.path}$PUSH_FAIL_PATH?userId=$userId")
+    val httpResponse = jsonClient.get("${Order.path}$PUSH_FAIL_PATH?${Const.userId}=$userId")
     return if (httpResponse.status == HttpStatusCode.BadRequest){
         emptyList()
     } else {
@@ -236,7 +236,7 @@ suspend fun getOrderPushFailsByUser(userId : String) : List<StoredOrderPushFaile
  * @param cartId the [Cart.id] for which we want to retrieve the push result
  */
 suspend fun getOrderPushResultByCartId(cartId : String) : PrintifyOrderPushResult? {
-    val httpResponse = jsonClient.get("${Order.path}$PUSH_RESULT_PATH?cartId=$cartId")
+    val httpResponse = jsonClient.get("${Order.path}$PUSH_RESULT_PATH?${Const.userId}=$cartId")
     return getOrderPushResultFromResponse(httpResponse)
 }
 
@@ -245,7 +245,7 @@ suspend fun getOrderPushResultByCartId(cartId : String) : PrintifyOrderPushResul
  * @param cartId the [Cart.id] for which we want to retrieve the push result
  */
 suspend fun getOrderPushResultByOrderId(orderId : String) : PrintifyOrderPushResult? {
-    val httpResponse = jsonClient.get("${Order.path}$PUSH_RESULT_PATH?orderId=$orderId")
+    val httpResponse = jsonClient.get("${Order.path}$PUSH_RESULT_PATH?${Const.orderId}=$orderId")
     return getOrderPushResultFromResponse(httpResponse)
 }
 
@@ -297,7 +297,7 @@ suspend fun getUserOrderList(userId: String) : List<Order> {
  * @return a [List] of [MugCartItem] corresponding to the order's [Order.line_items]
  */
 suspend fun getOrderLineItemsAsMugCartItems(orderId: String) : List<MugCartItem> {
-    val httpResponse = jsonClient.get("${Order.path}${MugCartItem.path}?orderId=$orderId")
+    val httpResponse = jsonClient.get("${Order.path}${MugCartItem.path}?${Const.orderId}=$orderId")
     return if (httpResponse.status == HttpStatusCode.BadRequest){
         emptyList()
     } else {

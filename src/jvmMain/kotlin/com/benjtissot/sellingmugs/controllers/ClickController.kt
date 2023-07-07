@@ -14,10 +14,10 @@ fun Route.clickRouting(){
     //val LOG = Logger.getLogger(this.javaClass.name)
 
     // updating a ClickData because we add a click of type click_type
-    route ("$CLICK_OBJECT_PATH/{click_data_id}/{click_type}") {
+    route ("$CLICK_OBJECT_PATH/{${Const.clickDataId}/{${Const.clickType}}") {
         post {
-            val clickDataId: String = call.parameters["click_data_id"] ?: error("Invalid post request")
-            val clickTypeStr: String = call.parameters["click_type"] ?: error("Invalid post request")
+            val clickDataId: String = call.parameters[Const.clickDataId] ?: error("Invalid post request")
+            val clickTypeStr: String = call.parameters[Const.clickType] ?: error("Invalid post request")
             val clickType = Const.ClickType.valueOf(clickTypeStr)
             try {
                 ClickDataRepository.addClickById(clickDataId, clickType)

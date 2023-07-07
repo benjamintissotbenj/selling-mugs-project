@@ -152,9 +152,9 @@ class OrderService {
             val isTestOrder = OrderService.getOrder(localOrderId)?.isTestOrder()
             LOG.debug("Refunding order of localId $localOrderId with value testOrder : $isTestOrder and label ${order?.label ?: "LABEL NOT FOUND"}")
             Stripe.apiKey = if (isTestOrder == false){
-                System.getenv("STRIPE_API_KEY_REAL")
+                System.getenv(Const.STRIPE_API_KEY_REAL_STRING)
             } else {
-                System.getenv("STRIPE_API_KEY_TEST")
+                System.getenv(Const.STRIPE_API_KEY_TEST_STRING)
             }
 
             val paymentIntentId = OrderService.getOrderStripePaymentIntent(localOrderId)
@@ -162,7 +162,7 @@ class OrderService {
                 return HttpStatusCode(10, "Cannot refund if payment intent does not exist")
             }
             val params: MutableMap<String, Any> = HashMap()
-            params["payment_intent"] = paymentIntentId
+            params[Const.payment_intent] = paymentIntentId
 
             val refund = Refund.create(params)
             return if (refund.status != "succeeded"){

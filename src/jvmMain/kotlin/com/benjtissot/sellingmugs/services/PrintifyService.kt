@@ -130,7 +130,7 @@ class PrintifyService {
          */
         suspend fun putProductTitleDesc(productId: String,  updatedProductTitleDesc: UpdateProductTitleDesc): ReceiveProduct? {
             // Prepend the title with "Test" whenever not in production
-            val prependedUpdatedTitleDesc = if (System.getenv("ORG_GRADLE_PROJECT_isProduction")?.toBoolean() != true) { // includes null
+            val prependedUpdatedTitleDesc = if (System.getenv(Const.IS_PRODUCTION_STRING)?.toBoolean() != true) { // includes null
                 updatedProductTitleDesc.copy(title = "Test ${updatedProductTitleDesc.title}")
             } else {updatedProductTitleDesc}
             val httpResponse = apiUpdateProductTitleDesc(productId, prependedUpdatedTitleDesc)

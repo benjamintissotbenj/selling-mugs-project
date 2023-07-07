@@ -21,9 +21,9 @@ fun Route.printifyRouting(){
         get {
             call.respond("Hello Printify Controller")
         }
-        route("$UPLOAD_IMAGE_PATH/{public}"){
+        route("$UPLOAD_IMAGE_PATH/{${Const.public}}"){
             post {
-                val public : Boolean = call.parameters["public"]?.let {valueOf(it)} ?: error("Invalid public value in post request")
+                val public : Boolean = call.parameters[Const.public]?.let {valueOf(it)} ?: error("Invalid public value in post request")
                 val imageForUploadReceive = PrintifyService.uploadImage(call.receive(), public)
                 imageForUploadReceive?.let{
                     call.respond(imageForUploadReceive)
@@ -48,9 +48,9 @@ fun Route.printifyRouting(){
             }
         }
 
-        route("$PRODUCT_PATH/{productId}"){
+        route("$PRODUCT_PATH/{${Const.productId}}"){
             get {
-                val productId : String = call.parameters["productId"] ?: error("Invalid public value in post request")
+                val productId : String = call.parameters[Const.productId] ?: error("Invalid public value in post request")
                 PrintifyService.getProduct(productId)?.let {
                     call.respond(it)
                 } ?: let {
@@ -61,7 +61,7 @@ fun Route.printifyRouting(){
             put {
                 try {
                     val productId: String =
-                        call.parameters["productId"] ?: error("No productId value in update product put request")
+                        call.parameters[Const.productId] ?: error("No productId value in update product put request")
                     LOG.debug("Putting an update with update type ${call.request.queryParameters[Const.updateType]}")
                     if (!call.request.queryParameters[Const.updateType].isNullOrBlank()) {
                         when (call.request.queryParameters[Const.updateType]) {
@@ -92,7 +92,7 @@ fun Route.printifyRouting(){
 
             route(IMAGES_PATH){
                 get {
-                    val productId : String = call.parameters["productId"] ?: error("Invalid public value in post request")
+                    val productId : String = call.parameters[Const.productId] ?: error("Invalid public value in post request")
                     call.respond(getProductPreviewImages(productId))
                 }
             }

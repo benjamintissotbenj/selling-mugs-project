@@ -2,6 +2,7 @@ import ch.qos.logback.classic.LoggerContext
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.benjtissot.sellingmugs.ConfigConst
+import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.HOMEPAGE_PATH
 import com.benjtissot.sellingmugs.controllers.*
 import com.benjtissot.sellingmugs.entities.Session
@@ -32,7 +33,7 @@ import java.io.File
 import java.net.URI
 
 // Connection String for MongoDB in Heroku
-val connectionString: ConnectionString? = System.getenv("MONGODB_URI")?.let {
+val connectionString: ConnectionString? = System.getenv(Const.MONGODB_URI_STRING)?.let {
     ConnectionString(it)
 }
 
@@ -43,7 +44,7 @@ val client =
         KMongo.createClient().coroutine
     }
 
-var database = client.getDatabase(System.getenv("MONGODB_DBNAME") ?: "debug")
+var database = client.getDatabase(System.getenv(Const.MONGODB_DBNAME_STRING) ?: "debug")
 var redirectPath = ""
 
 private val LOG = KtorSimpleLogger("Server.kt")
@@ -135,8 +136,8 @@ fun Application.createRoutes(){
         }
 
         // Any other route redirects to homepage
-        get("/{path}"){
-            val path = call.parameters["path"] ?: error("Invalid get request")
+        get("/{${Const.path}}"){
+            val path = call.parameters[Const.path] ?: error("Invalid get request")
             redirectPath = "/$path"
             LOG.info("Redirecting to homepage to load page and redirect from front-end")
             call.respondRedirect(HOMEPAGE_PATH)
