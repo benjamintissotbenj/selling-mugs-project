@@ -105,6 +105,7 @@ fun Route.printifyRouting(){
                     }
                 } catch (e : Exception) {
                     e.printStackTrace()
+                    LOG.error("Error Message is ${e.message}")
                     call.respond(HttpStatusCode.InternalServerError)
                 }
             }
