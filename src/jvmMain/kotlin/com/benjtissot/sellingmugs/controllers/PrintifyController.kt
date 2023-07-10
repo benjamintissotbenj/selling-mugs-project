@@ -3,6 +3,7 @@ package com.benjtissot.sellingmugs.controllers
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.entities.printify.UpdateProductImage
 import com.benjtissot.sellingmugs.entities.printify.UpdateProductTitleDesc
+import com.benjtissot.sellingmugs.services.MugService
 import com.benjtissot.sellingmugs.services.PrintifyService
 import com.benjtissot.sellingmugs.services.PrintifyService.Companion.getProductPreviewImages
 import io.ktor.http.*
@@ -36,6 +37,9 @@ fun Route.printifyRouting(){
             post {
                 val productId = PrintifyService.createProduct(call.receive())
                 productId?.let{
+                    MugService.getMugByPrintifyId(productId)?.let {
+                        MugService.updateArtworkImage(it.artwork, productId) // make sure the images are updated when creating the product
+                    }
                     call.respond(productId)
                 } ?: let {
                     call.respond(HttpStatusCode.BadRequest)
