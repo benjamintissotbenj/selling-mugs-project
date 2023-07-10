@@ -13,26 +13,28 @@ import react.dom.html.ReactHTML.header
 
 external interface MugListProps: Props {
     var list: List<Mug>
-    var title: String
+    var title: String?
     var onMouseEnterItem: (Mug, HTMLDivElement) -> Unit
 }
 
 val MugListComponent = FC<MugListProps> {
         props ->
 
-
-    header {
-        css {
-            width = 100.pct
-        }
-        div {
+    props.title?.let{
+        header {
             css {
-                fontBig()
-                marginLeft = 10.vw
+                width = 100.pct
             }
-            +props.title
+            div {
+                css {
+                    fontBig()
+                    marginLeft = 10.vw
+                }
+                +it
+            }
         }
     }
+
     div {
         css {
             display = Display.flex

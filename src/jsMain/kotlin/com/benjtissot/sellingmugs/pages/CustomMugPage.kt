@@ -119,8 +119,11 @@ val CustomMugPage = FC<NavigationProps> { props ->
                                     }
                                     receiveProductTemp?.let {
                                         props.setAlert(successAlert("Title and description were successfully updated"))
+                                        getMugByPrintifyId(receiveProduct!!.id)?.let { mug ->
+                                            addMugToUserCustomMugList(props.session.user?.id ?: "", mug.id)
+                                        }
                                     } ?: let {
-                                        props.setAlert(errorAlert("Could not uupdate title and description of the product"))
+                                        props.setAlert(errorAlert("Could not update title and description of the product"))
                                     }
                                     receiveProduct = receiveProductTemp
                                 }
@@ -153,6 +156,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
                             val mug = getMugByPrintifyId(receiveProduct!!.id)
                             mug?.let {
                                 addMugToCart(it)
+                                addMugToUserCustomMugList(props.session.user?.id ?: "", it.id)
                                 props.setAlert(successAlert("Mug added to card !"))
                             } ?: let {
                                 props.setAlert(errorAlert())

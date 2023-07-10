@@ -1,6 +1,7 @@
 package com.benjtissot.sellingmugs.controllers
 
 import com.benjtissot.sellingmugs.Const
+import com.benjtissot.sellingmugs.USER_CUSTOM_MUG_LIST_PATH
 import com.benjtissot.sellingmugs.entities.Artwork
 import com.benjtissot.sellingmugs.entities.Mug
 import com.benjtissot.sellingmugs.genUuid
@@ -34,7 +35,7 @@ fun Route.mugRouting(){
             insertNewMug(call.receive<Mug>().copy(genUuid()))
             call.respond(HttpStatusCode.OK)
         }
-        delete("/{id}") {
+        delete("/{${Const.id}}") {
             val id = call.parameters[Const.id] ?: error("Invalid delete request")
             deleteMug(id)
             call.respond(HttpStatusCode.OK)
@@ -49,6 +50,32 @@ fun Route.mugRouting(){
                 }
             }
         }
+
+        route(USER_CUSTOM_MUG_LIST_PATH){
+            get {
+                val userId = call.request.queryParameters[Const.userId]
+                if (!userId.isNullOrBlank()){
+                    call.respond(MugService.getUserCustomMugList(userId))
+                } else {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+            }
+
+            route("/{${Const.userId}}/{${Const.mugId}}") {
+                post {
+                    val userId = call.parameters[Const.userId]
+                    val mugId = call.parameters[Const.mugId]
+                    if (mugId == null || userId == null){
+                        call.respond(HttpStatusCode.BadRequest)
+                    } else {
+                        MugService.addMugToUserCustomMugList(userId, mugId)
+                        call.respond(HttpStatusCode.OK)
+                    }
+                }
+            }
+        }
+
+
     }
 
     route(Artwork.path) {
