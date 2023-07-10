@@ -181,12 +181,10 @@ val CheckoutPage = FC<NavigationProps> { props ->
                                     +"Test Pay £${getCheckoutAmount(amountOfMugs)} with Stripe"
                                 }
                                 onClick = {
-                                    scope.launch {
-                                        recordClick(props.session.clickDataId, Const.ClickType.TEST_PAY.type)
-                                    }
                                     paymentPageOpened = true
                                     scope.launch {
-                                        delay(25L)
+                                        recordClick(props.session.clickDataId, Const.ClickType.TEST_PAY.type)
+                                        delay(50L) // let time for the popup to render
                                         window.open(
                                             getPaymentTestLink(amountOfMugs, props.session.id, props.session.user?.email ?: ""),
                                             "_blank"
@@ -242,6 +240,7 @@ val CheckoutPage = FC<NavigationProps> { props ->
             when (orderPushResult) {
                 null -> LoadingComponent {
                     open = paymentPageOpened && orderPushResult == null
+                    message = "This popup will automatically close once the payment is received. Please close only if you have decided not to continue your payment."
                     onClickClose = {
                         scope.launch {
                             recordClick(props.session.clickDataId, Const.ClickType.CLOSE_WAITING_FOR_PAYMENT.type)

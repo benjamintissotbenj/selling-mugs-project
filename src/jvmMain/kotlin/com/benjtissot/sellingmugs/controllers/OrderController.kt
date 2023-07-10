@@ -139,9 +139,7 @@ fun Route.orderRouting(){
             }
         }
     }
-
-
-    // TODO : handle payment refused (i.e. notify user in front-end)
+    
     route(STRIPE_WEBHOOK_PATH) {
         post {
             val payload: String = call.receiveText()
