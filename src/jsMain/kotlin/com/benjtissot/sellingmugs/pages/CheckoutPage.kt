@@ -45,29 +45,29 @@ val CheckoutPage = FC<NavigationProps> { props ->
     }
 
     useEffect {
-        if (paymentPageOpened) {
-            if (orderPushResult == null){
-                // Every 2 seconds, check for the order result to be saved in the backend
-                getOrderPushResultTimeout = setInterval({
-                    scope.launch {
-                        val pushResultTemp = getOrderPushResultByCartId(cart!!.id)
-                        if (pushResultTemp != null) {
-                            getOrderPushResultTimeout?.let { clearInterval(it) }
-                            props.updateSession()
-                            when (pushResultTemp) {
-                                is PrintifyOrderPushSuccess -> props.setAlert(successAlert("The order has been placed successfully !"))
-                                is PrintifyOrderPushFail -> props.setAlert(errorAlert("The order could not be placed : ${pushResultTemp.errors.reason}"))
-                                else -> {}
-                            }
-                            paymentPageOpened = true
-                            orderPushResult = pushResultTemp
+        if (paymentPageOpened && orderPushResult == null){
+            // Every 2 seconds, check for the order result to be saved in the backend
+            getOrderPushResultTimeout = setInterval({
+                scope.launch {
+                    val pushResultTemp = getOrderPushResultByCartId(cart!!.id)
+                    if (pushResultTemp != null) {
+                        getOrderPushResultTimeout?.let { clearInterval(it) }
+                        props.updateSession()
+                        when (pushResultTemp) {
+                            is PrintifyOrderPushSuccess -> props.setAlert(successAlert("The order has been placed successfully !"))
+                            is PrintifyOrderPushFail -> props.setAlert(errorAlert("The order could not be placed : ${pushResultTemp.errors.reason}"))
+                            else -> {}
                         }
+                        paymentPageOpened = true
+                        orderPushResult = pushResultTemp
                     }
-                }, 2000)
-            } else {
-                getOrderPushResultTimeout?.let { clearInterval(it) }
-            }
+                }
+            }, 2000)
+        } else {
+            // Cancelling timeout when it shouldn't be active
+            getOrderPushResultTimeout?.let { clearInterval(it) }
         }
+
     }
 
     div {

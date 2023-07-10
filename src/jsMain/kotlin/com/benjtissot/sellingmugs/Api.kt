@@ -244,13 +244,13 @@ suspend fun getOrderPushFailsByUser(userId : String) : List<StoredOrderPushFaile
  * @param cartId the [Cart.id] for which we want to retrieve the push result
  */
 suspend fun getOrderPushResultByCartId(cartId : String) : PrintifyOrderPushResult? {
-    val httpResponse = jsonClient.get("${Order.path}$PUSH_RESULT_PATH?${Const.userId}=$cartId")
+    val httpResponse = jsonClient.get("${Order.path}$PUSH_RESULT_PATH?${Const.cartId}=$cartId")
     return getOrderPushResultFromResponse(httpResponse)
 }
 
 /**
- * Gets a pushResult by cart id
- * @param cartId the [Cart.id] for which we want to retrieve the push result
+ * Gets a pushResult by order id
+ * @param orderId the [Order.id] for which we want to retrieve the push result
  */
 suspend fun getOrderPushResultByOrderId(orderId : String) : PrintifyOrderPushResult? {
     val httpResponse = jsonClient.get("${Order.path}$PUSH_RESULT_PATH?${Const.orderId}=$orderId")

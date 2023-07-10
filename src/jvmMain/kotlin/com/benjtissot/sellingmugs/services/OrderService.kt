@@ -282,8 +282,14 @@ class OrderService {
 
         private suspend fun handleCheckoutSessionCompleted(stripeSession: Session, testOrder : Boolean) : HttpStatusCode {
             val sessionId : String? = stripeSession.clientReferenceId
-            val session = SessionRepository.getSession(sessionId ?: "") ?: return HttpStatusCode.InternalServerError
-            val user = session.user ?: return HttpStatusCode.InternalServerError
+            val session = SessionRepository.getSession(sessionId ?: "") ?: run {
+                LOG.error("Could not find session of stripe-communicated sessionId : $sessionId")
+                return HttpStatusCode.InternalServerError
+            }
+            val user = session.user ?: run {
+                LOG.error("Could not find session user for session : $sessionId")
+                return HttpStatusCode.InternalServerError
+            }
             val addressTo = stripeSession.customerDetails.toAddressTo()
             val paymentIntentId = stripeSession.paymentIntent
 

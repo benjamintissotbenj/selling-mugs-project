@@ -68,7 +68,11 @@ fun Application.module() {
             format { call ->
                 val status = call.response.status()
                 val httpMethod = call.request.httpMethod.value
-                "$httpMethod method on ${call.request.path()}, query params ${call.request.queryParameters.json}, Status: $status"
+                var queryParams : String = ""
+                call.request.queryParameters.forEach {name, values ->
+                    queryParams += "$name=${if (values.isNotEmpty()) values[0] else ""}}"
+                }
+                "$httpMethod method on ${call.request.path()}, query params ${queryParams}, Status: $status"
             }
         }
 
@@ -114,7 +118,7 @@ fun Application.module() {
 }
 
 fun Application.createRoutes(){
-    routing {
+    /*val routing = */routing {
         // Routing to the controllers
         homepageRouting()
         sessionRouting()
