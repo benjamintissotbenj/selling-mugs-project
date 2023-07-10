@@ -48,7 +48,7 @@ val CreateProductForm = FC<CreateProductFormProps> { props ->
             div {
                 formLabelGroupDivCss()
 
-                // First Name
+                // Product title
                 label {
                     css { formLabel() }
                     +"Title"
@@ -62,8 +62,9 @@ val CreateProductForm = FC<CreateProductFormProps> { props ->
                     }
                 }
 
-                // Last Name
+                // Product Description
                 label {
+                    // TODO make this larger and more convenient to use, Pre-filled with default text
                     css { formLabel() }
                     +"Description of the product"
                     input {

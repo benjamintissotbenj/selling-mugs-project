@@ -32,5 +32,15 @@ class MugService {
         suspend fun deleteMugByPrintifyId(printifyId: String){
             mugCollection.deleteOne(Mug::printifyId eq printifyId) //type safe
         }
+
+        suspend fun updateArtworkImage(artwork : Artwork, printifyProductId : String){
+            MugService.getMugByArtwork(artwork)?.copy(
+                artwork = ArtworkService.updateArtwork(
+                    artwork.copy(previewURLs = PrintifyService.getProductPreviewImages(printifyProductId))
+                )
+            )?.let {
+                MugRepository.updateMug(it)
+            }
+        }
     }
 }

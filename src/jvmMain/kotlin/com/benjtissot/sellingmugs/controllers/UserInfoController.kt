@@ -11,7 +11,7 @@ import java.util.logging.Logger
 
 fun Route.userInfoRouting(){
 
-    val LOG = Logger.getLogger(this.javaClass.name)
+    // val LOG = Logger.getLogger(this.javaClass.name)
 
     route(USER_INFO_MESSAGE_PATH) {
         authenticate("auth-jwt") {

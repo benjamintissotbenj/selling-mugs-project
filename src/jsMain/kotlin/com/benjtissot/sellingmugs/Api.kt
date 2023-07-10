@@ -187,27 +187,35 @@ suspend fun getProduct(productId: String) : ReceiveProduct {
 /**
  * Updates a product from the store
  * @param productId the printify id of the product to get
- * @param updatedProduct the product to be updated
+ * @param updatedProductImage the product image to be updated
  * @return a [ReceiveProduct] object that holds all the information concerning the product
  */
-suspend fun putProduct(productId: String, updatedProductImage: UpdateProductImage) : ReceiveProduct {
-    return jsonClient.put("$PRINTIFY_PATH$PRODUCT_PATH/$productId?$updateType=$image") {
+suspend fun putProduct(productId: String, updatedProductImage: UpdateProductImage) : ReceiveProduct? {
+    val httpResponse = jsonClient.put("$PRINTIFY_PATH$PRODUCT_PATH/$productId?$updateType=$image") {
         contentType(ContentType.Application.Json)
         setBody(updatedProductImage)
-    }.body()
+    }
+    return if (httpResponse.status == HttpStatusCode.OK){ httpResponse.body() } else {
+        LOG.error("Put product resulted in error ${httpResponse.status.value} : ${httpResponse.status.value}")
+        null
+    }
 }
 
 /**
  * Updates a product from the store
  * @param productId the printify id of the product to get
- * @param updatedProduct the product to be updated
- * @return a [ReceiveProduct] object that holds all the information concerning the product
+ * @param updatedProductTitleDesc the product title and description to be updated
+ * @return a [ReceiveProduct] object that holds all the information concerning the product, null if failed
  */
-suspend fun putProduct(productId: String, updatedProductTitleDesc: UpdateProductTitleDesc) : ReceiveProduct {
-    return jsonClient.put("$PRINTIFY_PATH$PRODUCT_PATH/$productId?$updateType=$titleDesc") {
+suspend fun putProduct(productId: String, updatedProductTitleDesc: UpdateProductTitleDesc) : ReceiveProduct? {
+    val httpResponse = jsonClient.put("$PRINTIFY_PATH$PRODUCT_PATH/$productId?$updateType=$titleDesc") {
         contentType(ContentType.Application.Json)
         setBody(updatedProductTitleDesc)
-    }.body()
+    }
+    return if (httpResponse.status == HttpStatusCode.OK){ httpResponse.body() } else {
+        LOG.error("Put product resulted in error ${httpResponse.status.value} : ${httpResponse.status.value}")
+        null
+    }
 }
 
 /**
@@ -223,7 +231,7 @@ suspend fun getProductPreviewImages(productId: String) : List<String> {
  * @param cartId the [Cart.id] for which we want to retrieve the push result
  */
 suspend fun getOrderPushFailsByUser(userId : String) : List<StoredOrderPushFailed> {
-    val httpResponse = jsonClient.get("${Order.path}$PUSH_FAIL_PATH?userId=$userId")
+    val httpResponse = jsonClient.get("${Order.path}$PUSH_FAIL_PATH?${Const.userId}=$userId")
     return if (httpResponse.status == HttpStatusCode.BadRequest){
         emptyList()
     } else {
@@ -236,16 +244,16 @@ suspend fun getOrderPushFailsByUser(userId : String) : List<StoredOrderPushFaile
  * @param cartId the [Cart.id] for which we want to retrieve the push result
  */
 suspend fun getOrderPushResultByCartId(cartId : String) : PrintifyOrderPushResult? {
-    val httpResponse = jsonClient.get("${Order.path}$PUSH_RESULT_PATH?cartId=$cartId")
+    val httpResponse = jsonClient.get("${Order.path}$PUSH_RESULT_PATH?${Const.cartId}=$cartId")
     return getOrderPushResultFromResponse(httpResponse)
 }
 
 /**
- * Gets a pushResult by cart id
- * @param cartId the [Cart.id] for which we want to retrieve the push result
+ * Gets a pushResult by order id
+ * @param orderId the [Order.id] for which we want to retrieve the push result
  */
 suspend fun getOrderPushResultByOrderId(orderId : String) : PrintifyOrderPushResult? {
-    val httpResponse = jsonClient.get("${Order.path}$PUSH_RESULT_PATH?orderId=$orderId")
+    val httpResponse = jsonClient.get("${Order.path}$PUSH_RESULT_PATH?${Const.orderId}=$orderId")
     return getOrderPushResultFromResponse(httpResponse)
 }
 
@@ -297,7 +305,7 @@ suspend fun getUserOrderList(userId: String) : List<Order> {
  * @return a [List] of [MugCartItem] corresponding to the order's [Order.line_items]
  */
 suspend fun getOrderLineItemsAsMugCartItems(orderId: String) : List<MugCartItem> {
-    val httpResponse = jsonClient.get("${Order.path}${MugCartItem.path}?orderId=$orderId")
+    val httpResponse = jsonClient.get("${Order.path}${MugCartItem.path}?${Const.orderId}=$orderId")
     return if (httpResponse.status == HttpStatusCode.BadRequest){
         emptyList()
     } else {

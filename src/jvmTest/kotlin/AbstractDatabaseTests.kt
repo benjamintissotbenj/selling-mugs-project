@@ -1,4 +1,5 @@
 import ch.qos.logback.classic.LoggerContext
+import com.benjtissot.sellingmugs.shopId
 import io.ktor.util.logging.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.resetMain
@@ -55,6 +56,7 @@ abstract class AbstractDatabaseTests {
 
             setupScope()
             database = client.getDatabase("test")
+            shopId = 10495194
             LOG.delimit("FINISH INIT")
         }
 

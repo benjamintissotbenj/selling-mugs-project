@@ -10,7 +10,7 @@ import java.util.logging.Logger
 
 fun Route.sessionRouting(){
 
-    val LOG = Logger.getLogger(this.javaClass.name)
+    // val LOG = Logger.getLogger(this.javaClass.name)
 
     route(SESSION_OBJECT_PATH) {
         get {

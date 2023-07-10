@@ -46,8 +46,6 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
             paddingRight = 2.vw
         }
 
-
-
         // Box
         div {
             css {

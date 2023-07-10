@@ -1,10 +1,7 @@
 package com.benjtissot.sellingmugs.components.highLevel
 
 import com.benjtissot.sellingmugs.*
-import csstype.Color
-import csstype.NamedColor
-import csstype.px
-import csstype.vh
+import csstype.*
 import emotion.react.css
 import mui.lab.LoadingButton
 import mui.material.Backdrop
@@ -18,6 +15,7 @@ import react.dom.html.ReactHTML.div
 external interface LoadingProps: Props {
     var open: Boolean
     var onClickClose : () -> Unit
+    var message: String
 }
 
 val LoadingComponent = FC<LoadingProps> { props ->
@@ -40,6 +38,15 @@ val LoadingComponent = FC<LoadingProps> { props ->
             PopupHeaderComponent {
                 title = "Please Wait"
                 onClickClose = props.onClickClose
+            }
+
+            div {
+                css {
+                    textAlign = TextAlign.justify
+                    fontNormal()
+                    color = Color(Const.ColorCode.BACKGROUND_GREY_DARKEST.code())
+                }
+                +props.message
             }
 
             LoadingButton {

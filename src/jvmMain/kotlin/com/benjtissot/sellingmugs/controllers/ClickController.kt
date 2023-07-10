@@ -2,6 +2,7 @@ package com.benjtissot.sellingmugs.controllers
 
 import com.benjtissot.sellingmugs.CLICK_OBJECT_PATH
 import com.benjtissot.sellingmugs.Const
+import com.benjtissot.sellingmugs.entities.Click
 import com.benjtissot.sellingmugs.repositories.ClickDataRepository
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -11,19 +12,19 @@ import java.util.logging.Logger
 
 fun Route.clickRouting(){
 
-    val LOG = Logger.getLogger(this.javaClass.name)
+    //val LOG = Logger.getLogger(this.javaClass.name)
 
     // updating a ClickData because we add a click of type click_type
-    route ("$CLICK_OBJECT_PATH/{click_data_id}/{click_type}") {
+    route ("${Click.path}/{${Const.clickDataId}}/{${Const.clickType}}") {
         post {
-            val clickDataId: String = call.parameters["click_data_id"] ?: error("Invalid post request")
-            val clickTypeStr: String = call.parameters["click_type"] ?: error("Invalid post request")
-            LOG.info("Click type is $clickTypeStr")
-            val clickType = Const.ClickType.valueOf(clickTypeStr)
             try {
+                val clickDataId: String = call.parameters[Const.clickDataId] ?: error("Invalid post request")
+                val clickTypeStr: String = call.parameters[Const.clickType] ?: error("Invalid post request")
+                val clickType = Const.ClickType.valueOf(clickTypeStr)
                 ClickDataRepository.addClickById(clickDataId, clickType)
                 call.respond(HttpStatusCode.OK)
             } catch (e: Exception){
+                e.printStackTrace()
                 call.respond(HttpStatusCode.BadRequest)
             }
         }

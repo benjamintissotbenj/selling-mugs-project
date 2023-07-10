@@ -6,11 +6,13 @@ import com.benjtissot.sellingmugs.entities.printify.order.*
 import com.benjtissot.sellingmugs.repositories.*
 import com.benjtissot.sellingmugs.repositories.OrderRepository.Companion.getOrderPrintifyId
 import com.stripe.Stripe
+import com.stripe.exception.SignatureVerificationException
 import com.stripe.model.Event
 import com.stripe.model.EventDataObjectDeserializer
 import com.stripe.model.Refund
 import com.stripe.model.checkout.Session
 import com.stripe.model.checkout.Session.CustomerDetails
+import com.stripe.net.Webhook
 import io.ktor.client.call.*
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -58,18 +60,18 @@ class OrderService {
          * @param cartId the id of the cart to populate the order with
          * @return the [Order] created and added to the database
          */
-        suspend fun createOrderFromCart(addressTo: AddressTo, cartId: String, user: User) : Order {
+        suspend fun createOrderFromCart(addressTo: AddressTo, cartId: String, user: User, testOrder: Boolean) : Order {
             val cart = CartService.getCart(cartId)
             val lineItems: ArrayList<LineItem> = ArrayList(emptyList())
             cart?.let {lineItems.addAll(cart.mugCartItemList.map {LineItem(it.mug.printifyId, it.amount, 69010)})}
             val newOrder = Order.create(
                 getUuidFromString(cartId), // allows us to recognise an order by the cart it is linked to
-                getOrderNextLabel(user.id), // counts the number of orders of a given user
+                getOrderNextLabel(user.id, testOrder), // counts the number of orders of a given user
                 lineItems,
                 addressTo)
 
-            // Insert order in database
-            OrderRepository.insertOrder(newOrder)
+            // Upsert order in database
+            OrderRepository.updateOrder(newOrder)
 
             // Adds order to the list
             OrderRepository.addOrderToUserOrderList(user.id, newOrder.external_id)
@@ -80,8 +82,9 @@ class OrderService {
         /**
          * @return the next label when an order is created
          */
-        private suspend fun getOrderNextLabel(userId : String) : String {
-            return "${(OrderRepository.getUserOrderListByUserId(userId)?.orderIds?.size ?: 0) + 1}"
+        private suspend fun getOrderNextLabel(userId : String, testOrder: Boolean) : String {
+            val test = if (testOrder) "Test" else ""
+            return "$test ${(OrderRepository.getUserOrderListByUserId(userId)?.orderIds?.size ?: 0) + 1}"
         }
 
         /**
@@ -144,14 +147,22 @@ class OrderService {
          */
         suspend fun refundOrder(localOrderId: String) : HttpStatusCode {
             // Refund the order
-            Stripe.apiKey = "sk_test_51NKkLwJx7XjXUQ19LtK4VmklHiyn9fM0iTKKJOHD2OCc22UY2juDrf2g81W5NK1ZmzCpQrx9jBaV2BC3HuzEhghw00WIrj1t1h"
+            // Get the correct apiKey based on if the order was a test order or a real order
+            val order = getOrder(localOrderId)
+            val isTestOrder = OrderService.getOrder(localOrderId)?.isTestOrder()
+            LOG.debug("Refunding order of localId $localOrderId with value testOrder : $isTestOrder and label ${order?.label ?: "LABEL NOT FOUND"}")
+            Stripe.apiKey = if (isTestOrder == false){
+                System.getenv(Const.STRIPE_API_KEY_REAL_STRING)
+            } else {
+                System.getenv(Const.STRIPE_API_KEY_TEST_STRING)
+            }
 
             val paymentIntentId = OrderService.getOrderStripePaymentIntent(localOrderId)
             if (paymentIntentId == ""){
                 return HttpStatusCode(10, "Cannot refund if payment intent does not exist")
             }
             val params: MutableMap<String, Any> = HashMap()
-            params["payment_intent"] = paymentIntentId
+            params[Const.payment_intent] = paymentIntentId
 
             val refund = Refund.create(params)
             return if (refund.status != "succeeded"){
@@ -226,11 +237,27 @@ class OrderService {
          *
          ****************************************************************/
 
+        fun constructEvent(payload: String, sigHeader: String, endpointSecret: String) : Event? {
+            return try {
+                Webhook.constructEvent(
+                    payload, sigHeader, endpointSecret
+                )
+            } catch (e: SignatureVerificationException) {
+                // Invalid signature
+                println("Signature Verification Exception, payment signature invalid")
+                null
+            } catch (e: Exception) {
+                // Invalid payload
+                println("Invalid Payload")
+                null
+            }
+        }
+
         /**
          * Handles a Stripe webhook [Event]
          * @return a [HttpStatusCode] to confirm there were no errors
          */
-        suspend fun handleWebhookEvent(event: Event) : HttpStatusCode {
+        suspend fun handleWebhookEvent(event: Event, testOrder: Boolean = false) : HttpStatusCode {
             // Deserialize the nested object inside the event
             val dataObjectDeserializer: EventDataObjectDeserializer = event.dataObjectDeserializer
             if (!dataObjectDeserializer.getObject().isPresent) {
@@ -243,7 +270,7 @@ class OrderService {
                 "checkout.session.completed" -> {
                     println("Received webhook with event ${event.type} and stripe object $stripeObject")
                     // Getting necessary information from the strip object sent
-                    handleCheckoutSessionCompleted(stripeObject as Session)
+                    handleCheckoutSessionCompleted(stripeObject as Session, testOrder = testOrder)
                 }
 
                 else -> {
@@ -253,16 +280,22 @@ class OrderService {
             }
         }
 
-        private suspend fun handleCheckoutSessionCompleted(stripeSession: Session) : HttpStatusCode {
+        private suspend fun handleCheckoutSessionCompleted(stripeSession: Session, testOrder : Boolean) : HttpStatusCode {
             val sessionId : String? = stripeSession.clientReferenceId
-            val session = SessionRepository.getSession(sessionId ?: "") ?: return HttpStatusCode.InternalServerError
-            val user = session.user ?: return HttpStatusCode.InternalServerError
+            val session = SessionRepository.getSession(sessionId ?: "") ?: run {
+                LOG.error("Could not find session of stripe-communicated sessionId : $sessionId")
+                return HttpStatusCode.InternalServerError
+            }
+            val user = session.user ?: run {
+                LOG.error("Could not find session user for session : $sessionId")
+                return HttpStatusCode.InternalServerError
+            }
             val addressTo = stripeSession.customerDetails.toAddressTo()
             val paymentIntentId = stripeSession.paymentIntent
 
-            LOG.debug("cartId to create order is ${session.cartId}")
+            LOG.debug("cartId to create order is ${session.cartId}. Test Order ?= $testOrder")
             // Create order
-            val order = createOrderFromCart(addressTo, session.cartId, user)
+            val order = createOrderFromCart(addressTo, session.cartId, user, testOrder)
             // Updates session with a new cart, updated order id and updated user
             val newSession = SessionRepository.updateSession(
                 session.copy(orderId = order.external_id,
@@ -275,9 +308,9 @@ class OrderService {
             saveOrderPushResult(order.external_id, pushResult, paymentIntentId)
 
             if (pushResult is PrintifyOrderPushSuccess){
-                print("Order ${pushResult.id} pushed successfully")
+                println("Order ${pushResult.id} pushed successfully")
             } else if (pushResult is PrintifyOrderPushFail) {
-                print("${pushResult.message} because ${pushResult.errors.reason}")
+                println("${pushResult.message} because ${pushResult.errors.reason}")
             }
             return HttpStatusCode.OK
         }

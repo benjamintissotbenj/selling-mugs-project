@@ -16,7 +16,7 @@ import java.util.logging.Logger
 
 fun Route.userRouting(){
 
-    val LOG = Logger.getLogger(this.javaClass.name)
+    // val LOG = Logger.getLogger(this.javaClass.name)
 
     route(USER_OBJECT_PATH) {
         get {

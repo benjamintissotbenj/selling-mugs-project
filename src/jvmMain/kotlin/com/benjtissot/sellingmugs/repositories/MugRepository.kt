@@ -24,8 +24,9 @@ class MugRepository {
         /**
          * @param mug the [Mug] to be updated (inserted if not existent)
          */
-        suspend fun updateMug(mug: Mug) {
+        suspend fun updateMug(mug: Mug) : Mug {
             mugCollection.updateOneById(mug.id, mug, upsert())
+            return mug
         }
 
         suspend fun getMugByPrintifyId(printifyId: String) : Mug? {

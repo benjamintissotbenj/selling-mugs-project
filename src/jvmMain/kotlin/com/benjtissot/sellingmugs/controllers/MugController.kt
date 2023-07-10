@@ -1,5 +1,6 @@
 package com.benjtissot.sellingmugs.controllers
 
+import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.entities.Artwork
 import com.benjtissot.sellingmugs.entities.Mug
 import com.benjtissot.sellingmugs.genUuid
@@ -34,13 +35,13 @@ fun Route.mugRouting(){
             call.respond(HttpStatusCode.OK)
         }
         delete("/{id}") {
-            val id = call.parameters["id"] ?: error("Invalid delete request")
+            val id = call.parameters[Const.id] ?: error("Invalid delete request")
             deleteMug(id)
             call.respond(HttpStatusCode.OK)
         }
-        route("/{printifyId}") {
+        route("/{${Const.printifyId}}") {
             get {
-                val printifyId = call.parameters["printifyId"] ?: error("Invalid delete request")
+                val printifyId = call.parameters[Const.printifyId] ?: error("Invalid delete request")
                 MugService.getMugByPrintifyId(printifyId)?.let {
                     call.respond(it)
                 } ?: let {
@@ -60,7 +61,7 @@ fun Route.mugRouting(){
             call.respond(HttpStatusCode.OK)
         }
         delete("/{id}") {
-            val id = call.parameters["id"] ?: error("Invalid delete request")
+            val id = call.parameters[Const.id] ?: error("Invalid delete request")
             deleteArtwork(id)
             call.respond(HttpStatusCode.OK)
         }

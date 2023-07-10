@@ -14,9 +14,9 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 
 /**
- * Commonly owned Printify API to be accessed both by the front-end and the backend
+ * Back-end owned Printify API
  */
-var jsonPrintifyClient = HttpClient {
+var jsonPrintifyClient : HttpClient = HttpClient {
     install(ContentNegotiation) {
         json(Json{ ignoreUnknownKeys = true })
     }
@@ -33,7 +33,8 @@ var jsonPrintifyClient = HttpClient {
     }
 }
 
-const val shopId = 8965065
+
+var shopId = System.getenv(Const.PRINTIFY_STORE_ID_STRING)?.toInt() ?: 8965065
 
 /**
  *
@@ -115,13 +116,26 @@ suspend fun apiGetProduct(productId: String) : HttpResponse {
 /**
  * Updates a product from the store
  * @param productId the printify id of the product to get
- * @param updatedProduct the product to be updated
+ * @param updatedProductImage the product to be updated
  * @return a [HttpResponse] object that holds all the information concerning the product
  */
-suspend fun apiUpdateProduct(productId: String, updatedProduct: Any) : HttpResponse {
+suspend fun apiUpdateProductImage(productId: String, updatedProductImage: UpdateProductImage) : HttpResponse {
     return jsonPrintifyClient.put("shops/$shopId/products/$productId.json"){
         contentType(ContentType.Application.Json)
-        setBody(updatedProduct)
+        setBody(updatedProductImage)
+    }
+}
+
+/**
+ * Updates a product from the store
+ * @param productId the printify id of the product to get
+ * @param updatedProductTitleDesc the product to be updated
+ * @return a [HttpResponse] object that holds all the information concerning the product
+ */
+suspend fun apiUpdateProductTitleDesc(productId: String, updatedProductTitleDesc: UpdateProductTitleDesc) : HttpResponse {
+    return jsonPrintifyClient.put("shops/$shopId/products/$productId.json"){
+        contentType(ContentType.Application.Json)
+        setBody(updatedProductTitleDesc)
     }
 }
 

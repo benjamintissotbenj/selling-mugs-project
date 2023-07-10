@@ -45,29 +45,29 @@ val CheckoutPage = FC<NavigationProps> { props ->
     }
 
     useEffect {
-        if (paymentPageOpened) {
-            if (orderPushResult == null){
-                // Every 2 seconds, check for the order result to be saved in the backend
-                getOrderPushResultTimeout = setInterval({
-                    scope.launch {
-                        val pushResultTemp = getOrderPushResultByCartId(cart!!.id)
-                        if (pushResultTemp != null) {
-                            getOrderPushResultTimeout?.let { clearInterval(it) }
-                            props.updateSession()
-                            when (pushResultTemp) {
-                                is PrintifyOrderPushSuccess -> props.setAlert(successAlert("The order has been placed successfully !"))
-                                is PrintifyOrderPushFail -> props.setAlert(errorAlert("The order could not be placed : ${pushResultTemp.errors.reason}"))
-                                else -> {}
-                            }
-                            paymentPageOpened = true
-                            orderPushResult = pushResultTemp
+        if (paymentPageOpened && orderPushResult == null){
+            // Every 2 seconds, check for the order result to be saved in the backend
+            getOrderPushResultTimeout = setInterval({
+                scope.launch {
+                    val pushResultTemp = getOrderPushResultByCartId(cart!!.id)
+                    if (pushResultTemp != null) {
+                        getOrderPushResultTimeout?.let { clearInterval(it) }
+                        props.updateSession()
+                        when (pushResultTemp) {
+                            is PrintifyOrderPushSuccess -> props.setAlert(successAlert("The order has been placed successfully !"))
+                            is PrintifyOrderPushFail -> props.setAlert(errorAlert("The order could not be placed : ${pushResultTemp.errors.reason}"))
+                            else -> {}
                         }
+                        paymentPageOpened = true
+                        orderPushResult = pushResultTemp
                     }
-                }, 2000)
-            } else {
-                getOrderPushResultTimeout?.let { clearInterval(it) }
-            }
+                }
+            }, 2000)
+        } else {
+            // Cancelling timeout when it shouldn't be active
+            getOrderPushResultTimeout?.let { clearInterval(it) }
         }
+
     }
 
     div {
@@ -128,108 +128,109 @@ val CheckoutPage = FC<NavigationProps> { props ->
 
             val amountOfMugs = it.mugCartItemList.sumOf { item -> item.amount }
 
-            div {
-                css {
-                    display = Display.flex
-                    flexDirection = FlexDirection.row
-                    alignItems = AlignItems.start
-                    justifyContent = JustifyContent.spaceBetween
-                    width = 100.pct
-                    boxSizing = BoxSizing.borderBox
-                    paddingLeft = 10.vw
-                    paddingRight = 10.vw
-                    paddingTop = 5.vw
-                }
+            // If order hasn't gone through yet, we can buy stuff
+            if (orderPushResult == null) {
                 div {
                     css {
                         display = Display.flex
-                        flexDirection = FlexDirection.column
+                        flexDirection = FlexDirection.row
                         alignItems = AlignItems.start
+                        justifyContent = JustifyContent.spaceBetween
+                        width = 100.pct
+                        boxSizing = BoxSizing.borderBox
+                        paddingLeft = 10.vw
+                        paddingRight = 10.vw
+                        paddingTop = 5.vw
                     }
                     div {
-                        +"Total product price (with VAT): £${getTotalProductPrice(amountOfMugs)}"
-                    }
-                    div {
-                        +"Total shipping price (with VAT): £${getTotalShippingPrice(amountOfMugs)}"
-                    }
-                }
-
-                div {
-                    css {
-                        display = Display.flex
-                        flexDirection = FlexDirection.column
-                        alignItems = AlignItems.start
-                    }
-                    // Warning about ordering less than 10 mugs
-                    if (amountOfMugs > 10) {
+                        css {
+                            display = Display.flex
+                            flexDirection = FlexDirection.column
+                            alignItems = AlignItems.start
+                        }
                         div {
-                            css {
-                                color = NamedColor.red
-                                paddingBlock = 1.vh
-                                fontSmall()
-                            }
-                            +"You can only buy a maximum of 10 mugs at a time"
+                            +"Total product price (with VAT): £${getTotalProductPrice(amountOfMugs)}"
                         }
-                    } else {
-                        // Test pay
-                        IconButton {
-                            disabled = (amountOfMugs == 0)
-                            Payment()
+                        div {
+                            +"Total shipping price (with VAT): £${getTotalShippingPrice(amountOfMugs)}"
+                        }
+                    }
+
+                    div {
+                        css {
+                            display = Display.flex
+                            flexDirection = FlexDirection.column
+                            alignItems = AlignItems.start
+                        }
+                        // Warning about ordering less than 10 mugs
+                        if (amountOfMugs > 10) {
                             div {
-                                +"Test Pay £${getCheckoutAmount(amountOfMugs)} with Stripe"
-                            }
-                            onClick = {
-                                scope.launch {
-                                    recordClick(props.session.clickDataId, Const.ClickType.TEST_PAY.type)
+                                css {
+                                    color = NamedColor.red
+                                    paddingBlock = 1.vh
+                                    fontSmall()
                                 }
-                                paymentPageOpened = true
-                                scope.launch {
-                                    delay(25L)
-                                    window.open(
-                                        getPaymentTestLink(amountOfMugs, props.session.id, props.session.user?.email ?: ""),
-                                        "_blank"
-                                    )
+                                +"You can only buy a maximum of 10 mugs at a time"
+                            }
+                        } else {
+                            // Test pay
+                            IconButton {
+                                disabled = (amountOfMugs == 0)
+                                Payment()
+                                div {
+                                    +"Test Pay £${getCheckoutAmount(amountOfMugs)} with Stripe"
+                                }
+                                onClick = {
+                                    paymentPageOpened = true
+                                    scope.launch {
+                                        recordClick(props.session.clickDataId, Const.ClickType.TEST_PAY.type)
+                                        delay(50L) // let time for the popup to render
+                                        window.open(
+                                            getPaymentTestLink(amountOfMugs, props.session.id, props.session.user?.email ?: ""),
+                                            "_blank"
+                                        )
+                                    }
                                 }
                             }
-                        }
 
-                        // Real pay
-                        IconButton {
-                            disabled = (amountOfMugs == 0)
-                            Payment()
-                            div {
-                                +"Pay £${getCheckoutAmount(amountOfMugs)} with Stripe"
-                            }
-                            onClick = { event ->
-                                scope.launch {
-                                    recordClick(props.session.clickDataId, Const.ClickType.REAL_PAY_POPUP.type)
+                            // Real pay
+                            IconButton {
+                                disabled = (amountOfMugs == 0)
+                                Payment()
+                                div {
+                                    +"Pay £${getCheckoutAmount(amountOfMugs)} with Stripe"
                                 }
-                                popupTarget = event.currentTarget
+                                onClick = { event ->
+                                    scope.launch {
+                                        recordClick(props.session.clickDataId, Const.ClickType.REAL_PAY_POPUP.type)
+                                    }
+                                    popupTarget = event.currentTarget
+                                }
                             }
-                        }
 
-                        ConfirmCheckoutPopup {
-                            this.popupTarget = popupTarget
-                            this.amountOfMugs = amountOfMugs
-                            this.onClickCancel = {
-                                popupTarget = null
-                            }
-                            this.onClickConfirm = {
-                                scope.launch {
-                                    recordClick(props.session.clickDataId, Const.ClickType.CONFIRM_REAL_PAY.type)
+                            ConfirmCheckoutPopup {
+                                this.popupTarget = popupTarget
+                                this.amountOfMugs = amountOfMugs
+                                this.onClickCancel = {
+                                    popupTarget = null
                                 }
-                                paymentPageOpened = true
-                                scope.launch {
-                                    delay(25L)
-                                    window.open(
-                                        getPaymentLink(amountOfMugs, props.session.id, props.session.user?.email ?: ""),
-                                        "_blank"
-                                    )
+                                this.onClickConfirm = {
+                                    scope.launch {
+                                        recordClick(props.session.clickDataId, Const.ClickType.CONFIRM_REAL_PAY.type)
+                                    }
+                                    paymentPageOpened = true
+                                    scope.launch {
+                                        delay(25L)
+                                        window.open(
+                                            getPaymentLink(amountOfMugs, props.session.id, props.session.user?.email ?: ""),
+                                            "_blank"
+                                        )
+                                    }
+                                    popupTarget = null
                                 }
-                                popupTarget = null
                             }
-                        }
 
+                        }
                     }
                 }
             }
@@ -239,6 +240,7 @@ val CheckoutPage = FC<NavigationProps> { props ->
             when (orderPushResult) {
                 null -> LoadingComponent {
                     open = paymentPageOpened && orderPushResult == null
+                    message = "This popup will automatically close once the payment is received. Please close only if you have decided not to continue your payment."
                     onClickClose = {
                         scope.launch {
                             recordClick(props.session.clickDataId, Const.ClickType.CLOSE_WAITING_FOR_PAYMENT.type)
@@ -247,10 +249,10 @@ val CheckoutPage = FC<NavigationProps> { props ->
                         paymentPageOpened = false
                     }
                 }
-                is PrintifyOrderPushFail -> div {
+                is PrintifyOrderPushFail -> div { css { margin = 5.vw }
                     +"The order failed with message ${(orderPushResult as PrintifyOrderPushFail).message}. You can edit this in your profile page."
                 }
-                is PrintifyOrderPushSuccess -> div {
+                is PrintifyOrderPushSuccess -> div { css { margin = 5.vw }
                     +"The order has been placed successfully !"
                 }
             }

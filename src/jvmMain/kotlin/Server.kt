@@ -2,6 +2,7 @@ import ch.qos.logback.classic.LoggerContext
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.benjtissot.sellingmugs.ConfigConst
+import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.HOMEPAGE_PATH
 import com.benjtissot.sellingmugs.controllers.*
 import com.benjtissot.sellingmugs.entities.Session
@@ -14,21 +15,25 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.engine.*
 import io.ktor.server.http.content.*
 import io.ktor.server.netty.*
+import io.ktor.server.plugins.callloging.*
 import io.ktor.server.plugins.compression.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.ktor.util.logging.*
 import org.litote.kmongo.coroutine.coroutine
+import org.litote.kmongo.json
 import org.litote.kmongo.reactivestreams.KMongo
 import org.slf4j.LoggerFactory
+import org.slf4j.event.Level
 import java.io.File
 import java.net.URI
 
 // Connection String for MongoDB in Heroku
-val connectionString: ConnectionString? = System.getenv("MONGODB_URI")?.let {
+val connectionString: ConnectionString? = System.getenv(Const.MONGODB_URI_STRING)?.let {
     ConnectionString(it)
 }
 
@@ -39,7 +44,7 @@ val client =
         KMongo.createClient().coroutine
     }
 
-var database = client.getDatabase("debug")
+var database = client.getDatabase(System.getenv(Const.MONGODB_DBNAME_STRING) ?: "debug")
 var redirectPath = ""
 
 private val LOG = KtorSimpleLogger("Server.kt")
@@ -53,11 +58,30 @@ fun Application.module() {
             json()
         }
 
+        // Install logging of the calls made to this server
+        // Idea is to log only bad requests
+        install(CallLogging) {
+            level = Level.INFO
+            filter { call ->
+                call.response.status() != HttpStatusCode.OK
+            }
+            format { call ->
+                val status = call.response.status()
+                val httpMethod = call.request.httpMethod.value
+                var queryParams : String = ""
+                call.request.queryParameters.forEach {name, values ->
+                    queryParams += "$name=${if (values.isNotEmpty()) values[0] else ""}}"
+                }
+                "$httpMethod method on ${call.request.path()}, query params ${queryParams}, Status: $status"
+            }
+        }
+
         // Cross Origin Resource Sharing, handles calls to arbitrary JS clients
         install(CORS) {
             allowMethod(HttpMethod.Get)
             allowMethod(HttpMethod.Post)
             allowMethod(HttpMethod.Delete)
+            allowMethod(HttpMethod.Put)
             allowHeader(HttpHeaders.AccessControlAllowOrigin)
             allowHeader(HttpHeaders.AccessControlAllowHeaders)
             allowHeader(HttpHeaders.AccessControlAllowCredentials)
@@ -94,9 +118,7 @@ fun Application.module() {
 }
 
 fun Application.createRoutes(){
-    val routing = routing {
-
-
+    /*val routing = */routing {
         // Routing to the controllers
         homepageRouting()
         sessionRouting()
@@ -118,8 +140,8 @@ fun Application.createRoutes(){
         }
 
         // Any other route redirects to homepage
-        get("/{path}"){
-            val path = call.parameters["path"] ?: error("Invalid get request")
+        get("/{${Const.path}}"){
+            val path = call.parameters[Const.path] ?: error("Invalid get request")
             redirectPath = "/$path"
             LOG.info("Redirecting to homepage to load page and redirect from front-end")
             call.respondRedirect(HOMEPAGE_PATH)
@@ -169,7 +191,7 @@ fun Application.installAuthentication(){
                 }
             }
             // What to do if token is not valid
-            challenge { defaultScheme, realm ->
+            challenge { _, _ ->
                 call.respond(HttpStatusCode.Unauthorized)
             }
         }

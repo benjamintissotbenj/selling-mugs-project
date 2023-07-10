@@ -62,6 +62,10 @@ data class Order(
     fun getCalculateShipping(): OrderToCalculateShippingCosts {
         return OrderToCalculateShippingCosts(line_items, address_to)
     }
+
+    fun isTestOrder() : Boolean {
+        return label.contains("Test")
+    }
 }
 
 

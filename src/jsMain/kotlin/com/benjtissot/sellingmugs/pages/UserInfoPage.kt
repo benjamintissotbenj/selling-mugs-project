@@ -74,6 +74,8 @@ val UserInfoPage = FC<NavigationProps> { props ->
         }
     }
 
+    // TODO : create list of custom mugs by user
+
     div {
         css {
             display = Display.flex
