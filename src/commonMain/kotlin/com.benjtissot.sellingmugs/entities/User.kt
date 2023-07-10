@@ -14,7 +14,6 @@ data class User(
     val passwordHash: String,
     val userType: Const.UserType,
     var addressInfoId: String, // todo: "save cart" instead of personal info
-    // todo: retrieve address info from stripe to store the data and edit if needed in case of error
 
     ){
 
