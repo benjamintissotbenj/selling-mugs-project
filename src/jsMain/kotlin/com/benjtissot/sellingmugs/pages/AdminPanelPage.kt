@@ -64,7 +64,7 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                         setAlert(successAlert( "Product $productName created successfully !"))
                         LOG.debug("Created product $productId")
                     }
-                    onProductCreatedFailed = { productId ->
+                    onProductCreatedFailed = { _ ->
                         setAlert(errorAlert( "Could not create product"))
                         LOG.debug("Could not create product")
                     }

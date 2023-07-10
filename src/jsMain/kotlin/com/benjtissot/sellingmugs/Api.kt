@@ -187,27 +187,35 @@ suspend fun getProduct(productId: String) : ReceiveProduct {
 /**
  * Updates a product from the store
  * @param productId the printify id of the product to get
- * @param updatedProduct the product to be updated
+ * @param updatedProductImage the product image to be updated
  * @return a [ReceiveProduct] object that holds all the information concerning the product
  */
-suspend fun putProduct(productId: String, updatedProductImage: UpdateProductImage) : ReceiveProduct {
-    return jsonClient.put("$PRINTIFY_PATH$PRODUCT_PATH/$productId?$updateType=$image") {
+suspend fun putProduct(productId: String, updatedProductImage: UpdateProductImage) : ReceiveProduct? {
+    val httpResponse = jsonClient.put("$PRINTIFY_PATH$PRODUCT_PATH/$productId?$updateType=$image") {
         contentType(ContentType.Application.Json)
         setBody(updatedProductImage)
-    }.body()
+    }
+    return if (httpResponse.status == HttpStatusCode.OK){ httpResponse.body() } else {
+        LOG.error("Put product resulted in error ${httpResponse.status.value} : ${httpResponse.status.value}")
+        null
+    }
 }
 
 /**
  * Updates a product from the store
  * @param productId the printify id of the product to get
- * @param updatedProduct the product to be updated
- * @return a [ReceiveProduct] object that holds all the information concerning the product
+ * @param updatedProductTitleDesc the product title and description to be updated
+ * @return a [ReceiveProduct] object that holds all the information concerning the product, null if failed
  */
-suspend fun putProduct(productId: String, updatedProductTitleDesc: UpdateProductTitleDesc) : ReceiveProduct {
-    return jsonClient.put("$PRINTIFY_PATH$PRODUCT_PATH/$productId?$updateType=$titleDesc") {
+suspend fun putProduct(productId: String, updatedProductTitleDesc: UpdateProductTitleDesc) : ReceiveProduct? {
+    val httpResponse = jsonClient.put("$PRINTIFY_PATH$PRODUCT_PATH/$productId?$updateType=$titleDesc") {
         contentType(ContentType.Application.Json)
         setBody(updatedProductTitleDesc)
-    }.body()
+    }
+    return if (httpResponse.status == HttpStatusCode.OK){ httpResponse.body() } else {
+        LOG.error("Put product resulted in error ${httpResponse.status.value} : ${httpResponse.status.value}")
+        null
+    }
 }
 
 /**

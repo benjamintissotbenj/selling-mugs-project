@@ -30,7 +30,8 @@ import kotlin.math.round
 external interface EditImageOnTemplateProps: Props {
     var uploadedImage: ImageForUploadReceive?
     var receiveProduct: ReceiveProduct?
-    var updateProduct: (ReceiveProduct)->Unit
+    var setAlert : (AlertState) -> Unit
+    var updateProduct: (ReceiveProduct?)->Unit
 }
 
 
@@ -253,6 +254,7 @@ val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
                                     scale,
                                     rotate
                                 )
+                                props.setAlert(infoAlert("Updating preview images"))
                                 scope.launch {
                                     props.updateProduct(putProduct(receiveProduct.id, receiveProduct.changeImage(transformedImage)))
                                 }

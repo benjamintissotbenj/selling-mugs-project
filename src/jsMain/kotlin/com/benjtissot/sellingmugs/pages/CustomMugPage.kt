@@ -84,7 +84,6 @@ val CustomMugPage = FC<NavigationProps> { props ->
                                 uploadReceive?.let {
 
                                     uploadedImage = uploadReceive
-                                    // TODO allow admin to set name and description
                                     val mugProductInfo = MugProductInfo("Custom Mug - ${uploadReceive.id}", "", it.toImage())
                                     val httpResponse = createProduct(mugProductInfo)
                                     val productId = httpResponse.body<String>()
@@ -113,12 +112,18 @@ val CustomMugPage = FC<NavigationProps> { props ->
                     onSubmit = { title, description ->
                         scope.launch {// Data processing to create the product in Printify store
                             uploadedImage?.let {
+                                props.setAlert(infoAlert("Updating title and description"))
                                 scope.launch {
-                                    receiveProduct = receiveProduct?.let {
+                                    val receiveProductTemp = receiveProduct?.let {
                                         putProduct(it.id, UpdateProductTitleDesc(title = title, description = description))
                                     }
+                                    receiveProductTemp?.let {
+                                        props.setAlert(successAlert("Title and description were successfully updated"))
+                                    } ?: let {
+                                        props.setAlert(errorAlert("Could not uupdate title and description of the product"))
+                                    }
+                                    receiveProduct = receiveProductTemp
                                 }
-                                props.setAlert(infoAlert("Updating title and description"))
 
                             }?:let{
                                 props.setAlert(errorAlert("Please upload an image before creating a product"))
@@ -179,12 +184,17 @@ val CustomMugPage = FC<NavigationProps> { props ->
                 EditImageOnTemplateComponent {
                     this.uploadedImage = uploadedImage
                     this.receiveProduct = receiveProduct
-                    this.updateProduct = {
+                    this.setAlert = props.setAlert
+                    this.updateProduct = { receiveProductTemp ->
                         scope.launch {
                             recordClick(props.session.clickDataId, Const.ClickType.CUSTOM_MUG_REFRESH_PREVIEW.type)
                         }
-                        props.setAlert(infoAlert("Updating preview images"))
-                        receiveProduct = it
+                        receiveProductTemp?.let {
+                            props.setAlert(successAlert("Successfully updated preview images"))
+                        } ?: let {
+                            props.setAlert(errorAlert("Could not update preview images "))
+                        }
+                        receiveProduct = receiveProductTemp
                     }
                 }
             }
