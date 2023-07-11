@@ -41,6 +41,8 @@ fun PropsWithClassName.formLabelGroupDivCss(){
         flexDirection = FlexDirection.column
         alignItems = AlignItems.start
         padding = 1.vh
+        width = 100.pct
+        boxSizing = BoxSizing.borderBox
     }
 }
 fun PropertiesBuilder.formLabel(){
@@ -59,20 +61,32 @@ fun PropsWithClassName.formInputCss(backColor: Color?){
     formInputCss(100.pct, 180.px, backColor, null)
 }
 
-fun PropsWithClassName.formInputCss(widthValue: Width, minimumWidth: MinWidth, backColor: Color?, frontColor: Color?){
+
+fun PropsWithClassName.formInputCss(widthValue: Width, minimumWidth: MinWidth, backColor: Color?, frontColor: Color?) {
     css {
-        backColor?.let { backgroundColor = it }
-        frontColor?.let { color = it }
-        boxSizing = BoxSizing.borderBox
-        padding = 1.vh
-        marginBottom = 1.vh
-        width = widthValue
-        minWidth = minimumWidth
-        fontSize = 2.vh
-        boxShade()
+        formInput(widthValue, minimumWidth, backColor, frontColor)
     }
 }
 
+fun PropertiesBuilder.formInput(){
+    formInput(100.pct, 180.px, null, null)
+}
+
+fun PropertiesBuilder.formInput(backColor: Color?){
+    formInput(100.pct, 180.px, backColor, null)
+}
+
+fun PropertiesBuilder.formInput(widthValue: Width, minimumWidth: MinWidth, backColor: Color?, frontColor: Color?){
+    backColor?.let { backgroundColor = it }
+    frontColor?.let { color = it }
+    boxSizing = BoxSizing.borderBox
+    padding = 1.vh
+    marginBottom = 1.vh
+    width = widthValue
+    minWidth = minimumWidth
+    fontSize = 2.vh
+    boxShade()
+}
 
 // CSS for general
 
@@ -200,7 +214,7 @@ fun PropertiesBuilder.card(){
     alignItems = AlignItems.center
     borderRadius = 2.vh
     // This allows for the card to look like a card without the "Overflow: hidden" attribute
-    maskImage = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);" as MaskImage /* this fixes the overflow:hidden in Chrome/Opera */
+    maskImage = Const.maskUrl as MaskImage /* this fixes the overflow:hidden in Chrome/Opera */
 
 }
 

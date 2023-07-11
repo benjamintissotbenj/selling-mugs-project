@@ -53,7 +53,7 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                 css {
                     justifySpaceBetween()
                     flexDirection = FlexDirection.row
-                    height = 80.pct
+                    height = 95.pct
                     width = 100.pct
                 }
 
