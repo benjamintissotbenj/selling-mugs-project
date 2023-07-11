@@ -280,6 +280,9 @@ class OrderService {
             }
         }
 
+        /**
+         * Sends an order to Printify based on the checkout session from stripe
+         */
         private suspend fun handleCheckoutSessionCompleted(stripeSession: Session, testOrder : Boolean) : HttpStatusCode {
             val sessionId : String? = stripeSession.clientReferenceId
             val session = SessionRepository.getSession(sessionId ?: "") ?: run {
@@ -299,7 +302,10 @@ class OrderService {
             // Updates session with a new cart, updated order id and updated user
             val newSession = SessionRepository.updateSession(
                 session.copy(orderId = order.external_id,
-                    cartId = CartRepository.createCart().id)
+                    cartId = CartRepository.createCart().id,
+                    user = UserRepository.getUserById(session.user!!.id)?.copy(savedCartId = "")
+                        ?.let { UserRepository.updateUser(it) }
+                )
             )
             LOG.debug("After session update, new cartId  is ${newSession.cartId}")
 

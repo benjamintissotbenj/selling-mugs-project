@@ -11,6 +11,26 @@ data class Cart(
     val mugCartItemList: ArrayList<MugCartItem>,
 ){
 
+    /**
+     * Considers two carts are equal if they have the same mugs in the same amount regardless of the order
+     */
+    override fun equals(other: Any?): Boolean {
+        return if (other is Cart) {
+            this.mugCartItemList.size == other.mugCartItemList.size &&
+                    this.mugCartItemList.map {"${it.mug.id}${it.amount}"}.toSet() == other.mugCartItemList.map {"${it.mug.id}${it.amount}"}.toSet()
+        } else {
+            super.equals(other)
+        }
+    }
+
+    override fun toString(): String {
+        var returnString = "Cart{\nid=$id, \nmugCartItemList=["
+        mugCartItemList.forEach { item ->
+            returnString+="\n{mug=${item.mug.id}, amount=${item.amount}},"
+        }
+        returnString += "\n]\n}"
+        return returnString
+    }
     companion object {
         // Idea is that we don't need to define a route and requests in strings. Any changes only need to come from the models
         // then the client and the server are adjusted automatically

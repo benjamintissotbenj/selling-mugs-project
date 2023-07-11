@@ -83,7 +83,7 @@ val MugCartItemComponent = FC<MugCartItemProps> { props ->
             }
 
             // Allows us to display a cart simply for information purposes
-            props.onRemove?.let {
+            props.onRemove?.let { // TODO : rename "delete", add two "add" and "remove" buttons to modify quantity
                 button {
                     // Styles for the remove button
                     divDefaultCss()

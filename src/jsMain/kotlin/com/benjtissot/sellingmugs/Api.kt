@@ -347,3 +347,29 @@ suspend fun addMugToUserCustomMugList(userId: String, mugId: String) : HttpStatu
     return jsonClient.post("${Mug.path}$USER_CUSTOM_MUG_LIST_PATH/$userId/$mugId").status
 }
 
+/**
+ * Loads the saved cart into the session
+ */
+suspend fun loadSavedCart() : HttpStatusCode {
+    return jsonClient.post("${Cart.path}$CART_LOAD_FROM_USER_PATH").status
+}
+
+/**
+ * Gets the cart saved by the current user
+ * @return the correct [Cart] instance if it exists, null otherwise
+ */
+suspend fun getSavedCart(userId: String) : Cart? {
+    val httpResponse = jsonClient.get("${Cart.path}?${Const.userId}=$userId")
+    return if (httpResponse.status == HttpStatusCode.OK){
+        httpResponse.body()
+    } else {
+        null
+    }
+}
+
+/**
+ * Saves the current cart id into the current user object
+ */
+suspend fun saveCartToUser(userId: String) : HttpStatusCode {
+    return jsonClient.post("${Cart.path}$CART_SAVE_TO_USER_PATH/$userId").status
+}
