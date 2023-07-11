@@ -40,6 +40,12 @@ val CartPage = FC<NavigationProps> { props ->
                 CartListComponent {
                     title = "Cart"
                     list = cart!!.mugCartItemList
+                    onChangeQuantity = { mugCartItem, deltaQuantity ->
+                        scope.launch {
+                            changeMugCartItemQuantity(mugCartItem, deltaQuantity)
+                            cart = getCart()
+                        }
+                    }
                     onRemoveItem = { mugCartItem ->
                         scope.launch {
                             removeMugCartItemFromCart(mugCartItem)
@@ -88,7 +94,7 @@ val CartPage = FC<NavigationProps> { props ->
                                 css {
                                     marginRight = 1.vw
                                 }
-                                +"Save cart"
+                                +"Save your cart for another day"
                             }
                             Save()
                             onClick = {
@@ -149,7 +155,6 @@ val CartPage = FC<NavigationProps> { props ->
                 LOG.debug("\nCurrent Cart is $cart, \n saved cart is $savedCart and they are different : ${savedCart!! != cart}")
             }
             if (savedCart != null && savedCart!! != cart) {
-                // TODO clear saved cart when order has gone through
                 // Adapt the messages to the amount of mugs
                 if (amountOfMugs > 0) {
                     div {+"You also have a cart saved."}

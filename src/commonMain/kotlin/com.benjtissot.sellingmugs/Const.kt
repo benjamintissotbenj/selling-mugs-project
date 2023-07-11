@@ -80,6 +80,7 @@ class Const {
         const val image = "image"
         const val cartId = "cartId"
         const val orderId = "orderId"
+        const val deltaQuantity = "deltaQuantity"
 
         // Call params
         const val id = "id"

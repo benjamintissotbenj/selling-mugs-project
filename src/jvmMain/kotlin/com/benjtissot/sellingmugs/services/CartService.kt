@@ -36,6 +36,19 @@ class CartService {
         }
 
         /**
+         * Changes the quantity of a mugCartItem. If the total quantity hits zero, removes the item from the cart
+         */
+        suspend fun changeMugCartItemQuantity(cart: Cart, mugCartItem: MugCartItem, deltaQuantity: Int) {
+            val totalAmount = mugCartItem.amount + deltaQuantity
+            if (totalAmount == 0) {
+                removeMugCartItemFromCart(mugCartItem, cart)
+            } else {
+                cart.mugCartItemList.find{ it.mug.id == mugCartItem.mug.id }?.amount = totalAmount
+                CartRepository.updateCart(cart)
+            }
+        }
+
+        /**
          * Creates a copy of the cart identified by cartId and saves that copied cart id
          * into a [User] object to be able to retrieve that cart later.
          */

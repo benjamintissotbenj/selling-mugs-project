@@ -115,6 +115,16 @@ suspend fun removeMugCartItemFromCart(mugCartItem: MugCartItem){
     }
 }
 
+/**
+ * Changes the amount of a given [MugCartItem] in the current cart
+ */
+suspend fun changeMugCartItemQuantity(mugCartItem: MugCartItem, deltaQuantity : Int){
+    jsonClient.post("$CART_PATH${MugCartItem.path}?${Const.deltaQuantity}=$deltaQuantity") {
+        contentType(ContentType.Application.Json)
+        setBody(mugCartItem)
+    }
+}
+
 
 // get User Info
 

@@ -108,6 +108,24 @@ fun Route.cartRouting(){
                 }
 
             }
+
+            post {
+                val mugCartItem = call.receive<MugCartItem>().copy()
+                val deltaQuantity: Int = call.parameters[Const.deltaQuantity]?.toInt() ?: run {
+                    call.respond(HttpStatusCode.BadRequest)
+                    0
+                }
+                getCart(getSession().cartId)?.let {
+                    try {
+                        CartService.changeMugCartItemQuantity(it, mugCartItem, deltaQuantity)
+                    } catch (e: Exception){
+                        call.respond(HttpStatusCode.BadGateway)
+                    }
+                    call.respond(HttpStatusCode.OK)
+                } ?: let {
+                    call.respond(HttpStatusCode.InternalServerError)
+                }
+            }
         }
     }
 }
