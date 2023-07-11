@@ -31,12 +31,13 @@ val ManageUsersComponent = FC<ManageUsersProps> { props ->
             paddingRight = 2.vw
             overflowY = "auto".unsafeCast<Overflow>()
         }
-        // todo : fixed width and set columns for the items of different length (eg emails)
         div {
             css {
                 fontNormalPlus()
                 padding = 1.vw
                 paddingTop = 2.vw
+                width = 100.pct
+                boxSizing = BoxSizing.borderBox
             }
             +"User Management"
         }

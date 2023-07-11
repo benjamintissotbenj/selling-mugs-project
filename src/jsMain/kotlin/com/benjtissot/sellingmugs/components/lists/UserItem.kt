@@ -31,19 +31,27 @@ val UserItem = FC<UserItemProps> { props ->
             contentCenteredVertically()
             justifySpaceBetween()
             width = 90.pct
+            boxSizing = BoxSizing.borderBox
             height = 16.pct
             minHeight = 40.px
             padding = 2.pct
         }
-
-        Icon {
-            fontSize = IconSize.small
-            PersonOutline()
+        div {
+            css {
+                width = 10.pct
+            }
+            Icon {
+                fontSize = IconSize.small
+                PersonOutline()
+            }
         }
 
         div {
             css {
                 fontNormal()
+                width = 60.pct
+                boxSizing = BoxSizing.borderBox
+                marginLeft = 5.pct
                 display = Display.flex
                 flexDirection = FlexDirection.column
                 alignItems = AlignItems.start
@@ -63,7 +71,7 @@ val UserItem = FC<UserItemProps> { props ->
             // Attributes
             css {
                 width = 100.rem
-                maxWidth = 10.vw
+                maxWidth = 20.pct
                 minWidth = 110.px
                 height = 3.rem
                 maxHeight = 5.vh
@@ -96,6 +104,9 @@ val UserItem = FC<UserItemProps> { props ->
         }
 
         IconButton {
+            css {
+                width = 10.pct
+            }
             Close()
             onClick = {props.onDeleteUser(props.user.id)}
         }

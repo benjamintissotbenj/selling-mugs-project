@@ -43,7 +43,7 @@ fun Route.cartRouting(){
                 }
             }
         }
-        route("$CART_SAVE_TO_USER_PATH/{${Const.userId}}"){ // todo: handle this without userId in the path
+        route("$CART_SAVE_TO_USER_PATH/{${Const.userId}}"){
             post {
                 val userId = call.parameters[Const.userId]
                 userId?.let {
