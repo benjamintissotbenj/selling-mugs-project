@@ -49,7 +49,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
         // Image and drag-and-drop container
         div {
             css {
-                width = 33.pct
+                width = 40.pct
                 height = 100.pct
                 marginLeft = 2.vw
                 contentCenteredHorizontally()
@@ -192,7 +192,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
         // Creation of the custom mug
         div {
             css {
-                width = 67.pct
+                width = 60.pct
                 marginTop = 4.vh
                 contentCenteredHorizontally()
             }

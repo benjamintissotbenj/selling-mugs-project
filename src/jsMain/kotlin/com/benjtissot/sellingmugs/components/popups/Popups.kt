@@ -147,7 +147,7 @@ val MugDetailsPopup = FC<MugDetailsPopupProps> { props ->
                     backgroundColor = NamedColor.white
                     marginTop = (-11).rem
                     width = 40.vh
-                    height = 50.vh
+                    height = "fit-content".unsafeCast<Height>()
                 }
                 onMouseLeave = {
                     props.onMouseLeavePopup()
@@ -160,24 +160,32 @@ val MugDetailsPopup = FC<MugDetailsPopupProps> { props ->
                     refresh = false
                 }
                 div {
+                    css {
+                        margin = 1.vw
+                    }
                     +mug.name
                 }
                 div {
                     css {
                         fontSmall()
+                        marginBlock = 1.vh
                     }
                     +mug.description
                 }
                 div {
+                    css {
+                        margin = 1.vh
+                    }
                     +"£${mug.price}"
                 }
                 IconButton {
+                    css {
+                        fontNormal()
+                        margin = 3.vw
+                        height = 5.vh
+                    }
                     AddShoppingCart()
                     div {
-                        css {
-                            fontNormal()
-                            margin = 2.vw
-                        }
                         +"Add to cart"
                     }
                     onClick = {
