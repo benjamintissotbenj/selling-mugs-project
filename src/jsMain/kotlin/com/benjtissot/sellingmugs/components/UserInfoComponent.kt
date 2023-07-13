@@ -53,6 +53,7 @@ val UserInfoComponent = FC<UserInfoProps> { props ->
             flexDirection = FlexDirection.column
             width = 100.pct
             marginBottom = 5.vh
+            overflowY = "auto".unsafeCast<Overflow>()
         }
 
         div {
@@ -107,7 +108,7 @@ val UserInfoComponent = FC<UserInfoProps> { props ->
     // Declare popup top level
     MugDetailsPopup {
         this.marginTop = -11
-        this.marginBottom = 0
+        this.marginBottom = -11
         this.popupTarget = popupTarget
         this.onMouseLeavePopup = {
             mugShowDetails = null

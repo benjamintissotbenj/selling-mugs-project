@@ -1,13 +1,10 @@
 package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.components.createProduct.HoverImageComponent
 import com.benjtissot.sellingmugs.components.lists.MugListComponent
 import com.benjtissot.sellingmugs.components.popups.MugDetailsPopup
 import com.benjtissot.sellingmugs.entities.Mug
-import csstype.rem
-import csstype.vw
-import emotion.react.css
+import com.benjtissot.sellingmugs.entities.Session
 import kotlinx.coroutines.launch
 import org.w3c.dom.HTMLDivElement
 import react.FC
@@ -51,16 +48,7 @@ val Homepage = FC<NavigationProps> { props ->
         }
         this.mug = mugShowDetails
         this.onClickAddToCart = { mug ->
-            // Add product to cart
-            scope.launch {
-                mug?.let {
-                    addMugToCart(it)
-                    props.setAlert(successAlert("Mug added to card !"))
-                } ?: let {
-                    props.setAlert(errorAlert())
-                }
-                recordClick(props.session.clickDataId, Const.ClickType.ADD_MUG_TO_CART.type)
-            }
+            onClickAddToCart(mug, props.setAlert, props.session)
         }
     }
 
@@ -80,9 +68,23 @@ val Homepage = FC<NavigationProps> { props ->
                 mugShowDetails = mug
                 popupTarget = target
             }
+            onClickAddToCart = { mug ->
+                onClickAddToCart(mug, props.setAlert, props.session)
+            }
         }
 
 
     }
 
+}
+
+fun onClickAddToCart(mug: Mug?, setAlert: (AlertState) -> Unit, session: Session) {
+    // Add product to cart
+    scope.launch {
+        mug?.let {
+            addMugToCart(it)
+            setAlert(successAlert("Mug added to card !"))
+        } ?: setAlert(errorAlert())
+        recordClick(session.clickDataId, Const.ClickType.ADD_MUG_TO_CART.type)
+    }
 }

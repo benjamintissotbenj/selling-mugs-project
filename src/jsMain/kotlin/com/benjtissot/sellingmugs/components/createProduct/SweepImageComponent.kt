@@ -29,6 +29,8 @@ val SweepImageComponent = FC<SweepImageProps> { props ->
 
     div {
         css {
+            width = 100.pct
+            height = 100.pct
             contentCenteredVertically()
             props.marginTop?.let { marginTop = it }
         }

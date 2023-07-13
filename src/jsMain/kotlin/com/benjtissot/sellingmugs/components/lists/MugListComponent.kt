@@ -10,9 +10,7 @@ import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.header
-import ringui.Col
-import ringui.Grid
-import ringui.Row
+import ringui.*
 
 
 external interface MugListProps: Props {
@@ -21,6 +19,7 @@ external interface MugListProps: Props {
     var list: List<Mug>
     var title: String?
     var onMouseEnterItem: (Mug, HTMLDivElement) -> Unit
+    var onClickAddToCart: (Mug) -> Unit
 }
 
 val MugListComponent = FC<MugListProps> {
@@ -60,7 +59,6 @@ val MugListComponent = FC<MugListProps> {
         // Create a chunked list to display the mugs in a list
         val mugArrayList : ArrayList<Mug?> = arrayListOf(null)
         mugArrayList.addAll(props.list)
-        val chunkedList = mugArrayList.chunked(3)
         div {
             css {
                 width = 100.pct
@@ -70,53 +68,72 @@ val MugListComponent = FC<MugListProps> {
             }
             Grid {
                 css {
-                    width = 96.pct
+                    width = 100.pct
                     height = "fit-content".unsafeCast<Height>()
                     padding = 0.px
                     margin = 16.px
                     boxSizing = BoxSizing.borderBox
+                    overflowY = "auto".unsafeCast<Overflow>()
                 }
-
-                chunkedList.forEach { threeItemsList ->
 
                     Row {
                         css {
                             padding = 0.px
-                            margin = 0.px
+                            marginInline = 3.pct
+                            boxSizing = BoxSizing.borderBox
                         }
 
-                        threeItemsList.forEach { mugItm ->
+                        mugArrayList.forEach { mugItm ->
                             Col {
                                 css {
                                     colDefault()
+                                    contentCenteredHorizontally()
+                                    boxSizing = BoxSizing.borderBox
                                 }
-                                xs = 4
+                                // Different widths for different screen sizes
+                                xs = 12
+                                sm = 6
+                                md = 4
+                                lg = 3
                                 mugItm?.let {
                                     MugItemGridComponent {
                                         mug = mugItm
-                                        this.onMouseEnterItem = props.onMouseEnterItem
+                                        onClickAddToCart = { mug -> props.onClickAddToCart(mug)}
                                     }
                                 } ?: div {
                                     css {
-                                        padding = 5.vw
-                                        contentCenteredHorizontally()
+                                        display = Display.flex
+                                        flexDirection = FlexDirection.column
+                                        alignContent = AlignContent.center
+                                        width = 90.pct
+                                        height = (1.5* this.width as Percentage).unsafeCast<Height>()
+                                        margin = 5.pct
+                                        paddingTop = 5.pct
+                                        boxSizing = BoxSizing.borderBox
                                     }
-                                    +"Customize your own mug !"
 
                                     HoverImageComponent {
-                                        width = 10.rem
-                                        height = 10.rem
+                                        width = 90.pct
+                                        height = 74.pct
                                         srcMain = "https://images.printify.com/api/catalog/5e440fbfd897db313b1987d1.jpg?s=320"
                                         srcHover = "https://images.printify.com/api/catalog/6358ee8d99b22ccab005e8a7.jpg?s=320"
                                         onClick = {
                                             props.onClickCustomItem()
                                         }
                                     }
+
+
+                                    div {
+                                        css {
+                                            padding = 5.pct
+                                        }
+                                        +"Customize your own mug !"
+                                    }
                                 }
                             }
                         }
                     }
-                }
+
             }
         }
     }
