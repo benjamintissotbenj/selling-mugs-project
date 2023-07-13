@@ -16,7 +16,72 @@ external interface MugItemProps: Props {
     var onMouseEnterItem: (Mug, HTMLDivElement) -> Unit
 }
 
-val MugItemComponent = FC<MugItemProps> {
+val MugItemListComponent = FC<MugItemProps> {
+        props ->
+
+    val hoverZoneRef = useRef<Element>(null)
+
+    useEffect {
+        val hoverZone = hoverZoneRef.current
+        val handleMouseEnter: (Event) -> Unit = { event ->
+            event.preventDefault()
+            props.onMouseEnterItem(props.mug, event.currentTarget as HTMLDivElement)
+        }
+        hoverZone?.addEventListener("mouseenter", handleMouseEnter)
+    }
+
+    div {
+        css {
+            alignContent = AlignContent.center
+            width = 10.rem
+            height = 15.rem
+            padding = 1.rem
+        }
+        div {
+            img {
+                css {
+                    width = 8.rem
+                    height = 8.rem
+                    margin = 1.rem
+                    boxSizing = BoxSizing.borderBox
+                }
+                src = props.mug.getBestPictureSrc()
+            }
+            ref = hoverZoneRef
+        }
+
+
+        div {
+            css {
+                width = 100.pct
+                boxSizing = BoxSizing.borderBox
+                padding = 1.vw
+                display = Display.flex
+                flexDirection = FlexDirection.column
+                alignItems = AlignItems.start
+            }
+            div {
+                css {
+                    width = 100.pct
+                    paddingInline = 5.pct
+                    boxSizing = BoxSizing.borderBox
+                    textOverflow = TextOverflow.ellipsis
+                    overflow = Overflow.hidden
+                    whiteSpace = WhiteSpace.nowrap
+                }
+                +props.mug.name
+            }
+            div {
+                +"£${props.mug.price}"
+            }
+        }
+        onClick = {props.onItemClick(props.mug)}
+    }
+
+
+}
+
+val MugItemGridComponent = FC<MugItemProps> {
         props ->
 
     val hoverZoneRef = useRef<Element>(null)

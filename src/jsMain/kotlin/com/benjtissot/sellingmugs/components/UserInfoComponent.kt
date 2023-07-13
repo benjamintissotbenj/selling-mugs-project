@@ -93,6 +93,7 @@ val UserInfoComponent = FC<UserInfoProps> { props ->
 
         // Display a list of the custom mugs made by the user
         MugListComponent {
+            displayStyle = Const.mugListDisplayList
             list = customMugsList
             title = "Your custom mugs"
             onMouseEnterItem = { mug, target ->
@@ -105,6 +106,8 @@ val UserInfoComponent = FC<UserInfoProps> { props ->
 
     // Declare popup top level
     MugDetailsPopup {
+        this.marginTop = -11
+        this.marginBottom = 0
         this.popupTarget = popupTarget
         this.onMouseLeavePopup = {
             mugShowDetails = null

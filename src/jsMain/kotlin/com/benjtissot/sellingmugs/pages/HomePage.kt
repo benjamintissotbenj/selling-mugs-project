@@ -42,6 +42,8 @@ val Homepage = FC<NavigationProps> { props ->
 
     // Declare popup top level
     MugDetailsPopup {
+        this.marginTop = -11
+        this.marginBottom = -11
         this.popupTarget = popupTarget
         this.onMouseLeavePopup = {
             mugShowDetails = null
@@ -65,6 +67,13 @@ val Homepage = FC<NavigationProps> { props ->
     div {
         // TODO: improve the muglist component, integrate the Customizable mug better
         MugListComponent {
+            onClickCustomItem = {
+                scope.launch{
+                    recordClick(props.session.clickDataId, Const.ClickType.CUSTOM_MUG_OPEN_PAGE.type)
+                }
+                props.navigate.invoke(CUSTOM_MUG_PATH)
+            }
+            displayStyle = Const.mugListDisplayGrid
             list = mugList
             title = "Best for you"
             onMouseEnterItem = { mug, target ->
@@ -73,26 +82,6 @@ val Homepage = FC<NavigationProps> { props ->
             }
         }
 
-        div {
-            css {
-                padding = 5.vw
-                contentCenteredHorizontally()
-            }
-            +"Customize your own mug !"
-
-            HoverImageComponent {
-                width = 10.rem
-                height = 10.rem
-                srcMain = "https://images.printify.com/api/catalog/5e440fbfd897db313b1987d1.jpg?s=320"
-                srcHover = "https://images.printify.com/api/catalog/6358ee8d99b22ccab005e8a7.jpg?s=320"
-                onClick = {
-                    scope.launch {
-                        recordClick(props.session.clickDataId, Const.ClickType.CUSTOM_MUG_OPEN_PAGE.type)
-                    }
-                    props.navigate.invoke(CUSTOM_MUG_PATH)
-                }
-            }
-        }
 
     }
 
