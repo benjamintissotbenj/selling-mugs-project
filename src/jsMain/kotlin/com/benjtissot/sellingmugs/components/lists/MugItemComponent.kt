@@ -104,7 +104,7 @@ val MugItemGridComponent = FC<MugItemGridProps> {
             flexDirection = FlexDirection.column
             alignContent = AlignContent.center
             width = 90.pct
-            height = (1.5* this.width as Percentage).unsafeCast<Height>()
+            height = 100.pct
             margin = 5.pct
             boxSizing = BoxSizing.borderBox
         }
@@ -183,7 +183,9 @@ val MugDetailsHover = FC<MugItemGridProps> { props ->
 
     SweepImageComponent {
         width = 90.pct
-        height = 90.pct
+        height = 90.pct // ensures a good square for proportions
+        margin = 3.pct
+        marginTop = 5.pct
         srcList = props.mug.getAllPictureSrcs()
         refresh = false
     }

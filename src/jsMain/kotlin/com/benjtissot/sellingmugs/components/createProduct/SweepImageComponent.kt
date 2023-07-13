@@ -6,6 +6,7 @@ import emotion.react.css
 import mui.icons.material.ChevronLeft
 import mui.icons.material.ChevronRight
 import mui.material.IconButton
+import mui.material.Size
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
@@ -20,6 +21,7 @@ external interface SweepImageProps: Props {
     var height: Height?
     var srcList: List<String>
     var refresh: Boolean
+    var margin : Margin
     var marginTop: MarginTop?
 }
 
@@ -29,14 +31,19 @@ val SweepImageComponent = FC<SweepImageProps> { props ->
 
     div {
         css {
-            width = 100.pct
-            height = 100.pct
+            width = props.width
+            height = props.height
+            props.margin?.let{ margin = it }
             contentCenteredVertically()
             props.marginTop?.let { marginTop = it }
         }
 
         if (sweep) {
             IconButton {
+                css {
+                    width = 5.pct
+                }
+                size = Size.small
                 ChevronLeft()
                 onClick = {
                     index = if (index>0) index - 1 else props.srcList.size - 1
@@ -45,14 +52,14 @@ val SweepImageComponent = FC<SweepImageProps> { props ->
             div {
                 css {
                     position = Position.relative
-                    height = props.height
-                    width = props.width
+                    height = 90.pct
+                    width = 90.pct
                 }
                 for (i: Int in 0 until props.srcList.size){
                     img {
                         css {
-                            height = props.height
-                            width = props.width
+                            height = 100.pct
+                            width = 100.pct
                             position = Position.absolute
                             right = 0.px
                             top = 0.px
@@ -66,6 +73,10 @@ val SweepImageComponent = FC<SweepImageProps> { props ->
             }
 
             IconButton {
+                css {
+                    width = 5.pct
+                }
+                size = Size.small
                 ChevronRight()
                 onClick = {
                     index = if (index<props.srcList.size - 1) index + 1 else 0
