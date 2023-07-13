@@ -71,6 +71,7 @@ class LoginService {
                 registerInfo.toUser(id = genUuid()).also {
                     UserRepository.insertUser(it)
                     OrderService.createUserOrderList(it.id)
+                    MugService.createUserCustomMugList(it.id)
                     return login(registerInfo.toLoginInfo(), session)
                 }
             }

@@ -2,10 +2,7 @@ package com.benjtissot.sellingmugs.components.forms
 
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.Const.ColorCode.BLUE
-import csstype.Color
-import csstype.NamedColor
-import csstype.px
-import csstype.vw
+import csstype.*
 import emotion.react.css
 import org.w3c.dom.HTMLFormElement
 import react.FC
@@ -16,6 +13,7 @@ import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.form
 import react.dom.html.ReactHTML.input
 import react.dom.html.ReactHTML.label
+import react.dom.html.ReactHTML.textarea
 import react.useState
 
 external interface CreateProductFormProps : Props {
@@ -24,8 +22,8 @@ external interface CreateProductFormProps : Props {
 }
 
 val CreateProductForm = FC<CreateProductFormProps> { props ->
-    var title by useState("")
-    var description by useState("")
+    var title by useState(Const.mugTitlePrefill)
+    var description by useState(Const.mugDescriptionPrefill)
 
     val submitHandler: FormEventHandler<HTMLFormElement> = {
         it.preventDefault()
@@ -43,6 +41,7 @@ val CreateProductForm = FC<CreateProductFormProps> { props ->
         form {
             css {
                 contentCenteredHorizontally()
+                width = 100.pct
             }
 
             div {
@@ -50,7 +49,10 @@ val CreateProductForm = FC<CreateProductFormProps> { props ->
 
                 // Product title
                 label {
-                    css { formLabel() }
+                    css {
+                        formLabel()
+                        width = 100.pct
+                    }
                     +"Title"
                     input {
                         formInputCss()
@@ -64,12 +66,19 @@ val CreateProductForm = FC<CreateProductFormProps> { props ->
 
                 // Product Description
                 label {
-                    // TODO make this larger and more convenient to use, Pre-filled with default text
-                    css { formLabel() }
+                    css {
+                        formLabel()
+                        height = 10.vw
+                        width = 100.pct
+                        marginBottom = 1.vw
+                    }
                     +"Description of the product"
-                    input {
-                        formInputCss()
-                        type = InputType.text
+                    textarea {
+                        css {
+                            formInput()
+                            maskImage = Const.maskUrl as MaskImage /* this fixes the overflow:hidden in Chrome/Opera */
+                            height = 100.pct
+                        }
                         onChange = {
                             description = it.target.value
                         }

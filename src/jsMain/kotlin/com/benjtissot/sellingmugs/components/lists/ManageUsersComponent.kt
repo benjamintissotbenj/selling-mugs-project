@@ -36,6 +36,8 @@ val ManageUsersComponent = FC<ManageUsersProps> { props ->
                 fontNormalPlus()
                 padding = 1.vw
                 paddingTop = 2.vw
+                width = 100.pct
+                boxSizing = BoxSizing.borderBox
             }
             +"User Management"
         }

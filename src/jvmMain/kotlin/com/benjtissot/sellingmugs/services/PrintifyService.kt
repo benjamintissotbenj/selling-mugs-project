@@ -106,7 +106,7 @@ class PrintifyService {
         /**
          * Updates a product's image from the store
          * @param productId the printify id of the product to get
-         * @param updatedProduct the product to be updated
+         * @param updatedProductImage the product image to be updated
          * @return a [ReceiveProduct] object that holds all the information concerning the product
          */
         suspend fun putProductImage(productId: String, updatedProductImage: UpdateProductImage): ReceiveProduct? {
@@ -125,7 +125,7 @@ class PrintifyService {
         /**
          * Updates a product from the store
          * @param productId the printify id of the product to get
-         * @param updatedProduct the product to be updated
+         * @param updatedProductTitleDesc the product title and description to be updated
          * @return a [ReceiveProduct] object that holds all the information concerning the product
          */
         suspend fun putProductTitleDesc(productId: String,  updatedProductTitleDesc: UpdateProductTitleDesc): ReceiveProduct? {

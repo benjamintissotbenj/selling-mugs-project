@@ -31,6 +31,8 @@ val CustomMugPage = FC<NavigationProps> { props ->
     val reader = FileReader()
     var loading by useState(false)
 
+    val isAdmin = props.session.user?.userType == Const.UserType.ADMIN
+
     useEffectOnce {
         scope.launch {
 
@@ -53,53 +55,70 @@ val CustomMugPage = FC<NavigationProps> { props ->
                 contentCenteredHorizontally()
             }
 
-            SweepImageComponent {
-                width = 20.vw
-                height = 20.vw
-                marginTop = if (props.session.user?.userType != Const.UserType.ADMIN) { 4.vh } else null
-                srcList = productPreviewImageSources
-                refresh = true
-            }
+            div {
+                css {
+                    width = 100.pct
+                    if (isAdmin){
+                        contentCenteredVertically()
+                    } else {
+                        contentCenteredHorizontally()
+                    }
+                }
+                SweepImageComponent {
+                    width = if (isAdmin) 15.vw else 20.vw
+                    height = if (isAdmin) 15.vw else 20.vw
+                    marginTop = if (props.session.user?.userType != Const.UserType.ADMIN) { 4.vh } else null
+                    srcList = productPreviewImageSources
+                    refresh = true
+                }
 
-            ImageDrop {
-                height = 20.vh
-                width = 30.vw
-                onImageDrop = { fileList ->
-                    if (fileList.isNotEmpty()) {
-                        scope.launch {
-                            recordClick(props.session.clickDataId, Const.ClickType.CUSTOM_MUG_UPLOAD_IMAGE.type)
-                        }
-                        reader.abort()
-                        val imageFile = fileList[0]
-                        droppedImageName = imageFile.name
-                        reader.readAsDataURL(imageFile)
-                        reader.onload = { _ ->
-                            props.setAlert(infoAlert("Image is being uploaded"))
-                            val uploadImage = ImageForUpload(
-                                file_name = droppedImageName,
-                                contents = selectBase64ContentFromURLData(reader.result as String)
-                            )
-                            scope.launch{
-                                val uploadReceive = uploadImage(uploadImage, public = props.session.user?.userType == Const.UserType.ADMIN)
-                                uploadReceive?.let {
+                div {
+                    css {
+                        height = 1.vw
+                        width = 1.vw
+                    }
+                }
 
-                                    uploadedImage = uploadReceive
-                                    val mugProductInfo = MugProductInfo("Custom Mug - ${uploadReceive.id}", "", it.toImage())
-                                    val httpResponse = createProduct(mugProductInfo)
-                                    val productId = httpResponse.body<String>()
+                ImageDrop {
+                    height = if (isAdmin) 10.vw else 20.vh
+                    width = if (isAdmin) 15.vw else 30.vw
+                    onImageDrop = { fileList ->
+                        if (fileList.isNotEmpty()) {
+                            scope.launch {
+                                recordClick(props.session.clickDataId, Const.ClickType.CUSTOM_MUG_UPLOAD_IMAGE.type)
+                            }
+                            reader.abort()
+                            val imageFile = fileList[0]
+                            droppedImageName = imageFile.name
+                            reader.readAsDataURL(imageFile)
+                            reader.onload = { _ ->
+                                props.setAlert(infoAlert("Image is being uploaded"))
+                                val uploadImage = ImageForUpload(
+                                    file_name = droppedImageName,
+                                    contents = selectBase64ContentFromURLData(reader.result as String)
+                                )
+                                scope.launch{
+                                    val uploadReceive = uploadImage(uploadImage, public = props.session.user?.userType == Const.UserType.ADMIN)
+                                    uploadReceive?.let {
 
-                                    if (httpResponse.status != HttpStatusCode.OK){
-                                        props.setAlert(errorAlert("Mug with image ${uploadImage.file_name} could not be created."))
-                                        return@launch
-                                    } else {
-                                        publishProduct(productId)
-                                        props.setAlert(successAlert("Mug with image ${uploadImage.file_name} was created successfully !"))
-                                        // LOG.debug("Mug with image ${uploadImage.file_name} was created successfully with id $productId")
-                                        receiveProduct = getProduct(productId)
-                                        loading = false
+                                        uploadedImage = uploadReceive
+                                        val mugProductInfo = MugProductInfo("Custom Mug - ${uploadReceive.id}", "", it.toImage())
+                                        val httpResponse = createProduct(mugProductInfo)
+                                        val productId = httpResponse.body<String>()
+
+                                        if (httpResponse.status != HttpStatusCode.OK){
+                                            props.setAlert(errorAlert("Mug with image ${uploadImage.file_name} could not be created."))
+                                            return@launch
+                                        } else {
+                                            publishProduct(productId)
+                                            props.setAlert(successAlert("Mug with image ${uploadImage.file_name} was created successfully !"))
+                                            // LOG.debug("Mug with image ${uploadImage.file_name} was created successfully with id $productId")
+                                            receiveProduct = getProduct(productId)
+                                            loading = false
+                                        }
+                                    } ?: let {
+                                        props.setAlert(errorAlert("Image ${uploadImage.file_name} could not be uploaded."))
                                     }
-                                } ?: let {
-                                    props.setAlert(errorAlert("Image ${uploadImage.file_name} could not be uploaded."))
                                 }
                             }
                         }
@@ -107,7 +126,9 @@ val CustomMugPage = FC<NavigationProps> { props ->
                 }
             }
 
-            if (props.session.user?.userType == Const.UserType.ADMIN) {
+
+
+            if (isAdmin) {
                 CreateProductForm {
                     onSubmit = { title, description ->
                         scope.launch {// Data processing to create the product in Printify store
@@ -119,8 +140,11 @@ val CustomMugPage = FC<NavigationProps> { props ->
                                     }
                                     receiveProductTemp?.let {
                                         props.setAlert(successAlert("Title and description were successfully updated"))
+                                        getMugByPrintifyId(receiveProduct!!.id)?.let { mug ->
+                                            addMugToUserCustomMugList(props.session.user?.id ?: "", mug.id)
+                                        }
                                     } ?: let {
-                                        props.setAlert(errorAlert("Could not uupdate title and description of the product"))
+                                        props.setAlert(errorAlert("Could not update title and description of the product"))
                                     }
                                     receiveProduct = receiveProductTemp
                                 }
@@ -153,6 +177,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
                             val mug = getMugByPrintifyId(receiveProduct!!.id)
                             mug?.let {
                                 addMugToCart(it)
+                                addMugToUserCustomMugList(props.session.user?.id ?: "", it.id)
                                 props.setAlert(successAlert("Mug added to card !"))
                             } ?: let {
                                 props.setAlert(errorAlert())

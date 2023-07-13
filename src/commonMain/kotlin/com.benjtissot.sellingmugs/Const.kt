@@ -31,6 +31,8 @@ class Const {
         CUSTOM_MUG_REFRESH_PREVIEW("CUSTOM_MUG_REFRESH_PREVIEW"),
         CUSTOM_MUG_ADD_TO_CART("CUSTOM_MUG_ADD_TO_CART"),
         CART_SEE_AVAILABLE_MUGS("CART_SEE_AVAILABLE_MUGS"),
+        CART_LOAD_SAVED_CART("CART_LOAD_SAVED_CART"),
+        CART_SAVE_TO_USER("CART_SAVE_TO_USER"),
         ;
 
         override fun toString(): String {
@@ -78,6 +80,7 @@ class Const {
         const val image = "image"
         const val cartId = "cartId"
         const val orderId = "orderId"
+        const val deltaQuantity = "deltaQuantity"
 
         // Call params
         const val id = "id"
@@ -89,9 +92,16 @@ class Const {
         const val userId = "userId"
         const val public = "public"
         const val printifyId = "printifyId"
+        const val mugId = "mugId"
 
         // Stripe params
         const val payment_intent = "payment_intent"
 
+        // Mug Description Prefill text
+        const val mugTitlePrefill = "Mug Title"
+        const val mugDescriptionPrefill = "This 11oz mug is made of brilliant white ceramic material with AAA+ ORCA coating, making them excellent for printing vibrant colors. They are easy to clean, microwave-safe, and the orca coating mugs can withstand up to 3000 cycles in the dishwasher."
+
+        // Hidden overflow card url
+        const val maskUrl = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);"
     }
 }

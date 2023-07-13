@@ -115,6 +115,16 @@ suspend fun removeMugCartItemFromCart(mugCartItem: MugCartItem){
     }
 }
 
+/**
+ * Changes the amount of a given [MugCartItem] in the current cart
+ */
+suspend fun changeMugCartItemQuantity(mugCartItem: MugCartItem, deltaQuantity : Int){
+    jsonClient.post("$CART_PATH${MugCartItem.path}?${Const.deltaQuantity}=$deltaQuantity") {
+        contentType(ContentType.Application.Json)
+        setBody(mugCartItem)
+    }
+}
+
 
 // get User Info
 
@@ -227,8 +237,8 @@ suspend fun getProductPreviewImages(productId: String) : List<String> {
 }
 
 /**
- * Gets a pushResult by cart id
- * @param cartId the [Cart.id] for which we want to retrieve the push result
+ * Gets a list of all the [StoredOrderPushFailed] by user id
+ * @param userId the [User.id] for which we want to retrieve the push result
  */
 suspend fun getOrderPushFailsByUser(userId : String) : List<StoredOrderPushFailed> {
     val httpResponse = jsonClient.get("${Order.path}$PUSH_FAIL_PATH?${Const.userId}=$userId")
@@ -257,14 +267,18 @@ suspend fun getOrderPushResultByOrderId(orderId : String) : PrintifyOrderPushRes
     return getOrderPushResultFromResponse(httpResponse)
 }
 
-suspend fun getOrderPushResultFromResponse(httpResponse: HttpResponse) : PrintifyOrderPushResult? {
-    return if (httpResponse.status == HttpStatusCode.BadRequest){
-        null
-    } else {
+/**
+ * Calculates the order push result from a httpstatus response
+ * @return a [PrintifyOrderPushResult] if the response is a good status code, Null otherwise
+ */
+private suspend fun getOrderPushResultFromResponse(httpResponse: HttpResponse) : PrintifyOrderPushResult? {
+    return if (httpResponse.status == HttpStatusCode.OK){
         val pushResultString = httpResponse.body<String>()
         LOG.debug("Push result string is $pushResultString")
         val decoded = Json.decodeFromString(PushResultSerializer, pushResultString)
         decoded
+    } else {
+        null
     }
 }
 
@@ -319,4 +333,53 @@ suspend fun getOrderLineItemsAsMugCartItems(orderId: String) : List<MugCartItem>
  */
 suspend fun cancelOrder(localOrderId: String) : HttpStatusCode {
     return jsonClient.post("${Order.path}/$localOrderId$CANCEL_ORDER_PATH").status
+}
+
+
+
+
+/**
+ * Get a user's custom mug list
+ */
+suspend fun getUserCustomMugList(userId: String) : List<Mug> {
+    val httpResponse = jsonClient.get("${Mug.path}$USER_CUSTOM_MUG_LIST_PATH?${Const.userId}=$userId")
+    return if (httpResponse.status == HttpStatusCode.OK){
+        httpResponse.body()
+    } else {
+        emptyList()
+    }
+}
+
+/**
+ * Insert a new mug in a user's custom mug list
+ */
+suspend fun addMugToUserCustomMugList(userId: String, mugId: String) : HttpStatusCode {
+    return jsonClient.post("${Mug.path}$USER_CUSTOM_MUG_LIST_PATH/$userId/$mugId").status
+}
+
+/**
+ * Loads the saved cart into the session
+ */
+suspend fun loadSavedCart() : HttpStatusCode {
+    return jsonClient.post("${Cart.path}$CART_LOAD_FROM_USER_PATH").status
+}
+
+/**
+ * Gets the cart saved by the current user
+ * @return the correct [Cart] instance if it exists, null otherwise
+ */
+suspend fun getSavedCart(userId: String) : Cart? {
+    val httpResponse = jsonClient.get("${Cart.path}?${Const.userId}=$userId")
+    return if (httpResponse.status == HttpStatusCode.OK){
+        httpResponse.body()
+    } else {
+        null
+    }
+}
+
+/**
+ * Saves the current cart id into the current user object
+ */
+suspend fun saveCartToUser(userId: String) : HttpStatusCode {
+    return jsonClient.post("${Cart.path}$CART_SAVE_TO_USER_PATH/$userId").status
 }

@@ -17,7 +17,7 @@ data class Mug(@SerialName("_id") val id: String,
     }
 
     fun getAllPictureSrcs() : List<String> {
-        var srcArrayList = ArrayList(artwork.previewURLs)
+        val srcArrayList = ArrayList(artwork.previewURLs)
         srcArrayList.add(artwork.imageURL)
         return srcArrayList.toList()
     }
@@ -26,4 +26,14 @@ data class Mug(@SerialName("_id") val id: String,
         // then the client and the server are adjusted automatically
         const val path = MUG_OBJECT_PATH
     }
+}
+
+
+
+@Serializable
+data class UserCustomMugList (
+    @SerialName("_id") val userId: String,
+    val mugIds: List<String>,
+){
+
 }

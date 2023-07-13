@@ -13,6 +13,7 @@ import react.dom.html.ReactHTML.header
 external interface CartListProps: Props {
     var list: List<MugCartItem>
     var title: String
+    var onChangeQuantity: (MugCartItem, Int) -> Unit // Change mugCartItem quantity by Int value
     var onRemoveItem: (MugCartItem) -> Unit
 }
 
@@ -44,6 +45,9 @@ val CartListComponent = FC<CartListProps> {
         props.list.forEach { mugCartItm ->
             MugCartItemComponent {
                 mugCartItem = mugCartItm
+                onChangeQuantity = { mugCartItem, deltaQuantity ->
+                    props.onChangeQuantity(mugCartItem, deltaQuantity)
+                }
                 onRemove = { mugCartItem ->
                     props.onRemoveItem(mugCartItem)
                 }

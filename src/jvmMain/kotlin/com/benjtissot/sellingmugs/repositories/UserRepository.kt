@@ -44,8 +44,9 @@ class UserRepository {
         /**
          * @param user the [User] to be updated (inserted if not existent)
          */
-        suspend fun updateUser(user: User) {
+        suspend fun updateUser(user: User) : User {
             userCollection.updateOneById(user.id, user, upsert())
+            return user
         }
 
         /**

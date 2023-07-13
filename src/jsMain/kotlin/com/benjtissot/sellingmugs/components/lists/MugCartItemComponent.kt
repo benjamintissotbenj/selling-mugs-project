@@ -3,6 +3,9 @@ package com.benjtissot.sellingmugs.components.lists
 import com.benjtissot.sellingmugs.*
 import csstype.*
 import emotion.react.css
+import mui.icons.material.Add
+import mui.icons.material.Remove
+import mui.material.IconButton
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.button
@@ -13,6 +16,7 @@ import kotlin.math.roundToInt
 
 external interface MugCartItemProps: Props {
     var mugCartItem: MugCartItem
+    var onChangeQuantity: ((MugCartItem, Int) -> Unit)? // Change mugCartItem quantity by Int value
     var onRemove: ((MugCartItem) -> Unit)?
 }
 
@@ -79,7 +83,27 @@ val MugCartItemComponent = FC<MugCartItemProps> { props ->
                     fontNormal()
                     color = NamedColor.gray
                 }
-                +"Quantity: ${props.mugCartItem.amount}"
+                props.onChangeQuantity?.let { onChangeQuantity ->
+                    IconButton {
+                        css { marginRight = 2.vw }
+                        Add()
+                        onClick = {
+                            onChangeQuantity(props.mugCartItem, 1)
+                        }
+                    }
+
+                    +"Quantity: ${props.mugCartItem.amount}"
+
+                    IconButton {
+                        css { marginLeft = 2.vw }
+                        Remove()
+                        onClick = {
+                            onChangeQuantity(props.mugCartItem,  - 1)
+                        }
+                    }
+                } ?: let {
+                    +"Quantity: ${props.mugCartItem.amount}"
+                }
             }
 
             // Allows us to display a cart simply for information purposes
