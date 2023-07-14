@@ -102,10 +102,12 @@ val MugItemGridComponent = FC<MugItemGridProps> {
         css {
             display = Display.flex
             flexDirection = FlexDirection.column
+            justifyContent = JustifyContent.center
             alignContent = AlignContent.center
             width = 90.pct
-            height = 100.pct
-            margin = 5.pct
+            height = 1.5 * 90.pct
+            marginBlock = 2.pct
+            marginInline = 5.pct
             boxSizing = BoxSizing.borderBox
         }
         onMouseLeave = {
@@ -135,8 +137,7 @@ external interface MugItemDefaultProps: MugDetailsProps {
 val MugDetailsDefault = FC<MugItemDefaultProps> { props ->
     img {
         css {
-            width = 90.pct
-            height = 90.pct
+            width = 96.pct
             margin = 3.pct
             boxSizing = BoxSizing.borderBox
         }
@@ -158,7 +159,6 @@ val MugDetailsDefault = FC<MugItemDefaultProps> { props ->
         div {
             css {
                 width = 100.pct
-                paddingInline = 5.pct
                 boxSizing = BoxSizing.borderBox
                 textOverflow = TextOverflow.ellipsis
                 overflow = Overflow.hidden
@@ -168,7 +168,7 @@ val MugDetailsDefault = FC<MugItemDefaultProps> { props ->
         }
         div {
             css {
-                padding = 5.pct
+                paddingTop = 5.pct
             }
             +"£${props.mug.price}"
         }
@@ -182,37 +182,60 @@ external interface MugItemHoverProps: MugItemGridProps {
 val MugDetailsHover = FC<MugItemGridProps> { props ->
 
     SweepImageComponent {
-        width = 90.pct
-        height = 90.pct // ensures a good square for proportions
-        margin = 3.pct
-        marginTop = 5.pct
+        width = 96.pct
+        height = 60.pct // ensures a good square for proportions
+        marginInline = 3.pct
         srcList = props.mug.getAllPictureSrcs()
         refresh = false
     }
-
     div {
+        css {
+            fontNormal()
+            paddingBlock = 2.pct
+            width = 100.pct
+            height = "fit-content".unsafeCast<Height>()
+            boxSizing = BoxSizing.borderBox
+            textOverflow = TextOverflow.ellipsis
+            overflow = Overflow.hidden
+            whiteSpace = WhiteSpace.nowrap
+        }
         +props.mug.name
     }
     div {
         css {
             fontSmall()
+            paddingTop = 2.pct
         }
         +props.mug.description
     }
     div {
-        +"£${props.mug.price}"
-    }
-    IconButton {
-        AddShoppingCart()
-        div {
-            css {
-                fontNormal()
-                margin = 2.vw
-            }
-            +"Add to cart"
+        css {
+            height = 5.pct
+            paddingTop = 5.pct
+            display = Display.flex
+            flexDirection = FlexDirection.column
+            justifyContent = JustifyContent.center
+            alignContent = AlignContent.center
+            overflow = Overflow.hidden
         }
-        onClick = {
-            props.onClickAddToCart(props.mug)
+        IconButton {
+            AddShoppingCart()
+            div {
+                css {
+                    fontNormal()
+                    marginInline = 2.vw
+                }
+                +"Add to cart"
+            }
+            div {
+                css {
+                    fontNormal()
+                }
+                +"£${props.mug.price}"
+            }
+            onClick = {
+                props.onClickAddToCart(props.mug)
+            }
         }
     }
 }

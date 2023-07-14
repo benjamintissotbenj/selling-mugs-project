@@ -73,7 +73,6 @@ val MugListComponent = FC<MugListProps> {
                     padding = 0.px
                     margin = 16.px
                     boxSizing = BoxSizing.borderBox
-                    overflowY = "auto".unsafeCast<Overflow>()
                 }
 
                     Row {
@@ -81,6 +80,7 @@ val MugListComponent = FC<MugListProps> {
                             padding = 0.px
                             marginInline = 3.pct
                             boxSizing = BoxSizing.borderBox
+                            height = 65.vh
                         }
 
                         mugArrayList.forEach { mugItm ->
