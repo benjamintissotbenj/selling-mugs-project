@@ -55,22 +55,25 @@ val ProjectInformationPage = FC<NavigationProps> { props ->
                 css {
                     fontNormalPlus()
                     fontWeight = FontWeight.bold
+                    marginBlock = 5.vh
+                    width = 100.pct
+                    height = 10.pct
+                    display = Display.flex
+                    flexDirection = FlexDirection.column
+                    alignItems = AlignItems.center
                 }
-                +"Disclaimer"
+                +"Selling Mugs Project - Information"
             }
+
             div {
                 css {
                     fontNormal()
-                    padding = 3.vw
-                    width = 100.pct
-                    height = 100.pct
+                    padding = 3.vh
+                    width = 80.pct
+                    height = 40.pct
                     boxSizing = BoxSizing.borderBox
                 }
-                val disclaimerMessage = "This website is part of a MSc Project for Imperial College. " +
-                        "As such, you have the possibility to create a test order to help with the " +
-                        "research, or to checkout a real order that will result in a mug being delivered. " +
-                        "Please bear in mind that only addresses in England will be accepted for delivery."
-                +disclaimerMessage
+                +Const.projectDescriptionMessage
             }
         }
 

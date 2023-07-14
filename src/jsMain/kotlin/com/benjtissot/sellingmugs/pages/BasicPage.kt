@@ -46,5 +46,7 @@ val BasicPage = FC<BasicPageProps> { props ->
         }
     }
 
-    FooterComponent {}
+    FooterComponent {
+        this.navigate = navigate
+    }
 }
