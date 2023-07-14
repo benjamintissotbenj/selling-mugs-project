@@ -108,5 +108,20 @@ class Const {
 
         const val mugListDisplayList = "list"
         const val mugListDisplayGrid = "grid"
+
+        const val contactLinkedin = "https://www.linkedin.com/in/benjamin-tissot-49a1538b/"
+        const val contactGitHub = "https://www.linkedin.com/in/benjamin-tissot-49a1538b/"
+
+        const val disclaimerMessage = "This website is part of a MSc Project for Imperial College. " +
+                "As such, you have the possibility to create a test order to help with the " +
+                "research, or to checkout a real order that will result in a mug being delivered. " +
+                "Please bear in mind that only addresses in England will be accepted for delivery."
+
+        const val projectDescriptionMessage = "This website is not meant to be used for commercial purposes. " +
+                "This is a project for a Master's Thesis for a MSc Computing at Imperial College London. " +
+                "The goal of this project is to create a fully automated e-commerce platform for selling mugs. " +
+                "This includes the possibility to customise mugs, to order mugs with existing designs and other things. " +
+                "This website gives you the possibility to create fake orders as well as real orders, since the idea was " +
+                "that people could use the website without actually spending money. "
     }
 }

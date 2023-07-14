@@ -116,14 +116,9 @@ val CheckoutPage = FC<NavigationProps> { props ->
                             height = 100.pct
                             boxSizing = BoxSizing.borderBox
                         }
-                        val disclaimerMessage = "This website is part of a MSc Project for Imperial College. " +
-                                "As such, you have the possibility to create a test order to help with the " +
-                                "research, or to checkout a real order that will result in a mug being delivered. " +
-                                "Please bear in mind that only addresses in England will be accepted for delivery."
-                        +disclaimerMessage
+                        +Const.disclaimerMessage
                     }
                 }
-
             }
 
             val amountOfMugs = it.mugCartItemList.sumOf { item -> item.amount }

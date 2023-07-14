@@ -113,13 +113,12 @@ val MugListComponent = FC<MugListProps> {
                                         width = 90.pct
                                         height = (1.5 * this.width.unsafeCast<Percentage>()).unsafeCast<Height>()
                                         margin = 5.pct
-                                        paddingTop = 5.pct
                                         boxSizing = BoxSizing.borderBox
                                     }
 
                                     HoverImageComponent {
-                                        width = 90.pct
-                                        height = 74.pct
+                                        width = 100.pct
+                                        height = 100.pct
                                         srcMain = "https://images.printify.com/api/catalog/5e440fbfd897db313b1987d1.jpg?s=320"
                                         srcHover = "https://images.printify.com/api/catalog/6358ee8d99b22ccab005e8a7.jpg?s=320"
                                         onClick = {
@@ -130,9 +129,15 @@ val MugListComponent = FC<MugListProps> {
 
                                     div {
                                         css {
-                                            padding = 5.pct
+                                            paddingTop = 5.pct
                                         }
                                         +"Customize your own mug !"
+                                    }
+                                    div {
+                                        css {
+                                            paddingTop = 5.pct
+                                        }
+                                        +"£7.20"
                                     }
                                 }
                             }
