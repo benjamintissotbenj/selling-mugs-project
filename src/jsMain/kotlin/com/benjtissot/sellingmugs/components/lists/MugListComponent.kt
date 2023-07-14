@@ -1,8 +1,11 @@
 package com.benjtissot.sellingmugs.components.lists
 
-import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.Const
+import com.benjtissot.sellingmugs.colDefault
 import com.benjtissot.sellingmugs.components.createProduct.HoverImageComponent
+import com.benjtissot.sellingmugs.contentCenteredHorizontally
 import com.benjtissot.sellingmugs.entities.Mug
+import com.benjtissot.sellingmugs.fontBig
 import csstype.*
 import emotion.react.css
 import org.w3c.dom.HTMLDivElement
@@ -10,7 +13,9 @@ import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.header
-import ringui.*
+import ringui.Col
+import ringui.Grid
+import ringui.Row
 
 
 external interface MugListProps: Props {
@@ -106,7 +111,7 @@ val MugListComponent = FC<MugListProps> {
                                         flexDirection = FlexDirection.column
                                         alignContent = AlignContent.center
                                         width = 90.pct
-                                        height = (1.5* this.width as Percentage).unsafeCast<Height>()
+                                        height = (1.5 * this.width.unsafeCast<Percentage>()).unsafeCast<Height>()
                                         margin = 5.pct
                                         paddingTop = 5.pct
                                         boxSizing = BoxSizing.borderBox

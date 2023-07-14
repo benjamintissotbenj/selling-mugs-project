@@ -2,15 +2,14 @@ package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.createProduct.EditImageOnTemplateComponent
-import com.benjtissot.sellingmugs.components.createProduct.SweepImageComponent
 import com.benjtissot.sellingmugs.components.createProduct.ImageDrop
+import com.benjtissot.sellingmugs.components.createProduct.SweepImageComponent
 import com.benjtissot.sellingmugs.components.forms.CreateProductForm
 import com.benjtissot.sellingmugs.entities.printify.*
 import csstype.*
 import emotion.react.css
 import io.ktor.client.call.*
 import io.ktor.http.*
-import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
 import mui.icons.material.AddShoppingCart
 import mui.material.IconButton
@@ -20,12 +19,11 @@ import react.dom.html.ReactHTML.div
 import react.useEffectOnce
 import react.useState
 
-private val LOG = KtorSimpleLogger("CustomMugPage.kt")
+/*private val LOG = KtorSimpleLogger("CustomMugPage.kt")*/
 
 
 val CustomMugPage = FC<NavigationProps> { props ->
     var receiveProduct : ReceiveProduct? by useState(null)
-    var droppedImageName: String = ""
     var uploadedImage : ImageForUploadReceive? by useState(null)
     val productPreviewImageSources : List<String> = receiveProduct?.images?.map{it.src} ?: emptyList()
     val reader = FileReader()
@@ -89,12 +87,11 @@ val CustomMugPage = FC<NavigationProps> { props ->
                             }
                             reader.abort()
                             val imageFile = fileList[0]
-                            droppedImageName = imageFile.name
                             reader.readAsDataURL(imageFile)
                             reader.onload = { _ ->
                                 props.setAlert(infoAlert("Image is being uploaded"))
                                 val uploadImage = ImageForUpload(
-                                    file_name = droppedImageName,
+                                    file_name = imageFile.name,
                                     contents = selectBase64ContentFromURLData(reader.result as String)
                                 )
                                 scope.launch{

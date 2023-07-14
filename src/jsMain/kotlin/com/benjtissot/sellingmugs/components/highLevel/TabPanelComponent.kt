@@ -1,18 +1,22 @@
+@file:Suppress("UNUSED_EXPRESSION")
+
 package com.benjtissot.sellingmugs.components.highLevel
 
-import com.benjtissot.sellingmugs.AlertState
-import com.benjtissot.sellingmugs.fontBig
 import com.benjtissot.sellingmugs.fontNormalPlus
-import com.benjtissot.sellingmugs.hideAlert
 import csstype.*
 import emotion.react.css
 import mui.lab.TabContext
-import mui.lab.TabPanel
-import mui.material.*
+import mui.material.Box
+import mui.material.Tab
+import mui.material.Tabs
+import mui.material.TabsVariant
 import mui.system.sx
-import react.*
+import react.FC
+import react.PropsWithChildren
+import react.create
 import react.dom.aria.ariaControls
 import react.dom.html.ReactHTML.div
+import react.useState
 
 
 external interface CreateTabsProps : PropsWithChildren {
@@ -48,8 +52,9 @@ val CreateTabsComponent = FC <CreateTabsProps> { props ->
                     variant = TabsVariant.fullWidth
                     value = tabValue
                     onChange = { _, newValue ->
-                        props.onClickTab(newValue as Int)
-                        tabValue = newValue as Int
+                        val intValue = newValue as Int
+                        props.onClickTab(intValue)
+                        tabValue = intValue
                     }
                     for (i: Int in 0 until numberOfTabs){
                         Tab {

@@ -175,10 +175,6 @@ val MugDetailsDefault = FC<MugItemDefaultProps> { props ->
     }
 }
 
-external interface MugItemHoverProps: MugItemGridProps {
-    var onMouseEnter : () -> Unit
-}
-
 val MugDetailsHover = FC<MugItemGridProps> { props ->
 
     SweepImageComponent {

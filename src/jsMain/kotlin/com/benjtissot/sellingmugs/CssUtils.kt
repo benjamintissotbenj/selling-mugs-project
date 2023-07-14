@@ -57,10 +57,6 @@ fun PropsWithClassName.formInputCss(){
     formInputCss(100.pct, 180.px, null, null)
 }
 
-fun PropsWithClassName.formInputCss(backColor: Color?){
-    formInputCss(100.pct, 180.px, backColor, null)
-}
-
 
 fun PropsWithClassName.formInputCss(widthValue: Width, minimumWidth: MinWidth, backColor: Color?, frontColor: Color?) {
     css {
@@ -70,10 +66,6 @@ fun PropsWithClassName.formInputCss(widthValue: Width, minimumWidth: MinWidth, b
 
 fun PropertiesBuilder.formInput(){
     formInput(100.pct, 180.px, null, null)
-}
-
-fun PropertiesBuilder.formInput(backColor: Color?){
-    formInput(100.pct, 180.px, backColor, null)
 }
 
 fun PropertiesBuilder.formInput(widthValue: Width, minimumWidth: MinWidth, backColor: Color?, frontColor: Color?){
@@ -98,9 +90,6 @@ fun PropsWithClassName.divDefaultCss(){
 
 // FONTS
 
-fun PropertiesBuilder.fontSmaller(){
-    fontSize = 0.5.rem
-}
 fun PropertiesBuilder.fontSmall(){
     fontSize = 0.75.rem
 }
@@ -112,9 +101,6 @@ fun PropertiesBuilder.fontNormalPlus(){
 }
 fun PropertiesBuilder.fontBig(){
     fontSize = 1.5.rem
-}
-fun PropertiesBuilder.fontBigger(){
-    fontSize = 2.rem
 }
 
 
@@ -214,7 +200,7 @@ fun PropertiesBuilder.card(){
     alignItems = AlignItems.center
     borderRadius = 2.vh
     // This allows for the card to look like a card without the "Overflow: hidden" attribute
-    maskImage = Const.maskUrl as MaskImage /* this fixes the overflow:hidden in Chrome/Opera */
+    maskImage = Const.maskUrl.unsafeCast<MaskImage>() /* this fixes the overflow:hidden in Chrome/Opera */
 
 }
 

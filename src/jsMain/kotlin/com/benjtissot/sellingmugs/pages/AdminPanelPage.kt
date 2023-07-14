@@ -9,13 +9,10 @@ import csstype.*
 import emotion.react.css
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
-import mui.icons.material.AddCircle
-import mui.icons.material.Person
 import mui.icons.material.PersonOutline
-import mui.material.*
+import mui.material.IconButton
 import react.FC
 import react.dom.html.ReactHTML.div
-import react.router.useNavigate
 import react.useEffectOnce
 import react.useState
 
@@ -28,7 +25,6 @@ val AdminPanelPage = FC<NavigationProps> { props ->
         }
     }
     var productPopupOpen by useState(false)
-    var usersPopupOpen by useState(false)
 
     var userList by useState(emptyList<User>())
 

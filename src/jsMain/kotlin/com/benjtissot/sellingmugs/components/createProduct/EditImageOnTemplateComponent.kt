@@ -51,7 +51,6 @@ val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
     val templateHeight = templateWidth/2f
     val gridUnit = templateWidth/8f
     val gridWidth = 12f*gridUnit
-    val gridHeight = templateHeight + gridUnit
     val hwratio = (uploadedImage?.height?:1).toFloat()/(uploadedImage?.width?:1).toFloat()
 
     val imageWidth = scale*templateWidth
@@ -108,12 +107,12 @@ val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
                     marks = marksPosSlider
                     size = Size.small
                     orientation = Orientation.vertical
-                    defaultValue = 50.asDynamic()
+                    defaultValue = 50.asDynamic() as? String
                     min = 0
                     max = 100
                     valueLabelDisplay = "auto"
                     value = 100 - verticalPositionPercentage
-                    onChange = {evt, value, thumb ->
+                    onChange = {_, value, _ ->
                         verticalPositionPercentage = 100 - value as Int
                     }
                 }
@@ -135,12 +134,12 @@ val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
                 Slider {
                     marks = marksPosSlider
                     size = Size.small
-                    defaultValue = 50.asDynamic()
+                    defaultValue = 50.asDynamic() as? String
                     min = 0
                     max = 100
                     valueLabelDisplay = "auto"
                     value = horizontalPositionPercentage
-                    onChange = {evt, value, thumb ->
+                    onChange = {_, value, _ ->
                         horizontalPositionPercentage = value as Int
                     }
                 }
@@ -172,12 +171,12 @@ val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
                 Slider {
                     marks = marksScaleSlider
                     size = Size.small
-                    defaultValue = 100.asDynamic()
+                    defaultValue = 100.asDynamic() as? String
                     min = 10
                     max = 300
                     valueLabelDisplay = "auto"
                     value = (scale*100f).toInt()
-                    onChange = {evt, value, thumb ->
+                    onChange = {_, value, _ ->
                         scale = round(value as Float)/100f
                     }
                 }
@@ -209,13 +208,13 @@ val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
                 Slider {
                     marks = marksRotateSlider
                     size = Size.small
-                    defaultValue = 0.asDynamic()
+                    defaultValue = 0.asDynamic() as? String
                     min = -180
                     max = 180
                     valueLabelDisplay = "auto"
                     value = rotate
-                    onChange = {evt, value, thumb ->
-                        rotate = value
+                    onChange = {_, value, _ ->
+                        rotate = value as Int
                     }
                 }
             }
