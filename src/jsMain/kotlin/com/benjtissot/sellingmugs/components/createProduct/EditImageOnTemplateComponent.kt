@@ -37,6 +37,8 @@ external interface EditImageOnTemplateProps: Props {
 
 val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
 
+    // TODO: automatic readjustment depending on the picture's height/width
+
     val uploadedImage = props.uploadedImage
     val receiveProduct = props.receiveProduct
 

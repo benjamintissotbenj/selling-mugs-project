@@ -114,6 +114,8 @@ external interface MugDetailsPopupProps: Props {
     var popupTarget : HTMLDivElement?
     var onMouseLeavePopup : () -> Unit
     var mug: Mug?
+    var marginTop : Number
+    var marginBottom : Number
     var onClickAddToCart: (Mug?) -> Unit
 }
 
@@ -145,7 +147,8 @@ val MugDetailsPopup = FC<MugDetailsPopupProps> { props ->
                     boxShade()
                     overflow = Overflow.hidden
                     backgroundColor = NamedColor.white
-                    marginTop = (-11).rem
+                    marginTop = props.marginTop.rem
+                    marginBottom = props.marginBottom.rem
                     width = 40.vh
                     height = "fit-content".unsafeCast<Height>()
                 }

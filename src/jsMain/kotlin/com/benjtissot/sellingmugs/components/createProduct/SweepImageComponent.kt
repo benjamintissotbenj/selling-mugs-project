@@ -1,11 +1,13 @@
 package com.benjtissot.sellingmugs.components.createProduct
 
+import com.benjtissot.sellingmugs.contentCenteredHorizontally
 import com.benjtissot.sellingmugs.contentCenteredVertically
 import csstype.*
 import emotion.react.css
 import mui.icons.material.ChevronLeft
 import mui.icons.material.ChevronRight
 import mui.material.IconButton
+import mui.material.Size
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
@@ -20,6 +22,7 @@ external interface SweepImageProps: Props {
     var height: Height?
     var srcList: List<String>
     var refresh: Boolean
+    var marginInline : MarginInline?
     var marginTop: MarginTop?
 }
 
@@ -30,11 +33,20 @@ val SweepImageComponent = FC<SweepImageProps> { props ->
     div {
         css {
             contentCenteredVertically()
+            justifyContent = JustifyContent.center
+            props.width?.let { width = it }
+            props.height?.let { height = it }
+            props.marginInline?.let{ marginInline = it }
             props.marginTop?.let { marginTop = it }
+            boxSizing = BoxSizing.borderBox
         }
 
         if (sweep) {
             IconButton {
+                css {
+                    width = 5.pct
+                }
+                size = Size.small
                 ChevronLeft()
                 onClick = {
                     index = if (index>0) index - 1 else props.srcList.size - 1
@@ -42,20 +54,24 @@ val SweepImageComponent = FC<SweepImageProps> { props ->
             }
             div {
                 css {
+                    contentCenteredHorizontally()
                     position = Position.relative
-                    height = props.height
-                    width = props.width
+                    height = 90.pct
+                    width = 90.pct
                 }
                 for (i: Int in 0 until props.srcList.size){
                     img {
                         css {
-                            height = props.height
-                            width = props.width
                             position = Position.absolute
-                            right = 0.px
                             top = 0.px
-                            left = 0.px
                             bottom = 0.px
+                            if (i == props.srcList.size - 1){
+                                left = 0.px
+                                right = 0.px
+                                width = 100.pct
+                            } else {
+                                height = 100.pct
+                            }
                             visibility = if (i == index) Visibility.visible else Visibility.collapse
                         }
                         src = props.srcList[i] + if (props.refresh) "?${random.nextInt()}" else ""
@@ -64,6 +80,10 @@ val SweepImageComponent = FC<SweepImageProps> { props ->
             }
 
             IconButton {
+                css {
+                    width = 5.pct
+                }
+                size = Size.small
                 ChevronRight()
                 onClick = {
                     index = if (index<props.srcList.size - 1) index + 1 else 0

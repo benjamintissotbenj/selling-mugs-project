@@ -30,7 +30,7 @@ val CreateTabsComponent = FC <CreateTabsProps> { props ->
 
     div {
         css {
-            overflow = Overflow.hidden
+            overflow = "auto".unsafeCast<Overflow>()
             boxSizing = BoxSizing.borderBox
             height = props.height
             width = props.width
