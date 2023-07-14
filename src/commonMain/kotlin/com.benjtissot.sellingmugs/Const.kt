@@ -110,7 +110,7 @@ class Const {
         const val mugListDisplayGrid = "grid"
 
         const val contactLinkedin = "https://www.linkedin.com/in/benjamin-tissot-49a1538b/"
-        const val contactGitHub = "https://www.linkedin.com/in/benjamin-tissot-49a1538b/"
+        const val contactGitHub = "https://github.com/benjamintissotbenj/selling-mugs-project"
 
         const val disclaimerMessage = "This website is part of a MSc Project for Imperial College. " +
                 "As such, you have the possibility to create a test order to help with the " +
