@@ -90,6 +90,9 @@ fun PropsWithClassName.divDefaultCss(){
 
 // FONTS
 
+fun PropertiesBuilder.fontSmaller(){
+    fontSize = 0.5.rem
+}
 fun PropertiesBuilder.fontSmall(){
     fontSize = 0.75.rem
 }

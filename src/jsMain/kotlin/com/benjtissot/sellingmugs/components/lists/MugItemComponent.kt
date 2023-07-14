@@ -81,7 +81,7 @@ val MugItemListComponent = FC<MugItemListProps> {
                 css {
                     padding = 5.pct
                 }
-                +"£${props.mug.price}"
+                +"£${props.mug.price}0"
             }
         }
     }
@@ -170,7 +170,7 @@ val MugDetailsDefault = FC<MugItemDefaultProps> { props ->
             css {
                 paddingTop = 5.pct
             }
-            +"£${props.mug.price}"
+            +"£${props.mug.price}0"
         }
     }
 }
@@ -227,7 +227,7 @@ val MugDetailsHover = FC<MugItemGridProps> { props ->
                 css {
                     fontNormal()
                 }
-                +"£${props.mug.price}"
+                +"£${props.mug.price}0"
             }
             onClick = {
                 props.onClickAddToCart(props.mug)

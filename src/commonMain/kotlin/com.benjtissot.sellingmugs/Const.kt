@@ -108,5 +108,8 @@ class Const {
 
         const val mugListDisplayList = "list"
         const val mugListDisplayGrid = "grid"
+
+        const val contactLinkedin = "https://www.linkedin.com/in/benjamin-tissot-49a1538b/"
+        const val contactGitHub = "https://www.linkedin.com/in/benjamin-tissot-49a1538b/"
     }
 }

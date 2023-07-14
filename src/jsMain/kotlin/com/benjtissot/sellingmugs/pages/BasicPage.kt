@@ -34,7 +34,7 @@ val BasicPage = FC<BasicPageProps> { props ->
     div {
         css {
             boxSizing = BoxSizing.borderBox
-            height = 88.vh
+            height = 87.vh
             width = 100.vw
             overflowY = "auto".unsafeCast<Overflow>()
         }
