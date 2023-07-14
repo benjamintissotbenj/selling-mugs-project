@@ -20,9 +20,10 @@ val HoverImageComponent = FC<HoverImageProps> { props ->
     Button {
         css {
             position = Position.relative
-            height = props.height
-            width = props.width
-            marginTop = 4.vw
+            props.width?.let { width = it }
+            props.height?.let { height = it }
+            margin = 3.pct
+            boxSizing = BoxSizing.borderBox
         }
         onClick = {
             props.onClick()
@@ -30,20 +31,19 @@ val HoverImageComponent = FC<HoverImageProps> { props ->
         ReactHTML.img {
             css {
                 position = Position.absolute
-                height = props.height
-                width = props.width
+                width = 100.pct
                 right = 0.px
                 top = 0.px
                 left = 0.px
                 bottom = 0.px
+                objectFit = ObjectFit.contain
             }
             src = props.srcMain
         }
         ReactHTML.img {
             css {
                 position = Position.absolute
-                height = props.height
-                width = props.width
+                width = 100.pct
                 right = 0.px
                 top = 0.px
                 left = 0.px

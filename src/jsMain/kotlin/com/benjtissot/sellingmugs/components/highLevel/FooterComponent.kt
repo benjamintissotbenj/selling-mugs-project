@@ -33,6 +33,7 @@ val FooterComponent = FC<FooterProps> { props ->
                 marginLeft = 4.vw
             }
             +"Footer"
+            // TODO: actually put up some things in here
         }
     }
 }
