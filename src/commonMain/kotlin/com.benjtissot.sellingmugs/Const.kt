@@ -9,6 +9,16 @@ class Const {
             return type
         }
     }
+    enum class StableDiffusionImageType(var type: String) {
+        REALISTIC("REALISTIC"),
+        CARTOON_ILLUSTRATION("CARTOON_ILLUSTRATION"),
+        GEOMETRIC("GEOMETRIC"),
+        ;
+
+        override fun toString(): String {
+            return type
+        }
+    }
     enum class ClickType(var type: String) {
         HOME_NAV("HOME_NAV"),
         PROFILE_NAV("PROFILE_NAV"),
@@ -101,6 +111,9 @@ class Const {
         const val mugTitlePrefill = "Mug Title"
         const val mugDescriptionPrefill = "This 11oz mug is made of brilliant white ceramic material with AAA+ ORCA coating, making them excellent for printing vibrant colors. They are easy to clean, microwave-safe, and the orca coating mugs can withstand up to 3000 cycles in the dishwasher."
 
+        // Mug Subject Prefill text
+        const val mugSubjectPrefill = "Urban Photography"
+
         // Hidden overflow card url
         const val maskUrl = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);"
 
@@ -123,5 +136,24 @@ class Const {
                 "This includes the possibility to customise mugs, to order mugs with existing designs and other things. " +
                 "This website gives you the possibility to create fake orders as well as real orders, since the idea was " +
                 "that people could use the website without actually spending money. "
+
+        const val promptResponseStructure = "Structure of the response should be a JSON object containing the different " +
+                "variations, with a unique field called variations containing the variation objects . Each object has " +
+                "two fields, one that contains one string with all the variation parameters (under the name parameters) " +
+                "and a second that contains the narrative (under the name narrative). Based on the above structures, " +
+                "create 2 different variations for the subject. Then, write a detailed narrative of about 400 characters " +
+                "for each variation and store it in the JSON under the name prompt. The response should contain the JSON " +
+                "object and only the JSON object, so that the response can be parsed. Subject of the prompt is: "
+
+        fun getRealisticStructure() : String {
+            return "Structure of a Stable Diffusion prompt : (subject of the image), (camera type), (camera lens type), (time of day), (style of photography), (Realism Level), (Lighting). "
+        }
+
+        fun getGeometricStructure() : String {
+            return "Structure of a Stable Diffusion prompt : (subject of the image), (most appropriate shapes for the subject), (symmetry), (computer generated or human drawn), (Realism Level), (Lighting). "
+        }
+        fun getCartoonStructure() : String {
+            return "Structure of a Stable Diffusion prompt : (subject of the image), (drawing type), (illustration style), (time of day), (known artist style), (Realism Level), (Lighting). "
+        }
     }
 }

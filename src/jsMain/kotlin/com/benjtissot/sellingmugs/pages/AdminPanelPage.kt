@@ -7,9 +7,11 @@ import com.benjtissot.sellingmugs.components.lists.ManageUsersComponent
 import com.benjtissot.sellingmugs.entities.User
 import csstype.*
 import emotion.react.css
+import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
 import mui.icons.material.PersonOutline
+import mui.icons.material.Send
 import mui.material.IconButton
 import react.FC
 import react.dom.html.ReactHTML.div
@@ -111,15 +113,14 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                     navigate = props.navigate
                 }
             }
+
         } else {
             div {
                 divDefaultCss()
                 +"You must be an admin to view this page"
             }
         }
-
     }
-
 }
 
 fun selectBase64ContentFromURLData(input : String) : String {

@@ -5,6 +5,8 @@ import com.benjtissot.sellingmugs.components.createProduct.EditImageOnTemplateCo
 import com.benjtissot.sellingmugs.components.createProduct.ImageDrop
 import com.benjtissot.sellingmugs.components.createProduct.SweepImageComponent
 import com.benjtissot.sellingmugs.components.forms.CreateProductForm
+import com.benjtissot.sellingmugs.components.forms.GenerateMugsForm
+import com.benjtissot.sellingmugs.entities.openAI.ChatRequestParams
 import com.benjtissot.sellingmugs.entities.printify.*
 import csstype.*
 import emotion.react.css
@@ -41,7 +43,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
         css {
             contentCenteredVertically()
             height = 100.pct
-            width = 100.pct
+            width = 98.pct
         }
 
         // Image and drag-and-drop container
@@ -154,6 +156,22 @@ val CustomMugPage = FC<NavigationProps> { props ->
                         }
                     }
                     deleteFieldsOnSubmit = false
+                }
+
+                div {
+                    css {
+                        fontNormal()
+                        fontWeight = FontWeight.bold
+                    }
+                    +"OR"
+                }
+
+                GenerateMugsForm {
+                    onSubmit = { subject, artType ->
+                        scope.launch {
+                            createMugsForSubject(ChatRequestParams(subject, artType))
+                        }
+                    }
                 }
             }
 
