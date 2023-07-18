@@ -1,27 +1,25 @@
 package com.benjtissot.sellingmugs.services
 
-import com.benjtissot.sellingmugs.apiFetchImage
-import com.benjtissot.sellingmugs.apiGenerateImage
-import com.benjtissot.sellingmugs.apiGenerateStableDiffusionPrompt
+import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.entities.openAI.*
 import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
 import com.benjtissot.sellingmugs.entities.printify.ImageForUploadReceive
 import com.benjtissot.sellingmugs.entities.printify.MugProductInfo
 import com.benjtissot.sellingmugs.entities.stableDiffusion.ImageGeneratedLog
 import com.benjtissot.sellingmugs.entities.stableDiffusion.ImageResponse
-import com.benjtissot.sellingmugs.genUuid
 import com.benjtissot.sellingmugs.repositories.ChatRepository
 import com.benjtissot.sellingmugs.repositories.StableDiffusionRepository
 import io.ktor.client.call.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.util.logging.*
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import kotlinx.coroutines.time.delay
 import kotlinx.datetime.Clock
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.litote.kmongo.json
+import java.io.IOException
 import java.lang.Long.max
 import java.time.Duration
 
@@ -32,38 +30,76 @@ class ImageGeneratorService {
 
         /**
          * Uses OpenAI and Stable Diffusion APIs to create a list of images from a subject
+         * @param params the different [ChatRequestParams] needed to create a good OpenAI request
+         * @return the list of [HttpStatusCode]s associated with each variation
+         * @throws [OpenAIUnavailable] when the server is unable to connect with OpenAI's API
          */
+        @OptIn(DelicateCoroutinesApi::class)
         @Throws
-        suspend fun generateImagesFromParams(params: ChatRequestParams) {
+        suspend fun generateImagesFromParams(params: ChatRequestParams) : List<HttpStatusCode> {
             // Get ChatGPT to create a list of variations
-            val variations = generateVariationsFromParams(params)
-
-            variations.forEach { variation ->
-                    // Use StableDiffusion to create an image for each variation
-                    val stableDiffusionImageSource = generateImageFromVariation(variation)
-
-                    // Upload generated image to printify
-                    val imageUploadedToPrintify = uploadImageFromSource(variation.getCleanName(), stableDiffusionImageSource)
-
-                    imageUploadedToPrintify?.let {
-                        // Create mug from image
-                        // TODO: description from chatGPT here
-                        val mugProductInfo = MugProductInfo("AI - ${variation.getCleanName()}", "", it.toImage())
-                        val productPrintifyId = PrintifyService.createProduct(mugProductInfo)
-                        productPrintifyId?.let { id ->
-                            // Get all generated mug visuals
-                            MugService.getMugByPrintifyId(id)?.let { mug ->
-                                MugService.updateArtworkImage(mug.artwork, id) // make sure the images are updated when creating the product
-                            }
-                            // Make product available to buy
-                            PrintifyService.publishProduct(id)
-                        }
-                    }
-
+            val variations = try {
+                generateVariationsFromParams(params)
+            } catch (e: IOException) {
+                throw OpenAIUnavailable()
+            }
+            var counter = 0
+            val deferred = variations.map { variation ->
+                counter++
+                if (counter == 5){
+                    delay(1000) // wait 1 second every 5 requests to fit with Stable Diffusion API
                 }
+                GlobalScope.async {
+                    try {
+                        // Use StableDiffusion to create an image for each variation
+                        val stableDiffusionImageSource = generateImageFromVariation(variation)
 
-            runBlocking {
-                //deferred , await all coroutines
+                        // Upload generated image to printify
+                        val imageUploadedToPrintify =
+                            uploadImageFromSource(variation.getCleanName(), stableDiffusionImageSource)
+
+                        imageUploadedToPrintify?.let {
+                            // Create mug from image
+                            // TODO: description from chatGPT here
+                            val mugProductInfo = MugProductInfo("AI - ${variation.getCleanName()}", "", it.toImage())
+                            val productPrintifyId = PrintifyService.createProduct(mugProductInfo)
+                            productPrintifyId?.let { id ->
+                                // Get all generated mug visuals
+                                val mug = MugService.getMugByPrintifyId(id)?.let { mug ->
+                                    MugService.updateArtworkImage(
+                                        mug.artwork,
+                                        id
+                                    ) // make sure the images are updated when creating the product
+                                }
+                                // Make product available to buy
+                                val statusCode = PrintifyService.publishProduct(id)
+                                if (statusCode != HttpStatusCode.OK) {
+                                    Const.HttpStatusCode_ProductPublicationFailed
+                                } else {
+                                    statusCode
+                                }
+                            } ?: Const.HttpStatusCode_ImageUploadFail
+                        } ?: Const.HttpStatusCode_ImageUploadFail
+
+                    } catch (e: Exception) {
+                        HttpStatusCode(
+                            90,
+                            "Error in the process for variation ${variation.name}, message: ${e.message ?: "no-message"}"
+                        )
+                    }
+                }
+            }
+
+            return runBlocking {
+                LOG.debug("Awaiting coroutines")
+                val listOfStatuses = deferred.awaitAll()
+                LOG.debug("All coroutines done :")
+                LOG.debug("{")
+                listOfStatuses.forEach { status ->
+                    LOG.debug("\tStatus ${status.value}, ${status.description};")
+                }
+                LOG.debug("}")
+                listOfStatuses
             }
         }
 

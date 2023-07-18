@@ -23,7 +23,8 @@ var jsonPrintifyClient : HttpClient = HttpClient {
     install(Logging){
         level = LogLevel.BODY
         filter { request ->
-            !request.url.pathSegments.contains("uploads")
+            true
+            //!request.url.pathSegments.contains("uploads")
         }
     }
     defaultRequest {

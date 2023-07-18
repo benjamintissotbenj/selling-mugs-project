@@ -1,7 +1,9 @@
 package com.benjtissot.sellingmugs.controllers
 
+import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.OPEN_AI_PATH
 import com.benjtissot.sellingmugs.entities.openAI.ChatRequestParams
+import com.benjtissot.sellingmugs.entities.openAI.OpenAIUnavailable
 import com.benjtissot.sellingmugs.services.ImageGeneratorService
 import io.ktor.client.call.*
 import io.ktor.client.statement.*
@@ -20,9 +22,11 @@ fun Route.openAIRouting(){
         post {
             val params: ChatRequestParams = call.receive()
             try {
-                ImageGeneratorService.generateImagesFromParams(params)
-                call.respond(HttpStatusCode.OK)
-            } catch (e: Exception) {
+                call.respond(ImageGeneratorService.generateImagesFromParams(params))
+            } catch (e: OpenAIUnavailable) {
+                e.printStackTrace()
+                call.respond(Const.HttpStatusCode_OpenAIUnavailable)
+            }catch (e: Exception) {
                 e.printStackTrace()
                 call.respond(HttpStatusCode.InternalServerError)
             }

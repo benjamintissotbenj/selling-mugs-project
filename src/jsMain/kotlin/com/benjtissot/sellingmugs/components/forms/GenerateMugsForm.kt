@@ -17,18 +17,20 @@ import react.dom.html.ReactHTML.input
 import react.dom.html.ReactHTML.label
 import react.dom.html.ReactHTML.textarea
 import react.useState
+import kotlin.math.roundToInt
 
 external interface GenerateMugsFormProps : Props {
-    var onSubmit: (String, Const.StableDiffusionImageType) -> Unit
+    var onSubmit: (String, Const.StableDiffusionImageType, Int) -> Unit
 }
 
 val GenerateMugsForm = FC<GenerateMugsFormProps> { props ->
     var subject by useState(Const.mugSubjectPrefill)
+    var numberOfVariations by useState(2)
     var imageType by useState(Const.StableDiffusionImageType.REALISTIC.type)
 
     val submitHandler: FormEventHandler<HTMLFormElement> = {
         it.preventDefault()
-        props.onSubmit(subject, Const.StableDiffusionImageType.valueOf(imageType))
+        props.onSubmit(subject, Const.StableDiffusionImageType.valueOf(imageType), numberOfVariations)
     }
 
     div {
@@ -67,6 +69,38 @@ val GenerateMugsForm = FC<GenerateMugsFormProps> { props ->
                             subject = it.target.value
                         }
                         value = subject
+                    }
+                }
+
+                // Number of Variations to create
+                label {
+                    css {
+                        formLabel()
+                        width = 100.pct
+                    }
+                    div {
+                        css {
+                            padding = 2.vh
+                        }
+                        +"Number of variations (<15)"
+                    }
+                    input {
+                        css {
+                            formInput()
+                            fontNormal()
+                        }
+                        type = InputType.text
+                        onChange = {
+                            val numberOfVariationsTemp = try {
+                                it.target.value.toInt()
+                            } catch (e: NumberFormatException) {
+                                0
+                            }
+                            if (numberOfVariationsTemp < 15){
+                                numberOfVariations = numberOfVariationsTemp
+                            }
+                        }
+                        value = numberOfVariations.toString()
                     }
                 }
 

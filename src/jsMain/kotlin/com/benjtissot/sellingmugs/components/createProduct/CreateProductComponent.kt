@@ -74,10 +74,10 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
 
 
                 GenerateMugsForm {
-                    onSubmit = { subject, artType ->
+                    onSubmit = { subject, artType, numberOfVariations ->
                         props.onCreatingMugs(subject, artType)
                         scope.launch {
-                            props.onMugsCreationResponse(createMugsForSubject(ChatRequestParams(subject, artType)))
+                            props.onMugsCreationResponse(createMugsForSubject(ChatRequestParams(subject, artType, numberOfVariations)))
                         }
                     }
                 }

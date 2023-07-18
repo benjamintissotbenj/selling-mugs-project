@@ -16,7 +16,7 @@ class ChatRequest(
                 Const.StableDiffusionImageType.GEOMETRIC -> {Const.getGeometricStructure()}
                 Const.StableDiffusionImageType.CARTOON_ILLUSTRATION -> {Const.getCartoonStructure()}
             }
-             val message = "$promptStructure \n ${Const.promptResponseStructure} ${parameters.subject}"
+             val message = "$promptStructure \n ${Const.getPromptResponseStructure(parameters.amountOfVariations)} ${parameters.subject}"
 
             return ChatRequest("gpt-3.5-turbo", arrayListOf(Message("user", content = message)), temperature = 0.7f)
         }
@@ -31,4 +31,4 @@ class Message(
 }
 
 @Serializable
-class ChatRequestParams(val subject : String, val type: Const.StableDiffusionImageType)
+class ChatRequestParams(val subject : String, val type: Const.StableDiffusionImageType, val amountOfVariations: Int)
