@@ -1,5 +1,5 @@
-import com.benjtissot.sellingmugs.entities.RegisterInfo
-import com.benjtissot.sellingmugs.entities.Session
+import com.benjtissot.sellingmugs.entities.local.RegisterInfo
+import com.benjtissot.sellingmugs.entities.local.Session
 import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.repositories.UserRepository
 import com.benjtissot.sellingmugs.services.BadCredentialsException

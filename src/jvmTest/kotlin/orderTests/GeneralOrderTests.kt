@@ -1,22 +1,20 @@
 package orderTests
 
 import AbstractDatabaseTests
-import com.benjtissot.sellingmugs.entities.LoginInfo
-import com.benjtissot.sellingmugs.entities.RegisterInfo
-import com.benjtissot.sellingmugs.entities.Session
+import com.benjtissot.sellingmugs.entities.local.LoginInfo
+import com.benjtissot.sellingmugs.entities.local.RegisterInfo
+import com.benjtissot.sellingmugs.entities.local.Session
 import com.benjtissot.sellingmugs.entities.printify.order.AddressTo
 import com.benjtissot.sellingmugs.entities.printify.order.Order
 import com.benjtissot.sellingmugs.entities.printify.order.PrintifyOrderPushSuccess
 import com.benjtissot.sellingmugs.repositories.CartRepository
 import com.benjtissot.sellingmugs.repositories.SessionRepository
-import com.benjtissot.sellingmugs.repositories.UserRepository
 import com.benjtissot.sellingmugs.services.*
 import delimit
 import imageForUpload1
 import imageForUpload2
 import imageForUpload3
 import io.ktor.http.*
-import io.ktor.server.auth.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

@@ -1,6 +1,6 @@
 package com.benjtissot.sellingmugs.services
 
-import com.benjtissot.sellingmugs.entities.Session
+import com.benjtissot.sellingmugs.entities.local.Session
 import com.benjtissot.sellingmugs.repositories.SessionRepository
 import io.ktor.server.application.*
 import io.ktor.server.sessions.*

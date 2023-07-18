@@ -1,7 +1,7 @@
 package com.benjtissot.sellingmugs.components.lists
 
 import com.benjtissot.sellingmugs.components.createProduct.SweepImageComponent
-import com.benjtissot.sellingmugs.entities.Mug
+import com.benjtissot.sellingmugs.entities.local.Mug
 import com.benjtissot.sellingmugs.fontNormal
 import com.benjtissot.sellingmugs.fontSmall
 import csstype.*

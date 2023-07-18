@@ -1,9 +1,8 @@
 package com.benjtissot.sellingmugs.repositories
 
-import com.benjtissot.sellingmugs.entities.LoginInfo
-import com.benjtissot.sellingmugs.entities.User
+import com.benjtissot.sellingmugs.entities.local.LoginInfo
+import com.benjtissot.sellingmugs.entities.local.User
 import database
-import org.litote.kmongo.MongoOperator
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.upsert

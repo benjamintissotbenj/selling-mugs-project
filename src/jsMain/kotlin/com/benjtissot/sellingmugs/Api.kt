@@ -3,7 +3,7 @@ package com.benjtissot.sellingmugs
 import com.benjtissot.sellingmugs.Const.Companion.image
 import com.benjtissot.sellingmugs.Const.Companion.titleDesc
 import com.benjtissot.sellingmugs.Const.Companion.updateType
-import com.benjtissot.sellingmugs.entities.*
+import com.benjtissot.sellingmugs.entities.local.*
 import com.benjtissot.sellingmugs.entities.openAI.ChatRequestParams
 import com.benjtissot.sellingmugs.entities.printify.*
 import com.benjtissot.sellingmugs.entities.printify.order.*

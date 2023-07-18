@@ -1,14 +1,12 @@
 package com.benjtissot.sellingmugs.controllers
 
-import com.benjtissot.sellingmugs.CLICK_OBJECT_PATH
 import com.benjtissot.sellingmugs.Const
-import com.benjtissot.sellingmugs.entities.Click
+import com.benjtissot.sellingmugs.entities.local.Click
 import com.benjtissot.sellingmugs.repositories.ClickDataRepository
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import java.util.logging.Logger
 
 fun Route.clickRouting(){
 

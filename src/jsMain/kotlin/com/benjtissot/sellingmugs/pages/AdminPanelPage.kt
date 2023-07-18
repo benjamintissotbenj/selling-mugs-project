@@ -4,14 +4,13 @@ import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.buttons.LogoutButtonComponent
 import com.benjtissot.sellingmugs.components.createProduct.CreateProductComponent
 import com.benjtissot.sellingmugs.components.lists.ManageUsersComponent
-import com.benjtissot.sellingmugs.entities.User
+import com.benjtissot.sellingmugs.entities.local.User
 import csstype.*
 import emotion.react.css
 import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
 import mui.icons.material.PersonOutline
-import mui.icons.material.Send
 import mui.material.IconButton
 import react.FC
 import react.dom.html.ReactHTML.div

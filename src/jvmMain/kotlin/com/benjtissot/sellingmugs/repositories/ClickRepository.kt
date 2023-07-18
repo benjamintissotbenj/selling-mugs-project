@@ -1,7 +1,7 @@
 package com.benjtissot.sellingmugs.repositories
 
 import com.benjtissot.sellingmugs.Const
-import com.benjtissot.sellingmugs.entities.Click
+import com.benjtissot.sellingmugs.entities.local.Click
 import com.benjtissot.sellingmugs.genUuid
 import database
 import kotlinx.datetime.Clock

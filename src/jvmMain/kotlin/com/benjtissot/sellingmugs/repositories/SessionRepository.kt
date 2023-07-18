@@ -1,6 +1,6 @@
 package com.benjtissot.sellingmugs.repositories
 
-import com.benjtissot.sellingmugs.entities.Session
+import com.benjtissot.sellingmugs.entities.local.Session
 import com.benjtissot.sellingmugs.genUuid
 import database
 import org.litote.kmongo.upsert

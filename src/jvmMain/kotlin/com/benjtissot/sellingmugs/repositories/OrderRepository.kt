@@ -1,6 +1,6 @@
 package com.benjtissot.sellingmugs.repositories
 
-import com.benjtissot.sellingmugs.entities.User
+import com.benjtissot.sellingmugs.entities.local.User
 import com.benjtissot.sellingmugs.entities.printify.order.*
 import database
 import org.litote.kmongo.*

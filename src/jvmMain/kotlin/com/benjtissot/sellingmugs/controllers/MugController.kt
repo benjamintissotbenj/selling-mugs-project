@@ -2,8 +2,8 @@ package com.benjtissot.sellingmugs.controllers
 
 import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.USER_CUSTOM_MUG_LIST_PATH
-import com.benjtissot.sellingmugs.entities.Artwork
-import com.benjtissot.sellingmugs.entities.Mug
+import com.benjtissot.sellingmugs.entities.local.Artwork
+import com.benjtissot.sellingmugs.entities.local.Mug
 import com.benjtissot.sellingmugs.genUuid
 import com.benjtissot.sellingmugs.services.ArtworkService.Companion.deleteArtwork
 import com.benjtissot.sellingmugs.services.ArtworkService.Companion.getArtworkList

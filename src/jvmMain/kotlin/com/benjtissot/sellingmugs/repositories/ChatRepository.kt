@@ -1,6 +1,5 @@
 package com.benjtissot.sellingmugs.repositories
 
-import com.benjtissot.sellingmugs.entities.User
 import com.benjtissot.sellingmugs.entities.openAI.ChatLog
 import database
 import org.litote.kmongo.eq

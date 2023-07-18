@@ -5,7 +5,7 @@ import com.benjtissot.sellingmugs.ConfigConst
 import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.HOMEPAGE_PATH
 import com.benjtissot.sellingmugs.controllers.*
-import com.benjtissot.sellingmugs.entities.Session
+import com.benjtissot.sellingmugs.entities.local.Session
 import com.mongodb.ConnectionString
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
@@ -25,12 +25,9 @@ import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.ktor.util.logging.*
 import org.litote.kmongo.coroutine.coroutine
-import org.litote.kmongo.json
 import org.litote.kmongo.reactivestreams.KMongo
 import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
-import java.io.File
-import java.net.URI
 
 // Connection String for MongoDB in Heroku
 val connectionString: ConnectionString? = System.getenv(Const.MONGODB_URI_STRING)?.let {

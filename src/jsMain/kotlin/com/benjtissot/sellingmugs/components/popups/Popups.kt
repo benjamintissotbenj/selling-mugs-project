@@ -2,25 +2,18 @@ package com.benjtissot.sellingmugs.components.popups
 
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.createProduct.SweepImageComponent
-import com.benjtissot.sellingmugs.entities.Mug
+import com.benjtissot.sellingmugs.entities.local.Mug
 import com.benjtissot.sellingmugs.entities.printify.order.Order
 import csstype.*
 import emotion.react.css
-import kotlinx.coroutines.launch
 import mui.icons.material.AddShoppingCart
 import mui.lab.LoadingButton
 import mui.material.*
-import org.w3c.dom.Element
 import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLDivElement
-import org.w3c.dom.events.Event
 import react.FC
 import react.Props
-import react.dom.html.ReactHTML
 import react.dom.html.ReactHTML.div
-import react.dom.html.ReactHTML.img
-import react.useEffect
-import react.useRef
 
 external interface ConfirmCancelPopupProps: Props {
     var onClickCancel : () -> Unit

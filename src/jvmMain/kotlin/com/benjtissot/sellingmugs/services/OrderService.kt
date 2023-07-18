@@ -1,7 +1,8 @@
 package com.benjtissot.sellingmugs.services
 
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.entities.User
+import com.benjtissot.sellingmugs.entities.local.MugCartItem
+import com.benjtissot.sellingmugs.entities.local.User
 import com.benjtissot.sellingmugs.entities.printify.order.*
 import com.benjtissot.sellingmugs.repositories.*
 import com.benjtissot.sellingmugs.repositories.OrderRepository.Companion.getOrderPrintifyId
@@ -15,8 +16,6 @@ import com.stripe.model.checkout.Session.CustomerDetails
 import com.stripe.net.Webhook
 import io.ktor.client.call.*
 import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.response.*
 import io.ktor.util.logging.*
 
 private val LOG = KtorSimpleLogger("OrderService.kt")

@@ -1,7 +1,7 @@
 package com.benjtissot.sellingmugs.services
 
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.entities.Mug
+import com.benjtissot.sellingmugs.entities.local.Mug
 import com.benjtissot.sellingmugs.entities.printify.*
 import com.benjtissot.sellingmugs.repositories.MugRepository
 import io.ktor.client.call.*

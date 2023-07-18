@@ -2,7 +2,7 @@ package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.lists.CartListComponent
-import com.benjtissot.sellingmugs.entities.Cart
+import com.benjtissot.sellingmugs.entities.local.Cart
 import csstype.*
 import emotion.react.css
 import io.ktor.http.*

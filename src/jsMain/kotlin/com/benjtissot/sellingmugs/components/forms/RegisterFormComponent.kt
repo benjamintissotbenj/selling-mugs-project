@@ -2,7 +2,7 @@ package com.benjtissot.sellingmugs.components.forms
 
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.Const.ColorCode.BLUE
-import com.benjtissot.sellingmugs.entities.RegisterInfo
+import com.benjtissot.sellingmugs.entities.local.RegisterInfo
 import csstype.*
 import emotion.react.css
 import org.komputing.khash.sha256.extensions.sha256
