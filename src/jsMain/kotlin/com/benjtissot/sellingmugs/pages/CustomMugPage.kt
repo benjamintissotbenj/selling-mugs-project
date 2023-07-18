@@ -158,22 +158,6 @@ val CustomMugPage = FC<NavigationProps> { props ->
                     }
                     deleteFieldsOnSubmit = false
                 }
-
-                div {
-                    css {
-                        fontNormal()
-                        fontWeight = FontWeight.bold
-                    }
-                    +"OR"
-                }
-
-                GenerateMugsForm {
-                    onSubmit = { subject, artType ->
-                        scope.launch {
-                            createMugsForSubject(ChatRequestParams(subject, artType))
-                        }
-                    }
-                }
             }
 
 

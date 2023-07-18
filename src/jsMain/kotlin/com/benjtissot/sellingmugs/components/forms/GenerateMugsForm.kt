@@ -4,6 +4,8 @@ import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.Const.ColorCode.BLUE
 import csstype.*
 import emotion.react.css
+import mui.material.MenuItem
+import mui.material.Select
 import org.w3c.dom.HTMLFormElement
 import react.FC
 import react.Props
@@ -32,6 +34,7 @@ val GenerateMugsForm = FC<GenerateMugsFormProps> { props ->
     div {
         css {
             fullCenterColumnOriented()
+            width = 100.pct
         }
         form {
             css {
@@ -48,9 +51,17 @@ val GenerateMugsForm = FC<GenerateMugsFormProps> { props ->
                         formLabel()
                         width = 100.pct
                     }
-                    +"Subject"
+                    div {
+                        css {
+                            padding = 2.vh
+                        }
+                        +"Subject"
+                    }
                     input {
-                        formInputCss()
+                        css {
+                            formInput()
+                            fontNormal()
+                        }
                         type = InputType.text
                         onChange = {
                             subject = it.target.value
@@ -67,23 +78,54 @@ val GenerateMugsForm = FC<GenerateMugsFormProps> { props ->
                         width = 100.pct
                         marginBottom = 1.vw
                     }
-                    +"Art Type"
-                    textarea {
+                    div {
                         css {
-                            formInput()
-                            maskImage = Const.maskUrl as MaskImage /* this fixes the overflow:hidden in Chrome/Opera */
-                            height = 100.pct
+                            padding = 2.vh
                         }
-                        onChange = {
-                            imageType = it.target.value
+                        +"Art Type"
+                    }
+                    Select {
+                        // Attributes
+                        css {
+                            width = 50.pct
+                            minWidth = 110.px
+                            height = 3.rem
+                            maxHeight = 5.vh
+                            minHeight = 40.px
+                            color = NamedColor.black
+                            boxSizing = BoxSizing.borderBox
+                            fontNormal()
                         }
                         value = imageType
+                        onChange = { event, _ ->
+                            imageType = event.target.value
+                        }
+
+
+                        // Children, in the selector
+
+                        MenuItem {
+                            value = Const.StableDiffusionImageType.REALISTIC.type
+                            +"Realistic"
+                        }
+                        MenuItem {
+                            value = Const.StableDiffusionImageType.GEOMETRIC.type
+                            +"Geometric"
+                        }
+                        MenuItem {
+                            value = Const.StableDiffusionImageType.CARTOON_ILLUSTRATION.type
+                            +"Cartoon Illustration"
+                        }
                     }
                 }
             }
 
             input {
-                formInputCss(10.vw, 200.px, backColor = Color(BLUE.code()), frontColor = NamedColor.white)
+                css {
+                    formInput(10.vw, 200.px, backColor = Color(BLUE.code()), frontColor = NamedColor.white)
+                    marginTop = 2.vh
+                    cursor = Cursor.pointer
+                }
                 type = InputType.submit
                 value = "Generate mugs"
             }

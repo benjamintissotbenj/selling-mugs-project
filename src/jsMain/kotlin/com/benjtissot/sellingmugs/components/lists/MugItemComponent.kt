@@ -105,6 +105,7 @@ val MugItemGridComponent = FC<MugItemGridProps> {
             justifyContent = JustifyContent.center
             alignContent = AlignContent.center
             width = 90.pct
+            minHeight = 55.vh
             height = 1.5 * 90.pct
             marginBlock = 2.pct
             marginInline = 5.pct
