@@ -389,9 +389,9 @@ suspend fun saveCartToUser(userId: String) : HttpStatusCode {
 /**
  * Creates a request to the back-end to create mugs given a subject
  */
-suspend fun createMugsForSubject(params: ChatRequestParams): HttpStatusCode {
+suspend fun generateMugs(params: ChatRequestParams): HttpResponse {
     return jsonClient.post(OPEN_AI_PATH){
         contentType(ContentType.Application.Json)
         setBody(params)
-    }.status
+    }
 }

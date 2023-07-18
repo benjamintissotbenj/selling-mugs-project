@@ -7,6 +7,7 @@ import com.benjtissot.sellingmugs.components.lists.ManageUsersComponent
 import com.benjtissot.sellingmugs.entities.local.User
 import csstype.*
 import emotion.react.css
+import io.ktor.client.call.*
 import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
@@ -58,9 +59,18 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                     onCreatingMugs = {subject, artType ->
                         props.setAlert(infoAlert("You are creating mugs on the subject of $subject in a ${artType.type} style", "Mug Creation"))
                     }
-                    onMugsCreationResponse = { httpStatusCode ->
-                        when (httpStatusCode) {
-                            HttpStatusCode.OK -> props.setAlert(successAlert("You have successfully created your mugs"))
+                    onMugsCreationResponse = { httpResponse ->
+                        when (httpResponse.status) {
+                            HttpStatusCode.OK -> {
+                                scope.launch {
+                                    val statusCodes : List<HttpStatusCode> = httpResponse.body()
+                                    statusCodes.forEach { status ->
+                                        println(status.print())
+                                    }
+                                }
+                                props.setAlert(successAlert("You have successfully created your mugs"))
+                            }
+                            Const.HttpStatusCode_OpenAIUnavailable -> props.setAlert(errorAlert("OpenAI is unavailable, please try later"))
                             else -> props.setAlert(errorAlert("There has been a problem during creation. Consult Logs."))
                         }
 

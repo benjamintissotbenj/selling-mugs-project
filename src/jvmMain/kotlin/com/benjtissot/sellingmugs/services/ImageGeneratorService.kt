@@ -58,6 +58,7 @@ class ImageGeneratorService {
                         val imageUploadedToPrintify =
                             uploadImageFromSource(variation.getCleanName(), stableDiffusionImageSource)
 
+                        // TODO: create function for this, log mug creation status in DB
                         imageUploadedToPrintify?.let {
                             // Create mug from image
                             // TODO: description from chatGPT here
@@ -65,7 +66,7 @@ class ImageGeneratorService {
                             val productPrintifyId = PrintifyService.createProduct(mugProductInfo)
                             productPrintifyId?.let { id ->
                                 // Get all generated mug visuals
-                                val mug = MugService.getMugByPrintifyId(id)?.let { mug ->
+                                MugService.getMugByPrintifyId(id)?.let { mug ->
                                     MugService.updateArtworkImage(
                                         mug.artwork,
                                         id
@@ -96,7 +97,7 @@ class ImageGeneratorService {
                 LOG.debug("All coroutines done :")
                 LOG.debug("{")
                 listOfStatuses.forEach { status ->
-                    LOG.debug("\tStatus ${status.value}, ${status.description};")
+                    LOG.debug(status.print())
                 }
                 LOG.debug("}")
                 listOfStatuses
