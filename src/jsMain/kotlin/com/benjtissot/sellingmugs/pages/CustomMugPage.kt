@@ -51,7 +51,6 @@ val CustomMugPage = FC<NavigationProps> { props ->
             css {
                 width = 40.pct
                 height = 100.pct
-                marginLeft = 2.vw
                 contentCenteredHorizontally()
             }
 
@@ -60,6 +59,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
                     width = 100.pct
                     if (isAdmin){
                         contentCenteredVertically()
+                        justifyContent = JustifyContent.center
                     } else {
                         contentCenteredHorizontally()
                     }
@@ -72,6 +72,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
                     refresh = true
                 }
 
+                // Used as a spacer
                 div {
                     css {
                         height = 1.vw
@@ -208,14 +209,14 @@ val CustomMugPage = FC<NavigationProps> { props ->
         div {
             css {
                 width = 60.pct
-                marginTop = 4.vh
+                marginTop = 2.vh
                 contentCenteredHorizontally()
             }
             div {
                 css {
                     boxNormalBig()
                     maxHeight = "fit-content".unsafeCast<MaxHeight>()
-                    margin = "auto".unsafeCast<Margin>()
+                    boxSizing = BoxSizing.borderBox
                     boxShade()
                     contentCenteredVertically()
                     contentCenteredHorizontally()

@@ -88,7 +88,11 @@ val CreateProductForm = FC<CreateProductFormProps> { props ->
             }
 
             input {
-                formInputCss(10.vw, 200.px, backColor = Color(BLUE.code()), frontColor = NamedColor.white)
+
+                css {
+                    formInput(10.vw, 200.px, backColor = Color(BLUE.code()), frontColor = NamedColor.white)
+                    marginTop = 2.vh
+                }
                 type = InputType.submit
                 value = "Create Product"
             }

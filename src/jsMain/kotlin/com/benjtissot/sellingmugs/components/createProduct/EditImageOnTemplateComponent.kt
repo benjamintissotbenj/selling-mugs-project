@@ -65,6 +65,7 @@ val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
             height = "fit-content".unsafeCast<Height>()
             padding = 0.px
             margin = 16.px
+            boxSizing = BoxSizing.borderBox
         }
 
         // Template images + y slider
