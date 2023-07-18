@@ -38,3 +38,6 @@ class ImageRequest(
         }
     }
 }
+
+@Serializable
+class ImageFetchRequest(val key: String)

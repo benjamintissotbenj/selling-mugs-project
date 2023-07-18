@@ -137,10 +137,12 @@ class Const {
                 "This website gives you the possibility to create fake orders as well as real orders, since the idea was " +
                 "that people could use the website without actually spending money. "
 
-        const val promptResponseStructure = "Structure of the response should be a JSON object containing the different " +
-                "variations, with a unique field called variations containing the variation objects . Each object has " +
-                "two fields, one that contains one string with all the variation parameters (under the name parameters) " +
-                "and a second that contains the narrative (under the name narrative). Based on the above structures, " +
+        const val promptResponseStructure = "Structure of a Variation object : { name, parameters, narrative }. " +
+                "The structure of the response should be a JSON object containing the different " +
+                "variations, with a unique field called variations containing the Variation objects . Each object has " +
+                "three fields, one that contains the name you give to this variation (under the name name), " +
+                "one that contains one string with all the variation parameters (under the name parameters) " +
+                "and a third that contains the narrative (under the name narrative). Based on the above structures, " +
                 "create 2 different variations for the subject. Then, write a detailed narrative of about 400 characters " +
                 "for each variation and store it in the JSON under the name prompt. The response should contain the JSON " +
                 "object and only the JSON object, so that the response can be parsed. Subject of the prompt is: "

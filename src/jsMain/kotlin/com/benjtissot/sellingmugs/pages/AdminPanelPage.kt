@@ -26,7 +26,6 @@ val AdminPanelPage = FC<NavigationProps> { props ->
         scope.launch {
         }
     }
-    var productPopupOpen by useState(false)
 
     var userList by useState(emptyList<User>())
 

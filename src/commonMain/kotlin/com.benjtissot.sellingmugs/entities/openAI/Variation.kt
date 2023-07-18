@@ -9,8 +9,12 @@ class ChatResponseContent(
 
 @Serializable
 class Variation(
+    val name: String,
     val parameters: String,
     val narrative: String,
 ) {
+    fun getCleanName(): String{
+        return this.name.substringAfter(":")
+    }
 }
 
