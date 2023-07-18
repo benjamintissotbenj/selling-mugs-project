@@ -39,11 +39,11 @@ var openAIClient : HttpClient = HttpClient {
 /**
  * Generates a stable diffusion prompt on the subject of the given parameter
  */
-suspend fun apiGenerateStableDiffusionPrompt(params: ChatRequestParams) : HttpResponse {
+suspend fun apiGenerateStableDiffusionPrompt(request: ChatRequest) : HttpResponse {
     return openAIClient.post("chat/completions"){
         contentType(ContentType.Application.Json)
         setBody(
-            ChatRequest.generateFromParams(params)
+            request
         )
     }
 }

@@ -2,24 +2,21 @@ package com.benjtissot.sellingmugs.services
 
 import com.benjtissot.sellingmugs.apiGenerateImage
 import com.benjtissot.sellingmugs.apiGenerateStableDiffusionPrompt
-import com.benjtissot.sellingmugs.entities.openAI.ChatRequestParams
-import com.benjtissot.sellingmugs.entities.openAI.ChatResponse
-import com.benjtissot.sellingmugs.entities.openAI.ChatResponseContent
-import com.benjtissot.sellingmugs.entities.openAI.Variation
+import com.benjtissot.sellingmugs.entities.openAI.*
 import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
 import com.benjtissot.sellingmugs.entities.printify.ImageForUploadReceive
 import com.benjtissot.sellingmugs.entities.printify.MugProductInfo
 import com.benjtissot.sellingmugs.entities.stableDiffusion.ImageResponse
+import com.benjtissot.sellingmugs.genUuid
+import com.benjtissot.sellingmugs.repositories.ChatRepository
 import io.ktor.client.call.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.response.*
 import io.ktor.util.logging.*
+import kotlinx.datetime.Clock
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.litote.kmongo.json
-
 private val LOG = KtorSimpleLogger("ImageGeneratorService.kt")
 
 class ImageGeneratorService {
@@ -61,6 +58,7 @@ class ImageGeneratorService {
 
         /**
          * Generates variations from a given subject
+         * @param params the [ChatRequestParams] used
          * @return a [List] object that contains [Variation] if the request is a
          * success, and throws an error that contains the appropriate message otherwise.
          */
@@ -69,16 +67,20 @@ class ImageGeneratorService {
             var apiResponse : HttpResponse
             var exception: Exception?
             var numberOfTries = 0
+            val chatRequest = ChatRequest.generateFromParams(params)
             do {
                 numberOfTries ++
                 LOG.debug("Sending request to API, restarting if Service Unavailable")
-                apiResponse = apiGenerateStableDiffusionPrompt(params)
+                apiResponse = apiGenerateStableDiffusionPrompt(chatRequest)
                 exception = null
                 if (apiResponse.status == HttpStatusCode.OK){
                     try {
                         val responseObject = apiResponse.body<ChatResponse>()
                         val content = responseObject.choices[0].message.content
                         val chatResponseContent = Json.decodeFromString<ChatResponseContent>(content)
+
+                        insertNewChatLog(chatRequest, chatResponseContent, "Success")
+
                         return chatResponseContent.variations
                     } catch (e: Exception){
                         exception = e
@@ -88,12 +90,13 @@ class ImageGeneratorService {
                 // Runs a maximum of 5 times while there is an exception or unavailable service
             } while (numberOfTries <= 5 && (exception != null || apiResponse.status == HttpStatusCode.ServiceUnavailable))
 
-            // TODO throw custom exception
-            throw Exception(if (exception != null){
+            val errorMessage = if (exception != null){
                 "Exceeded five tries. Last Exception was ${exception.json}"}
             else {
                 "Exceeded five tries. Last API response status was ${apiResponse.status}"
-            } )
+            }
+            insertNewChatLog(chatRequest, null, errorMessage)
+            throw Exception(errorMessage)
         }
 
         @Throws
@@ -104,7 +107,6 @@ class ImageGeneratorService {
                 return imageResponse.output[0]
             } catch (e: Exception) {
                 e.printStackTrace()
-                // TODO throw custom exception
                 throw e
             }
         }
@@ -114,6 +116,17 @@ class ImageGeneratorService {
          */
         private suspend fun uploadImageFromSource(fileName: String, imageSource: String) : ImageForUploadReceive? {
             return PrintifyService.uploadImage(ImageForUpload(file_name = fileName, url = imageSource), true)
+        }
+
+
+        /******************************************
+         *
+         * ************ Helpers ***************** *
+         *
+         *****************************************/
+
+        private suspend fun insertNewChatLog(chatRequest: ChatRequest, chatResponseContent: ChatResponseContent?, message: String){
+            ChatRepository.insertChatLog(ChatLog(genUuid(), chatRequest, chatResponseContent, message, Clock.System.now()))
         }
 
     }

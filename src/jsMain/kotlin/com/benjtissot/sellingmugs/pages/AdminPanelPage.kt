@@ -56,18 +56,16 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                 }
 
                 CreateProductComponent {
-                    setAlert = props.setAlert
                     navigate = props.navigate
-                    onProductCreatedSuccess = { productId, productName ->
-                        setAlert(successAlert( "Product $productName created successfully !"))
-                        LOG.debug("Created product $productId")
+                    onCreatingMugs = {subject, artType ->
+                        props.setAlert(infoAlert("You are creating mugs on the subject of $subject in a ${artType.type} style", "Mug Creation"))
                     }
-                    onProductCreatedFailed = { _ ->
-                        setAlert(errorAlert( "Could not create product"))
-                        LOG.debug("Could not create product")
-                    }
-                    onClickClose = {
-                        productPopupOpen = false
+                    onMugsCreationResponse = { httpStatusCode ->
+                        when (httpStatusCode) {
+                            HttpStatusCode.OK -> props.setAlert(successAlert("You have successfully created your mugs"))
+                            else -> props.setAlert(errorAlert("There has been a problem during creation. Consult Logs."))
+                        }
+
                     }
                 }
 

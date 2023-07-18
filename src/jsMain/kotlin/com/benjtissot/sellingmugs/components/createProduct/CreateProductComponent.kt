@@ -29,9 +29,8 @@ import react.useState
 private val LOG = KtorSimpleLogger("CreateProductComponent.kt")
 
 external interface CreateProductProps : NavigationProps {
-    var onProductCreatedSuccess : (productId: String, productName: String) -> Unit
-    var onProductCreatedFailed : (productId: String) -> Unit
-    var onClickClose: () -> Unit
+    var onCreatingMugs: (String, Const.StableDiffusionImageType) -> Unit
+    var onMugsCreationResponse: (HttpStatusCode) -> Unit
 }
 
 val CreateProductComponent = FC<CreateProductProps> { props ->
@@ -76,8 +75,9 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
 
                 GenerateMugsForm {
                     onSubmit = { subject, artType ->
+                        props.onCreatingMugs(subject, artType)
                         scope.launch {
-                            createMugsForSubject(ChatRequestParams(subject, artType))
+                            props.onMugsCreationResponse(createMugsForSubject(ChatRequestParams(subject, artType)))
                         }
                     }
                 }
@@ -99,8 +99,6 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
                     }
                 }
             }
-
-
         }
     }
 }
