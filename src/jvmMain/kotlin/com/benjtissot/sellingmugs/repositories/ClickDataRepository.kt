@@ -1,8 +1,8 @@
 package com.benjtissot.sellingmugs.repositories
 
 import com.benjtissot.sellingmugs.Const
-import com.benjtissot.sellingmugs.entities.Click
-import com.benjtissot.sellingmugs.entities.ClickData
+import com.benjtissot.sellingmugs.entities.local.Click
+import com.benjtissot.sellingmugs.entities.local.ClickData
 import com.benjtissot.sellingmugs.genUuid
 import database
 import org.litote.kmongo.eq

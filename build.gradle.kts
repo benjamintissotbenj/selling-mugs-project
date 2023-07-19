@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.config.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
-val kotlinVersion = "1.7.20-Beta"
+val kotlinVersion = "1.8.20"
 val serializationVersion = "1.3.3"
 val ktorVersion = "2.0.3"
 val logbackVersion = "1.2.11"
@@ -62,7 +62,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.2")
             }
         }
 
@@ -100,6 +100,8 @@ kotlin {
                 implementation("com.stripe:stripe-java:22.23.1")
                 // GSON
                 implementation("com.google.code.gson:gson:2.8.5")
+
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2")
             }
         }
 
@@ -109,7 +111,7 @@ kotlin {
                 implementation(kotlin("test-annotations-common"))
                 implementation("org.litote.kmongo:kmongo-coroutine-serialization:$kmongoVersion")
                 implementation("io.ktor:ktor-server-test-host:$ktorVersion")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.2")
             }
         }
 
@@ -142,7 +144,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("test-js"))
                 implementation(kotlin("test-annotations-common"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.2")
             }
         }
     }

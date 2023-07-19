@@ -1,7 +1,7 @@
 package com.benjtissot.sellingmugs.services
 
 import com.benjtissot.sellingmugs.controllers.artworkCollection
-import com.benjtissot.sellingmugs.entities.Artwork
+import com.benjtissot.sellingmugs.entities.local.Artwork
 import org.litote.kmongo.eq
 import org.litote.kmongo.upsert
 

@@ -4,9 +4,12 @@ import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.buttons.LogoutButtonComponent
 import com.benjtissot.sellingmugs.components.createProduct.CreateProductComponent
 import com.benjtissot.sellingmugs.components.lists.ManageUsersComponent
-import com.benjtissot.sellingmugs.entities.User
+import com.benjtissot.sellingmugs.entities.local.User
+import com.benjtissot.sellingmugs.entities.openAI.CustomStatusCode
 import csstype.*
 import emotion.react.css
+import io.ktor.client.call.*
+import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
 import mui.icons.material.PersonOutline
@@ -24,7 +27,6 @@ val AdminPanelPage = FC<NavigationProps> { props ->
         scope.launch {
         }
     }
-    var productPopupOpen by useState(false)
 
     var userList by useState(emptyList<User>())
 
@@ -54,18 +56,25 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                 }
 
                 CreateProductComponent {
-                    setAlert = props.setAlert
                     navigate = props.navigate
-                    onProductCreatedSuccess = { productId, productName ->
-                        setAlert(successAlert( "Product $productName created successfully !"))
-                        LOG.debug("Created product $productId")
+                    onCreatingMugs = {subject, artType ->
+                        props.setAlert(infoAlert("You are creating mugs on the subject of $subject in a ${artType.type} style", "Mug Creation"))
                     }
-                    onProductCreatedFailed = { _ ->
-                        setAlert(errorAlert( "Could not create product"))
-                        LOG.debug("Could not create product")
-                    }
-                    onClickClose = {
-                        productPopupOpen = false
+                    onMugsCreationResponse = { httpResponse ->
+                        when (httpResponse.status) {
+                            HttpStatusCode.OK -> {
+                                scope.launch {
+                                    val statusCodes : List<CustomStatusCode> = httpResponse.body()
+                                    statusCodes.forEach { status ->
+                                        println(status.print())
+                                    }
+                                }
+                                props.setAlert(successAlert("You have successfully created your mugs"))
+                            }
+                            Const.HttpStatusCode_OpenAIUnavailable -> props.setAlert(errorAlert("OpenAI is unavailable, please try later"))
+                            else -> props.setAlert(errorAlert("There has been a problem during creation. Consult Logs."))
+                        }
+
                     }
                 }
 
@@ -111,15 +120,14 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                     navigate = props.navigate
                 }
             }
+
         } else {
             div {
                 divDefaultCss()
                 +"You must be an admin to view this page"
             }
         }
-
     }
-
 }
 
 fun selectBase64ContentFromURLData(input : String) : String {

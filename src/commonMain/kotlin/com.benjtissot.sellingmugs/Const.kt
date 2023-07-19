@@ -1,9 +1,21 @@
 package com.benjtissot.sellingmugs
 
+import io.ktor.http.*
+
 class Const {
     enum class UserType(var type: String) {
         CLIENT("CLIENT"),
         ADMIN("ADMIN"),;
+
+        override fun toString(): String {
+            return type
+        }
+    }
+    enum class StableDiffusionImageType(var type: String) {
+        REALISTIC("REALISTIC"),
+        CARTOON_ILLUSTRATION("CARTOON_ILLUSTRATION"),
+        GEOMETRIC("GEOMETRIC"),
+        ;
 
         override fun toString(): String {
             return type
@@ -68,6 +80,8 @@ class Const {
         const val MONGODB_URI_STRING = "MONGODB_URI"
         const val MONGODB_DBNAME_STRING = "MONGODB_DBNAME"
         const val IS_PRODUCTION_STRING = "ORG_GRADLE_PROJECT_isProduction"
+        const val OPENAI_API_KEY = "OPENAI_API_KEY"
+        const val STABLE_DIFFUSION_API_KEY = "STABLE_DIFFUSION_API_KEY"
 
         // Filter Order
         const val ORDER_FILTER_ALL = "All"
@@ -101,6 +115,9 @@ class Const {
         const val mugTitlePrefill = "Mug Title"
         const val mugDescriptionPrefill = "This 11oz mug is made of brilliant white ceramic material with AAA+ ORCA coating, making them excellent for printing vibrant colors. They are easy to clean, microwave-safe, and the orca coating mugs can withstand up to 3000 cycles in the dishwasher."
 
+        // Mug Subject Prefill text
+        const val mugSubjectPrefill = "Urban Photography"
+
         // Hidden overflow card url
         const val maskUrl = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);"
 
@@ -123,5 +140,33 @@ class Const {
                 "This includes the possibility to customise mugs, to order mugs with existing designs and other things. " +
                 "This website gives you the possibility to create fake orders as well as real orders, since the idea was " +
                 "that people could use the website without actually spending money. "
+
+        fun getPromptResponseStructure(numberOfVariations: Int) : String {
+            return "Structure of a Variation object : { name, parameters, narrative }. " +
+                    "The structure of the response should be a JSON object containing the different " +
+                    "variations, with a unique field called variations containing the Variation objects . Each object has " +
+                    "three fields, one that contains the name you give to this variation (under the name name), " +
+                    "one that contains one string with all the variation parameters (under the name parameters) " +
+                    "and a third that contains the narrative (under the name narrative). Based on the above structures, " +
+                    "create $numberOfVariations different variations for the subject. Then, write a detailed narrative of about 400 characters " +
+                    "for each variation and store it in the JSON under the name prompt. The response should contain the JSON " +
+                    "object and only the JSON object, so that the response can be parsed. Subject of the prompt is: "
+        }
+
+        fun getRealisticStructure() : String {
+            return "Structure of a Stable Diffusion prompt : (subject of the image), (camera type), (camera lens type), (time of day), (style of photography), (Realism Level), (Lighting). "
+        }
+
+        fun getGeometricStructure() : String {
+            return "Structure of a Stable Diffusion prompt : (subject of the image), (most appropriate shapes for the subject), (symmetry), (computer generated or human drawn), (Realism Level), (Lighting). "
+        }
+        fun getCartoonStructure() : String {
+            return "Structure of a Stable Diffusion prompt : (subject of the image), (drawing type), (illustration style), (time of day), (known artist style), (Realism Level), (Lighting). "
+        }
+
+        val HttpStatusCode_OpenAIUnavailable = HttpStatusCode(80, "OpenAI Server is unavailable, please try later")
+        val HttpStatusCode_ImageUploadFail = HttpStatusCode(91, "Image Upload failed")
+        val HttpStatusCode_ProductCreationFailed = HttpStatusCode(92, "Product Creation Failed")
+        val HttpStatusCode_ProductPublicationFailed = HttpStatusCode(93, "Product Publication Failed")
     }
 }

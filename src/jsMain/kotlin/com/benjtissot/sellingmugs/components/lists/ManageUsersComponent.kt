@@ -1,12 +1,9 @@
 package com.benjtissot.sellingmugs.components.lists
 
-import com.benjtissot.sellingmugs.deleteUser
-import com.benjtissot.sellingmugs.entities.User
+import com.benjtissot.sellingmugs.entities.local.User
 import com.benjtissot.sellingmugs.fontNormalPlus
-import com.benjtissot.sellingmugs.scope
 import csstype.*
 import emotion.react.css
-import kotlinx.coroutines.launch
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div

@@ -1,6 +1,7 @@
 package com.benjtissot.sellingmugs.components.lists
 
 import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.entities.local.MugCartItem
 import csstype.*
 import emotion.react.css
 import mui.icons.material.Add

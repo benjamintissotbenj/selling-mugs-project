@@ -1,6 +1,7 @@
 package com.benjtissot.sellingmugs.controllers
 
 import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.entities.local.MugCartItem
 import com.benjtissot.sellingmugs.entities.printify.order.Order
 import com.benjtissot.sellingmugs.entities.printify.order.PushResultSerializer
 import com.benjtissot.sellingmugs.entities.printify.order.StoredOrderPushFailed
@@ -8,9 +9,7 @@ import com.benjtissot.sellingmugs.repositories.OrderRepository
 import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.services.OrderService
 import com.benjtissot.sellingmugs.services.SessionService.Companion.getSession
-import com.stripe.exception.SignatureVerificationException
 import com.stripe.model.Event
-import com.stripe.net.Webhook
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*

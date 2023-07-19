@@ -4,7 +4,7 @@ import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.colDefault
 import com.benjtissot.sellingmugs.components.createProduct.HoverImageComponent
 import com.benjtissot.sellingmugs.contentCenteredHorizontally
-import com.benjtissot.sellingmugs.entities.Mug
+import com.benjtissot.sellingmugs.entities.local.Mug
 import com.benjtissot.sellingmugs.fontBig
 import csstype.*
 import emotion.react.css

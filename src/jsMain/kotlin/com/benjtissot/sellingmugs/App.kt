@@ -1,7 +1,7 @@
 package com.benjtissot.sellingmugs
 
 import com.benjtissot.sellingmugs.components.highLevel.AlertComponent
-import com.benjtissot.sellingmugs.entities.Session
+import com.benjtissot.sellingmugs.entities.local.Session
 import com.benjtissot.sellingmugs.pages.*
 import io.ktor.util.logging.*
 import kotlinx.browser.document

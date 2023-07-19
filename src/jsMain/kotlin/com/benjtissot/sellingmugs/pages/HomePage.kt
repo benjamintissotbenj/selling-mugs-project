@@ -3,8 +3,8 @@ package com.benjtissot.sellingmugs.pages
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.lists.MugListComponent
 import com.benjtissot.sellingmugs.components.popups.MugDetailsPopup
-import com.benjtissot.sellingmugs.entities.Mug
-import com.benjtissot.sellingmugs.entities.Session
+import com.benjtissot.sellingmugs.entities.local.Mug
+import com.benjtissot.sellingmugs.entities.local.Session
 import kotlinx.coroutines.launch
 import org.w3c.dom.HTMLDivElement
 import react.FC

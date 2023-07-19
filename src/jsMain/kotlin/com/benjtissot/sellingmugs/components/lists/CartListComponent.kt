@@ -1,6 +1,6 @@
 package com.benjtissot.sellingmugs.components.lists
 
-import com.benjtissot.sellingmugs.MugCartItem
+import com.benjtissot.sellingmugs.entities.local.MugCartItem
 import com.benjtissot.sellingmugs.fontBig
 import csstype.*
 import emotion.react.css

@@ -2,7 +2,7 @@ package com.benjtissot.sellingmugs.pages
 
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.forms.LoginFormComponent
-import com.benjtissot.sellingmugs.entities.LoginInfo
+import com.benjtissot.sellingmugs.entities.local.LoginInfo
 import csstype.*
 import emotion.react.css
 import io.ktor.client.call.*
@@ -16,7 +16,6 @@ import react.FC
 import react.dom.html.ReactHTML.button
 import react.dom.html.ReactHTML.div
 import react.router.NavigateFunction
-import react.router.useNavigate
 
 private val LOG = KtorSimpleLogger("loginPage.kt")
 

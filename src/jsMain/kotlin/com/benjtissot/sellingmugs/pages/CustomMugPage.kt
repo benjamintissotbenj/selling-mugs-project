@@ -5,6 +5,8 @@ import com.benjtissot.sellingmugs.components.createProduct.EditImageOnTemplateCo
 import com.benjtissot.sellingmugs.components.createProduct.ImageDrop
 import com.benjtissot.sellingmugs.components.createProduct.SweepImageComponent
 import com.benjtissot.sellingmugs.components.forms.CreateProductForm
+import com.benjtissot.sellingmugs.components.forms.GenerateMugsForm
+import com.benjtissot.sellingmugs.entities.openAI.ChatRequestParams
 import com.benjtissot.sellingmugs.entities.printify.*
 import csstype.*
 import emotion.react.css
@@ -41,7 +43,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
         css {
             contentCenteredVertically()
             height = 100.pct
-            width = 100.pct
+            width = 98.pct
         }
 
         // Image and drag-and-drop container
@@ -49,7 +51,6 @@ val CustomMugPage = FC<NavigationProps> { props ->
             css {
                 width = 40.pct
                 height = 100.pct
-                marginLeft = 2.vw
                 contentCenteredHorizontally()
             }
 
@@ -58,6 +59,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
                     width = 100.pct
                     if (isAdmin){
                         contentCenteredVertically()
+                        justifyContent = JustifyContent.center
                     } else {
                         contentCenteredHorizontally()
                     }
@@ -70,6 +72,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
                     refresh = true
                 }
 
+                // Used as a spacer
                 div {
                     css {
                         height = 1.vw
@@ -190,14 +193,14 @@ val CustomMugPage = FC<NavigationProps> { props ->
         div {
             css {
                 width = 60.pct
-                marginTop = 4.vh
+                marginTop = 2.vh
                 contentCenteredHorizontally()
             }
             div {
                 css {
                     boxNormalBig()
                     maxHeight = "fit-content".unsafeCast<MaxHeight>()
-                    margin = "auto".unsafeCast<Margin>()
+                    boxSizing = BoxSizing.borderBox
                     boxShade()
                     contentCenteredVertically()
                     contentCenteredHorizontally()

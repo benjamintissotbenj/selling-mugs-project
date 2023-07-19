@@ -1,11 +1,9 @@
 package com.benjtissot.sellingmugs.repositories
 
-import com.benjtissot.sellingmugs.controllers.artworkCollection
-import com.benjtissot.sellingmugs.entities.Artwork
-import com.benjtissot.sellingmugs.entities.Mug
-import com.benjtissot.sellingmugs.entities.User
-import com.benjtissot.sellingmugs.entities.UserCustomMugList
-import com.benjtissot.sellingmugs.entities.printify.order.Order
+import com.benjtissot.sellingmugs.entities.local.Artwork
+import com.benjtissot.sellingmugs.entities.local.Mug
+import com.benjtissot.sellingmugs.entities.local.User
+import com.benjtissot.sellingmugs.entities.local.UserCustomMugList
 
 import database
 import org.litote.kmongo.*

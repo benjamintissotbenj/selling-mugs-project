@@ -1,16 +1,11 @@
 package com.benjtissot.sellingmugs.services
 
 import com.benjtissot.sellingmugs.controllers.mugCollection
-import com.benjtissot.sellingmugs.entities.Artwork
-import com.benjtissot.sellingmugs.entities.Mug
-import com.benjtissot.sellingmugs.entities.UserCustomMugList
-import com.benjtissot.sellingmugs.entities.printify.order.UserOrderList
+import com.benjtissot.sellingmugs.entities.local.Artwork
+import com.benjtissot.sellingmugs.entities.local.Mug
+import com.benjtissot.sellingmugs.entities.local.UserCustomMugList
 import com.benjtissot.sellingmugs.repositories.MugRepository
-import com.benjtissot.sellingmugs.repositories.OrderRepository
-import com.benjtissot.sellingmugs.repositories.userCustomMugCollection
 import org.litote.kmongo.eq
-import org.litote.kmongo.push
-import org.litote.kmongo.upsert
 
 class MugService {
     companion object {

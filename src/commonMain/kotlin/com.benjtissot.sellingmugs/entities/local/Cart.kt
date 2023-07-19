@@ -1,7 +1,6 @@
-package com.benjtissot.sellingmugs.entities
+package com.benjtissot.sellingmugs.entities.local
 
 import com.benjtissot.sellingmugs.CART_OBJECT_PATH
-import com.benjtissot.sellingmugs.MugCartItem
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

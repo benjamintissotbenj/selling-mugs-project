@@ -1,4 +1,4 @@
-package com.benjtissot.sellingmugs.entities
+package com.benjtissot.sellingmugs.entities.local
 
 import com.benjtissot.sellingmugs.SESSION_OBJECT_PATH
 import kotlinx.serialization.SerialName
