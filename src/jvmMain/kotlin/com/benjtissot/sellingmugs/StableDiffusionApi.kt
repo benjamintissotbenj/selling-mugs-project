@@ -42,7 +42,7 @@ var stableDiffusionClient : HttpClient = HttpClient {
  * Generates a stable diffusion image based on the prompt
  */
 suspend fun apiGenerateImage(prompt: String) : HttpResponse {
-    val imageRequest = ImageRequest.generate(System.getenv("STABLE_DIFFUSION_API_KEY_TEST"), prompt)
+    val imageRequest = ImageRequest.generate(System.getenv(Const.STABLE_DIFFUSION_API_KEY), prompt)
     val httpResponse = stableDiffusionClient.post("text2img"){
         contentType(ContentType.Application.Json)
         setBody(
@@ -57,7 +57,7 @@ suspend fun apiGenerateImage(prompt: String) : HttpResponse {
  * Generates a stable diffusion image based on the prompt
  */
 suspend fun apiFetchImage(id: Int) : HttpResponse {
-    val imageRequest = ImageFetchRequest(System.getenv("STABLE_DIFFUSION_API_KEY_TEST"))
+    val imageRequest = ImageFetchRequest(System.getenv(Const.STABLE_DIFFUSION_API_KEY))
     val httpResponse = stableDiffusionClient.post("fetch/$id"){
         contentType(ContentType.Application.Json)
         setBody(

@@ -108,9 +108,8 @@ val GenerateMugsForm = FC<GenerateMugsFormProps> { props ->
                 label {
                     css {
                         formLabel()
-                        height = 10.vw
                         width = 100.pct
-                        marginBottom = 1.vw
+                        marginBottom = 1.vh
                     }
                     div {
                         css {

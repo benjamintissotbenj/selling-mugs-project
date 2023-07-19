@@ -30,7 +30,7 @@ var openAIClient : HttpClient = HttpClient {
     }
     defaultRequest {
         url("https://fast-earth-36264.herokuapp.com/https://api.openai.com/v1/")
-        header("Authorization", "Bearer ${System.getenv("OPENAI_API_KEY_TEST")}")
+        header("Authorization", "Bearer ${System.getenv(Const.OPENAI_API_KEY)}")
         header("origin", "${ConfigConst.HOST}:${ConfigConst.PORT}")  // needed for this to work,
     }
 }

@@ -80,6 +80,8 @@ class Const {
         const val MONGODB_URI_STRING = "MONGODB_URI"
         const val MONGODB_DBNAME_STRING = "MONGODB_DBNAME"
         const val IS_PRODUCTION_STRING = "ORG_GRADLE_PROJECT_isProduction"
+        const val OPENAI_API_KEY = "OPENAI_API_KEY"
+        const val STABLE_DIFFUSION_API_KEY = "STABLE_DIFFUSION_API_KEY"
 
         // Filter Order
         const val ORDER_FILTER_ALL = "All"
