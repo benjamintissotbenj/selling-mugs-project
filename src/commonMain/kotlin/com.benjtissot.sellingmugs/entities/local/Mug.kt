@@ -1,4 +1,4 @@
-package com.benjtissot.sellingmugs.entities
+package com.benjtissot.sellingmugs.entities.local
 
 import com.benjtissot.sellingmugs.MUG_OBJECT_PATH
 import kotlinx.serialization.SerialName
@@ -10,7 +10,8 @@ data class Mug(@SerialName("_id") val id: String,
                val name: String,
                var description: String,
                val price: Float,
-               var artwork: Artwork){
+               var artwork: Artwork
+){
 
     fun getBestPictureSrc() : String {
         return artwork.previewURLs.let {if (it.isEmpty()) artwork.imageURL else it[0]}

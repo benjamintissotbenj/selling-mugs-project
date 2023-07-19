@@ -3,7 +3,7 @@ package com.benjtissot.sellingmugs.pages
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.highLevel.LoadingComponent
 import com.benjtissot.sellingmugs.components.popups.ConfirmCheckoutPopup
-import com.benjtissot.sellingmugs.entities.Cart
+import com.benjtissot.sellingmugs.entities.local.Cart
 import com.benjtissot.sellingmugs.entities.printify.order.PrintifyOrderPushFail
 import com.benjtissot.sellingmugs.entities.printify.order.PrintifyOrderPushResult
 import com.benjtissot.sellingmugs.entities.printify.order.PrintifyOrderPushSuccess

@@ -1,10 +1,9 @@
 package com.benjtissot.sellingmugs.controllers
 
-import com.benjtissot.sellingmugs.CHECKOUT_PATH
 import com.benjtissot.sellingmugs.LOGIN_BACKEND_PATH
 import com.benjtissot.sellingmugs.LOGOUT_PATH
 import com.benjtissot.sellingmugs.REGISTER_PATH
-import com.benjtissot.sellingmugs.entities.Session
+import com.benjtissot.sellingmugs.entities.local.Session
 import com.benjtissot.sellingmugs.services.BadCredentialsException
 import com.benjtissot.sellingmugs.services.LoginService.Companion.login
 import com.benjtissot.sellingmugs.services.LoginService.Companion.logout
@@ -20,7 +19,6 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.ktor.util.logging.*
-import redirectPath
 import java.util.*
 
 private val LOG = KtorSimpleLogger("LoginController.kt")

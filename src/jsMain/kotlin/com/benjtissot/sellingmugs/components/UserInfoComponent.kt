@@ -1,29 +1,17 @@
 package com.benjtissot.sellingmugs.components
 
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.components.highLevel.PopupHeaderComponent
-import com.benjtissot.sellingmugs.components.forms.CreateProductForm
 import com.benjtissot.sellingmugs.components.lists.MugListComponent
 import com.benjtissot.sellingmugs.components.popups.MugDetailsPopup
-import com.benjtissot.sellingmugs.entities.Mug
-import com.benjtissot.sellingmugs.entities.User
-import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
-import com.benjtissot.sellingmugs.entities.printify.ImageForUploadReceive
-import com.benjtissot.sellingmugs.entities.printify.MugProductInfo
-import com.benjtissot.sellingmugs.pages.selectBase64ContentFromURLData
+import com.benjtissot.sellingmugs.entities.local.Mug
+import com.benjtissot.sellingmugs.entities.local.User
 import csstype.*
 import emotion.react.css
-import io.ktor.client.call.*
-import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
-import mui.material.Button
 import org.w3c.dom.HTMLDivElement
-import org.w3c.files.FileReader
 import react.FC
 import react.dom.html.ReactHTML.div
-import react.dom.html.ReactHTML.img
-import react.router.useNavigate
 import react.useEffectOnce
 import react.useState
 

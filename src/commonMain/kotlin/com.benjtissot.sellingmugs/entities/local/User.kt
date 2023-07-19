@@ -1,4 +1,4 @@
-package com.benjtissot.sellingmugs.entities
+package com.benjtissot.sellingmugs.entities.local
 
 import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.USER_OBJECT_PATH

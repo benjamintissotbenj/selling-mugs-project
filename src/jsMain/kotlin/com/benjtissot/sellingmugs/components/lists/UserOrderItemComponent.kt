@@ -1,6 +1,7 @@
 package com.benjtissot.sellingmugs.components.lists
 
 import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.entities.local.MugCartItem
 import com.benjtissot.sellingmugs.entities.printify.order.Order
 import com.benjtissot.sellingmugs.entities.printify.toPrettyFormat
 import com.benjtissot.sellingmugs.entities.stripe.getCheckoutAmount
@@ -11,11 +12,9 @@ import mui.icons.material.ArrowDropDown
 import mui.icons.material.ArrowDropUp
 import mui.lab.LoadingButton
 import mui.material.ButtonColor
-import mui.material.Card
 import mui.material.IconButton
 import mui.material.Size
 import org.w3c.dom.HTMLButtonElement
-import org.w3c.dom.events.MouseEvent
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.button

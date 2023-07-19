@@ -1,4 +1,4 @@
-package com.benjtissot.sellingmugs.entities
+package com.benjtissot.sellingmugs.entities.local
 
 import com.benjtissot.sellingmugs.entities.printify.order.AddressTo
 import kotlinx.serialization.SerialName

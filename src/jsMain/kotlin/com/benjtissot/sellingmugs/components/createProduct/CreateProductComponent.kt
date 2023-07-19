@@ -1,39 +1,27 @@
 package com.benjtissot.sellingmugs.components.createProduct
 
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.components.highLevel.PopupHeaderComponent
-import com.benjtissot.sellingmugs.components.forms.CreateProductForm
-import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
-import com.benjtissot.sellingmugs.entities.printify.ImageForUploadReceive
-import com.benjtissot.sellingmugs.entities.printify.MugProductInfo
-import com.benjtissot.sellingmugs.pages.selectBase64ContentFromURLData
+import com.benjtissot.sellingmugs.components.forms.GenerateMugsForm
+import com.benjtissot.sellingmugs.entities.openAI.ChatRequestParams
 import csstype.*
 import emotion.react.css
-import io.ktor.client.call.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
 import mui.material.Button
-import org.w3c.files.FileReader
 import react.FC
 import react.dom.html.ReactHTML.div
-import react.dom.html.ReactHTML.img
-import react.router.useNavigate
-import react.useState
 
 
 private val LOG = KtorSimpleLogger("CreateProductComponent.kt")
 
 external interface CreateProductProps : NavigationProps {
-    var onProductCreatedSuccess : (productId: String, productName: String) -> Unit
-    var onProductCreatedFailed : (productId: String) -> Unit
-    var onClickClose: () -> Unit
+    var onCreatingMugs: (String, Const.StableDiffusionImageType) -> Unit
+    var onMugsCreationResponse: (HttpResponse) -> Unit
 }
 
 val CreateProductComponent = FC<CreateProductProps> { props ->
-    var uploadedImage: ImageForUploadReceive? by useState(null) // Starts blank but not empty, as to not show warning message initially
-
-    val reader = FileReader()
     // Parent to hold flex to center the box
     div {
         css {
@@ -54,7 +42,7 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
                 boxShade()
                 center()
                 width = 95.pct
-                padding = 1.vh
+                padding = 4.vh
             }
 
             div {
@@ -63,7 +51,7 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
                     contentCenteredVertically()
                     contentCenteredHorizontally()
                 }
-                +"Create a product"
+                +"Generate mugs by AI"
             }
 
             // Container for the centered content INSIDE the box
@@ -72,82 +60,33 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
                     contentCenteredHorizontally()
                 }
 
-                ImageDrop {
-                    onImageDrop = { fileList ->
-                        if (fileList.isNotEmpty()) {
-                            LOG.debug("Image Was Dropped")
-                            LOG.debug("File List: $fileList")
 
-                            val imageFile = fileList[0]
-                            reader.readAsDataURL(imageFile)
-                            reader.onload = { _ ->
-                                props.setAlert(infoAlert("Image is being uploaded"))
-                                val uploadImage = ImageForUpload(
-                                    file_name = imageFile.name,
-                                    contents = selectBase64ContentFromURLData(reader.result as String)
-                                )
-                                scope.launch {
-                                    val uploadReceive = uploadImage(uploadImage)
-                                    uploadReceive?.let {
-                                        props.setAlert(successAlert("Image ${uploadImage.file_name} was uploaded successfully !"))
-                                    } ?: let {
-                                        props.setAlert(errorAlert("Image ${uploadImage.file_name} could not be uploaded."))
-                                    }
-                                    uploadedImage = uploadReceive
-                                }
-                            }
-                        }
-                    }
-                }
-
-                uploadedImage?.let {
-                    img {
-                        src = uploadedImage?.preview_url ?: ""
-                        // Styles for the product image
-                        css {
-                            width = 80.px
-                            height = 80.px
-                            marginRight = 16.px
+                GenerateMugsForm {
+                    onSubmit = { subject, artType, numberOfVariations ->
+                        props.onCreatingMugs(subject, artType)
+                        scope.launch {
+                            props.onMugsCreationResponse(generateMugs(ChatRequestParams(subject, artType, numberOfVariations)))
                         }
                     }
                 }
 
 
-                CreateProductForm {
-                    onSubmit = { title, description ->
-                        scope.launch {// Data processing to create the product in Printify store
-                            uploadedImage?.let {
-                                val mugProductInfo = MugProductInfo(title, description, uploadedImage!!.toImage())
-                                val httpResponse = createProduct(mugProductInfo)
-                                val productId = httpResponse.body<String>()
-
-                                if (httpResponse.status != HttpStatusCode.OK){
-                                    props.onProductCreatedFailed(productId)
-                                    return@launch
-                                } else {
-                                    props.onProductCreatedSuccess(productId, title)
-                                    publishProduct(productId)
-                                }
-
-                            }?:let{
-                                props.setAlert(errorAlert("Please upload an image before creating a product"))
-                                return@launch
-                            }
-
-                        }
+                div {
+                    css {
+                        fontNormal()
+                        fontWeight = FontWeight.bold
+                        margin = 2.vh
                     }
-                    deleteFieldsOnSubmit = (uploadedImage!=null)
+                    +"OR"
                 }
 
                 Button {
-                    +"Advanced"
+                    +"Custom mug creation"
                     onClick = {
                         props.navigate.invoke(CUSTOM_MUG_PATH)
                     }
                 }
             }
-
-
         }
     }
 }

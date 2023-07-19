@@ -1,7 +1,7 @@
 package com.benjtissot.sellingmugs.components.lists
 
 import com.benjtissot.sellingmugs.components.createProduct.SweepImageComponent
-import com.benjtissot.sellingmugs.entities.Mug
+import com.benjtissot.sellingmugs.entities.local.Mug
 import com.benjtissot.sellingmugs.fontNormal
 import com.benjtissot.sellingmugs.fontSmall
 import csstype.*
@@ -105,6 +105,7 @@ val MugItemGridComponent = FC<MugItemGridProps> {
             justifyContent = JustifyContent.center
             alignContent = AlignContent.center
             width = 90.pct
+            minHeight = 55.vh
             height = 1.5 * 90.pct
             marginBlock = 2.pct
             marginInline = 5.pct

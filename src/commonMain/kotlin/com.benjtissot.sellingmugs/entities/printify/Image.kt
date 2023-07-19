@@ -1,6 +1,6 @@
 package com.benjtissot.sellingmugs.entities.printify
 
-import com.benjtissot.sellingmugs.entities.Artwork
+import com.benjtissot.sellingmugs.entities.local.Artwork
 import kotlinx.serialization.Serializable
 
 @Serializable

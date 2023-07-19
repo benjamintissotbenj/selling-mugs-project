@@ -2,9 +2,9 @@ package orderTests
 
 import AbstractDatabaseTests
 import PrintifyTests
-import com.benjtissot.sellingmugs.entities.LoginInfo
-import com.benjtissot.sellingmugs.entities.RegisterInfo
-import com.benjtissot.sellingmugs.entities.Session
+import com.benjtissot.sellingmugs.entities.local.LoginInfo
+import com.benjtissot.sellingmugs.entities.local.RegisterInfo
+import com.benjtissot.sellingmugs.entities.local.Session
 import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
 import com.benjtissot.sellingmugs.entities.printify.order.AddressTo
 import com.benjtissot.sellingmugs.entities.printify.order.Order

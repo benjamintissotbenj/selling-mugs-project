@@ -1,9 +1,9 @@
 package com.benjtissot.sellingmugs.controllers
 
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.entities.Cart
-import com.benjtissot.sellingmugs.entities.Mug
-import com.benjtissot.sellingmugs.repositories.SessionRepository
+import com.benjtissot.sellingmugs.entities.local.Cart
+import com.benjtissot.sellingmugs.entities.local.Mug
+import com.benjtissot.sellingmugs.entities.local.MugCartItem
 import com.benjtissot.sellingmugs.repositories.UserRepository
 import com.benjtissot.sellingmugs.services.CartService
 import com.benjtissot.sellingmugs.services.CartService.Companion.getCart

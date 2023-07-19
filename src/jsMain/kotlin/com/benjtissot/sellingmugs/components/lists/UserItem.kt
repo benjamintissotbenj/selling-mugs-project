@@ -1,11 +1,10 @@
 package com.benjtissot.sellingmugs.components.lists
 
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.entities.User
+import com.benjtissot.sellingmugs.entities.local.User
 import csstype.*
 import emotion.react.css
 import io.ktor.util.logging.*
-import kotlinx.coroutines.launch
 import mui.icons.material.PersonOutline
 import mui.icons.material.Close
 import mui.material.*

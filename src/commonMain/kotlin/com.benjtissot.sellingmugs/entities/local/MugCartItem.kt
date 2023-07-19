@@ -1,7 +1,6 @@
-package com.benjtissot.sellingmugs
+package com.benjtissot.sellingmugs.entities.local
 
-import com.benjtissot.sellingmugs.entities.Mug
-import kotlinx.serialization.SerialName
+import com.benjtissot.sellingmugs.entities.local.Mug
 import kotlinx.serialization.Serializable
 
 @Serializable
