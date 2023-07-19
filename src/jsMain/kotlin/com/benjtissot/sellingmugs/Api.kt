@@ -85,8 +85,21 @@ suspend fun recordClick(clickDataId: String, clickType: String) {
 
 
 // MugList
-suspend fun getMugList(): List<Mug> {
-    return jsonClient.get(Mug.path).body()
+suspend fun getMugList(categories: List<String>, pageNumber : Int): List<Mug> {
+    var queryParams = "?${Const.pageNumber}=$pageNumber"
+    if (categories.isNotEmpty()){
+        queryParams += "&"
+        categories.forEach{
+            queryParams += "&${Const.categories}=$it"
+        }
+    }
+
+    val httpResponse = jsonClient.get("${Mug.path}$queryParams")
+    return if (httpResponse.status == HttpStatusCode.OK){
+        httpResponse.body()
+    } else {
+        emptyList()
+    }
 }
 
 suspend fun getMugByPrintifyId(printifyId: String): Mug? {

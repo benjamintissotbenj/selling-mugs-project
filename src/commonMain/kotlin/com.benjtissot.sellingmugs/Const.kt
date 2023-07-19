@@ -107,6 +107,8 @@ class Const {
         const val public = "public"
         const val printifyId = "printifyId"
         const val mugId = "mugId"
+        const val categories = "categories"
+        const val pageNumber = "pageNumber"
 
         // Stripe params
         const val payment_intent = "payment_intent"

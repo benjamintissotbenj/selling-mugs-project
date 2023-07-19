@@ -56,7 +56,7 @@ class PrintifyService {
                     MugService.updateArtworkImage(artwork, productId)
                 }
 
-                val mug = Mug(getUuidFromString(productId), productId, mugProduct.title, mugProduct.description, mugProduct.variants[0].price/100f, artwork)
+                val mug = Mug(getUuidFromString(productId), productId, mugProduct.title, mugProduct.description, mugProduct.variants[0].price/100f, "", artwork)
                 MugRepository.updateMug(mug)
                 return productId
             } ?: let {

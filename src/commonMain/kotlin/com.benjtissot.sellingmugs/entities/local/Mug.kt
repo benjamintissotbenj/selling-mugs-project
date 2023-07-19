@@ -10,6 +10,7 @@ data class Mug(@SerialName("_id") val id: String,
                val name: String,
                var description: String,
                val price: Float,
+               val category: String = "",
                var artwork: Artwork
 ){
 
@@ -38,3 +39,10 @@ data class UserCustomMugList (
 ){
 
 }
+
+@Serializable
+data class MugFilter(
+    val currentPage: Int? = null,
+    val publicOnly: Boolean = true,
+    val categories: List<String> = emptyList()
+)

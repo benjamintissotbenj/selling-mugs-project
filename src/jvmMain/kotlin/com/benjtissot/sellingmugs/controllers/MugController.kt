@@ -4,13 +4,14 @@ import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.USER_CUSTOM_MUG_LIST_PATH
 import com.benjtissot.sellingmugs.entities.local.Artwork
 import com.benjtissot.sellingmugs.entities.local.Mug
+import com.benjtissot.sellingmugs.entities.local.MugFilter
 import com.benjtissot.sellingmugs.genUuid
 import com.benjtissot.sellingmugs.services.ArtworkService.Companion.deleteArtwork
 import com.benjtissot.sellingmugs.services.ArtworkService.Companion.getArtworkList
 import com.benjtissot.sellingmugs.services.ArtworkService.Companion.insertNewArtwork
 import com.benjtissot.sellingmugs.services.MugService
 import com.benjtissot.sellingmugs.services.MugService.Companion.deleteMug
-import com.benjtissot.sellingmugs.services.MugService.Companion.getMugList
+import com.benjtissot.sellingmugs.services.MugService.Companion.getPublicMugList
 import com.benjtissot.sellingmugs.services.MugService.Companion.insertNewMug
 import database
 import io.ktor.http.*
@@ -29,7 +30,9 @@ fun Route.mugRouting(){
 
     route(Mug.path) {
         get {
-            call.respond(getMugList())
+            val pageNumber: Int? = call.request.queryParameters[Const.pageNumber]?.toIntOrNull()
+            val categories = call.parameters.getAll(Const.categories) ?: emptyList()
+            call.respond(getPublicMugList(MugFilter(currentPage = pageNumber, categories = categories)))
         }
         post {
             insertNewMug(call.receive<Mug>().copy(genUuid()))
