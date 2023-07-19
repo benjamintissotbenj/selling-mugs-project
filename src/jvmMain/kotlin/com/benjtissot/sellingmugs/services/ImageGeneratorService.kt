@@ -31,12 +31,12 @@ class ImageGeneratorService {
         /**
          * Uses OpenAI and Stable Diffusion APIs to create a list of images from a subject
          * @param params the different [ChatRequestParams] needed to create a good OpenAI request
-         * @return the list of [HttpStatusCode]s associated with each variation
+         * @return the list of [CustomStatusCode]s associated with each variation, serialisable version of [HttpStatusCode]
          * @throws [OpenAIUnavailable] when the server is unable to connect with OpenAI's API
          */
         @OptIn(DelicateCoroutinesApi::class)
         @Throws
-        suspend fun generateImagesFromParams(params: ChatRequestParams) : List<HttpStatusCode> {
+        suspend fun generateImagesFromParams(params: ChatRequestParams) : List<CustomStatusCode> {
             // Get ChatGPT to create a list of variations
             val variations = try {
                 generateVariationsFromParams(params)
@@ -93,7 +93,7 @@ class ImageGeneratorService {
 
             return runBlocking {
                 LOG.debug("Awaiting coroutines")
-                val listOfStatuses = deferred.awaitAll()
+                val listOfStatuses = deferred.awaitAll().map { httpStatusCode -> httpStatusCode.toCustom() }
                 LOG.debug("All coroutines done :")
                 LOG.debug("{")
                 listOfStatuses.forEach { status ->
@@ -182,6 +182,7 @@ class ImageGeneratorService {
          * Calls [PrintifyService] to upload an image from a fileName and a source url
          */
         private suspend fun uploadImageFromSource(fileName: String, imageSource: String) : ImageForUploadReceive? {
+            // TODO run a loop to get image a couple times if it fails
             return PrintifyService.uploadImage(ImageForUpload(file_name = fileName, url = imageSource), true)
         }
 

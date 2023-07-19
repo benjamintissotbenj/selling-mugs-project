@@ -5,6 +5,7 @@ import com.benjtissot.sellingmugs.components.buttons.LogoutButtonComponent
 import com.benjtissot.sellingmugs.components.createProduct.CreateProductComponent
 import com.benjtissot.sellingmugs.components.lists.ManageUsersComponent
 import com.benjtissot.sellingmugs.entities.local.User
+import com.benjtissot.sellingmugs.entities.openAI.CustomStatusCode
 import csstype.*
 import emotion.react.css
 import io.ktor.client.call.*
@@ -63,7 +64,7 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                         when (httpResponse.status) {
                             HttpStatusCode.OK -> {
                                 scope.launch {
-                                    val statusCodes : List<HttpStatusCode> = httpResponse.body()
+                                    val statusCodes : List<CustomStatusCode> = httpResponse.body()
                                     statusCodes.forEach { status ->
                                         println(status.print())
                                     }
