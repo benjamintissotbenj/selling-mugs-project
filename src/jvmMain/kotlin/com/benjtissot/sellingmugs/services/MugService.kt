@@ -22,6 +22,7 @@ class MugService {
 
         /**
          * Gets all the mugs in the database, can be paginated, filtered
+         * @param mugFilter a [MugFilter] object that holds all the information to filter out which mugs we want to retrieve
          */
         suspend fun getAllMugsList(mugFilter : MugFilter = MugFilter()) : List<Mug> {
             val publicFilter = if (mugFilter.publicOnly){

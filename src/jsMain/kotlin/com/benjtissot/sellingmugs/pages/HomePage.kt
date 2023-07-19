@@ -3,6 +3,7 @@ package com.benjtissot.sellingmugs.pages
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.lists.MugListComponent
 import com.benjtissot.sellingmugs.components.popups.MugDetailsPopup
+import com.benjtissot.sellingmugs.entities.local.Category
 import com.benjtissot.sellingmugs.entities.local.Mug
 import com.benjtissot.sellingmugs.entities.local.Session
 import kotlinx.coroutines.launch
@@ -17,6 +18,8 @@ var checkRedirect: String? = null
 
 val Homepage = FC<NavigationProps> { props ->
     val navigateFun = props.navigate
+    var availableCategories by useState(emptyList<Category>())
+    var selectedCategories by useState(emptyList<Category>())
     var mugList by useState(emptyList<Mug>())
 
     var popupTarget : HTMLDivElement? by useState(null)
@@ -34,7 +37,8 @@ val Homepage = FC<NavigationProps> { props ->
                 navigateFun.invoke(checkRedirect?:"")
                 checkRedirect = ""
             } else {
-                mugList = getMugList(emptyList(), 0)
+                availableCategories = getAllCategories()
+                mugList = getMugList(selectedCategories, 0)
             }
         }
     }
@@ -65,6 +69,19 @@ val Homepage = FC<NavigationProps> { props ->
             }
             displayStyle = Const.mugListDisplayGrid
             list = mugList
+            this.availableCategories = availableCategories
+            this.selectedCategories = selectedCategories
+            onChangeSelectedCategories = { categoryIds ->
+                println("Selected Categories:")
+                categoryIds.forEach {
+                    println("$it,")
+                }
+                scope.launch {
+                    val tempSelectedCategories = getCategoriesByIds(categoryIds)
+                    selectedCategories = tempSelectedCategories
+                    mugList = getMugList(tempSelectedCategories, 0)
+                }
+            }
             title = "Best for you"
             onMouseEnterItem = { mug, target ->
                 mugShowDetails = mug

@@ -1,18 +1,19 @@
 package com.benjtissot.sellingmugs.components.lists
 
-import com.benjtissot.sellingmugs.Const
-import com.benjtissot.sellingmugs.colDefault
+import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.createProduct.HoverImageComponent
-import com.benjtissot.sellingmugs.contentCenteredHorizontally
+import com.benjtissot.sellingmugs.entities.local.Category
 import com.benjtissot.sellingmugs.entities.local.Mug
-import com.benjtissot.sellingmugs.fontBig
 import csstype.*
 import emotion.react.css
+import mui.material.MenuItem
+import mui.material.Select
 import org.w3c.dom.HTMLDivElement
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.header
+import react.useState
 import ringui.Col
 import ringui.Grid
 import ringui.Row
@@ -20,6 +21,9 @@ import ringui.Row
 
 external interface MugListProps: Props {
     var displayStyle: String
+    var availableCategories: List<Category>?
+    var selectedCategories: List<Category>
+    var onChangeSelectedCategories: (List<String>) -> Unit
     var onClickCustomItem: () -> Unit
     var list: List<Mug>
     var title: String?
@@ -41,6 +45,45 @@ val MugListComponent = FC<MugListProps> {
                     marginLeft = 10.vw
                 }
                 +it
+            }
+
+            // Filter by category
+            props.availableCategories?.let {
+                Select {
+                    // Attributes
+                    css {
+                        width = 100.rem
+                        maxWidth = 20.pct
+                        minWidth = 110.px
+                        height = 3.rem
+                        maxHeight = 5.vh
+                        minHeight = 40.px
+                        color = NamedColor.black
+                        fontNormal()
+                    }
+                    multiple = true
+                    //labelId = "select-type-label"
+                    value = props.selectedCategories.map { cat -> cat.id }.toTypedArray()
+                    /*label = InputLabel.create{
+                        id = "select-type-label"
+                    }*/
+                    onChange = { event, _ ->
+                        val tempCategoriesId = event.target.value.unsafeCast<Array<String>>()
+                        val tempCategoriesIdList : ArrayList<String> = arrayListOf()
+                        tempCategoriesIdList.addAll(tempCategoriesId)
+                        props.onChangeSelectedCategories(tempCategoriesIdList)
+
+                    }
+
+
+                    // Children, in the selector
+                    props.availableCategories?.forEach { category ->
+                        MenuItem {
+                            value = category.id
+                            +category.name
+                        }
+                    }
+                }
             }
         }
     }

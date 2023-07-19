@@ -3,12 +3,14 @@ package com.benjtissot.sellingmugs.controllers
 import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.USER_CUSTOM_MUG_LIST_PATH
 import com.benjtissot.sellingmugs.entities.local.Artwork
+import com.benjtissot.sellingmugs.entities.local.Category
 import com.benjtissot.sellingmugs.entities.local.Mug
 import com.benjtissot.sellingmugs.entities.local.MugFilter
 import com.benjtissot.sellingmugs.genUuid
 import com.benjtissot.sellingmugs.services.ArtworkService.Companion.deleteArtwork
 import com.benjtissot.sellingmugs.services.ArtworkService.Companion.getArtworkList
 import com.benjtissot.sellingmugs.services.ArtworkService.Companion.insertNewArtwork
+import com.benjtissot.sellingmugs.services.CategoryService
 import com.benjtissot.sellingmugs.services.MugService
 import com.benjtissot.sellingmugs.services.MugService.Companion.deleteMug
 import com.benjtissot.sellingmugs.services.MugService.Companion.getPublicMugList
@@ -31,7 +33,7 @@ fun Route.mugRouting(){
     route(Mug.path) {
         get {
             val pageNumber: Int? = call.request.queryParameters[Const.pageNumber]?.toIntOrNull()
-            val categories = call.parameters.getAll(Const.categories) ?: emptyList()
+            val categories = call.parameters.getAll(Const.categories)?.mapNotNull { id -> CategoryService.getCategoryById(id) } ?: emptyList()
             call.respond(getPublicMugList(MugFilter(currentPage = pageNumber, categories = categories)))
         }
         post {
@@ -95,5 +97,18 @@ fun Route.mugRouting(){
             deleteArtwork(id)
             call.respond(HttpStatusCode.OK)
         }
+    }
+
+    route(Category.path){
+        get {
+            // TODO debug this shit
+            val categoryIds = call.parameters.getAll(Const.id)
+            if (categoryIds.isNullOrEmpty()) {
+                call.respond(CategoryService.getAllCategories())
+            } else {
+                call.respond(CategoryService.getCategories(categoryIds))
+            }
+        }
+
     }
 }

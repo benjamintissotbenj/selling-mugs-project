@@ -1,6 +1,7 @@
 package com.benjtissot.sellingmugs.services
 
 import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.entities.local.Category
 import com.benjtissot.sellingmugs.entities.local.Mug
 import com.benjtissot.sellingmugs.entities.printify.*
 import com.benjtissot.sellingmugs.repositories.MugRepository
@@ -56,7 +57,7 @@ class PrintifyService {
                     MugService.updateArtworkImage(artwork, productId)
                 }
 
-                val mug = Mug(getUuidFromString(productId), productId, mugProduct.title, mugProduct.description, mugProduct.variants[0].price/100f, "", artwork)
+                val mug = Mug(getUuidFromString(productId), productId, mugProduct.title, mugProduct.description, mugProduct.variants[0].price/100f, Category(), artwork)
                 MugRepository.updateMug(mug)
                 return productId
             } ?: let {
