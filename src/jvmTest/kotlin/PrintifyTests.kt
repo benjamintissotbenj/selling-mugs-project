@@ -1,3 +1,4 @@
+import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
 import com.benjtissot.sellingmugs.entities.printify.ImageForUploadReceive
 import com.benjtissot.sellingmugs.entities.printify.MugProductInfo
@@ -47,7 +48,7 @@ class PrintifyTests : AbstractDatabaseTests() {
         }
 
         suspend fun createProductTest(imageForUploadReceive : ImageForUploadReceive) : String {
-            val mugProductInfo = MugProductInfo("Test Title", "Test product upload Description", imageForUploadReceive!!.toImage())
+            val mugProductInfo = MugProductInfo("Test Title", "Test product upload Description", Const.mugCategoryDefault, imageForUploadReceive!!.toImage())
             val productId = PrintifyService.createProduct(mugProductInfo)
             LOG.debug("productId after product creation is $productId")
             assert(productId != null)

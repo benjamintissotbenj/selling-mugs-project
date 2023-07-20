@@ -7,12 +7,10 @@ import com.benjtissot.sellingmugs.entities.local.Mug
 import csstype.*
 import emotion.react.css
 import mui.icons.material.ExpandMore
-import mui.material.IconButton
-import mui.material.MenuItem
-import mui.material.Select
-import mui.material.Slider
+import mui.material.*
 import mui.system.sx
 import org.w3c.dom.HTMLDivElement
+import react.CSSProperties
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
@@ -49,43 +47,61 @@ val MugListComponent = FC<MugListProps> {
                 css {
                     fontBig()
                     marginLeft = 10.vw
+                    width = 50.pct
                 }
                 +it
             }
 
             // Filter by category
             props.availableCategories?.let {
-                Select {
-                    // Attributes
+                div {
                     css {
-                        width = 100.rem
-                        maxWidth = 20.pct
-                        minWidth = 110.px
-                        height = 3.rem
-                        maxHeight = 5.vh
-                        minHeight = 40.px
+                        display = Display.flex
+                        flexDirection = FlexDirection.rowReverse
+                        alignItems = AlignItems.center
+                        width = 50.pct
                         color = NamedColor.white
-                        fontNormal()
-                        marginRight = 4.vw
                     }
-
-                    multiple = true
-                    value = props.selectedCategories.map { cat -> cat.id }.toTypedArray()
-                    onChange = { event, _ ->
-                        val tempCategoriesId = event.target.value.unsafeCast<Array<String>>()
-                        val tempCategoriesIdList : ArrayList<String> = arrayListOf()
-                        tempCategoriesIdList.addAll(tempCategoriesId)
-                        props.onChangeSelectedCategories(tempCategoriesIdList)
-
-                    }
-
-
-                    // Children, in the selector
-                    props.availableCategories?.forEach { category ->
-                        MenuItem {
-                            value = category.id
-                            +category.name
+                    Select {
+                        // Attributes
+                        css {
+                            width = 70.pct
+                            minWidth = 70.pct
+                            height = 3.rem
+                            maxHeight = 5.vh
+                            minHeight = 40.px
+                            fontNormal()
+                            marginRight = 4.vw
                         }
+                        sx {
+                            color = NamedColor.white
+                        }
+
+                        multiple = true
+                        value = props.selectedCategories.map { cat -> cat.id }.toTypedArray()
+                        onChange = { event, _ ->
+                            val tempCategoriesId = event.target.value.unsafeCast<Array<String>>()
+                            val tempCategoriesIdList: ArrayList<String> = arrayListOf()
+                            tempCategoriesIdList.addAll(tempCategoriesId)
+                            props.onChangeSelectedCategories(tempCategoriesIdList)
+
+                        }
+
+
+                        // Children, in the selector
+                        props.availableCategories?.forEach { category ->
+                            MenuItem {
+                                value = category.id
+                                +category.name
+                            }
+                        }
+                    }
+                    div {
+                        css {
+                            fontNormal()
+                            marginRight = 2.vw
+                        }
+                        +"Filter by :"
                     }
                 }
             }

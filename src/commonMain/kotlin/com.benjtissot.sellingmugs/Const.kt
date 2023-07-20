@@ -124,10 +124,10 @@ class Const {
         // Hidden overflow card url
         const val maskUrl = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);"
 
-
-
         const val mugListDisplayList = "list"
         const val mugListDisplayGrid = "grid"
+
+        const val mugCategoryDefault = "Default"
 
         const val contactLinkedin = "https://www.linkedin.com/in/benjamin-tissot-49a1538b/"
         const val contactGitHub = "https://github.com/benjamintissotbenj/selling-mugs-project"

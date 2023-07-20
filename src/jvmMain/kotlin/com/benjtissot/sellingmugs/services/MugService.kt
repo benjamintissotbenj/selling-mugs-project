@@ -1,10 +1,7 @@
 package com.benjtissot.sellingmugs.services
 
 import com.benjtissot.sellingmugs.controllers.mugCollection
-import com.benjtissot.sellingmugs.entities.local.Artwork
-import com.benjtissot.sellingmugs.entities.local.Mug
-import com.benjtissot.sellingmugs.entities.local.MugFilter
-import com.benjtissot.sellingmugs.entities.local.UserCustomMugList
+import com.benjtissot.sellingmugs.entities.local.*
 import com.benjtissot.sellingmugs.repositories.MugRepository
 import org.bson.conversions.Bson
 import org.litote.kmongo.*

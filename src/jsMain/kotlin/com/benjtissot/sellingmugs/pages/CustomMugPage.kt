@@ -102,7 +102,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
                                     uploadReceive?.let {
 
                                         uploadedImage = uploadReceive
-                                        val mugProductInfo = MugProductInfo("Custom Mug - ${uploadReceive.id}", "", it.toImage())
+                                        val mugProductInfo = MugProductInfo("Custom Mug - ${uploadReceive.id}", "", Const.mugCategoryDefault, it.toImage())
                                         val httpResponse = createProduct(mugProductInfo)
                                         val productId = httpResponse.body<String>()
 

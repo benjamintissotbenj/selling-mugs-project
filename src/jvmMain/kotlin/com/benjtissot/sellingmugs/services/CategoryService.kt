@@ -1,5 +1,6 @@
 package com.benjtissot.sellingmugs.services
 
+import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.controllers.mugCollection
 import com.benjtissot.sellingmugs.entities.local.*
 import com.benjtissot.sellingmugs.getUuidFromString
@@ -14,7 +15,7 @@ class CategoryService {
     companion object {
 
         fun createCategory(name: String) : Category {
-            if (name == "Default") return Category("0", name)
+            if (name == Const.mugCategoryDefault) return Category("0", name)
             return Category(getUuidFromString(name), name)
         }
 

@@ -1,3 +1,4 @@
+import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.entities.local.*
 import com.benjtissot.sellingmugs.genUuid
 import com.benjtissot.sellingmugs.repositories.CategoryRepository
@@ -74,7 +75,7 @@ class MugListTests : AbstractDatabaseTests() {
         LOG.delimit("Category Tests")
         launch {
             val defaultCategory = CategoryRepository.getCategoryById("0")
-            assert(defaultCategory?.name == "Default")
+            assert(defaultCategory?.name == Const.mugCategoryDefault)
             val category1 = CategoryService.getCategoryByName(categories[0].name)
             assert(category1?.id == categories[0].id)
         }

@@ -1,6 +1,7 @@
 package com.benjtissot.sellingmugs.entities.local
 
 import com.benjtissot.sellingmugs.CATEGORY_OBJECT_PATH
+import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.MUG_OBJECT_PATH
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -51,7 +52,7 @@ data class MugFilter(
 @Serializable
 data class Category (
     @SerialName("_id") val id : String = "0",
-    val name: String = "Default"
+    val name: String = Const.mugCategoryDefault
 ){
     companion object {
         val path = CATEGORY_OBJECT_PATH
