@@ -30,11 +30,12 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
             display = Display.flex
             flexDirection = FlexDirection.column
             height = "fit-content".unsafeCast<Height>()
-            maxHeight = 100.pct
+            maxHeight = 90.pct
             width = 50.pct
             boxSizing = BoxSizing.borderBox
             paddingLeft = 2.vw
             paddingRight = 2.vw
+            margin = 2.vw
         }
 
         // Box
@@ -44,14 +45,11 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
                 boxNormalNormal()
                 boxShade()
                 center()
-                display = Display.flex
-                flexDirection = FlexDirection.column
-                justifyContent = JustifyContent.center
-                alignItems = AlignItems.center
                 height = 100.pct
                 width = 100.pct
                 paddingInline = 2.vw
                 paddingBottom = 2.vh
+                overflowY = "auto".unsafeCast<Overflow>()
             }
 
             CreateTabsComponent {

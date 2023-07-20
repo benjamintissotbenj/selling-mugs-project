@@ -40,7 +40,8 @@ val AdminPanelPage = FC<NavigationProps> { props ->
         css {
             contentCenteredHorizontally()
             width = 100.pct
-            height = 95.pct
+            height = 100.pct
+            paddingTop = 2.vh
             boxSizing = BoxSizing.borderBox
         }
 
@@ -50,7 +51,7 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                 css {
                     justifySpaceBetween()
                     flexDirection = FlexDirection.row
-                    height = 95.pct
+                    height = 93.pct
                     width = 100.pct
                 }
 
@@ -94,16 +95,15 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                     }
                 }
             }
-
             div {
                 css {
                     justifySpaceBetween()
                     alignItems = AlignItems.center
                     width = 100.pct
-                    paddingTop = 2.vh
+                    maxHeight = 5.vh
+                    paddingBlock = 2.vh
+                    paddingInline = 5.vw
                     boxSizing = BoxSizing.borderBox
-                    paddingLeft = 5.vw
-                    paddingRight = 5.vw
                     flexDirection = FlexDirection.row
                 }
 

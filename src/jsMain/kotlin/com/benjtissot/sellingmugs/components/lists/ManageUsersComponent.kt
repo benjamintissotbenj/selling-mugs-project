@@ -21,18 +21,18 @@ val ManageUsersComponent = FC<ManageUsersProps> { props ->
             display = Display.flex
             flexDirection = FlexDirection.column
             alignItems = AlignItems.center
-            height = 100.pct
+            height = 90.pct
             width = 50.pct
             boxSizing = BoxSizing.borderBox
             paddingLeft = 2.vw
             paddingRight = 2.vw
+            margin = 2.vw
             overflowY = "auto".unsafeCast<Overflow>()
         }
         div {
             css {
                 fontNormalPlus()
                 padding = 1.vw
-                paddingTop = 2.vw
                 width = 100.pct
                 boxSizing = BoxSizing.borderBox
             }
