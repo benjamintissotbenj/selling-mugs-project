@@ -13,6 +13,7 @@ import com.benjtissot.sellingmugs.services.ArtworkService.Companion.insertNewArt
 import com.benjtissot.sellingmugs.services.CategoryService
 import com.benjtissot.sellingmugs.services.MugService
 import com.benjtissot.sellingmugs.services.MugService.Companion.deleteMug
+import com.benjtissot.sellingmugs.services.MugService.Companion.getMugCount
 import com.benjtissot.sellingmugs.services.MugService.Companion.getPublicMugList
 import com.benjtissot.sellingmugs.services.MugService.Companion.insertNewMug
 import database
@@ -23,9 +24,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import java.util.logging.Logger
 
-
 val mugCollection = database.getCollection<Mug>()
 val artworkCollection = database.getCollection<Artwork>()
+
 fun Route.mugRouting(){
 
     val LOG = Logger.getLogger(this.javaClass.name)
@@ -34,7 +35,12 @@ fun Route.mugRouting(){
         get {
             val pageNumber: Int? = call.request.queryParameters[Const.pageNumber]?.toIntOrNull()
             val categories = call.parameters.getAll(Const.categories)?.mapNotNull { id -> CategoryService.getCategoryById(id) } ?: emptyList()
-            call.respond(getPublicMugList(MugFilter(currentPage = pageNumber, categories = categories)))
+            val count : Boolean = call.request.queryParameters[Const.count]?.toBooleanStrictOrNull() ?: false
+            if (count){
+                call.respond(getMugCount(MugFilter(categories = categories)))
+            } else {
+                call.respond(getPublicMugList(MugFilter(currentPage = pageNumber, categories = categories)))
+            }
         }
         post {
             insertNewMug(call.receive<Mug>().copy(genUuid()))

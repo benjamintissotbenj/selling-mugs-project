@@ -6,12 +6,40 @@ import com.benjtissot.sellingmugs.entities.local.Mug
 import com.benjtissot.sellingmugs.entities.local.MugFilter
 import com.benjtissot.sellingmugs.entities.local.UserCustomMugList
 import com.benjtissot.sellingmugs.repositories.MugRepository
+import org.bson.conversions.Bson
 import org.litote.kmongo.*
 
 class MugService {
     companion object {
 
         const val mugsPerPage = 25
+
+        /**
+         * Creates the appropriate BSON filter
+         * @param mugFilter the [MugFilter] object to analyse
+         * @return a [Bson] object used in queries
+         */
+        private fun createFilterFromMugFilter(mugFilter: MugFilter) : Bson {
+            val publicFilter = if (mugFilter.publicOnly){
+                Mug::artwork / Artwork::public eq true
+            } else {
+                EMPTY_BSON
+            }
+            val categoryFilter = if (mugFilter.categories.isNotEmpty()){
+                Mug::category `in` mugFilter.categories
+            } else {
+                EMPTY_BSON
+            }
+            return and (publicFilter, categoryFilter)
+        }
+
+        /**
+         * Counts mugs
+         */
+        suspend fun getMugCount(mugFilter: MugFilter) : Int {
+            val filter = createFilterFromMugFilter(mugFilter)
+            return mugCollection.countDocuments(filter).toInt()
+        }
 
         /**
          * Gets all the publicly available mugs
@@ -25,17 +53,7 @@ class MugService {
          * @param mugFilter a [MugFilter] object that holds all the information to filter out which mugs we want to retrieve
          */
         suspend fun getAllMugsList(mugFilter : MugFilter = MugFilter()) : List<Mug> {
-            val publicFilter = if (mugFilter.publicOnly){
-                Mug::artwork / Artwork::public eq true
-            } else {
-                EMPTY_BSON
-            }
-            val categoryFilter = if (mugFilter.categories.isNotEmpty()){
-                Mug::category `in` mugFilter.categories
-            } else {
-                EMPTY_BSON
-            }
-            val filter = and (publicFilter, categoryFilter)
+            val filter = createFilterFromMugFilter(mugFilter)
             return mugFilter.currentPage?.let {
                 mugCollection.find(filter).skip(it * mugsPerPage).limit(mugsPerPage).toList()
             } ?: let {

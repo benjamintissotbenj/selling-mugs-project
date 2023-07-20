@@ -6,8 +6,12 @@ import com.benjtissot.sellingmugs.entities.local.Category
 import com.benjtissot.sellingmugs.entities.local.Mug
 import csstype.*
 import emotion.react.css
+import mui.icons.material.ExpandMore
+import mui.material.IconButton
 import mui.material.MenuItem
 import mui.material.Select
+import mui.material.Slider
+import mui.system.sx
 import org.w3c.dom.HTMLDivElement
 import react.FC
 import react.Props
@@ -25,10 +29,12 @@ external interface MugListProps: Props {
     var selectedCategories: List<Category>
     var onChangeSelectedCategories: (List<String>) -> Unit
     var onClickCustomItem: () -> Unit
+    var onClickMore: () -> Unit
     var list: List<Mug>
     var title: String?
     var onMouseEnterItem: (Mug, HTMLDivElement) -> Unit
     var onClickAddToCart: (Mug) -> Unit
+    var totalNumberOfMugs: Int
 }
 
 val MugListComponent = FC<MugListProps> {
@@ -58,15 +64,13 @@ val MugListComponent = FC<MugListProps> {
                         height = 3.rem
                         maxHeight = 5.vh
                         minHeight = 40.px
-                        color = NamedColor.black
+                        color = NamedColor.white
                         fontNormal()
+                        marginRight = 4.vw
                     }
+
                     multiple = true
-                    //labelId = "select-type-label"
                     value = props.selectedCategories.map { cat -> cat.id }.toTypedArray()
-                    /*label = InputLabel.create{
-                        id = "select-type-label"
-                    }*/
                     onChange = { event, _ ->
                         val tempCategoriesId = event.target.value.unsafeCast<Array<String>>()
                         val tempCategoriesIdList : ArrayList<String> = arrayListOf()
@@ -110,82 +114,110 @@ val MugListComponent = FC<MugListProps> {
         div {
             css {
                 width = 100.pct
+                height = 100.pct
+                boxSizing = BoxSizing.borderBox
                 display = Display.flex
                 flexDirection = FlexDirection.column
                 alignItems = AlignItems.center
+                overflowY = "auto".unsafeCast<Overflow>()
             }
             Grid {
                 css {
                     width = 100.pct
                     height = "fit-content".unsafeCast<Height>()
                     padding = 0.px
-                    margin = 16.px
                     boxSizing = BoxSizing.borderBox
                 }
 
-                    Row {
-                        css {
-                            padding = 0.px
-                            marginInline = 3.pct
-                            boxSizing = BoxSizing.borderBox
-                            height = 65.vh
-                        }
+                Row {
+                    css {
+                        padding = 0.px
+                        marginInline = 3.pct
+                        boxSizing = BoxSizing.borderBox
+                        height = 65.vh
+                    }
 
-                        mugArrayList.forEach { mugItm ->
-                            Col {
+                    mugArrayList.forEach { mugItm ->
+                        Col {
+                            css {
+                                colDefault()
+                                contentCenteredHorizontally()
+                                boxSizing = BoxSizing.borderBox
+                            }
+                            // Different widths for different screen sizes
+                            xs = 12
+                            sm = 6
+                            md = 4
+                            lg = 3
+                            mugItm?.let {
+                                MugItemGridComponent {
+                                    mug = mugItm
+                                    onClickAddToCart = { mug -> props.onClickAddToCart(mug)}
+                                }
+                            } ?: div {
                                 css {
-                                    colDefault()
-                                    contentCenteredHorizontally()
+                                    display = Display.flex
+                                    flexDirection = FlexDirection.column
+                                    alignContent = AlignContent.center
+                                    width = 90.pct
+                                    height = (1.5 * this.width.unsafeCast<Percentage>()).unsafeCast<Height>()
+                                    margin = 5.pct
                                     boxSizing = BoxSizing.borderBox
                                 }
-                                // Different widths for different screen sizes
-                                xs = 12
-                                sm = 6
-                                md = 4
-                                lg = 3
-                                mugItm?.let {
-                                    MugItemGridComponent {
-                                        mug = mugItm
-                                        onClickAddToCart = { mug -> props.onClickAddToCart(mug)}
+
+                                HoverImageComponent {
+                                    width = 100.pct
+                                    height = 100.pct
+                                    srcMain = "https://images.printify.com/api/catalog/5e440fbfd897db313b1987d1.jpg?s=320"
+                                    srcHover = "https://images.printify.com/api/catalog/6358ee8d99b22ccab005e8a7.jpg?s=320"
+                                    onClick = {
+                                        props.onClickCustomItem()
                                     }
-                                } ?: div {
+                                }
+
+
+                                div {
                                     css {
-                                        display = Display.flex
-                                        flexDirection = FlexDirection.column
-                                        alignContent = AlignContent.center
-                                        width = 90.pct
-                                        height = (1.5 * this.width.unsafeCast<Percentage>()).unsafeCast<Height>()
-                                        margin = 5.pct
-                                        boxSizing = BoxSizing.borderBox
+                                        paddingTop = 5.pct
                                     }
-
-                                    HoverImageComponent {
-                                        width = 100.pct
-                                        height = 100.pct
-                                        srcMain = "https://images.printify.com/api/catalog/5e440fbfd897db313b1987d1.jpg?s=320"
-                                        srcHover = "https://images.printify.com/api/catalog/6358ee8d99b22ccab005e8a7.jpg?s=320"
-                                        onClick = {
-                                            props.onClickCustomItem()
-                                        }
+                                    +"Customize your own mug !"
+                                }
+                                div {
+                                    css {
+                                        paddingTop = 5.pct
                                     }
-
-
-                                    div {
-                                        css {
-                                            paddingTop = 5.pct
-                                        }
-                                        +"Customize your own mug !"
-                                    }
-                                    div {
-                                        css {
-                                            paddingTop = 5.pct
-                                        }
-                                        +"£7.20"
-                                    }
+                                    +"£7.20"
                                 }
                             }
                         }
                     }
+
+                    if (props.list.size < props.totalNumberOfMugs){
+                        Col {
+                            css {
+                                colDefault()
+                                contentCenteredHorizontally()
+                                boxSizing = BoxSizing.borderBox
+                            }
+                            // Different widths for different screen sizes
+                            xs = 12
+                            sm = 12
+                            md = 12
+                            lg = 12
+
+                            IconButton {
+                                ExpandMore {
+                                    css { marginInline = 2.vw }
+                                }
+                                +"Show more"
+                                onClick = {
+                                    props.onClickMore()
+                                }
+                            }
+                        }
+                    }
+
+                }
 
             }
         }

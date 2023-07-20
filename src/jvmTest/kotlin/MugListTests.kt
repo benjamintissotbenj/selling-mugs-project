@@ -74,7 +74,7 @@ class MugListTests : AbstractDatabaseTests() {
         LOG.delimit("Category Tests")
         launch {
             val defaultCategory = CategoryRepository.getCategoryById("0")
-            assert(defaultCategory?.name == "default")
+            assert(defaultCategory?.name == "Default")
             val category1 = CategoryService.getCategoryByName(categories[0].name)
             assert(category1?.id == categories[0].id)
         }

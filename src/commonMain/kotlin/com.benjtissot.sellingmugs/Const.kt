@@ -108,6 +108,7 @@ class Const {
         const val printifyId = "printifyId"
         const val mugId = "mugId"
         const val categories = "categories"
+        const val count = "count"
         const val pageNumber = "pageNumber"
 
         // Stripe params

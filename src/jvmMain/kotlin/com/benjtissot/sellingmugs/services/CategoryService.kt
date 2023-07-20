@@ -14,7 +14,7 @@ class CategoryService {
     companion object {
 
         fun createCategory(name: String) : Category {
-            if (name == "default") return Category("0", name)
+            if (name == "Default") return Category("0", name)
             return Category(getUuidFromString(name), name)
         }
 

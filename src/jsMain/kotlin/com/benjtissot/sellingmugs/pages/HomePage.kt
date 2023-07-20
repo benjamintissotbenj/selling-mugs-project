@@ -6,7 +6,11 @@ import com.benjtissot.sellingmugs.components.popups.MugDetailsPopup
 import com.benjtissot.sellingmugs.entities.local.Category
 import com.benjtissot.sellingmugs.entities.local.Mug
 import com.benjtissot.sellingmugs.entities.local.Session
+import csstype.*
+import emotion.react.css
 import kotlinx.coroutines.launch
+import mui.icons.material.ExpandMore
+import mui.material.IconButton
 import org.w3c.dom.HTMLDivElement
 import react.FC
 import react.dom.html.ReactHTML.div
@@ -21,6 +25,8 @@ val Homepage = FC<NavigationProps> { props ->
     var availableCategories by useState(emptyList<Category>())
     var selectedCategories by useState(emptyList<Category>())
     var mugList by useState(emptyList<Mug>())
+    var currentPage by useState(0)
+    var totalNumberOfMugs by useState(0)
 
     var popupTarget : HTMLDivElement? by useState(null)
     var mugShowDetails : Mug? by useState(null)
@@ -38,7 +44,8 @@ val Homepage = FC<NavigationProps> { props ->
                 checkRedirect = ""
             } else {
                 availableCategories = getAllCategories()
-                mugList = getMugList(selectedCategories, 0)
+                mugList = getMugList(selectedCategories, currentPage)
+                totalNumberOfMugs = getTotalMugCount(selectedCategories)
             }
         }
     }
@@ -59,30 +66,54 @@ val Homepage = FC<NavigationProps> { props ->
     }
 
     div {
-        // TODO: improve the muglist component, integrate the Customizable mug better
+        css {
+            width = 100.pct
+            height = 100.pct
+            display = Display.flex
+            flexDirection = FlexDirection.column
+            alignItems = AlignItems.center
+        }
         MugListComponent {
+            displayStyle = Const.mugListDisplayGrid
+            list = mugList
+            this.availableCategories = availableCategories
+            this.selectedCategories = selectedCategories
+            title = "Best for you"
+            this.totalNumberOfMugs = totalNumberOfMugs
             onClickCustomItem = {
                 scope.launch{
                     recordClick(props.session.clickDataId, Const.ClickType.CUSTOM_MUG_OPEN_PAGE.type)
                 }
                 props.navigate.invoke(CUSTOM_MUG_PATH)
             }
-            displayStyle = Const.mugListDisplayGrid
-            list = mugList
-            this.availableCategories = availableCategories
-            this.selectedCategories = selectedCategories
+            onClickMore = {
+                val tempMugList = ArrayList(mugList)
+                val tempCurrentPage = currentPage + 1
+                scope.launch {
+                    // update the mugList incrementally so that the UI doesn't have to wait for all the mugs at once
+                    tempMugList.addAll(getMugList(selectedCategories, tempCurrentPage))
+                    mugList = tempMugList
+                }
+                currentPage = tempCurrentPage
+            }
             onChangeSelectedCategories = { categoryIds ->
                 println("Selected Categories:")
                 categoryIds.forEach {
                     println("$it,")
                 }
                 scope.launch {
-                    val tempSelectedCategories = getCategoriesByIds(categoryIds)
+                    val tempSelectedCategories = if (categoryIds.isNotEmpty()) { getCategoriesByIds(categoryIds) } else { emptyList<Category>() }
                     selectedCategories = tempSelectedCategories
-                    mugList = getMugList(tempSelectedCategories, 0)
+                    totalNumberOfMugs = getTotalMugCount(tempSelectedCategories)
+                    // When changing categories, make sure that you stay on the same page (i.e. if you asked for more mugs to be shown)
+                    val tempMugList = ArrayList(emptyList<Mug>())
+                    for (i : Int in 0..currentPage){
+                        // update the mugList incrementally so that the UI doesn't have to wait for all the mugs at once
+                        tempMugList.addAll(getMugList(tempSelectedCategories, currentPage))
+                        mugList = tempMugList
+                    }
                 }
             }
-            title = "Best for you"
             onMouseEnterItem = { mug, target ->
                 mugShowDetails = mug
                 popupTarget = target
@@ -91,10 +122,7 @@ val Homepage = FC<NavigationProps> { props ->
                 onClickAddToCart(mug, props.setAlert, props.session)
             }
         }
-
-
     }
-
 }
 
 fun onClickAddToCart(mug: Mug?, setAlert: (AlertState) -> Unit, session: Session) {

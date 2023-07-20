@@ -102,6 +102,22 @@ suspend fun getMugList(categories: List<Category>, pageNumber : Int): List<Mug> 
     }
 }
 
+suspend fun getTotalMugCount(categories: List<Category>) : Int {
+    var queryParams = "?${Const.count}=true"
+    if (categories.isNotEmpty()){
+        categories.forEach{
+            queryParams += "&${Const.categories}=${it.id}"
+        }
+    }
+
+    val httpResponse = jsonClient.get("${Mug.path}$queryParams")
+    return if (httpResponse.status == HttpStatusCode.OK){
+        httpResponse.body()
+    } else {
+        0
+    }
+}
+
 suspend fun getMugByPrintifyId(printifyId: String): Mug? {
     val httpResponse = jsonClient.get("${Mug.path}/$printifyId")
     return if (httpResponse.status == HttpStatusCode.OK) httpResponse.body() else null
