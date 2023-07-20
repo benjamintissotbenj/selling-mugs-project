@@ -14,6 +14,7 @@ const val TRANSACTION_OBJECT_PATH = "/transaction"
 const val CLICK_OBJECT_PATH = "/click"
 const val CART_OBJECT_PATH = "/cart"
 const val ORDER_OBJECT_PATH = "/order"
+const val CATEGORY_OBJECT_PATH = "/category"
 
 // Rendering Paths
 

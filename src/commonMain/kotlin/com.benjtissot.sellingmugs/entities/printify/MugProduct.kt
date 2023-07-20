@@ -18,6 +18,7 @@ class MugProduct(
 class MugProductInfo(
     val title: String,
     val description: String,
+    val categoryName: String,
     val image: Image
 ){
     /**

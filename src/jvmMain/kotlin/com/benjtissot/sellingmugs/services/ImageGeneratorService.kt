@@ -62,7 +62,7 @@ class ImageGeneratorService {
                         imageUploadedToPrintify?.let {
                             // Create mug from image
                             // TODO: description from chatGPT here
-                            val mugProductInfo = MugProductInfo("AI - ${variation.getCleanName()}", "", it.toImage())
+                            val mugProductInfo = MugProductInfo("AI - ${variation.getCleanName()}", "", params.subject, it.toImage())
                             val productPrintifyId = PrintifyService.createProduct(mugProductInfo)
                             productPrintifyId?.let { id ->
                                 // Get all generated mug visuals
@@ -79,7 +79,7 @@ class ImageGeneratorService {
                                 } else {
                                     statusCode
                                 }
-                            } ?: Const.HttpStatusCode_ImageUploadFail
+                            } ?: Const.HttpStatusCode_ProductCreationFailed
                         } ?: Const.HttpStatusCode_ImageUploadFail
 
                     } catch (e: Exception) {
@@ -116,6 +116,7 @@ class ImageGeneratorService {
             var exception: Exception?
             var numberOfTries = 0
             val chatRequest = ChatRequest.generateFromParams(params)
+            CategoryService.updateCategory(CategoryService.createCategory(params.subject))
             do {
                 numberOfTries ++
                 LOG.debug("Sending request to API, restarting if Service Unavailable")
