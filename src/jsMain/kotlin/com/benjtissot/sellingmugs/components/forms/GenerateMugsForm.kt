@@ -15,9 +15,7 @@ import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.form
 import react.dom.html.ReactHTML.input
 import react.dom.html.ReactHTML.label
-import react.dom.html.ReactHTML.textarea
 import react.useState
-import kotlin.math.roundToInt
 
 external interface GenerateMugsFormProps : Props {
     var onSubmit: (String, Const.StableDiffusionImageType, Int) -> Unit
@@ -55,7 +53,7 @@ val GenerateMugsForm = FC<GenerateMugsFormProps> { props ->
                     }
                     div {
                         css {
-                            padding = 2.vh
+                            padding = 1.vh
                         }
                         +"Subject"
                     }
@@ -73,82 +71,20 @@ val GenerateMugsForm = FC<GenerateMugsFormProps> { props ->
                 }
 
                 // Number of Variations to create
-                label {
-                    css {
-                        formLabel()
-                        width = 100.pct
-                    }
-                    div {
-                        css {
-                            padding = 2.vh
+                VariationInput {
+                    this.numberOfVariations = numberOfVariations
+                    onChange = { nbVarTemp ->
+                        if (nbVarTemp < 15){
+                            numberOfVariations = nbVarTemp
                         }
-                        +"Number of variations (<15)"
-                    }
-                    input {
-                        css {
-                            formInput()
-                            fontNormal()
-                        }
-                        type = InputType.text
-                        onChange = {
-                            val numberOfVariationsTemp = try {
-                                it.target.value.toInt()
-                            } catch (e: NumberFormatException) {
-                                0
-                            }
-                            if (numberOfVariationsTemp < 15){
-                                numberOfVariations = numberOfVariationsTemp
-                            }
-                        }
-                        value = numberOfVariations.toString()
                     }
                 }
 
                 // Art Type
-                label {
-                    css {
-                        formLabel()
-                        width = 100.pct
-                        marginBottom = 1.vh
-                    }
-                    div {
-                        css {
-                            padding = 2.vh
-                        }
-                        +"Art Type"
-                    }
-                    Select {
-                        // Attributes
-                        css {
-                            width = 50.pct
-                            minWidth = 110.px
-                            height = 3.rem
-                            maxHeight = 5.vh
-                            minHeight = 40.px
-                            color = NamedColor.black
-                            boxSizing = BoxSizing.borderBox
-                            fontNormal()
-                        }
-                        value = imageType
-                        onChange = { event, _ ->
-                            imageType = event.target.value
-                        }
-
-
-                        // Children, in the selector
-
-                        MenuItem {
-                            value = Const.StableDiffusionImageType.REALISTIC.type
-                            +"Realistic"
-                        }
-                        MenuItem {
-                            value = Const.StableDiffusionImageType.GEOMETRIC.type
-                            +"Geometric"
-                        }
-                        MenuItem {
-                            value = Const.StableDiffusionImageType.CARTOON_ILLUSTRATION.type
-                            +"Cartoon Illustration"
-                        }
+                ArtTypeInput {
+                    artType = imageType
+                    onChange = { value ->
+                        imageType = value
                     }
                 }
             }
@@ -164,6 +100,194 @@ val GenerateMugsForm = FC<GenerateMugsFormProps> { props ->
             }
 
             onSubmit = submitHandler
+        }
+    }
+}
+
+external interface GenerateCategoriesFormProps : Props {
+    var onSubmit: (Int, Int, Const.StableDiffusionImageType) -> Unit
+}
+
+val GenerateCategoriesForm = FC<GenerateCategoriesFormProps> { props ->
+    var numberOfCategories by useState(2)
+    var numberOfVariations by useState(2)
+    var imageType by useState(Const.StableDiffusionImageType.REALISTIC.type)
+
+    val submitHandler: FormEventHandler<HTMLFormElement> = {
+        it.preventDefault()
+        props.onSubmit(numberOfCategories, numberOfVariations, Const.StableDiffusionImageType.valueOf(imageType))
+    }
+
+    div {
+        css {
+            fullCenterColumnOriented()
+            width = 100.pct
+        }
+        form {
+            css {
+                contentCenteredHorizontally()
+                width = 100.pct
+            }
+
+            div {
+                formLabelGroupDivCss()
+
+                // Number of Categories to create
+                label {
+                    css {
+                        formLabel()
+                        width = 100.pct
+                    }
+                    div {
+                        css {
+                            padding = 1.vh
+                        }
+                        +"Number of Categories (<15)"
+                    }
+                    input {
+                        css {
+                            formInput()
+                            fontNormal()
+                        }
+                        type = InputType.text
+                        onChange = {
+                            val numberOfCategoriesTemp = try {
+                                it.target.value.toInt()
+                            } catch (e: NumberFormatException) {
+                                0
+                            }
+                            if (numberOfCategoriesTemp < 15){
+                                numberOfCategories = numberOfCategoriesTemp
+                            }
+                        }
+                        value = numberOfCategories.toString()
+                    }
+                }
+
+                // Number of Variations to create
+                VariationInput {
+                    this.numberOfVariations = numberOfVariations
+                    onChange = { nbVarTemp ->
+                        if (nbVarTemp < 15){
+                            numberOfVariations = nbVarTemp
+                        }
+                    }
+                }
+
+                // Art Type
+                ArtTypeInput {
+                    artType = imageType
+                    onChange = { value ->
+                        imageType = value
+                    }
+                }
+            }
+
+            input {
+                css {
+                    formInput(80.pct, 200.px, backColor = Color(BLUE.code()), frontColor = NamedColor.white)
+                    textAlign = TextAlign.center
+                    marginTop = 2.vh
+                    cursor = Cursor.pointer
+                }
+                type = InputType.submit
+                value = "Generate $numberOfCategories categories with $numberOfVariations mugs each"
+            }
+
+            onSubmit = submitHandler
+        }
+    }
+}
+
+// TODO: refactor this code
+external interface VariationInputProps : Props {
+    var onChange: (Int) -> Unit
+    var numberOfVariations : Int
+}
+
+val VariationInput = FC<VariationInputProps> { props ->
+    label {
+        css {
+            formLabel()
+            width = 100.pct
+        }
+        div {
+            css {
+                padding = 1.vh
+            }
+            +"Number of variations (<15)"
+        }
+        input {
+            css {
+                formInput()
+                fontNormal()
+            }
+            type = InputType.text
+            onChange = {
+                props.onChange(
+                    try {
+                        it.target.value.toInt()
+                    } catch (e: NumberFormatException) {
+                        0
+                    }
+                )
+            }
+            value = props.numberOfVariations.toString()
+        }
+    }
+}
+
+
+external interface ArtTypeInputProps : Props {
+    var onChange: (String) -> Unit
+    var artType : String
+}
+val ArtTypeInput = FC<ArtTypeInputProps> { props ->
+
+    label {
+        css {
+            formLabel()
+            width = 100.pct
+            marginBottom = 1.vh
+        }
+        div {
+            css {
+                padding = 1.vh
+            }
+            +"Art Type"
+        }
+        Select {
+            // Attributes
+            css {
+                width = 50.pct
+                minWidth = 110.px
+                height = 3.rem
+                maxHeight = 5.vh
+                minHeight = 40.px
+                color = NamedColor.black
+                boxSizing = BoxSizing.borderBox
+                fontNormal()
+            }
+            value = props.artType
+            onChange = { event, _ ->
+                props.onChange(event.target.value)
+            }
+
+
+            // Children, in the selector
+
+            MenuItem {
+                value = Const.StableDiffusionImageType.REALISTIC.type
+                +"Realistic"
+            }
+            MenuItem {
+                value = Const.StableDiffusionImageType.GEOMETRIC.type
+                +"Geometric"
+            }
+            MenuItem {
+                value = Const.StableDiffusionImageType.CARTOON_ILLUSTRATION.type
+                +"Cartoon Illustration"
+            }
         }
     }
 }

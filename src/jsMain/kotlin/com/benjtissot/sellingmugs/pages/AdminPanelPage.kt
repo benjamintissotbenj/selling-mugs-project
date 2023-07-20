@@ -41,7 +41,6 @@ val AdminPanelPage = FC<NavigationProps> { props ->
             contentCenteredHorizontally()
             width = 100.pct
             height = 95.pct
-            paddingTop = 2.vh
             boxSizing = BoxSizing.borderBox
         }
 
@@ -57,6 +56,7 @@ val AdminPanelPage = FC<NavigationProps> { props ->
 
                 CreateProductComponent {
                     navigate = props.navigate
+                    session = props.session
                     onCreatingMugs = {subject, artType ->
                         props.setAlert(infoAlert("You are creating mugs on the subject of $subject in a ${artType.type} style", "Mug Creation"))
                     }
@@ -94,10 +94,13 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                     }
                 }
             }
+
             div {
                 css {
                     justifySpaceBetween()
+                    alignItems = AlignItems.center
                     width = 100.pct
+                    paddingTop = 2.vh
                     boxSizing = BoxSizing.borderBox
                     paddingLeft = 5.vw
                     paddingRight = 5.vw
