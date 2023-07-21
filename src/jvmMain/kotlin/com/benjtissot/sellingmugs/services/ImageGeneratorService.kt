@@ -37,18 +37,22 @@ class ImageGeneratorService {
          * @throws [OpenAIUnavailable] when the server is unable to connect with OpenAI's API
          */
         @Throws
-        suspend fun generateCategoriesAndMugs(params: CategoriesChatRequestParams) : List<CustomStatusCode> {
+        suspend fun generateCategoriesAndMugs(params: CategoriesChatRequestParams) : GenerateCategoriesStatus {
             val categoriesAndStyle = generateCategories(params.amountOfCategories)
 
-            return categoriesAndStyle.flatMap { pair ->
-                try {
-                    val imageType = params.type ?: pair.second
-                    generateMugsFromParams(MugsChatRequestParams(pair.first.name, imageType, params.amountOfVariations))
-                } catch (e: OpenAIUnavailable) {
-                    e.printStackTrace()
-                    emptyList()
-                }
-            }
+            return GenerateCategoriesStatus( genUuid(),
+                categoriesAndStyle.map { pair ->
+                    try {
+                        val imageType = params.type ?: pair.second
+                        val statusCodes = generateMugsFromParams(MugsChatRequestParams(pair.first.name, imageType, params.amountOfVariations))
+                        GenerateCategoryStatus(pair.first, "Success", statusCodes)
+                    } catch (e: OpenAIUnavailable) {
+                        e.printStackTrace()
+                        GenerateCategoryStatus(pair.first, e.message, emptyList())
+                    }
+                },
+                Clock.System.now()
+            )
         }
 
 
@@ -262,8 +266,16 @@ class ImageGeneratorService {
          * Calls [PrintifyService] to upload an image from a fileName and a source url
          */
         private suspend fun uploadImageFromSource(fileName: String, imageSource: String) : ImageForUploadReceive? {
-            // TODO run a loop to get image a couple times if it fails
-            return PrintifyService.uploadImage(ImageForUpload(file_name = fileName, url = imageSource), true)
+            var imageForUploadReceive : ImageForUploadReceive? = null
+            var nbTries = 0
+            while (imageForUploadReceive == null && nbTries < 5){
+                nbTries ++
+                imageForUploadReceive = PrintifyService.uploadImage(ImageForUpload(file_name = fileName, url = imageSource), true)
+                if (imageForUploadReceive == null){
+                    delay(1000L) // wait 1 s if image does not upload immediately correctly
+                }
+            }
+            return imageForUploadReceive
         }
 
         /**

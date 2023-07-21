@@ -24,7 +24,7 @@ val AlertComponent = FC <AlertProps> { props ->
             this.open = true
             autoHideDuration = 5000
             onClose = { _, reason ->
-                if (reason == SnackbarCloseReason.timeout){
+                if (reason == SnackbarCloseReason.timeout && !alertState.stayOn){
                     props.setAlert(hideAlert())
                 }
             }

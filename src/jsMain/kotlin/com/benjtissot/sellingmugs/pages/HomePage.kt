@@ -32,8 +32,6 @@ val Homepage = FC<NavigationProps> { props ->
     var mugShowDetails : Mug? by useState(null)
 
 
-    // TODO pagination
-
     // At first initialisation, get the list
     // Alternative is useState when we want to persist something across re-renders
     useEffectOnce {

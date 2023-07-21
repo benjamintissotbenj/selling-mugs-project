@@ -7,6 +7,7 @@ import com.benjtissot.sellingmugs.entities.local.Mug
 import com.benjtissot.sellingmugs.entities.openAI.CategoriesChatRequestParams
 import com.benjtissot.sellingmugs.entities.openAI.MugsChatRequestParams
 import com.benjtissot.sellingmugs.entities.openAI.OpenAIUnavailable
+import com.benjtissot.sellingmugs.repositories.CategoriesGenerationResultRepository
 import com.benjtissot.sellingmugs.services.ImageGeneratorService
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -39,7 +40,11 @@ fun Route.openAIRouting(){
             post {
                 val chatRequestParams : CategoriesChatRequestParams = call.receive()
                 try {
-                    call.respond(ImageGeneratorService.generateCategoriesAndMugs(chatRequestParams))
+                    call.respond(
+                        CategoriesGenerationResultRepository.updateGenerateCategoriesStatus (
+                            ImageGeneratorService.generateCategoriesAndMugs(chatRequestParams)
+                        )
+                    )
                 } catch (e: OpenAIUnavailable) {
                     e.printStackTrace()
                     call.respond(Const.HttpStatusCode_OpenAIUnavailable)

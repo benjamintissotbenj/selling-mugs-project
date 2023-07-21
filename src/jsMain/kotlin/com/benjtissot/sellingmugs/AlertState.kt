@@ -9,6 +9,7 @@ class AlertState (
     val message: String = "Message",
     val severity: AlertColor = AlertColor.info,
     val variant: AlertVariant = AlertVariant.standard,
+    val stayOn: Boolean = false
 ) {
 }
 
@@ -19,9 +20,10 @@ fun showAlert(
     title: String,
     message: String,
     severity: AlertColor = AlertColor.info,
-    variant: AlertVariant = AlertVariant.standard
+    variant: AlertVariant = AlertVariant.standard,
+    stayOn: Boolean = false
 ): AlertState {
-    return AlertState(true, title, message, severity, variant)
+    return AlertState(true, title, message, severity, variant, stayOn)
 }
 
 /**
@@ -59,9 +61,10 @@ fun warningAlert(
  */
 fun infoAlert(
     message: String,
-    title: String = "Information"
+    title: String = "Information",
+    stayOn: Boolean = false
 ): AlertState {
-    return showAlert(title, message, AlertColor.info)
+    return showAlert(title, message, AlertColor.info, stayOn = stayOn)
 }
 
 /**
