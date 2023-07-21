@@ -71,6 +71,7 @@ val DisplayGenerationResultComponent = FC<DisplayGenerationResultProps> { props 
 
             // Components
             CustomStatusCodeListComponent {
+                list = props.list
                 height = 90.pct
                 onMouseEnterMessage = { div, text ->
                     focusedText = text
@@ -151,6 +152,7 @@ val DisplayCategoriesGenerationResultComponent = FC<DisplayCategoriesGenerationR
 
                 // Components
                 CustomStatusCodeListComponent {
+                    list = categoryStatus.customStatusCodes
                     height = "fit-content".unsafeCast<Height>()
                     minHeight = 30.vh
                     maxHeight = 80.vh

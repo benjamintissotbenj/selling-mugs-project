@@ -8,6 +8,7 @@ import com.benjtissot.sellingmugs.components.createProduct.DisplayGenerationResu
 import com.benjtissot.sellingmugs.components.lists.ManageUsersComponent
 import com.benjtissot.sellingmugs.entities.local.Category
 import com.benjtissot.sellingmugs.entities.local.User
+import com.benjtissot.sellingmugs.entities.openAI.CategoriesChatRequestParams
 import com.benjtissot.sellingmugs.entities.openAI.CustomStatusCode
 import com.benjtissot.sellingmugs.entities.openAI.GenerateCategoriesStatus
 import com.benjtissot.sellingmugs.entities.openAI.GenerateCategoryStatus
@@ -29,7 +30,8 @@ private val LOG = KtorSimpleLogger("AdminPanelPage.kt")
 
 val AdminPanelPage = FC<NavigationProps> { props ->
     var creationResult by useState(emptyList<CustomStatusCode>())
-    /*var testCatStatus = GenerateCategoriesStatus("Id", listOf(
+    /*
+    var testCatStatus = GenerateCategoriesStatus("Id", "MessageAtTop", CategoriesChatRequestParams(3, 3, null), listOf(
         GenerateCategoryStatus(
             Category("1", "Name 1"), "", listOf(
                 CustomStatusCode(200, "Success"),
@@ -37,7 +39,7 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                 CustomStatusCode(200, "Success"),
                 CustomStatusCode(200, "Success"),
                 CustomStatusCode(91, "This is an extremely long message. This is an extremely long message. This is an extremely long message. "),
-            )),
+            ), Clock.System.now(), Clock.System.now()),
         GenerateCategoryStatus(
             Category("2", "Name 2"), "There was an error during upload", listOf(
                 CustomStatusCode(200, "Success"),
@@ -45,7 +47,7 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                 CustomStatusCode(200, "Success"),
                 CustomStatusCode(200, "Success"),
                 CustomStatusCode(91, "This is an extremely long message. This is an extremely long message. This is an extremely long message. "),
-            )),
+            ), Clock.System.now(), Clock.System.now()),
         GenerateCategoryStatus(
             Category("2", "Name 2"), "", listOf(
                 CustomStatusCode(200, "Success"),
@@ -53,10 +55,11 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                 CustomStatusCode(200, "Success"),
                 CustomStatusCode(200, "Success"),
                 CustomStatusCode(91, "This is an extremely long message. This is an extremely long message. This is an extremely long message. "),
-            )),
+            ), Clock.System.now(), Clock.System.now()),
     ),
-        Clock.System.now()
-    )*/
+        Clock.System.now(), Clock.System.now()
+    )
+    */
     var generateCategoriesStatus : GenerateCategoriesStatus? by useState(null)
 
     useEffectOnce {
