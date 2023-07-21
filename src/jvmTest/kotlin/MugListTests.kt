@@ -1,6 +1,7 @@
 import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.entities.local.*
 import com.benjtissot.sellingmugs.genUuid
+import com.benjtissot.sellingmugs.getUuidFromString
 import com.benjtissot.sellingmugs.repositories.CategoryRepository
 import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.services.CategoryService
@@ -28,7 +29,8 @@ class MugListTests : AbstractDatabaseTests() {
             session = SessionRepository.createSession()
             CategoryRepository.insertCategory(Category())
             for (j: Int in 0 until categoriesAmount){
-                val category = Category("${j+1}", "Category ${j+1}")
+                val catName = "Category ${j+1}"
+                val category = Category(getUuidFromString(catName), catName)
                 CategoryRepository.insertCategory(category)
                 categories.add(category)
                 for (i: Int in 1..mugsAmountPerCategory){
