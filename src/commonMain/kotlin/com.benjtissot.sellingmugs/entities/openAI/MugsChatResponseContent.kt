@@ -1,9 +1,10 @@
 package com.benjtissot.sellingmugs.entities.openAI
 
+import com.benjtissot.sellingmugs.Const
 import kotlinx.serialization.Serializable
 
 @Serializable
-class ChatResponseContent(
+class MugsChatResponseContent(
     val variations: List<Variation>
 ){}
 
@@ -18,3 +19,13 @@ class Variation(
     }
 }
 
+
+@Serializable
+class CategoriesChatResponseContent(val categories: List<CategoryResponse>){
+}
+
+@Serializable
+class CategoryResponse(
+    val category: String,
+    val style: Const.StableDiffusionImageType
+)

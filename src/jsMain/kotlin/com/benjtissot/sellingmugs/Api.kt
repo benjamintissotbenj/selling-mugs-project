@@ -4,7 +4,8 @@ import com.benjtissot.sellingmugs.Const.Companion.image
 import com.benjtissot.sellingmugs.Const.Companion.titleDesc
 import com.benjtissot.sellingmugs.Const.Companion.updateType
 import com.benjtissot.sellingmugs.entities.local.*
-import com.benjtissot.sellingmugs.entities.openAI.ChatRequestParams
+import com.benjtissot.sellingmugs.entities.openAI.CategoriesChatRequestParams
+import com.benjtissot.sellingmugs.entities.openAI.MugsChatRequestParams
 import com.benjtissot.sellingmugs.entities.printify.*
 import com.benjtissot.sellingmugs.entities.printify.order.*
 import io.ktor.client.*
@@ -435,8 +436,19 @@ suspend fun saveCartToUser(userId: String) : HttpStatusCode {
 /**
  * Creates a request to the back-end to create mugs given a subject
  */
-suspend fun generateMugs(params: ChatRequestParams): HttpResponse {
-    return jsonClient.post(OPEN_AI_PATH){
+suspend fun generateMugs(params: MugsChatRequestParams): HttpResponse {
+    return jsonClient.post("$OPEN_AI_PATH${Mug.path}"){
+        contentType(ContentType.Application.Json)
+        setBody(params)
+    }
+}
+
+
+/**
+ * Creates a request to the back-end to create mugs from generated categories
+ */
+suspend fun generateMugsInCategories(params: CategoriesChatRequestParams): HttpResponse {
+    return jsonClient.post("$OPEN_AI_PATH${Category.path}"){
         contentType(ContentType.Application.Json)
         setBody(params)
     }

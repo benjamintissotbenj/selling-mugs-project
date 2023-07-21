@@ -8,7 +8,8 @@ import kotlinx.serialization.Serializable
 class ChatLog(
     @SerialName("_id") val id: String,
     val chatRequest: ChatRequest,
-    val chatResponse: ChatResponseContent?,
+    val mugChatResponse: MugsChatResponseContent? = null,
+    val categoriesChatResponseContent: CategoriesChatResponseContent? = null,
     val message: String,
     val responseReceived: Instant
 ){}
