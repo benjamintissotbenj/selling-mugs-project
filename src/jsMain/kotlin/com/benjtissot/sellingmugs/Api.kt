@@ -453,3 +453,14 @@ suspend fun generateMugsInCategories(params: CategoriesChatRequestParams): HttpR
         setBody(params)
     }
 }
+
+
+/**
+ * Creates a request to the back-end to create mugs from generated categories
+ */
+suspend fun generateDesign(params: MugsChatRequestParams): HttpResponse {
+    return jsonClient.post("$OPEN_AI_PATH${Artwork.path}"){
+        contentType(ContentType.Application.Json)
+        setBody(params)
+    }
+}

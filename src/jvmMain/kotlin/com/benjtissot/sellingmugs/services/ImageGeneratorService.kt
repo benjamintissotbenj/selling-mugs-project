@@ -132,6 +132,35 @@ class ImageGeneratorService {
          *****************************************/
 
         /**
+         * Generates a single design from the given parameters and returns the result of it's upload to printify
+         * @param params the variation name and the style in which to draw it
+         * @return [ImageForUploadReceive] when the upload is a success, null when we have tried 5 times without succeeding
+         * @throws [OpenAIUnavailable] when the service takes too long to reply
+         * @throws [Exception] when there is an unknown error
+         */
+        suspend fun generateDesignFromParams(params: MugsChatRequestParams) : ImageForUploadReceive? {
+            // Get ChatGPT to create a list of variations
+            val variations = try {
+                generateVariationsFromParams(params)
+            } catch (e: IOException) {
+                throw OpenAIUnavailable()
+            }
+            if (variations.isEmpty()) {
+                throw OpenAIUnavailable()
+            }
+            val variation = variations[0]
+            return try {
+                // Use StableDiffusion to create an image for each variation
+                val stableDiffusionImageSource = generateImageFromVariation(variation)
+
+                // Upload generated image to printify
+                uploadImageFromSource(variation.getCleanName(), stableDiffusionImageSource)
+            } catch (e: Exception) {
+                throw Exception("Error in the process for variation ${variation.name}, message: ${e.message ?: "no-message"}")
+            }
+        }
+
+        /**
          * Uses OpenAI and Stable Diffusion APIs to create a list of images from a subject
          * @param params the different [MugsChatRequestParams] needed to create a good OpenAI request
          * @return the list of [CustomStatusCode]s associated with each variation, serializable version of [HttpStatusCode]

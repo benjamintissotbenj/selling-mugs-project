@@ -19,11 +19,13 @@ import react.useState
 
 external interface GenerateMugsFormProps : Props {
     var onSubmit: (String, Const.StableDiffusionImageType, Int) -> Unit
+    var isCustomMug : Boolean
+    var width : Width
 }
 
 val GenerateMugsForm = FC<GenerateMugsFormProps> { props ->
     var subject by useState(Const.mugSubjectPrefill)
-    var numberOfVariations by useState(2)
+    var numberOfVariations by useState(if (props.isCustomMug) 1 else 2)
     var imageType by useState(Const.StableDiffusionImageType.REALISTIC.type)
 
     val submitHandler: FormEventHandler<HTMLFormElement> = {
@@ -34,7 +36,7 @@ val GenerateMugsForm = FC<GenerateMugsFormProps> { props ->
     div {
         css {
             fullCenterColumnOriented()
-            width = 100.pct
+            width = props.width
         }
         form {
             css {
@@ -70,12 +72,14 @@ val GenerateMugsForm = FC<GenerateMugsFormProps> { props ->
                     }
                 }
 
-                // Number of Variations to create
-                VariationInput {
-                    this.numberOfVariations = numberOfVariations
-                    onChange = { nbVarTemp ->
-                        if (nbVarTemp < 15){
-                            numberOfVariations = nbVarTemp
+                // Number of Variations to create, available when not creating single mug
+                if (!props.isCustomMug){
+                    VariationInput {
+                        this.numberOfVariations = numberOfVariations
+                        onChange = { nbVarTemp ->
+                            if (nbVarTemp < 15){
+                                numberOfVariations = nbVarTemp
+                            }
                         }
                     }
                 }
@@ -96,7 +100,7 @@ val GenerateMugsForm = FC<GenerateMugsFormProps> { props ->
                     cursor = Cursor.pointer
                 }
                 type = InputType.submit
-                value = "Generate mugs"
+                value = if (numberOfVariations == 1) "Generate mug" else "Generate mugs"
             }
 
             onSubmit = submitHandler
