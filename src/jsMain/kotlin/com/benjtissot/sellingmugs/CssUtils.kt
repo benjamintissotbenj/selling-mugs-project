@@ -106,6 +106,20 @@ fun PropertiesBuilder.fontBig(){
     fontSize = 1.5.rem
 }
 
+fun PropertiesBuilder.componentTitle(){
+    textAlign = TextAlign.center
+    fontNormal()
+    fontWeight = FontWeight.bold
+    height = 10.pct
+    minHeight = 8.vh
+    width = 100.pct
+    marginBottom = 2.pct
+    boxSizing = BoxSizing.borderBox
+    display = Display.flex
+    flexDirection = FlexDirection.column
+    justifyContent = JustifyContent.center
+}
+
 
 // BOX SIZE
 
