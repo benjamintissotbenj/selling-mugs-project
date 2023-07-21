@@ -1,6 +1,7 @@
 package com.benjtissot.sellingmugs.entities.openAI
 
 import com.benjtissot.sellingmugs.Const
+import com.benjtissot.sellingmugs.Const.Companion.getGenerateCategoriesPrompt
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -10,7 +11,7 @@ class ChatRequest(
     val temperature: Float,
 ) {
     companion object {
-        fun generateFromParams(parameters: ChatRequestParams) : ChatRequest {
+        fun generateMugRequestFromParams(parameters: MugsChatRequestParams) : ChatRequest {
             val promptStructure = when (parameters.type){
                 Const.StableDiffusionImageType.REALISTIC -> {Const.getRealisticStructure()}
                 Const.StableDiffusionImageType.GEOMETRIC -> {Const.getGeometricStructure()}
@@ -18,6 +19,11 @@ class ChatRequest(
             }
              val message = "$promptStructure \n ${Const.getPromptResponseStructure(parameters.amountOfVariations)} ${parameters.subject}"
 
+            return ChatRequest("gpt-3.5-turbo", arrayListOf(Message("user", content = message)), temperature = 0.7f)
+        }
+
+        fun generateCategoryRequestFromParams(amountOfCategories: Int) : ChatRequest {
+             val message = getGenerateCategoriesPrompt(amountOfCategories)
             return ChatRequest("gpt-3.5-turbo", arrayListOf(Message("user", content = message)), temperature = 0.7f)
         }
     }
@@ -31,4 +37,7 @@ class Message(
 }
 
 @Serializable
-class ChatRequestParams(val subject : String, val type: Const.StableDiffusionImageType, val amountOfVariations: Int)
+class MugsChatRequestParams(val subject : String, val type: Const.StableDiffusionImageType, val amountOfVariations: Int)
+
+@Serializable
+class CategoriesChatRequestParams(val amountOfCategories: Int, val amountOfVariations: Int, val type: Const.StableDiffusionImageType?)

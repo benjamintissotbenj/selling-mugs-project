@@ -1,5 +1,7 @@
 package com.benjtissot.sellingmugs.entities.local
 
+import com.benjtissot.sellingmugs.CATEGORY_OBJECT_PATH
+import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.MUG_OBJECT_PATH
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -10,6 +12,7 @@ data class Mug(@SerialName("_id") val id: String,
                val name: String,
                var description: String,
                val price: Float,
+               val category: Category = Category(),
                var artwork: Artwork
 ){
 
@@ -37,4 +40,21 @@ data class UserCustomMugList (
     val mugIds: List<String>,
 ){
 
+}
+
+@Serializable
+data class MugFilter(
+    val currentPage: Int? = null,
+    val publicOnly: Boolean = true,
+    val categories: List<Category> = emptyList()
+)
+
+@Serializable
+data class Category (
+    @SerialName("_id") val id : String = "0",
+    val name: String = Const.mugCategoryDefault
+){
+    companion object {
+        val path = CATEGORY_OBJECT_PATH
+    }
 }

@@ -1,17 +1,61 @@
 package com.benjtissot.sellingmugs.services
 
 import com.benjtissot.sellingmugs.controllers.mugCollection
-import com.benjtissot.sellingmugs.entities.local.Artwork
-import com.benjtissot.sellingmugs.entities.local.Mug
-import com.benjtissot.sellingmugs.entities.local.UserCustomMugList
+import com.benjtissot.sellingmugs.entities.local.*
 import com.benjtissot.sellingmugs.repositories.MugRepository
-import org.litote.kmongo.eq
+import org.bson.conversions.Bson
+import org.litote.kmongo.*
 
 class MugService {
     companion object {
 
-        suspend fun getMugList() : List<Mug> {
-            return mugCollection.find().toList().filter {mug -> mug.artwork.public} // only get the publicly available mugs
+        const val mugsPerPage = 25
+
+        /**
+         * Creates the appropriate BSON filter
+         * @param mugFilter the [MugFilter] object to analyse
+         * @return a [Bson] object used in queries
+         */
+        private fun createFilterFromMugFilter(mugFilter: MugFilter) : Bson {
+            val publicFilter = if (mugFilter.publicOnly){
+                Mug::artwork / Artwork::public eq true
+            } else {
+                EMPTY_BSON
+            }
+            val categoryFilter = if (mugFilter.categories.isNotEmpty()){
+                Mug::category `in` mugFilter.categories
+            } else {
+                EMPTY_BSON
+            }
+            return and (publicFilter, categoryFilter)
+        }
+
+        /**
+         * Counts mugs
+         */
+        suspend fun getMugCount(mugFilter: MugFilter) : Int {
+            val filter = createFilterFromMugFilter(mugFilter)
+            return mugCollection.countDocuments(filter).toInt()
+        }
+
+        /**
+         * Gets all the publicly available mugs
+         */
+        suspend fun getPublicMugList(mugFilter: MugFilter = MugFilter()) : List<Mug> {
+            return getAllMugsList(mugFilter.copy(publicOnly = true)) // only get the publicly available mugs
+        }
+
+        /**
+         * Gets all the mugs in the database, can be paginated, filtered
+         * @param mugFilter a [MugFilter] object that holds all the information to filter out which mugs we want to retrieve
+         */
+        suspend fun getAllMugsList(mugFilter : MugFilter = MugFilter()) : List<Mug> {
+            val filter = createFilterFromMugFilter(mugFilter)
+            return mugFilter.currentPage?.let {
+                mugCollection.find(filter).skip(it * mugsPerPage).limit(mugsPerPage).toList()
+            } ?: let {
+                mugCollection.find(filter).toList()
+            }
         }
 
         suspend fun insertNewMug(mug: Mug){

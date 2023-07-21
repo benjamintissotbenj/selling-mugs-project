@@ -40,7 +40,7 @@ val AdminPanelPage = FC<NavigationProps> { props ->
         css {
             contentCenteredHorizontally()
             width = 100.pct
-            height = 95.pct
+            height = 100.pct
             paddingTop = 2.vh
             boxSizing = BoxSizing.borderBox
         }
@@ -51,12 +51,13 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                 css {
                     justifySpaceBetween()
                     flexDirection = FlexDirection.row
-                    height = 95.pct
+                    height = 93.pct
                     width = 100.pct
                 }
 
                 CreateProductComponent {
                     navigate = props.navigate
+                    session = props.session
                     onCreatingMugs = {subject, artType ->
                         props.setAlert(infoAlert("You are creating mugs on the subject of $subject in a ${artType.type} style", "Mug Creation"))
                     }
@@ -70,6 +71,25 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                                     }
                                 }
                                 props.setAlert(successAlert("You have successfully created your mugs"))
+                            }
+                            Const.HttpStatusCode_OpenAIUnavailable -> props.setAlert(errorAlert("OpenAI is unavailable, please try later"))
+                            else -> props.setAlert(errorAlert("There has been a problem during creation. Consult Logs."))
+                        }
+
+                    }
+                    onCreatingCategories = { nbCat, nbVal, artType ->
+                        props.setAlert(infoAlert("You are creating $nbCat categories with $nbVal mugs each. For style, you have chosen ${artType ?: "Automatic"}", "Categories and mugs"))
+                    }
+                    onCategoriesCreationResponse = { httpResponse ->
+                        when (httpResponse.status) {
+                            HttpStatusCode.OK -> {
+                                scope.launch {
+                                    val statusCodes : List<CustomStatusCode> = httpResponse.body()
+                                    statusCodes.forEach { status ->
+                                        println(status.print())
+                                    }
+                                }
+                                props.setAlert(successAlert("You have successfully created your categories and your mugs"))
                             }
                             Const.HttpStatusCode_OpenAIUnavailable -> props.setAlert(errorAlert("OpenAI is unavailable, please try later"))
                             else -> props.setAlert(errorAlert("There has been a problem during creation. Consult Logs."))
@@ -97,10 +117,12 @@ val AdminPanelPage = FC<NavigationProps> { props ->
             div {
                 css {
                     justifySpaceBetween()
+                    alignItems = AlignItems.center
                     width = 100.pct
+                    maxHeight = 5.vh
+                    paddingBlock = 2.vh
+                    paddingInline = 5.vw
                     boxSizing = BoxSizing.borderBox
-                    paddingLeft = 5.vw
-                    paddingRight = 5.vw
                     flexDirection = FlexDirection.row
                 }
 

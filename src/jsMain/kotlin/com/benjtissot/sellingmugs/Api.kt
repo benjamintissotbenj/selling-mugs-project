@@ -4,7 +4,8 @@ import com.benjtissot.sellingmugs.Const.Companion.image
 import com.benjtissot.sellingmugs.Const.Companion.titleDesc
 import com.benjtissot.sellingmugs.Const.Companion.updateType
 import com.benjtissot.sellingmugs.entities.local.*
-import com.benjtissot.sellingmugs.entities.openAI.ChatRequestParams
+import com.benjtissot.sellingmugs.entities.openAI.CategoriesChatRequestParams
+import com.benjtissot.sellingmugs.entities.openAI.MugsChatRequestParams
 import com.benjtissot.sellingmugs.entities.printify.*
 import com.benjtissot.sellingmugs.entities.printify.order.*
 import io.ktor.client.*
@@ -85,13 +86,59 @@ suspend fun recordClick(clickDataId: String, clickType: String) {
 
 
 // MugList
-suspend fun getMugList(): List<Mug> {
-    return jsonClient.get(Mug.path).body()
+suspend fun getMugList(categories: List<Category>, pageNumber : Int): List<Mug> {
+    var queryParams = "?${Const.pageNumber}=$pageNumber"
+    if (categories.isNotEmpty()){
+        queryParams += "&"
+        categories.forEach{
+            queryParams += "&${Const.categories}=${it.id}"
+        }
+    }
+
+    val httpResponse = jsonClient.get("${Mug.path}$queryParams")
+    return if (httpResponse.status == HttpStatusCode.OK){
+        httpResponse.body()
+    } else {
+        emptyList()
+    }
+}
+
+suspend fun getTotalMugCount(categories: List<Category>) : Int {
+    var queryParams = "?${Const.count}=true"
+    if (categories.isNotEmpty()){
+        categories.forEach{
+            queryParams += "&${Const.categories}=${it.id}"
+        }
+    }
+
+    val httpResponse = jsonClient.get("${Mug.path}$queryParams")
+    return if (httpResponse.status == HttpStatusCode.OK){
+        httpResponse.body()
+    } else {
+        0
+    }
 }
 
 suspend fun getMugByPrintifyId(printifyId: String): Mug? {
     val httpResponse = jsonClient.get("${Mug.path}/$printifyId")
     return if (httpResponse.status == HttpStatusCode.OK) httpResponse.body() else null
+}
+
+suspend fun getAllCategories(): List<Category> {
+    val httpResponse = jsonClient.get(Category.path)
+    return if (httpResponse.status == HttpStatusCode.OK) httpResponse.body() else emptyList()
+}
+
+suspend fun getCategoriesByIds(categoryIds : List<String>) : List<Category> {
+    var queryParams = ""
+    if (categoryIds.isNotEmpty()){
+        queryParams += "?"
+        categoryIds.forEach {
+            queryParams += "${Const.id}=$it&"
+        }
+    }
+    val httpResponse = jsonClient.get(Category.path + queryParams)
+    return if (httpResponse.status == HttpStatusCode.OK) httpResponse.body() else emptyList()
 }
 
 
@@ -389,8 +436,19 @@ suspend fun saveCartToUser(userId: String) : HttpStatusCode {
 /**
  * Creates a request to the back-end to create mugs given a subject
  */
-suspend fun generateMugs(params: ChatRequestParams): HttpResponse {
-    return jsonClient.post(OPEN_AI_PATH){
+suspend fun generateMugs(params: MugsChatRequestParams): HttpResponse {
+    return jsonClient.post("$OPEN_AI_PATH${Mug.path}"){
+        contentType(ContentType.Application.Json)
+        setBody(params)
+    }
+}
+
+
+/**
+ * Creates a request to the back-end to create mugs from generated categories
+ */
+suspend fun generateMugsInCategories(params: CategoriesChatRequestParams): HttpResponse {
+    return jsonClient.post("$OPEN_AI_PATH${Category.path}"){
         contentType(ContentType.Application.Json)
         setBody(params)
     }

@@ -22,6 +22,7 @@ import react.useState
 external interface CreateTabsProps : PropsWithChildren {
     var labels : List<String>
     var height: Height
+    var maxHeight: MaxHeight
     var width: Width
     var onClickTab: (Int) -> Unit
 }
@@ -34,9 +35,9 @@ val CreateTabsComponent = FC <CreateTabsProps> { props ->
 
     div {
         css {
-            overflow = "auto".unsafeCast<Overflow>()
             boxSizing = BoxSizing.borderBox
             height = props.height
+            maxHeight = props.maxHeight
             width = props.width
         }
 
@@ -81,9 +82,10 @@ val CreateTabsComponent = FC <CreateTabsProps> { props ->
             // Render children tabs
             div {
                 css {
+                    overflow = "auto".unsafeCast<Overflow>()
                     boxSizing = BoxSizing.borderBox
                     width = 100.pct
-                    height = 95.pct
+                    maxHeight = 95.pct
                 }
                 +props.children
             }

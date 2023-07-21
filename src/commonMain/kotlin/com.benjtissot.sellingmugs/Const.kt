@@ -45,6 +45,10 @@ class Const {
         CART_SEE_AVAILABLE_MUGS("CART_SEE_AVAILABLE_MUGS"),
         CART_LOAD_SAVED_CART("CART_LOAD_SAVED_CART"),
         CART_SAVE_TO_USER("CART_SAVE_TO_USER"),
+        GENERATE_MUGS_TAB("GENERATE_MUGS_TAB"),
+        GENERATE_CATEGORIES_TAB("GENERATE_CATEGORIES_TAB"),
+        GENERATE_MUGS_BUTTON("GENERATE_MUGS_BUTTON"),
+        GENERATE_CATEGORIES_BUTTON("GENERATE_CATEGORIES_BUTTON"),
         ;
 
         override fun toString(): String {
@@ -107,6 +111,9 @@ class Const {
         const val public = "public"
         const val printifyId = "printifyId"
         const val mugId = "mugId"
+        const val categories = "categories"
+        const val count = "count"
+        const val pageNumber = "pageNumber"
 
         // Stripe params
         const val payment_intent = "payment_intent"
@@ -121,10 +128,10 @@ class Const {
         // Hidden overflow card url
         const val maskUrl = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);"
 
-
-
         const val mugListDisplayList = "list"
         const val mugListDisplayGrid = "grid"
+
+        const val mugCategoryDefault = "Default"
 
         const val contactLinkedin = "https://www.linkedin.com/in/benjamin-tissot-49a1538b/"
         const val contactGitHub = "https://github.com/benjamintissotbenj/selling-mugs-project"
@@ -162,6 +169,12 @@ class Const {
         }
         fun getCartoonStructure() : String {
             return "Structure of a Stable Diffusion prompt : (subject of the image), (drawing type), (illustration style), (time of day), (known artist style), (Realism Level), (Lighting). "
+        }
+
+        fun getGenerateCategoriesPrompt(numberOfCategories: Int) : String {
+            return "Create a JSON file with a list called categories of $numberOfCategories different categories for mug designs. " +
+                    "Any category should be 1 to 3 words long. For each one, indicate its name (field name category) and " +
+                    "which style (field name style) would best be suited between REALISTIC, GEOMETRIC and CARTOON_ILLUSTRATION."
         }
 
         val HttpStatusCode_OpenAIUnavailable = HttpStatusCode(80, "OpenAI Server is unavailable, please try later")
