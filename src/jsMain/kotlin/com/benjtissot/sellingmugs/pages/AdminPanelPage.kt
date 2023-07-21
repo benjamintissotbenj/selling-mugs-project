@@ -109,7 +109,7 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                             props.setAlert(
                                 infoAlert(
                                     "You are creating mugs on the subject of $subject in a ${artType.type} style",
-                                    "Mug Creation",
+                                    "Generating mugs",
                                     stayOn = true
                                 )
                             )
@@ -127,8 +127,8 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                                     props.setAlert(successAlert("You have successfully created your mugs"))
                                 }
 
-                                Const.HttpStatusCode_OpenAIUnavailable -> props.setAlert(errorAlert("OpenAI is unavailable, please try later"))
-                                else -> props.setAlert(errorAlert("There has been a problem during creation. Consult Logs."))
+                                Const.HttpStatusCode_OpenAIUnavailable -> props.setAlert(errorAlert("OpenAI is unavailable, please try later", stayOn = true))
+                                else -> props.setAlert(errorAlert("There has been a problem during creation. Consult Logs.", stayOn = true))
                             }
 
                         }
@@ -136,7 +136,7 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                             props.setAlert(
                                 infoAlert(
                                     "You are creating $nbCat categories with $nbVal mugs each. For style, you have chosen ${artType ?: "Automatic"}",
-                                    "Categories and mugs",
+                                    "Generating categories and mugs",
                                     stayOn = true
                                 )
                             )
@@ -157,8 +157,8 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                                     props.setAlert(successAlert("You have successfully created your categories and your mugs"))
                                 }
 
-                                Const.HttpStatusCode_OpenAIUnavailable -> props.setAlert(errorAlert("OpenAI is unavailable, please try later"))
-                                else -> props.setAlert(errorAlert("There has been a problem during creation. Consult Logs."))
+                                Const.HttpStatusCode_OpenAIUnavailable -> props.setAlert(errorAlert("OpenAI is unavailable, please try later", stayOn = true))
+                                else -> props.setAlert(errorAlert("There has been a problem during creation. Consult Logs.", stayOn = true))
                             }
 
                         }

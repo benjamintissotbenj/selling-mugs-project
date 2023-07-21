@@ -9,15 +9,20 @@ import kotlinx.serialization.Serializable
 @Serializable
 class GenerateCategoriesStatus (
     @SerialName("_id") val id: String,
+    val message: String,
+    val requestParams: CategoriesChatRequestParams,
     val statuses : List<GenerateCategoryStatus>,
-    val dateGenerated : Instant,
+    val dateSubmitted : Instant,
+    val dateReturned : Instant,
 )
 
 @Serializable
 class GenerateCategoryStatus (
     val category: Category,
     val message: String,
-    val customStatusCodes : List<CustomStatusCode>
+    val customStatusCodes : List<CustomStatusCode>,
+    val dateSubmitted : Instant,
+    val dateReturned : Instant,
 )
 
 @Serializable

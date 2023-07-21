@@ -23,6 +23,7 @@ import org.litote.kmongo.json
 import java.io.IOException
 import java.lang.Long.max
 import java.time.Duration
+import java.time.Instant
 
 private val LOG = KtorSimpleLogger("ImageGeneratorService.kt")
 
@@ -38,21 +39,39 @@ class ImageGeneratorService {
          */
         @Throws
         suspend fun generateCategoriesAndMugs(params: CategoriesChatRequestParams) : GenerateCategoriesStatus {
-            val categoriesAndStyle = generateCategories(params.amountOfCategories)
-
-            return GenerateCategoriesStatus( genUuid(),
-                categoriesAndStyle.map { pair ->
-                    try {
-                        val imageType = params.type ?: pair.second
-                        val statusCodes = generateMugsFromParams(MugsChatRequestParams(pair.first.name, imageType, params.amountOfVariations))
-                        GenerateCategoryStatus(pair.first, "Success", statusCodes)
-                    } catch (e: OpenAIUnavailable) {
-                        e.printStackTrace()
-                        GenerateCategoryStatus(pair.first, e.message, emptyList())
-                    }
-                },
-                Clock.System.now()
-            )
+            val generateCategoriesStatusUuid = genUuid()
+            val dateSubmitted = Clock.System.now()
+            return try {
+                val categoriesAndStyle = generateCategories(params.amountOfCategories)
+                GenerateCategoriesStatus(
+                    generateCategoriesStatusUuid,
+                    "Overall success",
+                    params,
+                    categoriesAndStyle.map { pair ->
+                        val catRequestStarted = Clock.System.now()
+                        try {
+                            val imageType = params.type ?: pair.second
+                            val statusCodes = generateMugsFromParams(MugsChatRequestParams(pair.first.name, imageType, params.amountOfVariations))
+                            GenerateCategoryStatus(pair.first, "Success", statusCodes, dateSubmitted = catRequestStarted, dateReturned = Clock.System.now())
+                        } catch (e: OpenAIUnavailable) {
+                            e.printStackTrace()
+                            GenerateCategoryStatus(pair.first, e.message, emptyList(), dateSubmitted = catRequestStarted, dateReturned = Clock.System.now())
+                        }
+                    },
+                    dateSubmitted = dateSubmitted,
+                    dateReturned = Clock.System.now()
+                )
+            } catch (e: Exception){
+                e.printStackTrace()
+                GenerateCategoriesStatus(
+                    generateCategoriesStatusUuid,
+                    e.message ?: "Something went wrong, consult logs.",
+                    params,
+                    emptyList<GenerateCategoryStatus>(),
+                    dateSubmitted = dateSubmitted,
+                    dateReturned = Clock.System.now()
+                )
+            }
         }
 
 
@@ -64,6 +83,7 @@ class ImageGeneratorService {
 
         /**
          * Generates a list of categories and of most appropriate styles to generate images in this category
+         * @throws [Exception] if 5 tries are not enough to contact ChatGPT correctly
          */
         suspend fun generateCategories(amountOfCategories: Int) : List<Pair<Category, Const.StableDiffusionImageType>> {
             var apiResponse : HttpResponse

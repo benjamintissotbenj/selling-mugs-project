@@ -41,9 +41,10 @@ fun successAlert(
  */
 fun errorAlert(
     message: String = "Something went wrong",
-    title: String = "Error"
+    title: String = "Error",
+    stayOn: Boolean = true
 ): AlertState {
-    return showAlert(title, message, AlertColor.error)
+    return showAlert(title, message, AlertColor.error, stayOn = stayOn)
 }
 
 /**
