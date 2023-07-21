@@ -23,7 +23,6 @@ import org.litote.kmongo.json
 import java.io.IOException
 import java.lang.Long.max
 import java.time.Duration
-import java.time.Instant
 
 private val LOG = KtorSimpleLogger("ImageGeneratorService.kt")
 
@@ -67,7 +66,7 @@ class ImageGeneratorService {
                     generateCategoriesStatusUuid,
                     e.message ?: "Something went wrong, consult logs.",
                     params,
-                    emptyList<GenerateCategoryStatus>(),
+                    emptyList(),
                     dateSubmitted = dateSubmitted,
                     dateReturned = Clock.System.now()
                 )
@@ -85,7 +84,8 @@ class ImageGeneratorService {
          * Generates a list of categories and of most appropriate styles to generate images in this category
          * @throws [Exception] if 5 tries are not enough to contact ChatGPT correctly
          */
-        suspend fun generateCategories(amountOfCategories: Int) : List<Pair<Category, Const.StableDiffusionImageType>> {
+        private suspend fun generateCategories(amountOfCategories: Int) : List<Pair<Category, Const.StableDiffusionImageType>> {
+            val requestCreated = Clock.System.now()
             var apiResponse : HttpResponse
             var exception: Exception?
             var numberOfTries = 0
@@ -101,7 +101,7 @@ class ImageGeneratorService {
                         val content = responseObject.choices[0].message.content // be careful, maybe put a failsafe here if text contains more than just the JSON
                         val chatResponseContent = getCategoriesChatResponseContentFromString(content)
 
-                        insertNewCategoriesChatLog(chatRequest, chatResponseContent, "Success")
+                        insertNewCategoriesChatLog(chatRequest, chatResponseContent, "Success", requestCreated)
 
                         return chatResponseContent.categories.map { catResponse ->
                             Pair(Category(getUuidFromString(catResponse.category), catResponse.category), catResponse.style)
@@ -119,7 +119,7 @@ class ImageGeneratorService {
             else {
                 "Exceeded five tries. Last API response status was ${apiResponse.status}"
             }
-            insertNewCategoriesChatLog(chatRequest, null, errorMessage)
+            insertNewCategoriesChatLog(chatRequest, null, errorMessage, requestCreated)
             throw Exception(errorMessage)
         }
 
@@ -134,7 +134,7 @@ class ImageGeneratorService {
         /**
          * Uses OpenAI and Stable Diffusion APIs to create a list of images from a subject
          * @param params the different [MugsChatRequestParams] needed to create a good OpenAI request
-         * @return the list of [CustomStatusCode]s associated with each variation, serialisable version of [HttpStatusCode]
+         * @return the list of [CustomStatusCode]s associated with each variation, serializable version of [HttpStatusCode]
          * @throws [OpenAIUnavailable] when the server is unable to connect with OpenAI's API
          */
         @OptIn(DelicateCoroutinesApi::class)
@@ -215,6 +215,7 @@ class ImageGeneratorService {
          */
         @Throws
         private suspend fun generateVariationsFromParams(params: MugsChatRequestParams) : List<Variation> {
+            val requestCreated = Clock.System.now()
             var apiResponse : HttpResponse
             var exception: Exception?
             var numberOfTries = 0
@@ -231,7 +232,7 @@ class ImageGeneratorService {
                         val content = responseObject.choices[0].message.content // be careful, maybe put a failsafe here if text contains more than just the JSON
                         val chatResponseContent = getMugsChatResponseContentFromString(content)
 
-                        insertNewMugsChatLog(chatRequest, chatResponseContent, "Success")
+                        insertNewMugsChatLog(chatRequest, chatResponseContent, "Success", requestCreated)
 
                         return chatResponseContent.variations
                     } catch (e: Exception){
@@ -247,12 +248,13 @@ class ImageGeneratorService {
             else {
                 "Exceeded five tries. Last API response status was ${apiResponse.status}"
             }
-            insertNewMugsChatLog(chatRequest, null, errorMessage)
+            insertNewMugsChatLog(chatRequest, null, errorMessage, requestCreated)
             throw Exception(errorMessage)
         }
 
         @Throws
         private suspend fun generateImageFromVariation(variation: Variation) : String {
+            val requestCreated = Clock.System.now()
             val httpResponse = apiGenerateImage("${variation.parameters} ${variation.narrative}")
             try {
                 var imageResponse = httpResponse.body<ImageResponse>()
@@ -264,20 +266,20 @@ class ImageGeneratorService {
                     delay(Duration.ofSeconds(delay))
                     LOG.debug("Fetching variation ${variation.name}")
                     val httpResponseFetch = apiFetchImage(imageResponse.id)
-                    imageResponse = httpResponseFetch.body<ImageResponse>()
+                    imageResponse = httpResponseFetch.body()
                 }
 
                 return if (imageResponse.output.isEmpty()){
-                        insertNewImageGeneratedLog(variation, "", "Fetch source is empty")
+                        insertNewImageGeneratedLog(variation, "", "Fetch source is empty", requestCreated)
                         throw Exception("Fetch source is empty")
                     } else {
-                    insertNewImageGeneratedLog(variation, imageResponse.output[0], "")
+                    insertNewImageGeneratedLog(variation, imageResponse.output[0], "", requestCreated)
                         imageResponse.output[0]
                     }
 
             } catch (e: Exception) {
                 e.printStackTrace()
-                insertNewImageGeneratedLog(variation, "", e.message ?: "Unknown error")
+                insertNewImageGeneratedLog(variation, "", e.message ?: "Unknown error", requestCreated)
                 throw e
             }
         }
@@ -332,16 +334,16 @@ class ImageGeneratorService {
          *
          *****************************************/
 
-        private suspend fun insertNewMugsChatLog(chatRequest: ChatRequest, mugsChatResponseContent: MugsChatResponseContent?, message: String){
-            ChatRepository.insertChatLog(ChatLog(genUuid(), chatRequest, mugsChatResponseContent, null, message, Clock.System.now()))
+        private suspend fun insertNewMugsChatLog(chatRequest: ChatRequest, mugsChatResponseContent: MugsChatResponseContent?, message: String, requestCreated: kotlinx.datetime.Instant){
+            ChatRepository.insertChatLog(ChatLog(genUuid(), chatRequest, mugsChatResponseContent, null, message, requestSubmitted = requestCreated, Clock.System.now()))
         }
 
-        private suspend fun insertNewCategoriesChatLog(chatRequest: ChatRequest, categoriesChatResponseContent: CategoriesChatResponseContent?, message: String){
-            ChatRepository.insertChatLog(ChatLog(genUuid(), chatRequest, null, categoriesChatResponseContent, message, Clock.System.now()))
+        private suspend fun insertNewCategoriesChatLog(chatRequest: ChatRequest, categoriesChatResponseContent: CategoriesChatResponseContent?, message: String, requestCreated: kotlinx.datetime.Instant){
+            ChatRepository.insertChatLog(ChatLog(genUuid(), chatRequest, null, categoriesChatResponseContent, message, requestSubmitted = requestCreated, Clock.System.now()))
         }
 
-        private suspend fun insertNewImageGeneratedLog(variation: Variation, imageURL: String, message: String){
-            StableDiffusionRepository.insertImageGeneratedLog(ImageGeneratedLog(genUuid(), variation, imageURL, message, Clock.System.now()))
+        private suspend fun insertNewImageGeneratedLog(variation: Variation, imageURL: String, message: String, requestCreated: kotlinx.datetime.Instant){
+            StableDiffusionRepository.insertImageGeneratedLog(ImageGeneratedLog(genUuid(), variation, imageURL, message, requestSubmitted = requestCreated, Clock.System.now()))
         }
 
     }

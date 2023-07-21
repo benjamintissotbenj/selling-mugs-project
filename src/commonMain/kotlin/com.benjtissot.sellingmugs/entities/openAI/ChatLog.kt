@@ -11,6 +11,7 @@ class ChatLog(
     val mugChatResponse: MugsChatResponseContent? = null,
     val categoriesChatResponseContent: CategoriesChatResponseContent? = null,
     val message: String,
+    val requestSubmitted: Instant,
     val responseReceived: Instant
 ){}
 
