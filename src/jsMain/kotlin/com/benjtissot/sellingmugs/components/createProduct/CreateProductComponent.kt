@@ -113,7 +113,6 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
 
                         GenerateCategoriesForm {
                             onSubmit = { nbCat, nbVar, artType ->
-                                println("TODO: $nbCat, $nbVar, ${artType?.type ?: "Surprise me"}")
                                 props.onCreatingCategories(nbCat, nbVar, artType)
                                 scope.launch {
                                     recordClick(props.session.clickDataId, Const.ClickType.GENERATE_CATEGORIES_BUTTON.type)

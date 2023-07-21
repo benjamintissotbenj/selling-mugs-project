@@ -37,17 +37,39 @@ class ImageGeneratorService {
          * @throws [OpenAIUnavailable] when the server is unable to connect with OpenAI's API
          */
         @Throws
-        suspend fun generateCategoriesAndMugs(params: CategoriesChatRequestParams) : List<CustomStatusCode> {
-            val categoriesAndStyle = generateCategories(params.amountOfCategories)
-
-            return categoriesAndStyle.flatMap { pair ->
-                try {
-                    val imageType = params.type ?: pair.second
-                    generateMugsFromParams(MugsChatRequestParams(pair.first.name, imageType, params.amountOfVariations))
-                } catch (e: OpenAIUnavailable) {
-                    e.printStackTrace()
-                    emptyList()
-                }
+        suspend fun generateCategoriesAndMugs(params: CategoriesChatRequestParams) : GenerateCategoriesStatus {
+            val generateCategoriesStatusUuid = genUuid()
+            val dateSubmitted = Clock.System.now()
+            return try {
+                val categoriesAndStyle = generateCategories(params.amountOfCategories)
+                GenerateCategoriesStatus(
+                    generateCategoriesStatusUuid,
+                    "Overall success",
+                    params,
+                    categoriesAndStyle.map { pair ->
+                        val catRequestStarted = Clock.System.now()
+                        try {
+                            val imageType = params.type ?: pair.second
+                            val statusCodes = generateMugsFromParams(MugsChatRequestParams(pair.first.name, imageType, params.amountOfVariations))
+                            GenerateCategoryStatus(pair.first, "Success", statusCodes, dateSubmitted = catRequestStarted, dateReturned = Clock.System.now())
+                        } catch (e: OpenAIUnavailable) {
+                            e.printStackTrace()
+                            GenerateCategoryStatus(pair.first, e.message, emptyList(), dateSubmitted = catRequestStarted, dateReturned = Clock.System.now())
+                        }
+                    },
+                    dateSubmitted = dateSubmitted,
+                    dateReturned = Clock.System.now()
+                )
+            } catch (e: Exception){
+                e.printStackTrace()
+                GenerateCategoriesStatus(
+                    generateCategoriesStatusUuid,
+                    e.message ?: "Something went wrong, consult logs.",
+                    params,
+                    emptyList(),
+                    dateSubmitted = dateSubmitted,
+                    dateReturned = Clock.System.now()
+                )
             }
         }
 
@@ -60,8 +82,10 @@ class ImageGeneratorService {
 
         /**
          * Generates a list of categories and of most appropriate styles to generate images in this category
+         * @throws [Exception] if 5 tries are not enough to contact ChatGPT correctly
          */
-        suspend fun generateCategories(amountOfCategories: Int) : List<Pair<Category, Const.StableDiffusionImageType>> {
+        private suspend fun generateCategories(amountOfCategories: Int) : List<Pair<Category, Const.StableDiffusionImageType>> {
+            val requestCreated = Clock.System.now()
             var apiResponse : HttpResponse
             var exception: Exception?
             var numberOfTries = 0
@@ -77,7 +101,7 @@ class ImageGeneratorService {
                         val content = responseObject.choices[0].message.content // be careful, maybe put a failsafe here if text contains more than just the JSON
                         val chatResponseContent = getCategoriesChatResponseContentFromString(content)
 
-                        insertNewCategoriesChatLog(chatRequest, chatResponseContent, "Success")
+                        insertNewCategoriesChatLog(chatRequest, chatResponseContent, "Success", requestCreated)
 
                         return chatResponseContent.categories.map { catResponse ->
                             Pair(Category(getUuidFromString(catResponse.category), catResponse.category), catResponse.style)
@@ -95,7 +119,7 @@ class ImageGeneratorService {
             else {
                 "Exceeded five tries. Last API response status was ${apiResponse.status}"
             }
-            insertNewCategoriesChatLog(chatRequest, null, errorMessage)
+            insertNewCategoriesChatLog(chatRequest, null, errorMessage, requestCreated)
             throw Exception(errorMessage)
         }
 
@@ -110,7 +134,7 @@ class ImageGeneratorService {
         /**
          * Uses OpenAI and Stable Diffusion APIs to create a list of images from a subject
          * @param params the different [MugsChatRequestParams] needed to create a good OpenAI request
-         * @return the list of [CustomStatusCode]s associated with each variation, serialisable version of [HttpStatusCode]
+         * @return the list of [CustomStatusCode]s associated with each variation, serializable version of [HttpStatusCode]
          * @throws [OpenAIUnavailable] when the server is unable to connect with OpenAI's API
          */
         @OptIn(DelicateCoroutinesApi::class)
@@ -191,6 +215,7 @@ class ImageGeneratorService {
          */
         @Throws
         private suspend fun generateVariationsFromParams(params: MugsChatRequestParams) : List<Variation> {
+            val requestCreated = Clock.System.now()
             var apiResponse : HttpResponse
             var exception: Exception?
             var numberOfTries = 0
@@ -207,7 +232,7 @@ class ImageGeneratorService {
                         val content = responseObject.choices[0].message.content // be careful, maybe put a failsafe here if text contains more than just the JSON
                         val chatResponseContent = getMugsChatResponseContentFromString(content)
 
-                        insertNewMugsChatLog(chatRequest, chatResponseContent, "Success")
+                        insertNewMugsChatLog(chatRequest, chatResponseContent, "Success", requestCreated)
 
                         return chatResponseContent.variations
                     } catch (e: Exception){
@@ -223,12 +248,13 @@ class ImageGeneratorService {
             else {
                 "Exceeded five tries. Last API response status was ${apiResponse.status}"
             }
-            insertNewMugsChatLog(chatRequest, null, errorMessage)
+            insertNewMugsChatLog(chatRequest, null, errorMessage, requestCreated)
             throw Exception(errorMessage)
         }
 
         @Throws
         private suspend fun generateImageFromVariation(variation: Variation) : String {
+            val requestCreated = Clock.System.now()
             val httpResponse = apiGenerateImage("${variation.parameters} ${variation.narrative}")
             try {
                 var imageResponse = httpResponse.body<ImageResponse>()
@@ -240,20 +266,20 @@ class ImageGeneratorService {
                     delay(Duration.ofSeconds(delay))
                     LOG.debug("Fetching variation ${variation.name}")
                     val httpResponseFetch = apiFetchImage(imageResponse.id)
-                    imageResponse = httpResponseFetch.body<ImageResponse>()
+                    imageResponse = httpResponseFetch.body()
                 }
 
                 return if (imageResponse.output.isEmpty()){
-                        insertNewImageGeneratedLog(variation, "", "Fetch source is empty")
+                        insertNewImageGeneratedLog(variation, "", "Fetch source is empty", requestCreated)
                         throw Exception("Fetch source is empty")
                     } else {
-                    insertNewImageGeneratedLog(variation, imageResponse.output[0], "")
+                    insertNewImageGeneratedLog(variation, imageResponse.output[0], "", requestCreated)
                         imageResponse.output[0]
                     }
 
             } catch (e: Exception) {
                 e.printStackTrace()
-                insertNewImageGeneratedLog(variation, "", e.message ?: "Unknown error")
+                insertNewImageGeneratedLog(variation, "", e.message ?: "Unknown error", requestCreated)
                 throw e
             }
         }
@@ -262,8 +288,16 @@ class ImageGeneratorService {
          * Calls [PrintifyService] to upload an image from a fileName and a source url
          */
         private suspend fun uploadImageFromSource(fileName: String, imageSource: String) : ImageForUploadReceive? {
-            // TODO run a loop to get image a couple times if it fails
-            return PrintifyService.uploadImage(ImageForUpload(file_name = fileName, url = imageSource), true)
+            var imageForUploadReceive : ImageForUploadReceive? = null
+            var nbTries = 0
+            while (imageForUploadReceive == null && nbTries < 5){
+                nbTries ++
+                imageForUploadReceive = PrintifyService.uploadImage(ImageForUpload(file_name = fileName, url = imageSource), true)
+                if (imageForUploadReceive == null){
+                    delay(1000L) // wait 1 s if image does not upload immediately correctly
+                }
+            }
+            return imageForUploadReceive
         }
 
         /**
@@ -300,16 +334,16 @@ class ImageGeneratorService {
          *
          *****************************************/
 
-        private suspend fun insertNewMugsChatLog(chatRequest: ChatRequest, mugsChatResponseContent: MugsChatResponseContent?, message: String){
-            ChatRepository.insertChatLog(ChatLog(genUuid(), chatRequest, mugsChatResponseContent, null, message, Clock.System.now()))
+        private suspend fun insertNewMugsChatLog(chatRequest: ChatRequest, mugsChatResponseContent: MugsChatResponseContent?, message: String, requestCreated: kotlinx.datetime.Instant){
+            ChatRepository.insertChatLog(ChatLog(genUuid(), chatRequest, mugsChatResponseContent, null, message, requestSubmitted = requestCreated, Clock.System.now()))
         }
 
-        private suspend fun insertNewCategoriesChatLog(chatRequest: ChatRequest, categoriesChatResponseContent: CategoriesChatResponseContent?, message: String){
-            ChatRepository.insertChatLog(ChatLog(genUuid(), chatRequest, null, categoriesChatResponseContent, message, Clock.System.now()))
+        private suspend fun insertNewCategoriesChatLog(chatRequest: ChatRequest, categoriesChatResponseContent: CategoriesChatResponseContent?, message: String, requestCreated: kotlinx.datetime.Instant){
+            ChatRepository.insertChatLog(ChatLog(genUuid(), chatRequest, null, categoriesChatResponseContent, message, requestSubmitted = requestCreated, Clock.System.now()))
         }
 
-        private suspend fun insertNewImageGeneratedLog(variation: Variation, imageURL: String, message: String){
-            StableDiffusionRepository.insertImageGeneratedLog(ImageGeneratedLog(genUuid(), variation, imageURL, message, Clock.System.now()))
+        private suspend fun insertNewImageGeneratedLog(variation: Variation, imageURL: String, message: String, requestCreated: kotlinx.datetime.Instant){
+            StableDiffusionRepository.insertImageGeneratedLog(ImageGeneratedLog(genUuid(), variation, imageURL, message, requestSubmitted = requestCreated, Clock.System.now()))
         }
 
     }

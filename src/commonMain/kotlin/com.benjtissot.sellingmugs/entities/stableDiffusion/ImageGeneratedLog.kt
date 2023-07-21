@@ -11,6 +11,7 @@ class ImageGeneratedLog(
     val variationName: Variation,
     val imageURL: String,
     val message: String,
+    val requestSubmitted: Instant,
     val responseReceived: Instant
 ){}
 

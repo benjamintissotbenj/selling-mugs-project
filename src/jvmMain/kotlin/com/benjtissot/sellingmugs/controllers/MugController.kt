@@ -107,7 +107,6 @@ fun Route.mugRouting(){
 
     route(Category.path){
         get {
-            // TODO debug this shit
             val categoryIds = call.parameters.getAll(Const.id)
             if (categoryIds.isNullOrEmpty()) {
                 call.respond(CategoryService.getAllCategories())
