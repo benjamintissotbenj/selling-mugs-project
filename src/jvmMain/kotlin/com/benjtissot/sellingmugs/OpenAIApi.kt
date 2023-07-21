@@ -1,11 +1,7 @@
 package com.benjtissot.sellingmugs
 
 import com.benjtissot.sellingmugs.entities.openAI.ChatRequest
-import com.benjtissot.sellingmugs.entities.openAI.ChatRequestParams
-import com.benjtissot.sellingmugs.entities.printify.*
-import com.benjtissot.sellingmugs.entities.printify.order.*
 import io.ktor.client.*
-import io.ktor.client.call.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
@@ -40,6 +36,19 @@ var openAIClient : HttpClient = HttpClient {
  * Generates a stable diffusion prompt on the subject of the given parameter
  */
 suspend fun apiGenerateStableDiffusionPrompt(request: ChatRequest) : HttpResponse {
+    return openAIClient.post("chat/completions"){
+        contentType(ContentType.Application.Json)
+        setBody(
+            request
+        )
+    }
+}
+
+
+/**
+ * Generates a stable diffusion prompt on the subject of the given parameter
+ */
+suspend fun apiGenerateCategoryList(request: ChatRequest) : HttpResponse {
     return openAIClient.post("chat/completions"){
         contentType(ContentType.Application.Json)
         setBody(

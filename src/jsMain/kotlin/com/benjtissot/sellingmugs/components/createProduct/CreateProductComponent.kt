@@ -4,7 +4,8 @@ import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.forms.GenerateCategoriesForm
 import com.benjtissot.sellingmugs.components.forms.GenerateMugsForm
 import com.benjtissot.sellingmugs.components.highLevel.CreateTabsComponent
-import com.benjtissot.sellingmugs.entities.openAI.ChatRequestParams
+import com.benjtissot.sellingmugs.entities.openAI.CategoriesChatRequestParams
+import com.benjtissot.sellingmugs.entities.openAI.MugsChatRequestParams
 import csstype.*
 import emotion.react.css
 import io.ktor.client.statement.*
@@ -21,6 +22,8 @@ private val LOG = KtorSimpleLogger("CreateProductComponent.kt")
 external interface CreateProductProps : NavigationProps {
     var onCreatingMugs: (String, Const.StableDiffusionImageType) -> Unit
     var onMugsCreationResponse: (HttpResponse) -> Unit
+    var onCreatingCategories: (Int, Int, Const.StableDiffusionImageType?) -> Unit
+    var onCategoriesCreationResponse: (HttpResponse) -> Unit
 }
 
 val CreateProductComponent = FC<CreateProductProps> { props ->
@@ -88,7 +91,7 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
                                 props.onCreatingMugs(subject, artType)
                                 scope.launch {
                                     recordClick(props.session.clickDataId, Const.ClickType.GENERATE_MUGS_BUTTON.type)
-                                    props.onMugsCreationResponse(generateMugs(ChatRequestParams(subject, artType, numberOfVariations)))
+                                    props.onMugsCreationResponse(generateMugs(MugsChatRequestParams(subject, artType, numberOfVariations)))
                                 }
                             }
                         }
@@ -110,14 +113,12 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
 
                         GenerateCategoriesForm {
                             onSubmit = { nbCat, nbVar, artType ->
-                                println("TODO: $nbCat, $nbVar, ${artType.type}")
-                                /*
-                                props.onCreatingMugs(subject, artType)
+                                println("TODO: $nbCat, $nbVar, ${artType?.type ?: "Surprise me"}")
+                                props.onCreatingCategories(nbCat, nbVar, artType)
                                 scope.launch {
                                     recordClick(props.session.clickDataId, Const.ClickType.GENERATE_CATEGORIES_BUTTON.type)
-                                    props.onMugsCreationResponse(generateMugs(ChatRequestParams(subject, artType, numberOfVariations)))
+                                    props.onCategoriesCreationResponse(generateMugsInCategories(CategoriesChatRequestParams(nbCat, nbVar, artType)))
                                 }
-                                 */
                             }
                         }
                     }

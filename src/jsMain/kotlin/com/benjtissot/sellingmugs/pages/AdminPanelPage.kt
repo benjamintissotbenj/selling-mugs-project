@@ -77,6 +77,25 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                         }
 
                     }
+                    onCreatingCategories = { nbCat, nbVal, artType ->
+                        props.setAlert(infoAlert("You are creating $nbCat categories with $nbVal mugs each. For style, you have chosen ${artType ?: "Automatic"}", "Categories and mugs"))
+                    }
+                    onCategoriesCreationResponse = { httpResponse ->
+                        when (httpResponse.status) {
+                            HttpStatusCode.OK -> {
+                                scope.launch {
+                                    val statusCodes : List<CustomStatusCode> = httpResponse.body()
+                                    statusCodes.forEach { status ->
+                                        println(status.print())
+                                    }
+                                }
+                                props.setAlert(successAlert("You have successfully created your categories and your mugs"))
+                            }
+                            Const.HttpStatusCode_OpenAIUnavailable -> props.setAlert(errorAlert("OpenAI is unavailable, please try later"))
+                            else -> props.setAlert(errorAlert("There has been a problem during creation. Consult Logs."))
+                        }
+
+                    }
                 }
 
                 ManageUsersComponent {

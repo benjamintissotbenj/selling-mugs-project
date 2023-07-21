@@ -171,6 +171,12 @@ class Const {
             return "Structure of a Stable Diffusion prompt : (subject of the image), (drawing type), (illustration style), (time of day), (known artist style), (Realism Level), (Lighting). "
         }
 
+        fun getGenerateCategoriesPrompt(numberOfCategories: Int) : String {
+            return "Create a JSON file with a list called categories of $numberOfCategories different categories for mug designs. " +
+                    "Any category should be 1 to 3 words long. For each one, indicate its name (field name category) and " +
+                    "which style (field name style) would best be suited between REALISTIC, GEOMETRIC and CARTOON_ILLUSTRATION."
+        }
+
         val HttpStatusCode_OpenAIUnavailable = HttpStatusCode(80, "OpenAI Server is unavailable, please try later")
         val HttpStatusCode_ImageUploadFail = HttpStatusCode(91, "Image Upload failed")
         val HttpStatusCode_ProductCreationFailed = HttpStatusCode(92, "Product Creation Failed")

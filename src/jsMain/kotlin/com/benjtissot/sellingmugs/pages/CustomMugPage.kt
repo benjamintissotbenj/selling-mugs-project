@@ -5,8 +5,6 @@ import com.benjtissot.sellingmugs.components.createProduct.EditImageOnTemplateCo
 import com.benjtissot.sellingmugs.components.createProduct.ImageDrop
 import com.benjtissot.sellingmugs.components.createProduct.SweepImageComponent
 import com.benjtissot.sellingmugs.components.forms.CreateProductForm
-import com.benjtissot.sellingmugs.components.forms.GenerateMugsForm
-import com.benjtissot.sellingmugs.entities.openAI.ChatRequestParams
 import com.benjtissot.sellingmugs.entities.printify.*
 import csstype.*
 import emotion.react.css

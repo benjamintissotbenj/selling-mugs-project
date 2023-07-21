@@ -1,6 +1,7 @@
 package com.benjtissot.sellingmugs.services
 
 import com.benjtissot.sellingmugs.*
+import com.benjtissot.sellingmugs.entities.local.Category
 import com.benjtissot.sellingmugs.entities.openAI.*
 import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
 import com.benjtissot.sellingmugs.entities.printify.ImageForUploadReceive
@@ -29,14 +30,92 @@ class ImageGeneratorService {
     companion object {
 
         /**
+         * Generates categories and mugs for these categories using ChatGPT and Stable Diffusion
+         * @param params carries the number of categories you wish to create, number of
+         * variations per category and can hold an art type if the user wishes to give one
+         * @return the list of status codes to give feedback in the front-end of how well this went
+         * @throws [OpenAIUnavailable] when the server is unable to connect with OpenAI's API
+         */
+        @Throws
+        suspend fun generateCategoriesAndMugs(params: CategoriesChatRequestParams) : List<CustomStatusCode> {
+            val categoriesAndStyle = generateCategories(params.amountOfCategories)
+
+            return categoriesAndStyle.flatMap { pair ->
+                try {
+                    val imageType = params.type ?: pair.second
+                    generateMugsFromParams(MugsChatRequestParams(pair.first.name, imageType, params.amountOfVariations))
+                } catch (e: OpenAIUnavailable) {
+                    e.printStackTrace()
+                    emptyList()
+                }
+            }
+        }
+
+
+        /******************************************
+         *
+         * ******** Generate Categories ********* *
+         *
+         *****************************************/
+
+        /**
+         * Generates a list of categories and of most appropriate styles to generate images in this category
+         */
+        suspend fun generateCategories(amountOfCategories: Int) : List<Pair<Category, Const.StableDiffusionImageType>> {
+            var apiResponse : HttpResponse
+            var exception: Exception?
+            var numberOfTries = 0
+            val chatRequest = ChatRequest.generateCategoryRequestFromParams(amountOfCategories)
+            do {
+                numberOfTries ++
+                LOG.debug("Sending request to API, restarting if Service Unavailable")
+                apiResponse = apiGenerateCategoryList(chatRequest)
+                exception = null
+                if (apiResponse.status == HttpStatusCode.OK){
+                    try {
+                        val responseObject = apiResponse.body<ChatResponse>()
+                        val content = responseObject.choices[0].message.content // be careful, maybe put a failsafe here if text contains more than just the JSON
+                        val chatResponseContent = getCategoriesChatResponseContentFromString(content)
+
+                        insertNewCategoriesChatLog(chatRequest, chatResponseContent, "Success")
+
+                        return chatResponseContent.categories.map { catResponse ->
+                            Pair(Category(getUuidFromString(catResponse.category), catResponse.category), catResponse.style)
+                        }
+                    } catch (e: Exception){
+                        exception = e
+                        e.printStackTrace()
+                    }
+                }
+                // Runs a maximum of 5 times while there is an exception or unavailable service
+            } while (numberOfTries <= 5 && (exception != null || apiResponse.status == HttpStatusCode.ServiceUnavailable))
+
+            val errorMessage = if (exception != null){
+                "Exceeded five tries. Last Exception was ${exception.json}"}
+            else {
+                "Exceeded five tries. Last API response status was ${apiResponse.status}"
+            }
+            insertNewCategoriesChatLog(chatRequest, null, errorMessage)
+            throw Exception(errorMessage)
+        }
+
+
+
+        /******************************************
+         *
+         * *********** Generate Mugs ************ *
+         *
+         *****************************************/
+
+        /**
          * Uses OpenAI and Stable Diffusion APIs to create a list of images from a subject
-         * @param params the different [ChatRequestParams] needed to create a good OpenAI request
+         * @param params the different [MugsChatRequestParams] needed to create a good OpenAI request
          * @return the list of [CustomStatusCode]s associated with each variation, serialisable version of [HttpStatusCode]
          * @throws [OpenAIUnavailable] when the server is unable to connect with OpenAI's API
          */
         @OptIn(DelicateCoroutinesApi::class)
         @Throws
-        suspend fun generateImagesFromParams(params: ChatRequestParams) : List<CustomStatusCode> {
+        suspend fun generateMugsFromParams(params: MugsChatRequestParams) : List<CustomStatusCode> {
             // Get ChatGPT to create a list of variations
             val variations = try {
                 generateVariationsFromParams(params)
@@ -106,16 +185,16 @@ class ImageGeneratorService {
 
         /**
          * Generates variations from a given subject
-         * @param params the [ChatRequestParams] used
+         * @param params the [MugsChatRequestParams] used
          * @return a [List] object that contains [Variation] if the request is a
          * success, and throws an error that contains the appropriate message otherwise.
          */
         @Throws
-        private suspend fun generateVariationsFromParams(params: ChatRequestParams) : List<Variation> {
+        private suspend fun generateVariationsFromParams(params: MugsChatRequestParams) : List<Variation> {
             var apiResponse : HttpResponse
             var exception: Exception?
             var numberOfTries = 0
-            val chatRequest = ChatRequest.generateFromParams(params)
+            val chatRequest = ChatRequest.generateMugRequestFromParams(params)
             CategoryService.updateCategory(CategoryService.createCategory(params.subject))
             do {
                 numberOfTries ++
@@ -126,9 +205,9 @@ class ImageGeneratorService {
                     try {
                         val responseObject = apiResponse.body<ChatResponse>()
                         val content = responseObject.choices[0].message.content // be careful, maybe put a failsafe here if text contains more than just the JSON
-                        val chatResponseContent = getChatResponseContentFromString(content)
+                        val chatResponseContent = getMugsChatResponseContentFromString(content)
 
-                        insertNewChatLog(chatRequest, chatResponseContent, "Success")
+                        insertNewMugsChatLog(chatRequest, chatResponseContent, "Success")
 
                         return chatResponseContent.variations
                     } catch (e: Exception){
@@ -144,7 +223,7 @@ class ImageGeneratorService {
             else {
                 "Exceeded five tries. Last API response status was ${apiResponse.status}"
             }
-            insertNewChatLog(chatRequest, null, errorMessage)
+            insertNewMugsChatLog(chatRequest, null, errorMessage)
             throw Exception(errorMessage)
         }
 
@@ -190,7 +269,20 @@ class ImageGeneratorService {
         /**
          * Gets a clean version of the chat responseContent, even if the chat response has text before or after the JSON
          */
-        private fun getChatResponseContentFromString(content: String): ChatResponseContent {
+        private fun getMugsChatResponseContentFromString(content: String): MugsChatResponseContent {
+            return try {
+                Json.decodeFromString(content)
+            } catch (e: Exception){
+                // Most likely, the content has more than simply the json in it
+                val pureJsonContent = content.substringAfter("{","").substringBeforeLast("}","")
+                Json.decodeFromString("{$pureJsonContent}")
+            }
+        }
+
+        /**
+         * Gets a clean version of the chat responseContent, even if the chat response has text before or after the JSON
+         */
+        private fun getCategoriesChatResponseContentFromString(content: String): CategoriesChatResponseContent {
             return try {
                 Json.decodeFromString(content)
             } catch (e: Exception){
@@ -208,8 +300,12 @@ class ImageGeneratorService {
          *
          *****************************************/
 
-        private suspend fun insertNewChatLog(chatRequest: ChatRequest, chatResponseContent: ChatResponseContent?, message: String){
-            ChatRepository.insertChatLog(ChatLog(genUuid(), chatRequest, chatResponseContent, message, Clock.System.now()))
+        private suspend fun insertNewMugsChatLog(chatRequest: ChatRequest, mugsChatResponseContent: MugsChatResponseContent?, message: String){
+            ChatRepository.insertChatLog(ChatLog(genUuid(), chatRequest, mugsChatResponseContent, null, message, Clock.System.now()))
+        }
+
+        private suspend fun insertNewCategoriesChatLog(chatRequest: ChatRequest, categoriesChatResponseContent: CategoriesChatResponseContent?, message: String){
+            ChatRepository.insertChatLog(ChatLog(genUuid(), chatRequest, null, categoriesChatResponseContent, message, Clock.System.now()))
         }
 
         private suspend fun insertNewImageGeneratedLog(variation: Variation, imageURL: String, message: String){

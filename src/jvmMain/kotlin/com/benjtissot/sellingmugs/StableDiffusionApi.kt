@@ -1,14 +1,8 @@
 package com.benjtissot.sellingmugs
 
-import com.benjtissot.sellingmugs.entities.openAI.ChatRequest
-import com.benjtissot.sellingmugs.entities.openAI.ChatRequestParams
-import com.benjtissot.sellingmugs.entities.printify.*
-import com.benjtissot.sellingmugs.entities.printify.order.*
 import com.benjtissot.sellingmugs.entities.stableDiffusion.ImageFetchRequest
 import com.benjtissot.sellingmugs.entities.stableDiffusion.ImageRequest
-import com.benjtissot.sellingmugs.entities.stableDiffusion.ImageResponse
 import io.ktor.client.*
-import io.ktor.client.call.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*

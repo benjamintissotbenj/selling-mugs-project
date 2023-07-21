@@ -105,17 +105,17 @@ val GenerateMugsForm = FC<GenerateMugsFormProps> { props ->
 }
 
 external interface GenerateCategoriesFormProps : Props {
-    var onSubmit: (Int, Int, Const.StableDiffusionImageType) -> Unit
+    var onSubmit: (Int, Int, Const.StableDiffusionImageType?) -> Unit
 }
 
 val GenerateCategoriesForm = FC<GenerateCategoriesFormProps> { props ->
     var numberOfCategories by useState(2)
     var numberOfVariations by useState(2)
-    var imageType by useState(Const.StableDiffusionImageType.REALISTIC.type)
+    var imageType by useState("Automatic")
 
     val submitHandler: FormEventHandler<HTMLFormElement> = {
         it.preventDefault()
-        props.onSubmit(numberOfCategories, numberOfVariations, Const.StableDiffusionImageType.valueOf(imageType))
+        props.onSubmit(numberOfCategories, numberOfVariations, try {Const.StableDiffusionImageType.valueOf(imageType)} catch (e: Exception) {null})
     }
 
     div {
@@ -180,6 +180,7 @@ val GenerateCategoriesForm = FC<GenerateCategoriesFormProps> { props ->
                     onChange = { value ->
                         imageType = value
                     }
+                    automaticPossible = true
                 }
             }
 
@@ -241,6 +242,7 @@ val VariationInput = FC<VariationInputProps> { props ->
 external interface ArtTypeInputProps : Props {
     var onChange: (String) -> Unit
     var artType : String
+    var automaticPossible : Boolean?
 }
 val ArtTypeInput = FC<ArtTypeInputProps> { props ->
 
@@ -287,6 +289,12 @@ val ArtTypeInput = FC<ArtTypeInputProps> { props ->
             MenuItem {
                 value = Const.StableDiffusionImageType.CARTOON_ILLUSTRATION.type
                 +"Cartoon Illustration"
+            }
+            if (props.automaticPossible == true) {
+                MenuItem {
+                    value = "Automatic"
+                    +"Automatic"
+                }
             }
         }
     }
