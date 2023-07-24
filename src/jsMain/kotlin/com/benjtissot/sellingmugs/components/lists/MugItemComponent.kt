@@ -7,6 +7,9 @@ import com.benjtissot.sellingmugs.fontSmall
 import csstype.*
 import emotion.react.css
 import mui.icons.material.AddShoppingCart
+import mui.lab.LoadingButton
+import mui.material.Chip
+import mui.material.ChipVariant
 import mui.material.IconButton
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
@@ -136,15 +139,37 @@ external interface MugItemDefaultProps: MugDetailsProps {
 }
 
 val MugDetailsDefault = FC<MugItemDefaultProps> { props ->
-    img {
+
+    div {
         css {
+            position = Position.relative
             width = 96.pct
-            margin = 3.pct
+            height = 100.pct
             boxSizing = BoxSizing.borderBox
         }
-        src = props.mug.getBestPictureSrc()
-        onMouseEnter = {
-            props.onMouseEnter()
+        img {`in`
+            css {
+                position = Position.absolute
+                width = 100.pct
+                right = 0.px
+                top = 0.px
+                left = 0.px
+                bottom = 0.px
+                objectFit = ObjectFit.contain
+            }
+            src = props.mug.getBestPictureSrc()
+            onMouseEnter = {
+                props.onMouseEnter()
+            }
+        }
+        Chip {
+            css {
+                position = Position.absolute
+                top = 2.pct
+                left = 2.pct
+            }
+            variant = ChipVariant.outlined
+            label = div.create { +props.mug.category.name }
         }
     }
 
