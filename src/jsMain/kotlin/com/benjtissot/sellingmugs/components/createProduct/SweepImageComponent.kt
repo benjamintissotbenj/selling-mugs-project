@@ -24,6 +24,8 @@ external interface SweepImageProps: Props {
     var refresh: Boolean
     var marginInline : MarginInline?
     var marginTop: MarginTop?
+    var onClick: (() -> Unit)?
+    var showPointer: Boolean?
 }
 
 val SweepImageComponent = FC<SweepImageProps> { props ->
@@ -39,6 +41,12 @@ val SweepImageComponent = FC<SweepImageProps> { props ->
             props.marginInline?.let{ marginInline = it }
             props.marginTop?.let { marginTop = it }
             boxSizing = BoxSizing.borderBox
+        }
+
+        onClick = {
+            props.onClick?.let {
+                it.invoke()
+            }
         }
 
         if (sweep) {
@@ -58,6 +66,9 @@ val SweepImageComponent = FC<SweepImageProps> { props ->
                     position = Position.relative
                     height = 90.pct
                     width = 90.pct
+                    if (props.showPointer == true) {
+                        cursor = Cursor.pointer
+                    }
                 }
                 for (i: Int in 0 until props.srcList.size){
                     img {
