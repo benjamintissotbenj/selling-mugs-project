@@ -198,7 +198,6 @@ class ImageGeneratorService {
                         // TODO: create function for this, log mug creation status in DB
                         imageUploadedToPrintify?.let {
                             // Create mug from image
-                            // TODO: description from chatGPT here
                             val mugProductInfo = MugProductInfo("AI - ${variation.getCleanName()}", variation.description, params.subject, it.toImage())
                             val productPrintifyId = PrintifyService.createProduct(mugProductInfo)
                             productPrintifyId?.let { id ->
@@ -289,7 +288,7 @@ class ImageGeneratorService {
         @Throws
         private suspend fun generateImageFromVariation(variation: Variation) : String {
             val requestCreated = Clock.System.now()
-            val httpResponse = apiGenerateImage("${variation.parameters} ${variation.narrative}")
+            val httpResponse = apiGenerateImage("${variation.parameters} ${variation.narrative}", variation.negativePrompt)
             try {
                 var imageResponse = httpResponse.body<ImageResponse>()
                 var attempts = 0

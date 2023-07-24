@@ -1,6 +1,7 @@
 package com.benjtissot.sellingmugs.entities.openAI
 
 import com.benjtissot.sellingmugs.Const
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -14,6 +15,7 @@ class Variation(
     val parameters: String,
     val description: String,
     val narrative: String,
+    @SerialName("negative_prompt") val negativePrompt: String,
 ) {
     fun getCleanName(): String{
         return this.name.substringAfter(":")

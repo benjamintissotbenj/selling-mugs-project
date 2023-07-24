@@ -153,10 +153,13 @@ class Const {
             return "Structure of a Variation object : { name, parameters, narrative }. " +
                     "The structure of the response should be a JSON object containing the different " +
                     "variations, with a unique field called variations containing the Variation objects . Each object has " +
-                    "four fields, one that contains the name you give to this variation (under the name name), " +
+                    "five fields, one that contains the name you give to this variation (under the name name), " +
                     "a second that contains one string with all the variation parameters (under the name parameters) " +
                     "a third that contains the narrative (under the name narrative), " +
-                    "and a fourth one that contains a brief of the narrative (under the name description) Based on the above structures, " +
+                    "a fourth one that contains a brief of the narrative (under the name description) " +
+                    "and a fifth that contains an appropriate negative prompt for this image (under the name negative_prompt), " +
+                    "made only of key words of things we do not want appearing in the final image." +
+                    "Based on the above structures, " +
                     "create $numberOfVariations different variations for the subject. Then, write a detailed narrative of about 400 characters " +
                     "for each variation and store it in the JSON under the name prompt. Write a short brief of the narrative in around 100 characters" +
                     "and store it in the JSON under the name description. The response should contain the JSON " +
@@ -174,6 +177,7 @@ class Const {
             return "Structure of a Stable Diffusion prompt : (subject of the image), (drawing type), (illustration style), (time of day), (known artist style), (Realism Level), (Lighting). "
         }
 
+        // TODO include a list of categories to avoid if we want new categories only
         fun getGenerateCategoriesPrompt(numberOfCategories: Int) : String {
             return "Create a JSON file with a list called categories of $numberOfCategories different categories for mug designs. " +
                     "Any category should be 1 to 3 words long. For each one, indicate its name (field name category) and " +
