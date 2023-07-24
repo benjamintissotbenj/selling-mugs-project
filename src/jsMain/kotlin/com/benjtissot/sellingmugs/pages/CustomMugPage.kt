@@ -13,6 +13,7 @@ import csstype.*
 import emotion.react.css
 import io.ktor.client.call.*
 import io.ktor.http.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mui.icons.material.AddShoppingCart
 import mui.material.Button
@@ -110,8 +111,10 @@ val CustomMugPage = FC<NavigationProps> { props ->
                                     val uploadReceive = uploadImage(uploadImage, public = props.session.user?.userType == Const.UserType.ADMIN)
                                     uploadReceive?.let {
 
-                                        uploadedImage = uploadReceive
+                                        uploadedImage = null
+                                        delay(25L)
                                         showAIForm = false
+                                        uploadedImage = uploadReceive
                                         val mugProductInfo = MugProductInfo("Custom Mug - ${uploadReceive.id}", "", Const.mugCategoryDefault, it.toImage())
                                         val httpResponse = createProduct(mugProductInfo)
                                         val productId = httpResponse.body<String>()
@@ -208,8 +211,10 @@ val CustomMugPage = FC<NavigationProps> { props ->
                                     HttpStatusCode.OK -> {
                                         scope.launch {
                                             val uploadReceive : ImageForUploadReceive = httpResponse.body()
-                                            uploadedImage = uploadReceive
+                                            uploadedImage = null
                                             showAIForm = false
+                                            delay(25L)
+                                            uploadedImage = uploadReceive
                                             val mugProductInfo = MugProductInfo("Custom Mug - ${uploadReceive.id}", "", Const.mugCategoryDefault, uploadReceive.toImage())
                                             val httpResponseProduct = createProduct(mugProductInfo)
                                             val productId = httpResponseProduct.body<String>()
@@ -306,6 +311,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
                             props.setAlert(errorAlert("Could not update preview images "))
                         }
                         receiveProduct = receiveProductTemp
+
                     }
                 }
             }

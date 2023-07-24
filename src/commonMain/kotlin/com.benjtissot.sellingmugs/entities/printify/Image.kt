@@ -25,7 +25,7 @@ class ImageForUploadReceive(val id: String,
             val upload_time: String) {
 
     fun toImage() : Image {
-        return Image(id, file_name, mime_type, height, width, 0.5f, 0.5f, 1f, 0)
+        return Image(id, file_name, mime_type, height, width, 0.5f, 0.5f, width/(2f*height), 0)
     }
 
     /**
