@@ -74,12 +74,13 @@ val CustomMugPage = FC<NavigationProps> { props ->
                     width = if (showAIForm) 15.vw else 20.vw
                     height = if (showAIForm) 15.vw else 20.vw
                     marginTop = null
-                    srcList = productPreviewImageSources
+                    srcList = if (uploadedImage != null) productPreviewImageSources else emptyList()
                     refresh = true
                     onClick = {
                         showAIForm = false
                     }
                     showPointer = !showAIForm
+                    this.loading = loading
                 }
 
                 // Used as a spacer
@@ -102,6 +103,9 @@ val CustomMugPage = FC<NavigationProps> { props ->
                             val imageFile = fileList[0]
                             reader.readAsDataURL(imageFile)
                             reader.onload = { _ ->
+                                loading = true
+                                receiveProduct = null
+                                uploadedImage = null
                                 props.setAlert(infoAlert("Image is being uploaded"))
                                 val uploadImage = ImageForUpload(
                                     file_name = imageFile.name,
@@ -110,9 +114,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
                                 scope.launch{
                                     val uploadReceive = uploadImage(uploadImage, public = props.session.user?.userType == Const.UserType.ADMIN)
                                     uploadReceive?.let {
-
-                                        uploadedImage = null
-                                        delay(25L)
+                                        loading = false
                                         showAIForm = false
                                         uploadedImage = uploadReceive
                                         val mugProductInfo = MugProductInfo("Custom Mug - ${uploadReceive.id}", "", Const.mugCategoryDefault, it.toImage())
@@ -203,6 +205,9 @@ val CustomMugPage = FC<NavigationProps> { props ->
                                     stayOn = true
                                 )
                             )
+                            receiveProduct = null
+                            uploadedImage = null
+                            loading = true
                             scope.launch {
                                 recordClick(props.session.clickDataId, Const.ClickType.GENERATE_CUSTOM_DESIGN_BUTTON.type)
                                 // API call to generate design, receive an Image For Upload Receive
@@ -211,7 +216,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
                                     HttpStatusCode.OK -> {
                                         scope.launch {
                                             val uploadReceive : ImageForUploadReceive = httpResponse.body()
-                                            uploadedImage = null
+                                            loading = false
                                             showAIForm = false
                                             delay(25L)
                                             uploadedImage = uploadReceive
