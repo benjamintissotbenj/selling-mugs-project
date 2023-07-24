@@ -5,13 +5,19 @@ import com.benjtissot.sellingmugs.components.createProduct.EditImageOnTemplateCo
 import com.benjtissot.sellingmugs.components.createProduct.ImageDrop
 import com.benjtissot.sellingmugs.components.createProduct.SweepImageComponent
 import com.benjtissot.sellingmugs.components.forms.CreateProductForm
+import com.benjtissot.sellingmugs.components.forms.GenerateMugsForm
+import com.benjtissot.sellingmugs.entities.openAI.GenerateCategoriesStatus
+import com.benjtissot.sellingmugs.entities.openAI.MugsChatRequestParams
 import com.benjtissot.sellingmugs.entities.printify.*
 import csstype.*
 import emotion.react.css
 import io.ktor.client.call.*
 import io.ktor.http.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mui.icons.material.AddShoppingCart
+import mui.material.Button
+import mui.material.Collapse
 import mui.material.IconButton
 import org.w3c.files.FileReader
 import react.FC
@@ -28,6 +34,8 @@ val CustomMugPage = FC<NavigationProps> { props ->
     val productPreviewImageSources : List<String> = receiveProduct?.images?.map{it.src} ?: emptyList()
     val reader = FileReader()
     var loading by useState(false)
+
+    var showAIForm by useState(true)
 
     val isAdmin = props.session.user?.userType == Const.UserType.ADMIN
 
@@ -55,7 +63,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
             div {
                 css {
                     width = 100.pct
-                    if (isAdmin){
+                    if (showAIForm){
                         contentCenteredVertically()
                         justifyContent = JustifyContent.center
                     } else {
@@ -63,11 +71,16 @@ val CustomMugPage = FC<NavigationProps> { props ->
                     }
                 }
                 SweepImageComponent {
-                    width = if (isAdmin) 15.vw else 20.vw
-                    height = if (isAdmin) 15.vw else 20.vw
-                    marginTop = if (props.session.user?.userType != Const.UserType.ADMIN) { 4.vh } else null
-                    srcList = productPreviewImageSources
+                    width = if (showAIForm) 15.vw else 20.vw
+                    height = if (showAIForm) 15.vw else 20.vw
+                    marginTop = null
+                    srcList = if (uploadedImage != null) productPreviewImageSources else emptyList()
                     refresh = true
+                    onClick = {
+                        showAIForm = false
+                    }
+                    showPointer = !showAIForm
+                    this.loading = loading
                 }
 
                 // Used as a spacer
@@ -79,8 +92,8 @@ val CustomMugPage = FC<NavigationProps> { props ->
                 }
 
                 ImageDrop {
-                    height = if (isAdmin) 10.vw else 20.vh
-                    width = if (isAdmin) 15.vw else 30.vw
+                    height = if (showAIForm) 10.vw else 10.vh
+                    width = if (showAIForm) 15.vw else 20.vw
                     onImageDrop = { fileList ->
                         if (fileList.isNotEmpty()) {
                             scope.launch {
@@ -90,6 +103,9 @@ val CustomMugPage = FC<NavigationProps> { props ->
                             val imageFile = fileList[0]
                             reader.readAsDataURL(imageFile)
                             reader.onload = { _ ->
+                                loading = true
+                                receiveProduct = null
+                                uploadedImage = null
                                 props.setAlert(infoAlert("Image is being uploaded"))
                                 val uploadImage = ImageForUpload(
                                     file_name = imageFile.name,
@@ -98,7 +114,8 @@ val CustomMugPage = FC<NavigationProps> { props ->
                                 scope.launch{
                                     val uploadReceive = uploadImage(uploadImage, public = props.session.user?.userType == Const.UserType.ADMIN)
                                     uploadReceive?.let {
-
+                                        loading = false
+                                        showAIForm = false
                                         uploadedImage = uploadReceive
                                         val mugProductInfo = MugProductInfo("Custom Mug - ${uploadReceive.id}", "", Const.mugCategoryDefault, it.toImage())
                                         val httpResponse = createProduct(mugProductInfo)
@@ -155,6 +172,87 @@ val CustomMugPage = FC<NavigationProps> { props ->
                         }
                     }
                     deleteFieldsOnSubmit = false
+                }
+            }
+            else {
+                div {
+                    css {
+                        width = 100.pct
+                        textAlign = TextAlign.center
+                        fontNormal()
+                        fontWeight = FontWeight.bold
+                        padding = 2.vh
+                    }
+                    +"Or : create your design using AI"
+                }
+                //Create via AI
+                Collapse {
+                    css {
+                        height = "fit-content".unsafeCast<Height>()
+                        width = 90.pct
+                        boxSizing = BoxSizing.borderBox
+                        padding
+                    }
+                    `in` = showAIForm
+                    GenerateMugsForm {
+                        width = 100.pct
+                        isCustomMug = true
+                        onSubmit = { subject, artType, _ ->
+                            props.setAlert(
+                                infoAlert(
+                                    "You are creating an image on the subject of $subject in a ${artType.type} style",
+                                    "Generating image",
+                                    stayOn = true
+                                )
+                            )
+                            receiveProduct = null
+                            uploadedImage = null
+                            loading = true
+                            scope.launch {
+                                recordClick(props.session.clickDataId, Const.ClickType.GENERATE_CUSTOM_DESIGN_BUTTON.type)
+                                // API call to generate design, receive an Image For Upload Receive
+                                val httpResponse = generateDesign(MugsChatRequestParams(subject, artType, 1))
+                                when (httpResponse.status) {
+                                    HttpStatusCode.OK -> {
+                                        scope.launch {
+                                            val uploadReceive : ImageForUploadReceive = httpResponse.body()
+                                            loading = false
+                                            showAIForm = false
+                                            delay(25L)
+                                            uploadedImage = uploadReceive
+                                            val mugProductInfo = MugProductInfo("Custom Mug - ${uploadReceive.id}", "", Const.mugCategoryDefault, uploadReceive.toImage())
+                                            val httpResponseProduct = createProduct(mugProductInfo)
+                                            val productId = httpResponseProduct.body<String>()
+
+                                            if (httpResponseProduct.status != HttpStatusCode.OK){
+                                                props.setAlert(errorAlert("Mug with custom AI generated design could not be created."))
+                                                return@launch
+                                            } else {
+                                                publishProduct(productId)
+                                                props.setAlert(successAlert("Mug with custom AI generated design was created successfully !"))
+                                                receiveProduct = getProduct(productId)
+                                                loading = false
+                                            }
+                                        }
+                                        props.setAlert(successAlert("You have successfully created your design"))
+                                    }
+
+                                    Const.HttpStatusCode_OpenAIUnavailable -> props.setAlert(errorAlert("OpenAI is unavailable, please try later", stayOn = true))
+                                    else -> props.setAlert(errorAlert("There has been a problem during the generation process. Please try again. If the problem persists, contact an administrator.", stayOn = true))
+                                }
+
+                            }
+                        }
+                    }
+                }
+                Collapse {
+                    `in` = !showAIForm
+                    Button {
+                        +"Use AI"
+                        onClick = {
+                            showAIForm = true
+                        }
+                    }
                 }
             }
 
@@ -218,6 +316,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
                             props.setAlert(errorAlert("Could not update preview images "))
                         }
                         receiveProduct = receiveProductTemp
+
                     }
                 }
             }

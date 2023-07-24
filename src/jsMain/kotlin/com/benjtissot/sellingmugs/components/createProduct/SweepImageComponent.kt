@@ -6,6 +6,7 @@ import csstype.*
 import emotion.react.css
 import mui.icons.material.ChevronLeft
 import mui.icons.material.ChevronRight
+import mui.lab.LoadingButton
 import mui.material.IconButton
 import mui.material.Size
 import react.FC
@@ -24,6 +25,9 @@ external interface SweepImageProps: Props {
     var refresh: Boolean
     var marginInline : MarginInline?
     var marginTop: MarginTop?
+    var onClick: (() -> Unit)?
+    var showPointer: Boolean?
+    var loading: Boolean?
 }
 
 val SweepImageComponent = FC<SweepImageProps> { props ->
@@ -41,6 +45,11 @@ val SweepImageComponent = FC<SweepImageProps> { props ->
             boxSizing = BoxSizing.borderBox
         }
 
+        onClick = {
+            props.onClick?.let {
+                it.invoke()
+            }
+        }
         if (sweep) {
             IconButton {
                 css {
@@ -58,6 +67,9 @@ val SweepImageComponent = FC<SweepImageProps> { props ->
                     position = Position.relative
                     height = 90.pct
                     width = 90.pct
+                    if (props.showPointer == true) {
+                        cursor = Cursor.pointer
+                    }
                 }
                 for (i: Int in 0 until props.srcList.size){
                     img {
@@ -90,13 +102,45 @@ val SweepImageComponent = FC<SweepImageProps> { props ->
                 }
             }
         } else {
-            img {
+            div {
                 css {
-                    height = props.height
-                    width = props.width
+                    position = Position.relative
+                    props.width?.let { width = it }
+                    props.height?.let { height = it }
+                    margin = 3.pct
+                    boxSizing = BoxSizing.borderBox
                 }
-                src = "https://images.printify.com/api/catalog/5e440fbfd897db313b1987d1.jpg?s=320"
+                img {
+                    css {
+                        position = Position.absolute
+                        width = 100.pct
+                        right = 0.px
+                        top = 0.px
+                        left = 0.px
+                        bottom = 0.px
+                        objectFit = ObjectFit.contain
+                    }
+                    src = "https://images.printify.com/api/catalog/5e440fbfd897db313b1987d1.jpg?s=320"
+                }
+                if (props.loading == true){
+                    LoadingButton {
+                        css {
+                            position = Position.absolute
+                            width = 100.pct
+                            right = 0.px
+                            top = 45.pct
+                            left = 0.px
+                            bottom = 0.px
+                            objectFit = ObjectFit.contain
+                        }
+                        loading = true
+                    }
+                }
             }
+
+
         }
+
+
     }
 }

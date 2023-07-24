@@ -87,6 +87,8 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
 
 
                         GenerateMugsForm {
+                            width = 100.pct
+                            isCustomMug = false
                             onSubmit = { subject, artType, numberOfVariations ->
                                 props.onCreatingMugs(subject, artType)
                                 scope.launch {

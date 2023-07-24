@@ -20,6 +20,7 @@ import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.img
+import react.useEffect
 import react.useState
 import ringui.Col
 import ringui.Grid
@@ -31,18 +32,19 @@ external interface EditImageOnTemplateProps: Props {
     var uploadedImage: ImageForUploadReceive?
     var receiveProduct: ReceiveProduct?
     var setAlert : (AlertState) -> Unit
-    var updateProduct: (ReceiveProduct?)->Unit
+    var updateProduct: (ReceiveProduct?) -> Unit
 }
 
 
 val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
 
-    // TODO: automatic readjustment depending on the picture's height/width
-
     val uploadedImage = props.uploadedImage
     val receiveProduct = props.receiveProduct
 
-    var scale by useState(1f) // ratio image_width / template_width
+    val hwratio = (uploadedImage?.height?:1).toFloat()/(uploadedImage?.width?:2).toFloat()
+    val whratio = 1f/hwratio
+    val scaleInit = whratio/2f
+    var scale by useState(scaleInit) // ratio image_width / template_width
     var rotate by useState(0) // [-180 ; 180]]
     var horizontalPositionPercentage by useState(50) // from 0 to 100
     var verticalPositionPercentage by useState(50) // from 0 to 100
@@ -51,13 +53,26 @@ val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
     val templateHeight = templateWidth/2f
     val gridUnit = templateWidth/8f
     val gridWidth = 12f*gridUnit
-    val hwratio = (uploadedImage?.height?:1).toFloat()/(uploadedImage?.width?:1).toFloat()
 
     val imageWidth = scale*templateWidth
     val imageHeight = hwratio*imageWidth
 
     val x = (horizontalPositionPercentage*2f-50f)/100f // from -0.5 to +1.5, as it is the position of the center
     val y = (verticalPositionPercentage*2f-50f)/100f // from -0.5 to +1.5, as it is the position of the center
+
+    var adjusted by useState(false)
+
+    useEffect {
+        println("Scale is $scale, whratio is $whratio, uploadedImage is $uploadedImage, adjusted is $adjusted")
+        if (uploadedImage != null && receiveProduct != null && !adjusted) {
+            updateImage(uploadedImage, receiveProduct, props.setAlert, props.updateProduct, x, y, scaleInit, rotate)
+            adjusted = true
+            scale = scaleInit
+        }
+        if (uploadedImage == null) {
+            adjusted = false
+        }
+    }
 
     Grid {
         css {
@@ -243,28 +258,36 @@ val EditImageOnTemplateComponent = FC<EditImageOnTemplateProps> { props ->
                             +"Refresh Preview"
                         }
                         onClick = {
-                            // Put Update in printify
-                            if (uploadedImage != null && receiveProduct != null) {
-                                val transformedImage = Image(
-                                    uploadedImage.id,
-                                    uploadedImage.file_name,
-                                    uploadedImage.mime_type,
-                                    uploadedImage.height,
-                                    uploadedImage.width,
-                                    x,
-                                    y,
-                                    scale,
-                                    rotate
-                                )
-                                props.setAlert(infoAlert("Updating preview images"))
-                                scope.launch {
-                                    props.updateProduct(putProduct(receiveProduct.id, receiveProduct.changeImage(transformedImage)))
-                                }
-                            }
+                            updateImage(uploadedImage, receiveProduct, props.setAlert, props.updateProduct, x, y, scale, rotate)
                         }
                     }
                 }
             }
+        }
+    }
+}
+
+/**
+ * Updates an image in printify and in the display
+ */
+fun updateImage(uploadedImage : ImageForUploadReceive?, receiveProduct: ReceiveProduct?, setAlert : (AlertState) -> Unit, updateProduct: (ReceiveProduct?)->Unit,
+x: Float, y: Float, scale: Float, rotate: Int) {
+    // Put Update in printify
+    if (uploadedImage != null && receiveProduct != null) {
+        val transformedImage = Image(
+            uploadedImage.id,
+            uploadedImage.file_name,
+            uploadedImage.mime_type,
+            uploadedImage.height,
+            uploadedImage.width,
+            x,
+            y,
+            scale,
+            rotate
+        )
+        setAlert(infoAlert("Updating preview images"))
+        scope.launch {
+            updateProduct(putProduct(receiveProduct.id, receiveProduct.changeImage(transformedImage)))
         }
     }
 }

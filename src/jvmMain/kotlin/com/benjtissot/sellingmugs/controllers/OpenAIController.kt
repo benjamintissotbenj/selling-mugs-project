@@ -2,6 +2,7 @@ package com.benjtissot.sellingmugs.controllers
 
 import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.OPEN_AI_PATH
+import com.benjtissot.sellingmugs.entities.local.Artwork
 import com.benjtissot.sellingmugs.entities.local.Category
 import com.benjtissot.sellingmugs.entities.local.Mug
 import com.benjtissot.sellingmugs.entities.openAI.CategoriesChatRequestParams
@@ -21,6 +22,26 @@ private val LOG = KtorSimpleLogger("OpenAIController.kt")
 fun Route.openAIRouting(){
 
     route(OPEN_AI_PATH) {
+        route(Artwork.path){
+            post {
+                val params: MugsChatRequestParams = call.receive()
+                try {
+                    ImageGeneratorService.generateDesignFromParams(params)?.let {
+                        call.respond(it)
+                    } ?: run {
+                        // if we ran 5 times and it didn't manage to upload successfully
+                        call.respond(Const.HttpStatusCode_ImageUploadFail)
+                    }
+                } catch (e: OpenAIUnavailable) {
+                    e.printStackTrace()
+                    call.respond(Const.HttpStatusCode_OpenAIUnavailable)
+                }catch (e: Exception) {
+                    e.printStackTrace()
+                    call.respond(HttpStatusCode.InternalServerError)
+                }
+            }
+        }
+
         route(Mug.path){
             post {
                 val params: MugsChatRequestParams = call.receive()
