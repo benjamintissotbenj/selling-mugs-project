@@ -194,7 +194,7 @@ class ImageGeneratorService {
                         imageUploadedToPrintify?.let {
                             // Create mug from image
                             // TODO: description from chatGPT here
-                            val mugProductInfo = MugProductInfo("AI - ${variation.getCleanName()}", "", params.subject, it.toImage())
+                            val mugProductInfo = MugProductInfo("AI - ${variation.getCleanName()}", variation.description, params.subject, it.toImage())
                             val productPrintifyId = PrintifyService.createProduct(mugProductInfo)
                             productPrintifyId?.let { id ->
                                 // Get all generated mug visuals

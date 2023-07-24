@@ -153,11 +153,13 @@ class Const {
             return "Structure of a Variation object : { name, parameters, narrative }. " +
                     "The structure of the response should be a JSON object containing the different " +
                     "variations, with a unique field called variations containing the Variation objects . Each object has " +
-                    "three fields, one that contains the name you give to this variation (under the name name), " +
-                    "one that contains one string with all the variation parameters (under the name parameters) " +
-                    "and a third that contains the narrative (under the name narrative). Based on the above structures, " +
+                    "four fields, one that contains the name you give to this variation (under the name name), " +
+                    "a second that contains one string with all the variation parameters (under the name parameters) " +
+                    "a third that contains the narrative (under the name narrative), " +
+                    "and a fourth one that contains a brief of the narrative (under the name description) Based on the above structures, " +
                     "create $numberOfVariations different variations for the subject. Then, write a detailed narrative of about 400 characters " +
-                    "for each variation and store it in the JSON under the name prompt. The response should contain the JSON " +
+                    "for each variation and store it in the JSON under the name prompt. Write a short brief of the narrative in around 100 characters" +
+                    "and store it in the JSON under the name description. The response should contain the JSON " +
                     "object and only the JSON object, so that the response can be parsed. Subject of the prompt is: "
         }
 

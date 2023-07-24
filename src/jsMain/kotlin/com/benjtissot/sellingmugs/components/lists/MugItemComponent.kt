@@ -147,7 +147,7 @@ val MugDetailsDefault = FC<MugItemDefaultProps> { props ->
             height = 100.pct
             boxSizing = BoxSizing.borderBox
         }
-        img {`in`
+        img {
             css {
                 position = Position.absolute
                 width = 100.pct
