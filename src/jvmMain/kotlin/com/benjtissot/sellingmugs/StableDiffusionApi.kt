@@ -36,6 +36,7 @@ var stableDiffusionClient : HttpClient = HttpClient {
  * Generates a stable diffusion image based on the prompt
  */
 suspend fun apiGenerateImage(prompt: String) : HttpResponse {
+    // TODO use the negative prompt
     val imageRequest = ImageRequest.generate(System.getenv(Const.STABLE_DIFFUSION_API_KEY), prompt)
     val httpResponse = stableDiffusionClient.post("text2img"){
         contentType(ContentType.Application.Json)

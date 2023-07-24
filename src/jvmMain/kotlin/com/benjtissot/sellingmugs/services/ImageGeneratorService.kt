@@ -36,17 +36,16 @@ class ImageGeneratorService {
          * @return the list of status codes to give feedback in the front-end of how well this went
          * @throws [OpenAIUnavailable] when the server is unable to connect with OpenAI's API
          */
+        @OptIn(DelicateCoroutinesApi::class)
         @Throws
         suspend fun generateCategoriesAndMugs(params: CategoriesChatRequestParams) : GenerateCategoriesStatus {
             val generateCategoriesStatusUuid = genUuid()
             val dateSubmitted = Clock.System.now()
             return try {
                 val categoriesAndStyle = generateCategories(params.amountOfCategories)
-                GenerateCategoriesStatus(
-                    generateCategoriesStatusUuid,
-                    "Overall success",
-                    params,
-                    categoriesAndStyle.map { pair ->
+                // Using coroutines to parallelize the work
+                val deferred = categoriesAndStyle.map { pair ->
+                    GlobalScope.async {
                         val catRequestStarted = Clock.System.now()
                         try {
                             val imageType = params.type ?: pair.second
@@ -56,7 +55,13 @@ class ImageGeneratorService {
                             e.printStackTrace()
                             GenerateCategoryStatus(pair.first, e.message, emptyList(), dateSubmitted = catRequestStarted, dateReturned = Clock.System.now())
                         }
-                    },
+                    }
+                }
+                GenerateCategoriesStatus(
+                    generateCategoriesStatusUuid,
+                    "Overall success",
+                    params,
+                    deferred.awaitAll(),
                     dateSubmitted = dateSubmitted,
                     dateReturned = Clock.System.now()
                 )
@@ -287,8 +292,8 @@ class ImageGeneratorService {
             val httpResponse = apiGenerateImage("${variation.parameters} ${variation.narrative}")
             try {
                 var imageResponse = httpResponse.body<ImageResponse>()
-
-                while (imageResponse.status == "processing"){
+                var attempts = 0
+                while (imageResponse.status == "processing" && attempts < 5){
                     val delay = max(imageResponse.eta.toLong(), 5L) // at least 5 seconds
                     LOG.debug("Variation ${variation.name} is queued, eta $delay seconds")
                     // If we are still processing, delay for given eta and
@@ -296,14 +301,15 @@ class ImageGeneratorService {
                     LOG.debug("Fetching variation ${variation.name}")
                     val httpResponseFetch = apiFetchImage(imageResponse.id)
                     imageResponse = httpResponseFetch.body()
+                    attempts++
                 }
 
-                return if (imageResponse.output.isEmpty()){
-                        insertNewImageGeneratedLog(variation, "", "Fetch source is empty", requestCreated)
+                return if (imageResponse.output.isNullOrEmpty()){
+                        insertNewImageGeneratedLog(variation, "", "Fetch source is empty, tried to fetch $attempts times", requestCreated)
                         throw Exception("Fetch source is empty")
                     } else {
-                    insertNewImageGeneratedLog(variation, imageResponse.output[0], "", requestCreated)
-                        imageResponse.output[0]
+                    insertNewImageGeneratedLog(variation, imageResponse.output!![0], "", requestCreated)
+                        imageResponse.output!![0]
                     }
 
             } catch (e: Exception) {

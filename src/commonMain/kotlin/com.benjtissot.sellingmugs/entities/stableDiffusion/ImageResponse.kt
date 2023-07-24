@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 class ImageResponse(
     val status: String,
     val id: Int,
-    val output: List<String>,
+    val output: List<String>?,
     val eta: Float = 0f
 ) {
 }
