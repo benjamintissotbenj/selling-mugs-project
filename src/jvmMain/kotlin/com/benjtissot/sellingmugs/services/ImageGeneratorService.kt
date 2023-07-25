@@ -6,9 +6,11 @@ import com.benjtissot.sellingmugs.entities.openAI.*
 import com.benjtissot.sellingmugs.entities.printify.ImageForUpload
 import com.benjtissot.sellingmugs.entities.printify.ImageForUploadReceive
 import com.benjtissot.sellingmugs.entities.printify.MugProductInfo
+import com.benjtissot.sellingmugs.entities.printify.ProductLog
 import com.benjtissot.sellingmugs.entities.stableDiffusion.ImageGeneratedLog
 import com.benjtissot.sellingmugs.entities.stableDiffusion.ImageResponse
 import com.benjtissot.sellingmugs.repositories.ChatRepository
+import com.benjtissot.sellingmugs.repositories.MugRepository
 import com.benjtissot.sellingmugs.repositories.StableDiffusionRepository
 import io.ktor.client.call.*
 import io.ktor.client.statement.*
@@ -17,6 +19,7 @@ import io.ktor.util.logging.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.time.delay
 import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.litote.kmongo.json
@@ -195,27 +198,8 @@ class ImageGeneratorService {
                         val imageUploadedToPrintify =
                             uploadImageFromSource(variation.getCleanName(), stableDiffusionImageSource)
 
-                        // TODO: create function for this, log mug creation status in DB
                         imageUploadedToPrintify?.let {
-                            // Create mug from image
-                            val mugProductInfo = MugProductInfo("AI - ${variation.getCleanName()}", variation.description, params.subject, it.toImage())
-                            val productPrintifyId = PrintifyService.createProduct(mugProductInfo)
-                            productPrintifyId?.let { id ->
-                                // Get all generated mug visuals
-                                MugService.getMugByPrintifyId(id)?.let { mug ->
-                                    MugService.updateArtworkImage(
-                                        mug.artwork,
-                                        id
-                                    ) // make sure the images are updated when creating the product
-                                }
-                                // Make product available to buy
-                                val statusCode = PrintifyService.publishProduct(id)
-                                if (statusCode != HttpStatusCode.OK) {
-                                    Const.HttpStatusCode_ProductPublicationFailed
-                                } else {
-                                    statusCode
-                                }
-                            } ?: Const.HttpStatusCode_ProductCreationFailed
+                            publishMugFromImage(it, variation, params.subject)
                         } ?: Const.HttpStatusCode_ImageUploadFail
 
                     } catch (e: Exception) {
@@ -245,6 +229,8 @@ class ImageGeneratorService {
          * @param params the [MugsChatRequestParams] used
          * @return a [List] object that contains [Variation] if the request is a
          * success, and throws an error that contains the appropriate message otherwise.
+         * @throws [Exception] when the variation could not be created (if we tried more than 5 times without
+         * success, or if a chat response had the wrong format
          */
         @Throws
         private suspend fun generateVariationsFromParams(params: MugsChatRequestParams) : List<Variation> {
@@ -285,6 +271,12 @@ class ImageGeneratorService {
             throw Exception(errorMessage)
         }
 
+        /**
+         * Generates an image using Stable Diffusion for a given variation
+         * @param variation the [Variation] to create an image from
+         * @return a [String] representing the URL of the generated image
+         * @throws [Exception] when the image could not be created
+         */
         @Throws
         private suspend fun generateImageFromVariation(variation: Variation) : String {
             val requestCreated = Clock.System.now()
@@ -335,6 +327,42 @@ class ImageGeneratorService {
         }
 
         /**
+         * Creates and publishes a Mug to Printify
+         * @param imageForUpload the [ImageForUploadReceive] received by Printify's API
+         * @param variation the [Variation] created by chatGPT
+         * @param categoryName the name of the category to create the [MugProductInfo]
+         */
+        private suspend fun publishMugFromImage(imageForUpload: ImageForUploadReceive, variation: Variation, categoryName: String) : HttpStatusCode {
+            val dateCreatedLocally = Clock.System.now()
+            // Create mug from image
+            val mugProductInfo = MugProductInfo("AI - ${variation.getCleanName()}", variation.description, categoryName, imageForUpload.toImage())
+            val productPrintifyId = PrintifyService.createProduct(mugProductInfo)
+
+            return if (productPrintifyId == null) {
+                insertNewProductLog("", Const.HttpStatusCode_ProductCreationFailed.description, dateCreatedLocally, null, null)
+                Const.HttpStatusCode_ProductCreationFailed
+            } else {
+                val dateProductCreated = Clock.System.now()
+                // Get all generated mug visuals
+                MugService.getMugByPrintifyId(productPrintifyId)?.let { mug ->
+                    MugService.updateArtworkImage(
+                        mug.artwork,
+                        productPrintifyId
+                    ) // make sure the images are updated when creating the product
+                }
+                // Make product available to buy
+                val statusCode = PrintifyService.publishProduct(productPrintifyId)
+                if (statusCode != HttpStatusCode.OK) {
+                    insertNewProductLog(productPrintifyId, Const.HttpStatusCode_ProductPublicationFailed.description, dateCreatedLocally, dateProductCreated, null)
+                    Const.HttpStatusCode_ProductPublicationFailed
+                } else {
+                    insertNewProductLog(productPrintifyId, "Success", dateCreatedLocally, dateProductCreated, Clock.System.now())
+                    statusCode
+                }
+            }
+        }
+
+        /**
          * Gets a clean version of the chat responseContent, even if the chat response has text before or after the JSON
          */
         private fun getMugsChatResponseContentFromString(content: String): MugsChatResponseContent {
@@ -368,16 +396,20 @@ class ImageGeneratorService {
          *
          *****************************************/
 
-        private suspend fun insertNewMugsChatLog(chatRequest: ChatRequest, mugsChatResponseContent: MugsChatResponseContent?, message: String, requestCreated: kotlinx.datetime.Instant){
+        private suspend fun insertNewMugsChatLog(chatRequest: ChatRequest, mugsChatResponseContent: MugsChatResponseContent?, message: String, requestCreated: Instant){
             ChatRepository.insertChatLog(ChatLog(genUuid(), chatRequest, mugsChatResponseContent, null, message, requestSubmitted = requestCreated, Clock.System.now()))
         }
 
-        private suspend fun insertNewCategoriesChatLog(chatRequest: ChatRequest, categoriesChatResponseContent: CategoriesChatResponseContent?, message: String, requestCreated: kotlinx.datetime.Instant){
+        private suspend fun insertNewCategoriesChatLog(chatRequest: ChatRequest, categoriesChatResponseContent: CategoriesChatResponseContent?, message: String, requestCreated: Instant){
             ChatRepository.insertChatLog(ChatLog(genUuid(), chatRequest, null, categoriesChatResponseContent, message, requestSubmitted = requestCreated, Clock.System.now()))
         }
 
-        private suspend fun insertNewImageGeneratedLog(variation: Variation, imageURL: String, message: String, requestCreated: kotlinx.datetime.Instant){
+        private suspend fun insertNewImageGeneratedLog(variation: Variation, imageURL: String, message: String, requestCreated: Instant){
             StableDiffusionRepository.insertImageGeneratedLog(ImageGeneratedLog(genUuid(), variation, imageURL, message, requestSubmitted = requestCreated, Clock.System.now()))
+        }
+
+        private suspend fun insertNewProductLog(printifyId: String, message: String, dateCreatedLocally: Instant, dateProductCreated: Instant?, dateProductPublished: Instant?){
+            MugRepository.insertProductLog(ProductLog(genUuid(), printifyId, message, dateCreatedLocally, dateProductCreated, dateProductPublished))
         }
 
     }
