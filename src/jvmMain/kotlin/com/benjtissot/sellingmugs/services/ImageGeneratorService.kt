@@ -45,7 +45,7 @@ class ImageGeneratorService {
             val generateCategoriesStatusUuid = genUuid()
             val dateSubmitted = Clock.System.now()
             return try {
-                val categoriesAndStyle = generateCategories(params.amountOfCategories)
+                val categoriesAndStyle = generateCategories(params.amountOfCategories, params.newCategoriesOnly)
                 // Using coroutines to parallelize the work
                 val deferred = categoriesAndStyle.map { pair ->
                     GlobalScope.async {
@@ -92,12 +92,20 @@ class ImageGeneratorService {
          * Generates a list of categories and of most appropriate styles to generate images in this category
          * @throws [Exception] if 5 tries are not enough to contact ChatGPT correctly
          */
-        private suspend fun generateCategories(amountOfCategories: Int) : List<Pair<Category, Const.StableDiffusionImageType>> {
+        private suspend fun generateCategories(amountOfCategories: Int, newCategoriesOnly: Boolean) : List<Pair<Category, Const.StableDiffusionImageType>> {
             val requestCreated = Clock.System.now()
             var apiResponse : HttpResponse
             var exception: Exception?
             var numberOfTries = 0
-            val chatRequest = ChatRequest.generateCategoryRequestFromParams(amountOfCategories)
+
+            val chatRequest = ChatRequest.generateCategoryRequestFromParams(
+                amountOfCategories,
+                if (newCategoriesOnly) {
+                    CategoryService.getAllCategories()
+                } else {
+                    emptyList()
+                }
+            )
             do {
                 numberOfTries ++
                 LOG.debug("Sending request to API, restarting if Service Unavailable")

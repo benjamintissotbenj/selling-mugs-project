@@ -135,10 +135,10 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                             }
 
                         }
-                        onCreatingCategories = { nbCat, nbVal, artType ->
+                        onCreatingCategories = { nbCat, nbVal, artType, newCatOnly ->
                             props.setAlert(
                                 infoAlert(
-                                    "You are creating $nbCat categories with $nbVal mugs each. For style, you have chosen ${artType ?: "Automatic"}",
+                                    "You are creating $nbCat ${if (newCatOnly) "new " else ""}categories with $nbVal mugs each. For style, you have chosen ${artType ?: "Automatic"}",
                                     "Generating categories and mugs",
                                     stayOn = true
                                 )
