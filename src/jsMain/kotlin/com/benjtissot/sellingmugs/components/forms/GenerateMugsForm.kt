@@ -204,7 +204,6 @@ val GenerateCategoriesForm = FC<GenerateCategoriesFormProps> { props ->
     }
 }
 
-// TODO: refactor this code
 external interface VariationInputProps : Props {
     var onChange: (Int) -> Unit
     var numberOfVariations : Int

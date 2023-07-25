@@ -19,11 +19,11 @@ class ImageRequest(
     val track_id: String?
 ) {
     companion object {
-        fun generate(key: String, prompt: String) : ImageRequest {
+        fun generate(key: String, prompt: String, negative_prompt: String = "") : ImageRequest {
             return ImageRequest(
                 key = key,
-                prompt = prompt,
-                negative_prompt = "",
+                prompt = "$prompt. You should make this appropriate to be printed on a mug.",
+                negative_prompt = negative_prompt,
                 width = "1024",
                 height = "512",
                 samples = "1",

@@ -59,19 +59,26 @@ fun Route.openAIRouting(){
 
         route(Category.path){
             post {
-                val chatRequestParams : CategoriesChatRequestParams = call.receive()
-                try {
-                    call.respond(
-                        CategoriesGenerationResultRepository.updateGenerateCategoriesStatus (
-                            ImageGeneratorService.generateCategoriesAndMugs(chatRequestParams)
+                val chatRequestParams : CategoriesChatRequestParams? = try {
+                    call.receive()
+                } catch (e: Exception){
+                    call.respond(HttpStatusCode.BadRequest)
+                    null
+                }
+                if (chatRequestParams != null) {
+                    try {
+                        call.respond(
+                            CategoriesGenerationResultRepository.updateGenerateCategoriesStatus (
+                                ImageGeneratorService.generateCategoriesAndMugs(chatRequestParams)
+                            )
                         )
-                    )
-                } catch (e: OpenAIUnavailable) {
-                    e.printStackTrace()
-                    call.respond(Const.HttpStatusCode_OpenAIUnavailable)
-                }catch (e: Exception) {
-                    e.printStackTrace()
-                    call.respond(HttpStatusCode.InternalServerError)
+                    } catch (e: OpenAIUnavailable) {
+                        e.printStackTrace()
+                        call.respond(Const.HttpStatusCode_OpenAIUnavailable)
+                    }catch (e: Exception) {
+                        e.printStackTrace()
+                        call.respond(HttpStatusCode.InternalServerError)
+                    }
                 }
             }
         }
