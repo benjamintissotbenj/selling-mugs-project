@@ -29,7 +29,7 @@ fun Route.openAIRouting(){
                     ImageGeneratorService.generateDesignFromParams(params)?.let {
                         call.respond(it)
                     } ?: run {
-                        // if we ran 5 times and it didn't manage to upload successfully
+                        // if we ran 5 times, and it didn't manage to upload successfully
                         call.respond(Const.HttpStatusCode_ImageUploadFail)
                     }
                 } catch (e: OpenAIUnavailable) {

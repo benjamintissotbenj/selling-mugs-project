@@ -4,11 +4,13 @@ import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.Const.ColorCode.BLUE
 import csstype.*
 import emotion.react.css
+import mui.material.Checkbox
 import mui.material.MenuItem
 import mui.material.Select
 import org.w3c.dom.HTMLFormElement
 import react.FC
 import react.Props
+import react.create
 import react.dom.events.FormEventHandler
 import react.dom.html.InputType
 import react.dom.html.ReactHTML.div
@@ -109,17 +111,18 @@ val GenerateMugsForm = FC<GenerateMugsFormProps> { props ->
 }
 
 external interface GenerateCategoriesFormProps : Props {
-    var onSubmit: (Int, Int, Const.StableDiffusionImageType?) -> Unit
+    var onSubmit: (Int, Int, Const.StableDiffusionImageType?, Boolean) -> Unit
 }
 
 val GenerateCategoriesForm = FC<GenerateCategoriesFormProps> { props ->
     var numberOfCategories by useState(2)
     var numberOfVariations by useState(2)
     var imageType by useState("Automatic")
+    var newCategories by useState(false)
 
     val submitHandler: FormEventHandler<HTMLFormElement> = {
         it.preventDefault()
-        props.onSubmit(numberOfCategories, numberOfVariations, try {Const.StableDiffusionImageType.valueOf(imageType)} catch (e: Exception) {null})
+        props.onSubmit(numberOfCategories, numberOfVariations, try {Const.StableDiffusionImageType.valueOf(imageType)} catch (e: Exception) {null}, newCategories)
     }
 
     div {
@@ -186,6 +189,24 @@ val GenerateCategoriesForm = FC<GenerateCategoriesFormProps> { props ->
                     }
                     automaticPossible = true
                 }
+
+                div {
+                    css {
+                        display = Display.flex
+                        flexDirection = FlexDirection.row
+                        alignItems = AlignItems.center
+                    }
+                    Checkbox {
+                        checked = newCategories
+                        onChange = {_, checked -> newCategories = checked}
+                    }
+                    div {
+                        css {
+                            margin = 1.vh
+                        }
+                        +"New categories only"
+                    }
+                }
             }
 
             input {
@@ -196,7 +217,7 @@ val GenerateCategoriesForm = FC<GenerateCategoriesFormProps> { props ->
                     cursor = Cursor.pointer
                 }
                 type = InputType.submit
-                value = "Generate $numberOfCategories categories with $numberOfVariations mugs each"
+                value = "Generate $numberOfCategories ${if (newCategories) "new " else ""}categories with $numberOfVariations mugs each"
             }
 
             onSubmit = submitHandler

@@ -9,7 +9,6 @@ import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
-import kotlin.test.assertFails
 import kotlin.time.Duration.Companion.seconds
 
 class PrintifyTests : AbstractDatabaseTests() {

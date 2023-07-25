@@ -22,7 +22,7 @@ private val LOG = KtorSimpleLogger("CreateProductComponent.kt")
 external interface CreateProductProps : NavigationProps {
     var onCreatingMugs: (String, Const.StableDiffusionImageType) -> Unit
     var onMugsCreationResponse: (HttpResponse) -> Unit
-    var onCreatingCategories: (Int, Int, Const.StableDiffusionImageType?) -> Unit
+    var onCreatingCategories: (Int, Int, Const.StableDiffusionImageType?, Boolean) -> Unit
     var onCategoriesCreationResponse: (HttpResponse) -> Unit
 }
 
@@ -114,11 +114,11 @@ val CreateProductComponent = FC<CreateProductProps> { props ->
                         }
 
                         GenerateCategoriesForm {
-                            onSubmit = { nbCat, nbVar, artType ->
-                                props.onCreatingCategories(nbCat, nbVar, artType)
+                            onSubmit = { nbCat, nbVar, artType, newCatOnly ->
+                                props.onCreatingCategories(nbCat, nbVar, artType, newCatOnly)
                                 scope.launch {
                                     recordClick(props.session.clickDataId, Const.ClickType.GENERATE_CATEGORIES_BUTTON.type)
-                                    props.onCategoriesCreationResponse(generateMugsInCategories(CategoriesChatRequestParams(nbCat, nbVar, artType)))
+                                    props.onCategoriesCreationResponse(generateMugsInCategories(CategoriesChatRequestParams(nbCat, nbVar, artType, newCatOnly)))
                                 }
                             }
                         }

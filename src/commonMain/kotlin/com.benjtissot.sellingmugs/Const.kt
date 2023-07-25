@@ -158,7 +158,8 @@ class Const {
                     "a third that contains the narrative (under the name narrative), " +
                     "a fourth one that contains a brief of the narrative (under the name description) " +
                     "and a fifth that contains an appropriate negative prompt for this image (under the name negative_prompt), " +
-                    "made only of key words of things we do not want appearing in the final image." +
+                    "made only of key words of things we do not want appearing in the final image. " +
+                    "Please do not use \"Variation 1\" or similar names for the variation names. Find something original. " +
                     "Based on the above structures, " +
                     "create $numberOfVariations different variations for the subject. Then, write a detailed narrative of about 400 characters " +
                     "for each variation and store it in the JSON under the name prompt. Write a short brief of the narrative in around 100 characters" +
@@ -177,11 +178,17 @@ class Const {
             return "Structure of a Stable Diffusion prompt : (subject of the image), (drawing type), (illustration style), (time of day), (known artist style), (Realism Level), (Lighting). "
         }
 
-        // TODO include a list of categories to avoid if we want new categories only
-        fun getGenerateCategoriesPrompt(numberOfCategories: Int) : String {
-            return "Create a JSON file with a list called categories of $numberOfCategories different categories for mug designs. " +
-                    "Any category should be 1 to 3 words long. For each one, indicate its name (field name category) and " +
-                    "which style (field name style) would best be suited between REALISTIC, GEOMETRIC and CARTOON_ILLUSTRATION."
+        /**
+         * Creates a chatGPT prompt to create categories
+         * @param numberOfCategories the number of categories to be created
+         * @param categoriesToExclude the different categories to be excluded from the generated list of categories
+         * @return a [String] containing the prompt
+         */
+        fun getGenerateCategoriesPrompt(numberOfCategories: Int, categoriesToExclude: String) : String {
+            return "Create a JSON file with a list called \"categories\" of $numberOfCategories different categories for mug designs. " +
+                    "Any category name should be 1 to 3 words long. For each category object in the list, indicate its name (field name \"category\") and " +
+                    "which style (field name \"style\") would best be suited between REALISTIC, GEOMETRIC and CARTOON_ILLUSTRATION." +
+                    if (categoriesToExclude.isNotBlank()) "You should not include any category in this list : $categoriesToExclude. " else ""
         }
 
         val HttpStatusCode_OpenAIUnavailable = HttpStatusCode(80, "OpenAI Server is unavailable, please try later")

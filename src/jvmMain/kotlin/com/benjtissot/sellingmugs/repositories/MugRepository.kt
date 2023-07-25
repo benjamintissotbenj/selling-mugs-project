@@ -4,12 +4,15 @@ import com.benjtissot.sellingmugs.entities.local.Artwork
 import com.benjtissot.sellingmugs.entities.local.Mug
 import com.benjtissot.sellingmugs.entities.local.User
 import com.benjtissot.sellingmugs.entities.local.UserCustomMugList
-
+import com.benjtissot.sellingmugs.entities.printify.ProductLog
 import database
-import org.litote.kmongo.*
+import org.litote.kmongo.eq
+import org.litote.kmongo.push
+import org.litote.kmongo.upsert
 
 val mugCollection = database.getCollection<Mug>()
 val userCustomMugCollection = database.getCollection<UserCustomMugList>()
+val productLogCollection = database.getCollection<ProductLog>()
 
 class MugRepository {
     companion object {
@@ -66,6 +69,13 @@ class MugRepository {
          */
         suspend fun getUserCustomMugListByUserId(userId: String) : UserCustomMugList? {
             return userCustomMugCollection.findOneById(userId)
+        }
+
+        /**
+         * Inserts a [ProductLog] into the database
+         */
+        suspend fun insertProductLog(productLog: ProductLog) {
+            productLogCollection.insertOne(productLog)
         }
 
     }

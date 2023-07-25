@@ -2,6 +2,7 @@ package com.benjtissot.sellingmugs.entities.openAI
 
 import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.Const.Companion.getGenerateCategoriesPrompt
+import com.benjtissot.sellingmugs.entities.local.Category
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -22,8 +23,9 @@ class ChatRequest(
             return ChatRequest("gpt-3.5-turbo", arrayListOf(Message("user", content = message)), temperature = 0.7f)
         }
 
-        fun generateCategoryRequestFromParams(amountOfCategories: Int) : ChatRequest {
-             val message = getGenerateCategoriesPrompt(amountOfCategories)
+        fun generateCategoryRequestFromParams(amountOfCategories: Int, categoriesToExclude: List<Category>) : ChatRequest {
+            val catToExcludeString = categoriesToExclude.joinToString(", ") { cat -> cat.name }
+            val message = getGenerateCategoriesPrompt(amountOfCategories, catToExcludeString)
             return ChatRequest("gpt-3.5-turbo", arrayListOf(Message("user", content = message)), temperature = 0.7f)
         }
     }
@@ -40,4 +42,4 @@ class Message(
 class MugsChatRequestParams(val subject : String, val type: Const.StableDiffusionImageType, val amountOfVariations: Int)
 
 @Serializable
-class CategoriesChatRequestParams(val amountOfCategories: Int, val amountOfVariations: Int, val type: Const.StableDiffusionImageType?)
+class CategoriesChatRequestParams(val amountOfCategories: Int, val amountOfVariations: Int, val type: Const.StableDiffusionImageType?, val newCategoriesOnly: Boolean)

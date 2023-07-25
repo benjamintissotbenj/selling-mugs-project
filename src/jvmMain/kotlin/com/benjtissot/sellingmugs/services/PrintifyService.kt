@@ -13,7 +13,7 @@ import kotlinx.serialization.json.JsonObject
 
 /**
  * Although most of the product handling is done through the printify API directly, we need to
- * keep some trace of the products, artworks etc locally for machine learning purposes (which
+ * keep some trace of the products, artworks etc. locally for machine learning purposes (which
  * products work, that sort of thing)
  */
 class PrintifyService {
@@ -49,7 +49,7 @@ class PrintifyService {
                 return null
             }
             // Now that we have uploaded the MugProduct, we can save a Mug to our database
-            val productId = httpResponse.body<JsonObject>().get("id").toString().removeSurrounding("\"")
+            val productId = httpResponse.body<JsonObject>()["id"].toString().removeSurrounding("\"")
             val artwork = ArtworkService.findArtworkByPrintifyId(mugProductInfo.image.id)
             artwork?.let {
                 // Update the artwork and the mug with the preview images from printify
@@ -80,11 +80,11 @@ class PrintifyService {
         suspend fun publishProduct(productId: String) : HttpStatusCode {
             val publishStatus = apiPublishProduct(productId)
             val publishSuccessStatus = apiPublishingSuccessfulProduct(productId)
-            if (publishStatus == HttpStatusCode.OK && publishSuccessStatus == HttpStatusCode.OK){
-                return HttpStatusCode.OK
+            return if (publishStatus == HttpStatusCode.OK && publishSuccessStatus == HttpStatusCode.OK){
+                HttpStatusCode.OK
             } else {
                 LOG.error("Product could not be published")
-                return HttpStatusCode.InternalServerError
+                HttpStatusCode.InternalServerError
             }
         }
 
