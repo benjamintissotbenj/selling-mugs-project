@@ -292,14 +292,18 @@ class ImageGeneratorService {
             try {
                 var imageResponse = httpResponse.body<ImageResponse>()
                 var attempts = 0
+
                 while (imageResponse.status == "processing" && attempts < 5){
                     val delay = max(imageResponse.eta.toLong(), 5L) // at least 5 seconds
                     LOG.debug("Variation ${variation.name} is queued, eta $delay seconds")
                     // If we are still processing, delay for given eta and
                     delay(Duration.ofSeconds(delay))
                     LOG.debug("Fetching variation ${variation.name}")
-                    val httpResponseFetch = apiFetchImage(imageResponse.id)
-                    imageResponse = httpResponseFetch.body()
+                    // If imageResponse.id is null, try again without simply trying to fetch the image
+                    imageResponse.id?.let {
+                        val httpResponseFetch = apiFetchImage(imageResponse.id!!)
+                        imageResponse = httpResponseFetch.body()
+                    }
                     attempts++
                 }
 
