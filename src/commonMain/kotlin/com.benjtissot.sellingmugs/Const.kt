@@ -119,6 +119,7 @@ class Const {
         const val categories = "categories"
         const val count = "count"
         const val pageNumber = "pageNumber"
+        const val orderByViews = "orderByViews"
         const val param = "param"
         const val productInfo = "product_info"
 

@@ -3,6 +3,7 @@ import com.benjtissot.sellingmugs.entities.local.*
 import com.benjtissot.sellingmugs.genUuid
 import com.benjtissot.sellingmugs.getUuidFromString
 import com.benjtissot.sellingmugs.repositories.CategoryRepository
+import com.benjtissot.sellingmugs.repositories.MugRepository
 import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.services.CategoryService
 import com.benjtissot.sellingmugs.services.MugService
@@ -20,6 +21,7 @@ class MugListTests : AbstractDatabaseTests() {
     private val categoriesAmount = 4
     private val mugsAmountPerCategory = 10
     private var categories : ArrayList<Category> = arrayListOf()
+    private var mugs : ArrayList<Mug> = arrayListOf()
 
 
     @Before
@@ -35,7 +37,8 @@ class MugListTests : AbstractDatabaseTests() {
                 categories.add(category)
                 for (i: Int in 1..mugsAmountPerCategory){
                     val artwork = Artwork(genUuid(), imageURL = "", previewURLs = emptyList())
-                    val mug = Mug(genUuid(), "", "Mug ${j*mugsAmountPerCategory + i}", "Description", 7.2f, category, artwork)
+                    val mug = Mug(genUuid(), "", "Mug ${j*mugsAmountPerCategory + i}", "Description", 7.2f, category, artwork, kotlinx.datetime.Clock.System.now())
+                    mugs.add(mug)
                     MugService.insertNewMug(mug)
                 }
             }
@@ -52,19 +55,25 @@ class MugListTests : AbstractDatabaseTests() {
         launch {
             val allMugs = MugService.getAllMugsList()
             assert(allMugs.size == categoriesAmount*mugsAmountPerCategory)
-            val allMugsPaginated = MugService.getAllMugsList(MugFilter(currentPage = 0))
+            val allMugsPaginated = MugService.getAllMugsList(MugFilter(currentPage = 0, orderByViews = false ))
             assert(allMugsPaginated.size == MugService.mugsPerPage)
-            val allMugsPaginated2 = MugService.getAllMugsList(MugFilter(currentPage = 1))
+            val allMugsPaginated2 = MugService.getAllMugsList(MugFilter(currentPage = 1, orderByViews = false ))
             assert(allMugsPaginated2[0].name == "Mug ${MugService.mugsPerPage + 1}")
 
-            val allMugsCategoryFilteredPaginated = MugService.getAllMugsList(MugFilter(currentPage = 0, categories = categories.subList(0,3)))
+            val allMugsCategoryFilteredPaginated = MugService.getAllMugsList(MugFilter(currentPage = 0, orderByViews = false , categories = categories.subList(0,3)))
             assert(allMugsCategoryFilteredPaginated.size == MugService.mugsPerPage)
             assert(allMugsCategoryFilteredPaginated[0].category == categories[0])
             assert(allMugsCategoryFilteredPaginated[allMugsCategoryFilteredPaginated.size-1].category == categories[2]) // 25th mug is 3rd category
 
-            val allMugsCategoryFilteredPaginated2 = MugService.getAllMugsList(MugFilter(currentPage = 1, categories = categories.subList(0,3)))
+            val allMugsCategoryFilteredPaginated2 = MugService.getAllMugsList(MugFilter(currentPage = 1, orderByViews = false , categories = categories.subList(0,3)))
             assert(allMugsCategoryFilteredPaginated2.size == 5) //30 mugs of these 3 categories, 2nd page has 5 mugs left
             assert(allMugsCategoryFilteredPaginated2[0].category == categories[2])
+
+            MugRepository.updateMug(mugs[20].copy(views = 5))
+            MugRepository.updateMug(mugs[30].copy(views = 2))
+            val allMugsViewsOrderedPaginated = MugService.getAllMugsList(MugFilter(currentPage = 0, orderByViews = true))
+            assert(allMugsViewsOrderedPaginated[0].id == mugs[20].id)
+            assert(allMugsViewsOrderedPaginated[1].id == mugs[30].id)
         }
     }
 

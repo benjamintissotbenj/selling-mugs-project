@@ -43,7 +43,7 @@ val Homepage = FC<NavigationProps> { props ->
                 checkRedirect = ""
             } else {
                 availableCategories = getAllCategories()
-                mugList = getMugList(selectedCategories, currentPage)
+                mugList = getMugList(selectedCategories, currentPage, orderByViews = true)
                 totalNumberOfMugs = getTotalMugCount(selectedCategories)
             }
         }
@@ -90,7 +90,7 @@ val Homepage = FC<NavigationProps> { props ->
                 val tempCurrentPage = currentPage + 1
                 scope.launch {
                     // update the mugList incrementally so that the UI doesn't have to wait for all the mugs at once
-                    tempMugList.addAll(getMugList(selectedCategories, tempCurrentPage))
+                    tempMugList.addAll(getMugList(selectedCategories, tempCurrentPage, orderByViews = true))
                     mugList = tempMugList
                 }
                 currentPage = tempCurrentPage
@@ -108,7 +108,7 @@ val Homepage = FC<NavigationProps> { props ->
                     val tempMugList = ArrayList(emptyList<Mug>())
                     for (i : Int in 0..currentPage){
                         // update the mugList incrementally so that the UI doesn't have to wait for all the mugs at once
-                        tempMugList.addAll(getMugList(tempSelectedCategories, currentPage))
+                        tempMugList.addAll(getMugList(tempSelectedCategories, currentPage, orderByViews = true))
                         mugList = tempMugList
                     }
                 }
@@ -121,6 +121,9 @@ val Homepage = FC<NavigationProps> { props ->
                 onClickAddToCart(mug, props.setAlert, props.session)
             }
             onClickItem = { mug ->
+                scope.launch {
+                    increaseMugViews(mug.printifyId)
+                }
                 props.navigate.invoke("$PRODUCT_INFO_PATH/${mug.printifyId}")
             }
         }

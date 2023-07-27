@@ -5,6 +5,7 @@ import com.benjtissot.sellingmugs.entities.local.*
 import com.benjtissot.sellingmugs.repositories.MugRepository
 import org.bson.conversions.Bson
 import org.litote.kmongo.*
+import org.litote.kmongo.coroutine.CoroutineFindPublisher
 
 class MugService {
     companion object {
@@ -31,6 +32,30 @@ class MugService {
         }
 
         /**
+         * Creates the correct find method according to the mugFilter object
+         * @param sortByViews the [Boolean] indicating if we should sort the results by views or not
+         * @return a CoroutineFindPublisher to be chain-called
+         */
+        private fun CoroutineFindPublisher<Mug>.sortByViews(sortByViews: Boolean) : CoroutineFindPublisher<Mug> {
+            return if (sortByViews) {
+                sort(Mug::views eq -1)
+            } else {
+                this
+            }
+        }
+
+        /**
+         * Creates the correct find method according to the mugFilter object
+         * @param currentPage the [Int] indicating the current page if we want to paginate, null otherwise
+         * @return a CoroutineFindPublisher to be chain-called
+         */
+        private fun CoroutineFindPublisher<Mug>.paginate(currentPage: Int?) : CoroutineFindPublisher<Mug> {
+            return currentPage?.let {
+                skip(it * mugsPerPage).limit(mugsPerPage)
+            } ?: this
+        }
+
+        /**
          * Counts mugs
          */
         suspend fun getMugCount(mugFilter: MugFilter) : Int {
@@ -47,14 +72,23 @@ class MugService {
 
         /**
          * Gets all the mugs in the database, can be paginated, filtered
-         * @param mugFilter a [MugFilter] object that holds all the information to filter out which mugs we want to retrieve
+         * @param mugFilter a [MugFilter] object that holds all the information to filter out which mugs we want to retrieve,
+         * pagination information and ordering information
          */
         suspend fun getAllMugsList(mugFilter : MugFilter = MugFilter()) : List<Mug> {
             val filter = createFilterFromMugFilter(mugFilter)
-            return mugFilter.currentPage?.let {
-                mugCollection.find(filter).skip(it * mugsPerPage).limit(mugsPerPage).toList()
-            } ?: let {
-                mugCollection.find(filter).toList()
+            return mugCollection.find(filter)
+                .sortByViews(mugFilter.orderByViews)
+                .paginate(mugFilter.currentPage)
+                .toList()
+        }
+
+        /**
+         * Increases by one the amount of views a given mug has received (to perform ordering)
+         */
+        suspend fun increaseMugViews(printifyId: String){
+            getMugByPrintifyId(printifyId)?.let{
+                MugRepository.updateMug(it.copy(views = it.views + 1))
             }
         }
 

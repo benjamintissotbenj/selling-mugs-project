@@ -3,6 +3,7 @@ package com.benjtissot.sellingmugs.entities.local
 import com.benjtissot.sellingmugs.CATEGORY_OBJECT_PATH
 import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.MUG_OBJECT_PATH
+import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -14,7 +15,9 @@ data class Mug(@SerialName("_id") val id: String,
                val price: Float,
                val category: Category = Category(),
                var artwork: Artwork,
-               var fullPrompt: String? = null
+               var dateCreated: Instant?,
+               var fullPrompt: String? = null,
+               var views: Int = 0
 ){
 
     fun getBestPictureSrc() : String {
@@ -47,7 +50,8 @@ data class UserCustomMugList (
 data class MugFilter(
     val currentPage: Int? = null,
     val publicOnly: Boolean = true,
-    val categories: List<Category> = emptyList()
+    val categories: List<Category> = emptyList(),
+    val orderByViews : Boolean = false
 )
 
 @Serializable

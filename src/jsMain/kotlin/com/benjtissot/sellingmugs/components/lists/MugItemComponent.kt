@@ -1,14 +1,19 @@
 package com.benjtissot.sellingmugs.components.lists
 
+import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.components.createProduct.SweepImageComponent
 import com.benjtissot.sellingmugs.entities.local.Mug
 import com.benjtissot.sellingmugs.fontNormal
 import com.benjtissot.sellingmugs.fontSmall
 import csstype.*
 import emotion.react.css
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.periodUntil
 import mui.icons.material.AddShoppingCart
 import mui.lab.LoadingButton
 import mui.material.Chip
+import mui.material.ChipColor
 import mui.material.ChipVariant
 import mui.material.IconButton
 import org.w3c.dom.Element
@@ -172,6 +177,20 @@ val MugDetailsDefault = FC<MugItemDefaultProps> { props ->
             }
             variant = ChipVariant.outlined
             label = div.create { +props.mug.category.name }
+        }
+        val daysSinceCreation = props.mug.dateCreated?.periodUntil(Clock.System.now(), TimeZone.UTC)?.days
+        if (daysSinceCreation != null && daysSinceCreation < 7){
+
+            Chip {
+                css {
+                    position = Position.absolute
+                    top = 2.pct
+                    left = 80.pct
+                }
+                variant = ChipVariant.outlined
+                label = div.create { +"New" }
+                color = ChipColor.info
+            }
         }
     }
 
