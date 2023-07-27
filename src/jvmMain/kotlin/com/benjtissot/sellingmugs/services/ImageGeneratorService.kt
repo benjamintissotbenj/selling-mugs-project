@@ -347,7 +347,13 @@ class ImageGeneratorService {
         private suspend fun publishMugFromImage(imageForUpload: ImageForUploadReceive, variation: Variation, categoryName: String) : HttpStatusCode {
             val dateCreatedLocally = Clock.System.now()
             // Create mug from image
-            val mugProductInfo = MugProductInfo("AI - ${variation.getCleanName()}", variation.description, categoryName, imageForUpload.toImage())
+            val mugProductInfo = MugProductInfo(
+                title = variation.getCleanName(),
+                description = "AI generated : ${variation.description}",
+                categoryName = categoryName,
+                image = imageForUpload.toImage(),
+                fullPrompt = variation.narrative
+            )
             val productPrintifyId = PrintifyService.createProduct(mugProductInfo)
 
             return if (productPrintifyId == null) {

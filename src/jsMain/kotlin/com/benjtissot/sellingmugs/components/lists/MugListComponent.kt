@@ -6,8 +6,10 @@ import com.benjtissot.sellingmugs.entities.local.Category
 import com.benjtissot.sellingmugs.entities.local.Mug
 import csstype.*
 import emotion.react.css
+import kotlinx.js.jso
 import mui.icons.material.ExpandMore
 import mui.material.*
+import mui.system.PropsWithSx
 import mui.system.sx
 import org.w3c.dom.HTMLDivElement
 import react.CSSProperties
@@ -33,6 +35,7 @@ external interface MugListProps: Props {
     var onMouseEnterItem: (Mug, HTMLDivElement) -> Unit
     var onClickAddToCart: (Mug) -> Unit
     var totalNumberOfMugs: Int
+    var onClickItem: (Mug) -> Unit
 }
 
 val MugListComponent = FC<MugListProps> {
@@ -76,6 +79,7 @@ val MugListComponent = FC<MugListProps> {
                         sx {
                             color = NamedColor.white
                         }
+
 
                         multiple = true
                         value = props.selectedCategories.map { cat -> cat.id }.toTypedArray()
@@ -169,6 +173,7 @@ val MugListComponent = FC<MugListProps> {
                                 MugItemGridComponent {
                                     mug = mugItm
                                     onClickAddToCart = { mug -> props.onClickAddToCart(mug)}
+                                    onClickItem = {mug -> props.onClickItem(mug)}
                                 }
                             } ?: div {
                                 css {

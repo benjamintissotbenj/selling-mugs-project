@@ -64,7 +64,8 @@ class PrintifyService {
                     mugProduct.description,
                     mugProduct.variants[0].price/100f,
                     Category(getUuidFromString(mugProductInfo.categoryName), mugProductInfo.categoryName),
-                    artwork
+                    artwork,
+                    fullPrompt = mugProductInfo.fullPrompt
                 )
                 MugRepository.updateMug(mug)
                 return productId

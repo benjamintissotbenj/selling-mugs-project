@@ -13,7 +13,8 @@ data class Mug(@SerialName("_id") val id: String,
                var description: String,
                val price: Float,
                val category: Category = Category(),
-               var artwork: Artwork
+               var artwork: Artwork,
+               var fullPrompt: String? = null
 ){
 
     fun getBestPictureSrc() : String {

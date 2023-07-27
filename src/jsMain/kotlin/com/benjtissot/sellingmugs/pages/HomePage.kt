@@ -37,7 +37,8 @@ val Homepage = FC<NavigationProps> { props ->
     useEffectOnce {
         scope.launch {
             checkRedirect = checkRedirect()
-            if (checkRedirect!= null && ALL_FRONT_END_PATHS.contains(checkRedirect)) {
+            val checkRedirectPaths = checkRedirect?.split("/") ?: emptyList()
+            if (checkRedirect?.isNotEmpty() == true && checkRedirectPaths.isNotEmpty() && checkRedirectPaths.map { ALL_FRONT_END_PATHS.contains("/$it") }.contains(true)) {
                 navigateFun.invoke(checkRedirect?:"")
                 checkRedirect = ""
             } else {
@@ -118,6 +119,9 @@ val Homepage = FC<NavigationProps> { props ->
             }
             onClickAddToCart = { mug ->
                 onClickAddToCart(mug, props.setAlert, props.session)
+            }
+            onClickItem = { mug ->
+                props.navigate.invoke("$PRODUCT_INFO_PATH/${mug.printifyId}")
             }
         }
     }

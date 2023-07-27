@@ -94,6 +94,7 @@ val MugItemListComponent = FC<MugItemListProps> {
 
 external interface MugItemGridProps: MugDetailsProps {
     var onClickAddToCart: (Mug) -> Unit
+    var onClickItem: (Mug) -> Unit
 }
 
 val MugItemGridComponent = FC<MugItemGridProps> {
@@ -122,6 +123,7 @@ val MugItemGridComponent = FC<MugItemGridProps> {
             MugDetailsHover {
                 mug = props.mug
                 onClickAddToCart = props.onClickAddToCart
+                onClickItem = props.onClickItem
             }
         } else {
             MugDetailsDefault {
@@ -209,6 +211,10 @@ val MugDetailsHover = FC<MugItemGridProps> { props ->
         marginInline = 3.pct
         srcList = props.mug.getAllPictureSrcs()
         refresh = false
+        onClick = {
+            props.onClickItem(props.mug)
+        }
+        showPointer = true
     }
     div {
         css {
@@ -260,4 +266,134 @@ val MugDetailsHover = FC<MugItemGridProps> { props ->
             }
         }
     }
+}
+
+val MugDetailsComplete = FC<MugItemGridProps> { props ->
+
+    div {
+        css {
+            width = 100.pct
+            height = 100.pct
+            display = Display.flex
+            flexDirection = FlexDirection.row
+            alignContent = AlignContent.center
+        }
+        // image
+        SweepImageComponent {
+            width = 50.pct
+            height = 100.pct // ensures a good square for proportions
+            marginInline = 3.pct
+            srcList = props.mug.getAllPictureSrcs()
+            refresh = false
+        }
+
+        // info
+        div {
+            css {
+                display = Display.flex
+                flexDirection = FlexDirection.column
+                justifyContent = JustifyContent.flexStart
+                alignContent = AlignContent.center
+                width = 50.pct
+                height = 100.pct // ensures a good square for proportions
+                boxSizing = BoxSizing.borderBox
+                margin = 5.vh
+            }
+            div {
+                css {
+                    fontNormal()
+                    paddingBlock = 2.pct
+                    width = 100.pct
+                    height = "fit-content".unsafeCast<Height>()
+                    boxSizing = BoxSizing.borderBox
+                    textOverflow = TextOverflow.ellipsis
+                    overflow = Overflow.hidden
+                    whiteSpace = WhiteSpace.nowrap
+                }
+                div {
+                    css {
+                        paddingBottom = 1.pct
+                    }
+                    +"Mug name : "
+                }
+                +props.mug.name
+            }
+
+            div {
+                css {
+                    fontSmall()
+                    paddingTop = 4.pct
+                }
+                div {
+                    css {
+                        paddingBottom = 2.pct
+                    }
+                    +"Category : "
+                }
+                +props.mug.category.name
+            }
+
+            div {
+                css {
+                    fontSmall()
+                    paddingTop = 1.pct
+                }
+                div {
+                    css {
+                        paddingBottom = 2.pct
+                    }
+                    +"Description : "
+                }
+                +props.mug.description
+            }
+
+            props.mug.fullPrompt?.let {
+                div {
+                    css {
+                        fontSmall()
+                        paddingTop = 4.pct
+                    }
+                    div {
+                        css {
+                            paddingBottom = 2.pct
+                        }
+                        +"Full Prompt given to Stable Diffusion : "
+                    }
+                    +props.mug.fullPrompt!!
+                }
+            }
+
+            div {
+                css {
+                    height = 5.pct
+                    paddingTop = 10.pct
+                    display = Display.flex
+                    flexDirection = FlexDirection.column
+                    justifyContent = JustifyContent.center
+                    alignContent = AlignContent.center
+                    overflow = Overflow.hidden
+                }
+                IconButton {
+                    AddShoppingCart()
+                    div {
+                        css {
+                            fontNormal()
+                            marginInline = 2.vw
+                        }
+                        +"Add to cart"
+                    }
+                    div {
+                        css {
+                            fontNormal()
+                        }
+                        +"£${props.mug.price}0"
+                    }
+                    onClick = {
+                        props.onClickAddToCart(props.mug)
+                    }
+                }
+            }
+        }
+    }
+
 }

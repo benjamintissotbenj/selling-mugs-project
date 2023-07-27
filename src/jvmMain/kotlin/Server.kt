@@ -4,6 +4,7 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.benjtissot.sellingmugs.ConfigConst
 import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.HOMEPAGE_PATH
+import com.benjtissot.sellingmugs.PRODUCT_INFO_PATH
 import com.benjtissot.sellingmugs.controllers.*
 import com.benjtissot.sellingmugs.entities.local.Session
 import com.mongodb.ConnectionString
@@ -141,9 +142,14 @@ fun Application.createRoutes(){
         }
 
         // Any other route redirects to homepage
-        get("/{${Const.path}}"){
+        get("/{${Const.path}}/{${Const.param}...}"){
             val path = call.parameters[Const.path] ?: error("Invalid get request")
-            redirectPath = "/$path"
+            redirectPath = if (path == Const.productInfo) {
+                val mugPrintifyId = call.parameters.getAll(Const.param)?.get(0) ?: error("Invalid get request")
+                "/$path/$mugPrintifyId"
+            } else {
+                "/$path"
+            }
             LOG.info("Redirecting to homepage to load page and redirect from front-end")
             call.respondRedirect(HOMEPAGE_PATH)
         }
