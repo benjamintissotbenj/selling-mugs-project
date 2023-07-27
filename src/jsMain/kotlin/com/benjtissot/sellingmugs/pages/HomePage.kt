@@ -30,6 +30,7 @@ val Homepage = FC<NavigationProps> { props ->
 
     var popupTarget : HTMLDivElement? by useState(null)
     var mugShowDetails : Mug? by useState(null)
+    var orderBy by useState(Const.OrderBy.VIEWS)
 
 
     // At first initialisation, get the list
@@ -43,7 +44,7 @@ val Homepage = FC<NavigationProps> { props ->
                 checkRedirect = ""
             } else {
                 availableCategories = getAllCategories()
-                mugList = getMugList(selectedCategories, currentPage, orderByViews = true)
+                mugList = getMugList(selectedCategories, currentPage, orderBy = orderBy)
                 totalNumberOfMugs = getTotalMugCount(selectedCategories)
             }
         }
@@ -90,10 +91,17 @@ val Homepage = FC<NavigationProps> { props ->
                 val tempCurrentPage = currentPage + 1
                 scope.launch {
                     // update the mugList incrementally so that the UI doesn't have to wait for all the mugs at once
-                    tempMugList.addAll(getMugList(selectedCategories, tempCurrentPage, orderByViews = true))
+                    tempMugList.addAll(getMugList(selectedCategories, tempCurrentPage, orderBy = orderBy))
                     mugList = tempMugList
                 }
                 currentPage = tempCurrentPage
+            }
+            this.orderBy = orderBy
+            onChangeOrderBy = { orderByTemp ->
+                scope.launch {
+                    mugList = getMugList(selectedCategories, currentPage, orderBy = orderByTemp)
+                }
+                orderBy = orderByTemp
             }
             onChangeSelectedCategories = { categoryIds ->
                 println("Selected Categories:")
@@ -108,7 +116,7 @@ val Homepage = FC<NavigationProps> { props ->
                     val tempMugList = ArrayList(emptyList<Mug>())
                     for (i : Int in 0..currentPage){
                         // update the mugList incrementally so that the UI doesn't have to wait for all the mugs at once
-                        tempMugList.addAll(getMugList(tempSelectedCategories, currentPage, orderByViews = true))
+                        tempMugList.addAll(getMugList(tempSelectedCategories, currentPage, orderBy = orderBy))
                         mugList = tempMugList
                     }
                 }

@@ -1,8 +1,10 @@
 package com.benjtissot.sellingmugs.services
 
+import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.controllers.mugCollection
 import com.benjtissot.sellingmugs.entities.local.*
 import com.benjtissot.sellingmugs.repositories.MugRepository
+import kotlinx.datetime.Instant
 import org.bson.conversions.Bson
 import org.litote.kmongo.*
 import org.litote.kmongo.coroutine.CoroutineFindPublisher
@@ -33,14 +35,18 @@ class MugService {
 
         /**
          * Creates the correct find method according to the mugFilter object
-         * @param sortByViews the [Boolean] indicating if we should sort the results by views or not
+         * @param sortBy the [Const.OrderBy] indicating how we should sort the results
          * @return a CoroutineFindPublisher to be chain-called
          */
-        private fun CoroutineFindPublisher<Mug>.sortByViews(sortByViews: Boolean) : CoroutineFindPublisher<Mug> {
-            return if (sortByViews) {
-                sort(Mug::views eq -1)
-            } else {
-                this
+        private fun CoroutineFindPublisher<Mug>.sortBy(sortBy: Const.OrderBy) : CoroutineFindPublisher<Mug> {
+            return when (sortBy) {
+                Const.OrderBy.VIEWS -> sort(descending(Mug::views))
+                Const.OrderBy.NONE -> this
+                Const.OrderBy.MOST_RECENT -> sort(
+                    descending(listOf(
+                        Mug::dateCreated
+                    ))
+                )
             }
         }
 
@@ -78,7 +84,7 @@ class MugService {
         suspend fun getAllMugsList(mugFilter : MugFilter = MugFilter()) : List<Mug> {
             val filter = createFilterFromMugFilter(mugFilter)
             return mugCollection.find(filter)
-                .sortByViews(mugFilter.orderByViews)
+                .sortBy(mugFilter.orderBy)
                 .paginate(mugFilter.currentPage)
                 .toList()
         }

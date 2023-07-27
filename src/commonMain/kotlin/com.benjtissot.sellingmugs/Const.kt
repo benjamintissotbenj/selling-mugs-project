@@ -21,6 +21,20 @@ class Const {
             return type
         }
     }
+
+    enum class OrderBy(var value: String) {
+        VIEWS("VIEWS"),
+        MOST_RECENT("MOST_RECENT"),
+        NONE("NONE");
+        fun cleanName(): String {
+            return when (this) {
+                VIEWS -> "Views"
+                MOST_RECENT -> "Most recent"
+                NONE -> "None"
+            }
+        }
+    }
+
     enum class ClickType(var type: String) {
         HOME_NAV("HOME_NAV"),
         PROFILE_NAV("PROFILE_NAV"),
@@ -119,7 +133,9 @@ class Const {
         const val categories = "categories"
         const val count = "count"
         const val pageNumber = "pageNumber"
+        const val orderBy = "orderBy"
         const val orderByViews = "orderByViews"
+        const val orderByNew = "orderByNew"
         const val param = "param"
         const val productInfo = "product_info"
 
