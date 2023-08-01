@@ -95,9 +95,9 @@ val MugListComponent = FC<MugListProps> {
                 div {
                     css {
                         fontNormal()
-                        marginRight = 2.vw
+                        marginInline = 1.vw
                     }
-                    +"Order by :"
+                    +"Order by:"
                 }
             }
 
@@ -149,9 +149,9 @@ val MugListComponent = FC<MugListProps> {
                     div {
                         css {
                             fontNormal()
-                            marginRight = 2.vw
+                            marginInline = 1.vw
                         }
-                        +"Filter by :"
+                        +"Filter by:"
                     }
                 }
             }
@@ -229,6 +229,7 @@ val MugListComponent = FC<MugListProps> {
                                     width = 90.pct
                                     height = (1.5 * this.width.unsafeCast<Percentage>()).unsafeCast<Height>()
                                     margin = 5.pct
+                                    marginTop = 2.pct
                                     boxSizing = BoxSizing.borderBox
                                 }
 
@@ -245,7 +246,6 @@ val MugListComponent = FC<MugListProps> {
 
                                 div {
                                     css {
-                                        paddingTop = 5.pct
                                     }
                                     +"Customize your own mug !"
                                 }
