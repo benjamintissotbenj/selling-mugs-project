@@ -104,6 +104,10 @@ suspend fun getMugList(categories: List<Category>, pageNumber : Int, orderBy: Co
     }
 }
 
+suspend fun deleteMug(mugId: String) : HttpResponse {
+    return jsonClient.delete("${Mug.path}/$mugId")
+}
+
 suspend fun getTotalMugCount(categories: List<Category>) : Int {
     var queryParams = "?${Const.count}=true"
     if (categories.isNotEmpty()){

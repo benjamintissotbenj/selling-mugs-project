@@ -141,6 +141,11 @@ fun Application.createRoutes(){
             resources("")
         }
 
+        // Filters out any weird requests to favicon that are not static
+        get(Regex(".+/favicon.ico")){
+            call.respond(HttpStatusCode.OK)
+        }
+
         // Any other route redirects to homepage
         get("/{${Const.path}}/{${Const.param}...}"){
             val path = call.parameters[Const.path] ?: error("Invalid get request")

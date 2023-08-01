@@ -10,6 +10,7 @@ import csstype.Display
 import csstype.FlexDirection
 import csstype.JustifyContent
 import emotion.react.css
+import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
 import react.FC
@@ -36,6 +37,15 @@ val ProductInfoPage = FC<NavigationProps> { props ->
             this.mug = it
             this.onClickAddToCart = {
                 onClickAddToCart(it, props.setAlert, props.session)
+            }
+            this.onDeleteMug = { httpResponse ->
+                when (httpResponse.status) {
+                    HttpStatusCode.OK -> {
+                        props.setAlert(successAlert("You have deleted the mug successfully", "Deleting mug"))
+                        props.navigate.invoke(HOMEPAGE_PATH)
+                    }
+                    else -> props.setAlert(errorAlert("Something went wrong", "Deleting mug"))
+                }
             }
         }
     } ?: let {

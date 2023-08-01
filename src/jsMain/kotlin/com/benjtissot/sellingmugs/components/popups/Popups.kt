@@ -102,6 +102,35 @@ val ConfirmOrderCancelPopup = FC<ConfirmOrderCancelPopupProps> { props ->
     }
 }
 
+external interface ConfirmMugDeletePopupProps: ConfirmCancelPopupProps {
+    var popupTarget : HTMLButtonElement?
+    var mugToDelete : Mug
+}
+
+val ConfirmMugDeletePopup = FC<ConfirmMugDeletePopupProps> { props ->
+
+    Popper {
+        css {
+            border = 2.px
+            borderColor = Color(Const.ColorCode.BACKGROUND_GREY_DARKEST.code())
+        }
+        open = (props.popupTarget != null)
+        anchorEl = props.popupTarget
+        Box {
+            css {
+                popupBoxDefault()
+                height = "fit-content".unsafeCast<Height>()
+            }
+            +"Please confirm you wish to delete mug ${props.mugToDelete.name} : "
+
+            ConfirmCancelButtons {
+                this.onClickConfirm = props.onClickConfirm
+                this.onClickCancel = props.onClickCancel
+            }
+        }
+    }
+}
+
 
 external interface MugDetailsPopupProps: Props {
     var popupTarget : HTMLDivElement?

@@ -1,27 +1,30 @@
 package com.benjtissot.sellingmugs.components.lists
 
-import com.benjtissot.sellingmugs.Const
+import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.createProduct.SweepImageComponent
+import com.benjtissot.sellingmugs.components.popups.ConfirmMugDeletePopup
 import com.benjtissot.sellingmugs.entities.local.Mug
-import com.benjtissot.sellingmugs.fontNormal
-import com.benjtissot.sellingmugs.fontSmall
+import com.benjtissot.sellingmugs.entities.printify.order.Order
 import csstype.*
 import emotion.react.css
+import io.ktor.client.statement.*
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.periodUntil
 import mui.icons.material.AddShoppingCart
+import mui.icons.material.Delete
 import mui.lab.LoadingButton
-import mui.material.Chip
-import mui.material.ChipColor
-import mui.material.ChipVariant
-import mui.material.IconButton
+import mui.material.*
 import org.w3c.dom.Element
+import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.events.Event
 import react.*
+import react.dom.html.ReactHTML.button
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.img
+import react.router.NavigateFunction
 
 external interface MugDetailsProps: Props {
     var mug: Mug
@@ -287,7 +290,26 @@ val MugDetailsHover = FC<MugItemGridProps> { props ->
     }
 }
 
-val MugDetailsComplete = FC<MugItemGridProps> { props ->
+external interface MugDetailsCompleteProps: MugItemGridProps {
+    var onDeleteMug: (HttpResponse) -> Unit
+}
+
+val MugDetailsComplete = FC<MugDetailsCompleteProps> { props ->
+    var popupTarget : HTMLButtonElement? by useState(null)
+
+    ConfirmMugDeletePopup {
+
+        this.popupTarget = popupTarget
+        this.mugToDelete = props.mug
+        onClickCancel = {
+            popupTarget = null
+        }
+        onClickConfirm = {
+            scope.launch {
+                props.onDeleteMug(deleteMug(mugToDelete.id))
+            }
+        }
+    }
 
     div {
         css {
@@ -318,6 +340,7 @@ val MugDetailsComplete = FC<MugItemGridProps> { props ->
                 boxSizing = BoxSizing.borderBox
                 margin = 5.vh
             }
+            // Title
             div {
                 css {
                     fontNormal()
@@ -337,7 +360,7 @@ val MugDetailsComplete = FC<MugItemGridProps> { props ->
                 }
                 +props.mug.name
             }
-
+            // Category
             div {
                 css {
                     fontSmall()
@@ -351,7 +374,7 @@ val MugDetailsComplete = FC<MugItemGridProps> { props ->
                 }
                 +props.mug.category.name
             }
-
+            // Description
             div {
                 css {
                     fontSmall()
@@ -365,7 +388,7 @@ val MugDetailsComplete = FC<MugItemGridProps> { props ->
                 }
                 +props.mug.description
             }
-
+            // Full prompt
             props.mug.fullPrompt?.let {
                 div {
                     css {
@@ -382,6 +405,7 @@ val MugDetailsComplete = FC<MugItemGridProps> { props ->
                 }
             }
 
+            // Add to cart
             div {
                 css {
                     height = 5.pct
@@ -410,6 +434,45 @@ val MugDetailsComplete = FC<MugItemGridProps> { props ->
                     onClick = {
                         props.onClickAddToCart(props.mug)
                     }
+                }
+            }
+
+            // Delete mug
+            div {
+                css {
+                    width = 100.pct
+                    display = Display.flex
+                    flexDirection = FlexDirection.column
+                    justifyContent = JustifyContent.center
+                    alignItems = AlignItems.center
+                }
+                button {
+                    css {
+                        height = 5.pct
+                        width = "fit-content".unsafeCast<Width>()
+                        padding = 5.pct
+                        marginTop = 5.pct
+                        display = Display.flex
+                        flexDirection = FlexDirection.row
+                        justifyContent = JustifyContent.center
+                        alignItems = AlignItems.center
+                        overflow = Overflow.hidden
+                    }
+                    Delete {
+                        color = SvgIconColor.error
+                    }
+                    div {
+                        css {
+                            fontNormal()
+                            marginInline = 2.vw
+                            color = Color(Const.ColorCode.RED.code())
+                        }
+                        +"Delete mug"
+                    }
+                    onClick = { event ->
+                        popupTarget = event.currentTarget
+                    }
+
                 }
             }
         }
