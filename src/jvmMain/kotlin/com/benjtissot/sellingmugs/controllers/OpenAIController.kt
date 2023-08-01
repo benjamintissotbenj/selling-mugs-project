@@ -1,6 +1,7 @@
 package com.benjtissot.sellingmugs.controllers
 
 import com.benjtissot.sellingmugs.Const
+import com.benjtissot.sellingmugs.Const.Companion.HttpStatusCode_OpenAIUnavailable
 import com.benjtissot.sellingmugs.OPEN_AI_PATH
 import com.benjtissot.sellingmugs.entities.local.Artwork
 import com.benjtissot.sellingmugs.entities.local.Category
@@ -66,18 +67,20 @@ fun Route.openAIRouting(){
                     null
                 }
                 if (chatRequestParams != null) {
-                    try {
-                        call.respond(
-                            CategoriesGenerationResultRepository.updateGenerateCategoriesStatus (
-                                ImageGeneratorService.generateCategoriesAndMugs(chatRequestParams)
-                            )
+                    val status = try {
+                        CategoriesGenerationResultRepository.updateGenerateCategoriesStatus (
+                            ImageGeneratorService.generateCategoriesAndMugs(chatRequestParams)
                         )
-                    } catch (e: OpenAIUnavailable) {
+                    } catch (e: Exception) {
                         e.printStackTrace()
-                        call.respond(Const.HttpStatusCode_OpenAIUnavailable)
-                    }catch (e: Exception) {
-                        e.printStackTrace()
+                        null
+                    }
+                    if (status == null){
                         call.respond(HttpStatusCode.InternalServerError)
+                    } else if (status.message == OpenAIUnavailable().message){
+                        call.respond(HttpStatusCode_OpenAIUnavailable)
+                    } else {
+                        call.respond(status)
                     }
                 }
             }
