@@ -31,6 +31,7 @@ import io.ktor.util.logging.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
 import org.slf4j.LoggerFactory
@@ -190,7 +191,7 @@ fun Application.scheduleMugCreation(){
         override fun run() {
             // do your task here
             LOG.debug("Starting daily mug creation")
-            GlobalScope.async {
+            GlobalScope.launch {
                 val status = try {
                     CategoriesGenerationResultRepository.updateGenerateCategoriesStatus (
                         ImageGeneratorService.generateCategoriesAndMugs(
@@ -207,20 +208,21 @@ fun Application.scheduleMugCreation(){
                     null
                 }
                 if (status == null){
-                    LOG.error("There was an internal servor error")
+                    LOG.error("There was an internal server error")
                 } else if (status.message == OpenAIUnavailable().message){
+                    LOG.error("Mug creation failed:")
+                    LOG.error(status.message)
+                } else if (status.message.contains("Exceeded five tries")){
+                    LOG.error("Mug creation failed:")
                     LOG.error(status.message)
                 } else {
                     LOG.debug("Mug creation successful:")
                     LOG.debug(status.message)
                 }
             }
-
         }
     }
-    // repeat every hour
-    // Get seconds until midnight
-
+    // Start at 12:00:00, repeat every hour
     timer.schedule(task, today.time, TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS))
 }
 
