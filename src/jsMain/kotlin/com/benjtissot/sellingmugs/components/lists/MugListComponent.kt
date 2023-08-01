@@ -6,8 +6,10 @@ import com.benjtissot.sellingmugs.entities.local.Category
 import com.benjtissot.sellingmugs.entities.local.Mug
 import csstype.*
 import emotion.react.css
+import kotlinx.js.jso
 import mui.icons.material.ExpandMore
 import mui.material.*
+import mui.system.PropsWithSx
 import mui.system.sx
 import org.w3c.dom.HTMLDivElement
 import react.CSSProperties
@@ -26,6 +28,8 @@ external interface MugListProps: Props {
     var availableCategories: List<Category>?
     var selectedCategories: List<Category>
     var onChangeSelectedCategories: (List<String>) -> Unit
+    var orderBy: Const.OrderBy
+    var onChangeOrderBy: (Const.OrderBy) -> Unit
     var onClickCustomItem: () -> Unit
     var onClickMore: () -> Unit
     var list: List<Mug>
@@ -33,6 +37,7 @@ external interface MugListProps: Props {
     var onMouseEnterItem: (Mug, HTMLDivElement) -> Unit
     var onClickAddToCart: (Mug) -> Unit
     var totalNumberOfMugs: Int
+    var onClickItem: (Mug) -> Unit
 }
 
 val MugListComponent = FC<MugListProps> {
@@ -46,10 +51,54 @@ val MugListComponent = FC<MugListProps> {
             div {
                 css {
                     fontBig()
-                    marginLeft = 10.vw
-                    width = 50.pct
+                    marginLeft = 5.pct
+                    width = 35.pct
                 }
                 +it
+            }
+            div {
+                css {
+                    display = Display.flex
+                    flexDirection = FlexDirection.rowReverse
+                    alignItems = AlignItems.center
+                    width = 25.pct
+                    color = NamedColor.white
+                }
+                Select {
+                    // Attributes
+                    css {
+                        width = 50.pct
+                        minWidth = 50.pct
+                        height = 3.rem
+                        maxHeight = 5.vh
+                        minHeight = 40.px
+                        fontNormal()
+                        marginRight = 1.vw
+                    }
+                    sx {
+                        color = NamedColor.white
+                    }
+
+                    value = props.orderBy.value
+                    onChange = { event, _ ->
+                        props.onChangeOrderBy(Const.OrderBy.valueOf(event.target.value))
+                    }
+
+                    // Children, in the selector
+                    Const.OrderBy.values().forEach { orderByVal ->
+                        MenuItem {
+                            value = orderByVal.value
+                            +orderByVal.cleanName()
+                        }
+                    }
+                }
+                div {
+                    css {
+                        fontNormal()
+                        marginInline = 1.vw
+                    }
+                    +"Order by:"
+                }
             }
 
             // Filter by category
@@ -59,7 +108,7 @@ val MugListComponent = FC<MugListProps> {
                         display = Display.flex
                         flexDirection = FlexDirection.rowReverse
                         alignItems = AlignItems.center
-                        width = 50.pct
+                        width = 40.pct
                         color = NamedColor.white
                     }
                     Select {
@@ -76,6 +125,7 @@ val MugListComponent = FC<MugListProps> {
                         sx {
                             color = NamedColor.white
                         }
+
 
                         multiple = true
                         value = props.selectedCategories.map { cat -> cat.id }.toTypedArray()
@@ -99,9 +149,9 @@ val MugListComponent = FC<MugListProps> {
                     div {
                         css {
                             fontNormal()
-                            marginRight = 2.vw
+                            marginInline = 1.vw
                         }
-                        +"Filter by :"
+                        +"Filter by:"
                     }
                 }
             }
@@ -169,6 +219,7 @@ val MugListComponent = FC<MugListProps> {
                                 MugItemGridComponent {
                                     mug = mugItm
                                     onClickAddToCart = { mug -> props.onClickAddToCart(mug)}
+                                    onClickItem = {mug -> props.onClickItem(mug)}
                                 }
                             } ?: div {
                                 css {
@@ -178,6 +229,7 @@ val MugListComponent = FC<MugListProps> {
                                     width = 90.pct
                                     height = (1.5 * this.width.unsafeCast<Percentage>()).unsafeCast<Height>()
                                     margin = 5.pct
+                                    marginTop = 2.pct
                                     boxSizing = BoxSizing.borderBox
                                 }
 
@@ -194,7 +246,6 @@ val MugListComponent = FC<MugListProps> {
 
                                 div {
                                     css {
-                                        paddingTop = 5.pct
                                     }
                                     +"Customize your own mug !"
                                 }

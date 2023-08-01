@@ -128,6 +128,15 @@ val App = FC<Props> {
                         internalPage = ProjectInformationPage
                     }
                 }
+                Route {
+                    path = "$PRODUCT_INFO_PATH/:${Const.mugPrintifyId}"
+                    element = BasicPage.create{
+                        session = sessionApp!!
+                        updateSession = updateSessionApp
+                        setAlert = {alertState -> setAlert(alertState)}
+                        internalPage = ProductInfoPage
+                    }
+                }
             }
         }
 

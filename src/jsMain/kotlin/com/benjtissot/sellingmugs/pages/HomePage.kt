@@ -30,6 +30,7 @@ val Homepage = FC<NavigationProps> { props ->
 
     var popupTarget : HTMLDivElement? by useState(null)
     var mugShowDetails : Mug? by useState(null)
+    var orderBy by useState(Const.OrderBy.VIEWS)
 
 
     // At first initialisation, get the list
@@ -37,12 +38,13 @@ val Homepage = FC<NavigationProps> { props ->
     useEffectOnce {
         scope.launch {
             checkRedirect = checkRedirect()
-            if (checkRedirect!= null && ALL_FRONT_END_PATHS.contains(checkRedirect)) {
+            val checkRedirectPaths = checkRedirect?.split("/") ?: emptyList()
+            if (checkRedirect?.isNotEmpty() == true && checkRedirectPaths.isNotEmpty() && checkRedirectPaths.map { ALL_FRONT_END_PATHS.contains("/$it") }.contains(true)) {
                 navigateFun.invoke(checkRedirect?:"")
                 checkRedirect = ""
             } else {
                 availableCategories = getAllCategories()
-                mugList = getMugList(selectedCategories, currentPage)
+                mugList = getMugList(selectedCategories, currentPage, orderBy = orderBy)
                 totalNumberOfMugs = getTotalMugCount(selectedCategories)
             }
         }
@@ -89,10 +91,17 @@ val Homepage = FC<NavigationProps> { props ->
                 val tempCurrentPage = currentPage + 1
                 scope.launch {
                     // update the mugList incrementally so that the UI doesn't have to wait for all the mugs at once
-                    tempMugList.addAll(getMugList(selectedCategories, tempCurrentPage))
+                    tempMugList.addAll(getMugList(selectedCategories, tempCurrentPage, orderBy = orderBy))
                     mugList = tempMugList
                 }
                 currentPage = tempCurrentPage
+            }
+            this.orderBy = orderBy
+            onChangeOrderBy = { orderByTemp ->
+                scope.launch {
+                    mugList = getMugList(selectedCategories, currentPage, orderBy = orderByTemp)
+                }
+                orderBy = orderByTemp
             }
             onChangeSelectedCategories = { categoryIds ->
                 println("Selected Categories:")
@@ -107,7 +116,7 @@ val Homepage = FC<NavigationProps> { props ->
                     val tempMugList = ArrayList(emptyList<Mug>())
                     for (i : Int in 0..currentPage){
                         // update the mugList incrementally so that the UI doesn't have to wait for all the mugs at once
-                        tempMugList.addAll(getMugList(tempSelectedCategories, currentPage))
+                        tempMugList.addAll(getMugList(tempSelectedCategories, currentPage, orderBy = orderBy))
                         mugList = tempMugList
                     }
                 }
@@ -118,6 +127,12 @@ val Homepage = FC<NavigationProps> { props ->
             }
             onClickAddToCart = { mug ->
                 onClickAddToCart(mug, props.setAlert, props.session)
+            }
+            onClickItem = { mug ->
+                scope.launch {
+                    increaseMugViews(mug.printifyId)
+                }
+                props.navigate.invoke("$PRODUCT_INFO_PATH/${mug.printifyId}")
             }
         }
     }

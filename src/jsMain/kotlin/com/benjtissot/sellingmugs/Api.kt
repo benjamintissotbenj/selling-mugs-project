@@ -86,8 +86,9 @@ suspend fun recordClick(clickDataId: String, clickType: String) {
 
 
 // MugList
-suspend fun getMugList(categories: List<Category>, pageNumber : Int): List<Mug> {
-    var queryParams = "?${Const.pageNumber}=$pageNumber"
+suspend fun getMugList(categories: List<Category>, pageNumber : Int, orderBy: Const.OrderBy): List<Mug> {
+    var queryParams = "?${Const.pageNumber}=$pageNumber&${Const.orderBy}=${orderBy.value}"
+
     if (categories.isNotEmpty()){
         queryParams += "&"
         categories.forEach{
@@ -101,6 +102,10 @@ suspend fun getMugList(categories: List<Category>, pageNumber : Int): List<Mug> 
     } else {
         emptyList()
     }
+}
+
+suspend fun deleteMug(mugId: String) : HttpResponse {
+    return jsonClient.delete("${Mug.path}/$mugId")
 }
 
 suspend fun getTotalMugCount(categories: List<Category>) : Int {
@@ -122,6 +127,10 @@ suspend fun getTotalMugCount(categories: List<Category>) : Int {
 suspend fun getMugByPrintifyId(printifyId: String): Mug? {
     val httpResponse = jsonClient.get("${Mug.path}/$printifyId")
     return if (httpResponse.status == HttpStatusCode.OK) httpResponse.body() else null
+}
+
+suspend fun increaseMugViews(printifyId: String) {
+    jsonClient.post("${Mug.path}/$printifyId")
 }
 
 suspend fun getAllCategories(): List<Category> {

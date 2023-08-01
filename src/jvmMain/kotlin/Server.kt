@@ -6,6 +6,10 @@ import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.HOMEPAGE_PATH
 import com.benjtissot.sellingmugs.controllers.*
 import com.benjtissot.sellingmugs.entities.local.Session
+import com.benjtissot.sellingmugs.entities.openAI.CategoriesChatRequestParams
+import com.benjtissot.sellingmugs.entities.openAI.OpenAIUnavailable
+import com.benjtissot.sellingmugs.repositories.CategoriesGenerationResultRepository
+import com.benjtissot.sellingmugs.services.ImageGeneratorService
 import com.mongodb.ConnectionString
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
@@ -24,10 +28,16 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.ktor.util.logging.*
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
 import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
+import java.util.*
+import java.util.concurrent.TimeUnit
+
 
 // Connection String for MongoDB in Heroku
 val connectionString: ConnectionString? = System.getenv(Const.MONGODB_URI_STRING)?.let {
@@ -114,6 +124,9 @@ fun Application.module() {
         // Creates the routing for the application
         createRoutes()
 
+        // Run mug creation every day
+        scheduleMugCreation()
+
     }.start(wait = true)
 }
 
@@ -140,10 +153,20 @@ fun Application.createRoutes(){
             resources("")
         }
 
+        // Filters out any weird requests to favicon that are not static
+        get(Regex(".+/favicon.ico")){
+            call.respond(HttpStatusCode.OK)
+        }
+
         // Any other route redirects to homepage
-        get("/{${Const.path}}"){
+        get("/{${Const.path}}/{${Const.param}...}"){
             val path = call.parameters[Const.path] ?: error("Invalid get request")
-            redirectPath = "/$path"
+            redirectPath = if (path == Const.productInfo) {
+                val mugPrintifyId = call.parameters.getAll(Const.param)?.get(0) ?: error("Invalid get request")
+                "/$path/$mugPrintifyId"
+            } else {
+                "/$path"
+            }
             LOG.info("Redirecting to homepage to load page and redirect from front-end")
             call.respondRedirect(HOMEPAGE_PATH)
         }
@@ -152,6 +175,53 @@ fun Application.createRoutes(){
 
     // Print out all the routes for debug
     // allRoutes(routing).forEach { println(it) }
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+fun Application.scheduleMugCreation(){
+    // We're setting mug creations every day at noon
+    val today = Calendar.getInstance()
+    today[Calendar.HOUR_OF_DAY] = 12
+    today[Calendar.MINUTE] = 0
+    today[Calendar.SECOND] = 0
+
+    val timer = Timer()
+    val task: TimerTask = object : TimerTask() {
+        override fun run() {
+            // do your task here
+            LOG.debug("Starting daily mug creation")
+            GlobalScope.async {
+                val status = try {
+                    CategoriesGenerationResultRepository.updateGenerateCategoriesStatus (
+                        ImageGeneratorService.generateCategoriesAndMugs(
+                            CategoriesChatRequestParams(
+                                1,
+                                10,
+                                null,
+                                false
+                            )
+                        )
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    null
+                }
+                if (status == null){
+                    LOG.error("There was an internal servor error")
+                } else if (status.message == OpenAIUnavailable().message){
+                    LOG.error(status.message)
+                } else {
+                    LOG.debug("Mug creation successful:")
+                    LOG.debug(status.message)
+                }
+            }
+
+        }
+    }
+    // repeat every hour
+    // Get seconds until midnight
+
+    timer.schedule(task, today.time, TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS))
 }
 
 fun deactivateMongoDriverLogs(){

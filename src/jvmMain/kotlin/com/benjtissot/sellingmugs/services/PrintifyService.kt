@@ -9,6 +9,7 @@ import io.ktor.client.call.*
 import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.serialization.json.JsonObject
+import java.time.Clock
 
 
 /**
@@ -64,7 +65,9 @@ class PrintifyService {
                     mugProduct.description,
                     mugProduct.variants[0].price/100f,
                     Category(getUuidFromString(mugProductInfo.categoryName), mugProductInfo.categoryName),
-                    artwork
+                    artwork,
+                    kotlinx.datetime.Clock.System.now(),
+                    fullPrompt = mugProductInfo.fullPrompt
                 )
                 MugRepository.updateMug(mug)
                 return productId

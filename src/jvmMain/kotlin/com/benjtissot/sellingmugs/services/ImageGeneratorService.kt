@@ -37,10 +37,8 @@ class ImageGeneratorService {
          * @param params carries the number of categories you wish to create, number of
          * variations per category and can hold an art type if the user wishes to give one
          * @return the list of status codes to give feedback in the front-end of how well this went
-         * @throws [OpenAIUnavailable] when the server is unable to connect with OpenAI's API
          */
         @OptIn(DelicateCoroutinesApi::class)
-        @Throws
         suspend fun generateCategoriesAndMugs(params: CategoriesChatRequestParams) : GenerateCategoriesStatus {
             val generateCategoriesStatusUuid = genUuid()
             val dateSubmitted = Clock.System.now()
@@ -69,6 +67,16 @@ class ImageGeneratorService {
                     dateReturned = Clock.System.now()
                 )
             } catch (e: Exception){
+                e.printStackTrace()
+                GenerateCategoriesStatus(
+                    generateCategoriesStatusUuid,
+                    e.message ?: "Something went wrong, consult logs.",
+                    params,
+                    emptyList(),
+                    dateSubmitted = dateSubmitted,
+                    dateReturned = Clock.System.now()
+                )
+            } catch (e: OpenAIUnavailable){
                 e.printStackTrace()
                 GenerateCategoriesStatus(
                     generateCategoriesStatusUuid,
@@ -220,9 +228,9 @@ class ImageGeneratorService {
             }
 
             return runBlocking {
-                LOG.debug("Awaiting coroutines")
+                LOG.debug("Awaiting coroutines for subject ${params.subject}:")
                 val listOfStatuses = deferred.awaitAll().map { httpStatusCode -> httpStatusCode.toCustom() }
-                LOG.debug("All coroutines done :")
+                LOG.debug("All coroutines done for subject ${params.subject}:")
                 LOG.debug("{")
                 listOfStatuses.forEach { status ->
                     LOG.debug(status.print())
@@ -347,7 +355,13 @@ class ImageGeneratorService {
         private suspend fun publishMugFromImage(imageForUpload: ImageForUploadReceive, variation: Variation, categoryName: String) : HttpStatusCode {
             val dateCreatedLocally = Clock.System.now()
             // Create mug from image
-            val mugProductInfo = MugProductInfo("AI - ${variation.getCleanName()}", variation.description, categoryName, imageForUpload.toImage())
+            val mugProductInfo = MugProductInfo(
+                title = variation.getCleanName(),
+                description = "AI generated : ${variation.description}",
+                categoryName = categoryName,
+                image = imageForUpload.toImage(),
+                fullPrompt = variation.narrative
+            )
             val productPrintifyId = PrintifyService.createProduct(mugProductInfo)
 
             return if (productPrintifyId == null) {

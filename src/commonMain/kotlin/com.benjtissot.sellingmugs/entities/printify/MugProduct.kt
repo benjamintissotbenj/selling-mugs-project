@@ -19,7 +19,8 @@ class MugProductInfo(
     val title: String,
     val description: String,
     val categoryName: String,
-    val image: Image
+    val image: Image,
+    val fullPrompt: String? = null
 ){
     /**
      * Creates a MugProduct from a MugProductInfo

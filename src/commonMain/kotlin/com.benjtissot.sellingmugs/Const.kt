@@ -21,6 +21,20 @@ class Const {
             return type
         }
     }
+
+    enum class OrderBy(var value: String) {
+        VIEWS("VIEWS"),
+        MOST_RECENT("MOST_RECENT"),
+        NONE("NONE");
+        fun cleanName(): String {
+            return when (this) {
+                VIEWS -> "Views"
+                MOST_RECENT -> "Most recent"
+                NONE -> "None"
+            }
+        }
+    }
+
     enum class ClickType(var type: String) {
         HOME_NAV("HOME_NAV"),
         PROFILE_NAV("PROFILE_NAV"),
@@ -93,6 +107,10 @@ class Const {
         const val ORDER_FILTER_SIX_MONTHS = "< 6 months"
         const val ORDER_FILTER_THREE_MONTHS = "< 3 months"
 
+        // Front-end URL params
+        const val mugPrintifyId = "mugPrintifyId"
+
+
         // Query params
         const val updateType = "updateType"
         const val titleDesc = "titleDesc"
@@ -115,6 +133,11 @@ class Const {
         const val categories = "categories"
         const val count = "count"
         const val pageNumber = "pageNumber"
+        const val orderBy = "orderBy"
+        const val orderByViews = "orderByViews"
+        const val orderByNew = "orderByNew"
+        const val param = "param"
+        const val productInfo = "product_info"
 
         // Stripe params
         const val payment_intent = "payment_intent"
@@ -162,7 +185,7 @@ class Const {
                     "Please do not use \"Variation 1\" or similar names for the variation names. Find something original. " +
                     "Based on the above structures, " +
                     "create $numberOfVariations different variations for the subject. Then, write a detailed narrative of about 400 characters " +
-                    "for each variation and store it in the JSON under the name prompt. Write a short brief of the narrative in around 100 characters" +
+                    "for each variation and store it in the JSON under the name prompt. Write a short summary of the narrative in around 200 characters" +
                     "and store it in the JSON under the name description. The response should contain the JSON " +
                     "object and only the JSON object, so that the response can be parsed. Subject of the prompt is: "
         }
