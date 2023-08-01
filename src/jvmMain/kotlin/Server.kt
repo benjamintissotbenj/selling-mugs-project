@@ -154,17 +154,18 @@ fun Application.createRoutes(){
             resources("")
         }
 
-        // Filters out any weird requests to favicon that are not static
-        get(Regex(".+/favicon.ico")){
-            call.respond(HttpStatusCode.OK)
-        }
-
         // Any other route redirects to homepage
         get("/{${Const.path}}/{${Const.param}...}"){
             val path = call.parameters[Const.path] ?: error("Invalid get request")
             redirectPath = if (path == Const.productInfo) {
                 val mugPrintifyId = call.parameters.getAll(Const.param)?.get(0) ?: error("Invalid get request")
                 "/$path/$mugPrintifyId"
+            } else if (call.parameters.getAll(Const.param)?.isEmpty() == false){
+                  if (call.parameters.getAll(Const.param)?.get(0) == "favicon.ico"){
+                      ""
+                  } else {
+                      "/$path"
+                  }
             } else {
                 "/$path"
             }
@@ -180,9 +181,9 @@ fun Application.createRoutes(){
 
 @OptIn(DelicateCoroutinesApi::class)
 fun Application.scheduleMugCreation(){
-    // We're setting mug creations every day at noon
+    // We're setting mug creations every day at 18h00m00
     val today = Calendar.getInstance()
-    today[Calendar.HOUR_OF_DAY] = 12
+    today[Calendar.HOUR_OF_DAY] = 18
     today[Calendar.MINUTE] = 0
     today[Calendar.SECOND] = 0
 

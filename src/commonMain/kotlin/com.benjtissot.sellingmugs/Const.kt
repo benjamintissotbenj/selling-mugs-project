@@ -80,6 +80,7 @@ class Const {
         BACKGROUND_GREY_DARKER("#e0e0e0"),
         BACKGROUND_GREY_EVEN_DARKER("#d0d0d0"),
         BACKGROUND_GREY_DARKEST("#c0c0c0"),
+        BLACK("#000000"),
         RED("#ff0b00"),
         ;
         fun code(): String {
@@ -134,6 +135,7 @@ class Const {
         const val count = "count"
         const val pageNumber = "pageNumber"
         const val orderBy = "orderBy"
+        const val searchString = "searchString"
         const val orderByViews = "orderByViews"
         const val orderByNew = "orderByNew"
         const val param = "param"

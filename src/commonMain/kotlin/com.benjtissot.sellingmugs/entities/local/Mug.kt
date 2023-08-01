@@ -51,7 +51,8 @@ data class MugFilter(
     val currentPage: Int? = null,
     val publicOnly: Boolean = true,
     val categories: List<Category> = emptyList(),
-    val orderBy : Const.OrderBy = Const.OrderBy.NONE
+    val orderBy : Const.OrderBy = Const.OrderBy.NONE,
+    val searchString: String = ""
 )
 
 @Serializable

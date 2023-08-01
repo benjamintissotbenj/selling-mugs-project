@@ -4,7 +4,6 @@ import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.controllers.mugCollection
 import com.benjtissot.sellingmugs.entities.local.*
 import com.benjtissot.sellingmugs.repositories.MugRepository
-import kotlinx.datetime.Instant
 import org.bson.conversions.Bson
 import org.litote.kmongo.*
 import org.litote.kmongo.coroutine.CoroutineFindPublisher
@@ -30,7 +29,17 @@ class MugService {
             } else {
                 EMPTY_BSON
             }
-            return and (publicFilter, categoryFilter)
+            val searchFilter = if (mugFilter.searchString.isNotBlank()){
+                // Have ignore case filtering for the search string
+                or (
+                    Mug::name.regex(mugFilter.searchString, "i"),
+                    Mug::description.regex(mugFilter.searchString, "i"),
+                    (Mug::category / Category::name).regex(mugFilter.searchString, "i")
+                )
+            } else {
+                EMPTY_BSON
+            }
+            return and (publicFilter, categoryFilter, searchFilter)
         }
 
         /**
@@ -119,7 +128,7 @@ class MugService {
         }
 
         suspend fun updateArtworkImage(artwork : Artwork, printifyProductId : String){
-            MugService.getMugByArtwork(artwork)?.copy(
+            getMugByArtwork(artwork)?.copy(
                 artwork = ArtworkService.updateArtwork(
                     artwork.copy(previewURLs = PrintifyService.getProductPreviewImages(printifyProductId))
                 )

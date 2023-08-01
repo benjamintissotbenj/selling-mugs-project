@@ -34,13 +34,14 @@ fun Route.mugRouting(){
     route(Mug.path) {
         get {
             val pageNumber: Int? = call.request.queryParameters[Const.pageNumber]?.toIntOrNull()
+            val searchString: String = call.request.queryParameters[Const.searchString] ?: ""
             val orderBy: Const.OrderBy = call.request.queryParameters[Const.orderBy]?.let { Const.OrderBy.valueOf(it) } ?: Const.OrderBy.NONE
             val categories = call.parameters.getAll(Const.categories)?.mapNotNull { id -> CategoryService.getCategoryById(id) } ?: emptyList()
             val count : Boolean = call.request.queryParameters[Const.count]?.toBooleanStrictOrNull() ?: false
             if (count){
-                call.respond(getMugCount(MugFilter(categories = categories)))
+                call.respond(getMugCount(MugFilter(categories = categories, searchString = searchString)))
             } else {
-                call.respond(getPublicMugList(MugFilter(currentPage = pageNumber, categories = categories, orderBy = orderBy)))
+                call.respond(getPublicMugList(MugFilter(currentPage = pageNumber, categories = categories, orderBy = orderBy, searchString = searchString)))
             }
         }
         post {
