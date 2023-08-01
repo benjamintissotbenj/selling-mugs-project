@@ -12,6 +12,11 @@ be shut down as it will not be used for commercial purposes.
 The whole purpose of this project is to create a fully automated e-commerce platform to sell mugs. All the mugs are printed in England 
 for ethical and ecological purposes, which is why delivery is only allowed in the UK.
 
+This is a project that is made for re-use, for anyone to be able to build their own mug-selling e-commerce platform within minutes. 
+Its AI-powered design generation means that two different stores running on this code will have completely different mugs on sale. 
+The automated creation of mugs (by default, every day at midnight) allows the administrators to setup the platform with their own parameters,
+sit back and relax.
+
 #### Orders and Payment
 
 This project connects to [Printify](https://printify.com/) to manage custom print-on-demand for the users. The payments are managed 
@@ -53,6 +58,11 @@ The code uses the `PRINTIFY_STORE_ID`, `STRIPE_API_KEY_REAL`, `STRIPE_API_KEY_TE
 
 To communicate with [ChatGPT](https://openai.com/blog/openai-api) and [Stable Diffusion](https://stablediffusionapi.com/), the project
 needs access to `OPENAI_API_KEY` and `STABLE_DIFFUSION_API_KEY` environment variables to communicate smoothly with these APIs.
+
+##### Automated content
+
+Every day at a given time, the server will launch its own mug-creation script to continue populating the database day after day with new mug designs.
+Administrators can choose to keep or delete these mugs, thus making the maintenance of a clean store much easier.
 
 
 ### Frontend
