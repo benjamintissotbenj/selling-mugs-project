@@ -2,22 +2,23 @@ package com.benjtissot.sellingmugs.components.lists
 
 import com.benjtissot.sellingmugs.*
 import com.benjtissot.sellingmugs.components.createProduct.HoverImageComponent
+import com.benjtissot.sellingmugs.components.forms.SearchBarComponent
 import com.benjtissot.sellingmugs.entities.local.Category
 import com.benjtissot.sellingmugs.entities.local.Mug
 import csstype.*
 import emotion.react.css
 import kotlinx.js.jso
 import mui.icons.material.ExpandMore
+import mui.icons.material.Search
 import mui.material.*
 import mui.system.PropsWithSx
 import mui.system.sx
 import org.w3c.dom.HTMLDivElement
-import react.CSSProperties
-import react.FC
-import react.Props
+import react.*
+import react.dom.html.InputType
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.header
-import react.useState
+import react.dom.onChange
 import ringui.Col
 import ringui.Grid
 import ringui.Row
@@ -29,9 +30,11 @@ external interface MugListProps: Props {
     var selectedCategories: List<Category>
     var onChangeSelectedCategories: (List<String>) -> Unit
     var orderBy: Const.OrderBy
+    var searchString: String
     var onChangeOrderBy: (Const.OrderBy) -> Unit
     var onClickCustomItem: () -> Unit
     var onClickMore: () -> Unit
+    var onSearch: (String) -> Unit
     var list: List<Mug>
     var title: String?
     var onMouseEnterItem: (Mug, HTMLDivElement) -> Unit
@@ -43,7 +46,7 @@ external interface MugListProps: Props {
 val MugListComponent = FC<MugListProps> {
         props ->
 
-    props.title?.let{
+    props.title?.let {
         header {
             css {
                 width = 100.pct
@@ -58,37 +61,122 @@ val MugListComponent = FC<MugListProps> {
             }
             div {
                 css {
+                    width = "fit-content".unsafeCast<Width>()
+                    display = Display.flex
+                    flexDirection = FlexDirection.row
+                    justifyContent = JustifyContent.spaceBetween
+                    alignItems = AlignItems.center
+                    marginRight = 5.pct
+                }
+                SearchBarComponent {
+                    searchString = props.searchString
+                    onSubmit = { searchString ->
+                        props.onSearch(searchString)
+                    }
+                }
+            }
+        }
+    }
+
+    div {
+        css {
+            display = Display.flex
+            flexDirection = FlexDirection.row
+            justifyContent = JustifyContent.spaceBetween
+            alignItems = AlignItems.center
+            paddingBlock = 2.vh
+            height = 3.vh
+            width = 100.pct
+            color = Color(Const.ColorCode.BLACK.code())
+        }
+        div {
+            css {
+                fontNormal()
+                marginLeft = 5.pct
+                width = 35.pct
+            }
+            +"Modifiers :"
+        }
+        // Order By
+        div {
+            css {
+                display = Display.flex
+                flexDirection = FlexDirection.rowReverse
+                alignItems = AlignItems.center
+                width = 25.pct
+            }
+            Select {
+                // Attributes
+                css {
+                    width = 50.pct
+                    minWidth = 50.pct
+                    height = 3.rem
+                    maxHeight = 5.vh
+                    minHeight = 40.px
+                    fontNormal()
+                    marginRight = 1.vw
+                }
+
+                value = props.orderBy.value
+                onChange = { event, _ ->
+                    props.onChangeOrderBy(Const.OrderBy.valueOf(event.target.value))
+                }
+
+                // Children, in the selector
+                Const.OrderBy.values().forEach { orderByVal ->
+                    MenuItem {
+                        value = orderByVal.value
+                        +orderByVal.cleanName()
+                    }
+                }
+            }
+            div {
+                css {
+                    fontNormal()
+                    marginInline = 1.vw
+                }
+                +"Order by:"
+            }
+        }
+
+        // Filter by category
+        props.availableCategories?.let {
+            div {
+                css {
                     display = Display.flex
                     flexDirection = FlexDirection.rowReverse
                     alignItems = AlignItems.center
-                    width = 25.pct
-                    color = NamedColor.white
+                    width = 40.pct
                 }
                 Select {
                     // Attributes
                     css {
-                        width = 50.pct
-                        minWidth = 50.pct
+                        width = 70.pct
+                        minWidth = 70.pct
                         height = 3.rem
                         maxHeight = 5.vh
                         minHeight = 40.px
                         fontNormal()
-                        marginRight = 1.vw
-                    }
-                    sx {
-                        color = NamedColor.white
+                        marginRight = 4.vw
                     }
 
-                    value = props.orderBy.value
+
+                    multiple = true
+                    value = props.selectedCategories.map { cat -> cat.id }.toTypedArray()
                     onChange = { event, _ ->
-                        props.onChangeOrderBy(Const.OrderBy.valueOf(event.target.value))
+                        val tempCategoriesId = event.target.value.unsafeCast<Array<String>>()
+                        val tempCategoriesIdList: ArrayList<String> = arrayListOf()
+                        tempCategoriesIdList.addAll(tempCategoriesId)
+                        props.onChangeSelectedCategories(tempCategoriesIdList)
+
                     }
+
 
                     // Children, in the selector
-                    Const.OrderBy.values().forEach { orderByVal ->
+                    props.availableCategories?.forEach { category ->
                         MenuItem {
-                            value = orderByVal.value
-                            +orderByVal.cleanName()
+                            value = category.id
+                            +category.name
                         }
                     }
                 }
@@ -97,66 +185,11 @@ val MugListComponent = FC<MugListProps> {
                         fontNormal()
                         marginInline = 1.vw
                     }
-                    +"Order by:"
-                }
-            }
-
-            // Filter by category
-            props.availableCategories?.let {
-                div {
-                    css {
-                        display = Display.flex
-                        flexDirection = FlexDirection.rowReverse
-                        alignItems = AlignItems.center
-                        width = 40.pct
-                        color = NamedColor.white
-                    }
-                    Select {
-                        // Attributes
-                        css {
-                            width = 70.pct
-                            minWidth = 70.pct
-                            height = 3.rem
-                            maxHeight = 5.vh
-                            minHeight = 40.px
-                            fontNormal()
-                            marginRight = 4.vw
-                        }
-                        sx {
-                            color = NamedColor.white
-                        }
-
-
-                        multiple = true
-                        value = props.selectedCategories.map { cat -> cat.id }.toTypedArray()
-                        onChange = { event, _ ->
-                            val tempCategoriesId = event.target.value.unsafeCast<Array<String>>()
-                            val tempCategoriesIdList: ArrayList<String> = arrayListOf()
-                            tempCategoriesIdList.addAll(tempCategoriesId)
-                            props.onChangeSelectedCategories(tempCategoriesIdList)
-
-                        }
-
-
-                        // Children, in the selector
-                        props.availableCategories?.forEach { category ->
-                            MenuItem {
-                                value = category.id
-                                +category.name
-                            }
-                        }
-                    }
-                    div {
-                        css {
-                            fontNormal()
-                            marginInline = 1.vw
-                        }
-                        +"Filter by:"
-                    }
+                    +"Filter by:"
                 }
             }
         }
-    }
+}
 
     if (props.displayStyle == Const.mugListDisplayList){
         div {

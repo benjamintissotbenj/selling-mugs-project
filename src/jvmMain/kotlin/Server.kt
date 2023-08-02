@@ -31,6 +31,7 @@ import io.ktor.util.logging.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
 import org.slf4j.LoggerFactory
@@ -153,17 +154,18 @@ fun Application.createRoutes(){
             resources("")
         }
 
-        // Filters out any weird requests to favicon that are not static
-        get(Regex(".+/favicon.ico")){
-            call.respond(HttpStatusCode.OK)
-        }
-
         // Any other route redirects to homepage
         get("/{${Const.path}}/{${Const.param}...}"){
             val path = call.parameters[Const.path] ?: error("Invalid get request")
             redirectPath = if (path == Const.productInfo) {
                 val mugPrintifyId = call.parameters.getAll(Const.param)?.get(0) ?: error("Invalid get request")
                 "/$path/$mugPrintifyId"
+            } else if (call.parameters.getAll(Const.param)?.isEmpty() == false){
+                  if (call.parameters.getAll(Const.param)?.get(0) == "favicon.ico"){
+                      ""
+                  } else {
+                      "/$path"
+                  }
             } else {
                 "/$path"
             }
@@ -179,9 +181,9 @@ fun Application.createRoutes(){
 
 @OptIn(DelicateCoroutinesApi::class)
 fun Application.scheduleMugCreation(){
-    // We're setting mug creations every day at noon
+    // We're setting mug creations every day at 18h00m00
     val today = Calendar.getInstance()
-    today[Calendar.HOUR_OF_DAY] = 12
+    today[Calendar.HOUR_OF_DAY] = 18
     today[Calendar.MINUTE] = 0
     today[Calendar.SECOND] = 0
 
@@ -190,7 +192,7 @@ fun Application.scheduleMugCreation(){
         override fun run() {
             // do your task here
             LOG.debug("Starting daily mug creation")
-            GlobalScope.async {
+            GlobalScope.launch {
                 val status = try {
                     CategoriesGenerationResultRepository.updateGenerateCategoriesStatus (
                         ImageGeneratorService.generateCategoriesAndMugs(
@@ -207,20 +209,21 @@ fun Application.scheduleMugCreation(){
                     null
                 }
                 if (status == null){
-                    LOG.error("There was an internal servor error")
+                    LOG.error("There was an internal server error")
                 } else if (status.message == OpenAIUnavailable().message){
+                    LOG.error("Mug creation failed:")
+                    LOG.error(status.message)
+                } else if (status.message.contains("Exceeded five tries")){
+                    LOG.error("Mug creation failed:")
                     LOG.error(status.message)
                 } else {
                     LOG.debug("Mug creation successful:")
                     LOG.debug(status.message)
                 }
             }
-
         }
     }
-    // repeat every hour
-    // Get seconds until midnight
-
+    // Start at 12:00:00, repeat every hour
     timer.schedule(task, today.time, TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS))
 }
 

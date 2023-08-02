@@ -31,6 +31,7 @@ val Homepage = FC<NavigationProps> { props ->
     var popupTarget : HTMLDivElement? by useState(null)
     var mugShowDetails : Mug? by useState(null)
     var orderBy by useState(Const.OrderBy.VIEWS)
+    var searchString by useState("")
 
 
     // At first initialisation, get the list
@@ -44,7 +45,7 @@ val Homepage = FC<NavigationProps> { props ->
                 checkRedirect = ""
             } else {
                 availableCategories = getAllCategories()
-                mugList = getMugList(selectedCategories, currentPage, orderBy = orderBy)
+                mugList = getMugList(selectedCategories, currentPage, orderBy = orderBy, searchString = searchString)
                 totalNumberOfMugs = getTotalMugCount(selectedCategories)
             }
         }
@@ -91,15 +92,16 @@ val Homepage = FC<NavigationProps> { props ->
                 val tempCurrentPage = currentPage + 1
                 scope.launch {
                     // update the mugList incrementally so that the UI doesn't have to wait for all the mugs at once
-                    tempMugList.addAll(getMugList(selectedCategories, tempCurrentPage, orderBy = orderBy))
+                    tempMugList.addAll(getMugList(selectedCategories, tempCurrentPage, orderBy = orderBy, searchString = searchString))
                     mugList = tempMugList
                 }
                 currentPage = tempCurrentPage
             }
             this.orderBy = orderBy
+            this.searchString = searchString
             onChangeOrderBy = { orderByTemp ->
                 scope.launch {
-                    mugList = getMugList(selectedCategories, currentPage, orderBy = orderByTemp)
+                    mugList = getMugList(selectedCategories, currentPage, orderBy = orderByTemp, searchString = searchString)
                 }
                 orderBy = orderByTemp
             }
@@ -116,10 +118,16 @@ val Homepage = FC<NavigationProps> { props ->
                     val tempMugList = ArrayList(emptyList<Mug>())
                     for (i : Int in 0..currentPage){
                         // update the mugList incrementally so that the UI doesn't have to wait for all the mugs at once
-                        tempMugList.addAll(getMugList(tempSelectedCategories, currentPage, orderBy = orderBy))
+                        tempMugList.addAll(getMugList(tempSelectedCategories, currentPage, orderBy = orderBy, searchString = searchString))
                         mugList = tempMugList
                     }
                 }
+            }
+            onSearch = { searchStringTemp ->
+                scope.launch {
+                    mugList = getMugList(selectedCategories, currentPage, orderBy = orderBy, searchString = searchStringTemp)
+                }
+                searchString = searchStringTemp
             }
             onMouseEnterItem = { mug, target ->
                 mugShowDetails = mug

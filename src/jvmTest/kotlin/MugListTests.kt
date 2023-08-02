@@ -79,6 +79,10 @@ class MugListTests : AbstractDatabaseTests() {
             MugRepository.updateMug(mugs[10].copy(dateCreated = kotlinx.datetime.Clock.System.now()))
             val allMugsViewsOrderedPaginated = MugService.getAllMugsList(MugFilter(currentPage = 0, orderBy = Const.OrderBy.MOST_RECENT))
             assert(allMugsViewsOrderedPaginated[0].id == mugs[10].id)
+
+            MugRepository.updateMug(mugs[10].copy(name = "Test Name"))
+            val searchList = MugService.getAllMugsList(MugFilter(currentPage = 0, orderBy = Const.OrderBy.MOST_RECENT, searchString = "Test"))
+            assert(searchList[0].id == mugs[10].id)
         }
     }
 

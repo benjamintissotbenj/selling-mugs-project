@@ -86,8 +86,8 @@ suspend fun recordClick(clickDataId: String, clickType: String) {
 
 
 // MugList
-suspend fun getMugList(categories: List<Category>, pageNumber : Int, orderBy: Const.OrderBy): List<Mug> {
-    var queryParams = "?${Const.pageNumber}=$pageNumber&${Const.orderBy}=${orderBy.value}"
+suspend fun getMugList(categories: List<Category>, pageNumber : Int, orderBy: Const.OrderBy, searchString: String): List<Mug> {
+    var queryParams = "?${Const.pageNumber}=$pageNumber&${Const.orderBy}=${orderBy.value}&${Const.searchString}=$searchString"
 
     if (categories.isNotEmpty()){
         queryParams += "&"
