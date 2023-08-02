@@ -9,6 +9,7 @@ import com.benjtissot.sellingmugs.entities.printify.MugProductInfo
 import com.benjtissot.sellingmugs.entities.printify.ProductLog
 import com.benjtissot.sellingmugs.entities.stableDiffusion.ImageGeneratedLog
 import com.benjtissot.sellingmugs.entities.stableDiffusion.ImageResponse
+import com.benjtissot.sellingmugs.repositories.CategoriesGenerationResultRepository
 import com.benjtissot.sellingmugs.repositories.ChatRepository
 import com.benjtissot.sellingmugs.repositories.MugRepository
 import com.benjtissot.sellingmugs.repositories.StableDiffusionRepository
@@ -42,50 +43,50 @@ class ImageGeneratorService {
         suspend fun generateCategoriesAndMugs(params: CategoriesChatRequestParams) : GenerateCategoriesStatus {
             val generateCategoriesStatusUuid = genUuid()
             val dateSubmitted = Clock.System.now()
-            return try {
-                val categoriesAndStyle = generateCategories(params.amountOfCategories, params.newCategoriesOnly)
-                // Using coroutines to parallelize the work
-                val deferred = categoriesAndStyle.map { pair ->
-                    GlobalScope.async {
-                        val catRequestStarted = Clock.System.now()
-                        try {
-                            val imageType = params.type ?: pair.second
-                            val statusCodes = generateMugsFromParams(MugsChatRequestParams(pair.first.name, imageType, params.amountOfVariations))
-                            GenerateCategoryStatus(pair.first, "Success", statusCodes, dateSubmitted = catRequestStarted, dateReturned = Clock.System.now())
-                        } catch (e: OpenAIUnavailable) {
-                            e.printStackTrace()
-                            GenerateCategoryStatus(pair.first, e.message, emptyList(), dateSubmitted = catRequestStarted, dateReturned = Clock.System.now())
-                        }
-                    }
-                }
-                GenerateCategoriesStatus(
+            var generateCategoriesStatus = GenerateCategoriesStatus(
                     generateCategoriesStatusUuid,
-                    "Overall success",
-                    params,
-                    deferred.awaitAll(),
-                    dateSubmitted = dateSubmitted,
-                    dateReturned = Clock.System.now()
-                )
-            } catch (e: Exception){
-                e.printStackTrace()
-                GenerateCategoriesStatus(
-                    generateCategoriesStatusUuid,
-                    e.message ?: "Something went wrong, consult logs.",
+                    "pending",
                     params,
                     emptyList(),
                     dateSubmitted = dateSubmitted,
                     dateReturned = Clock.System.now()
+                )
+            return try {
+                val categoriesAndStyle = generateCategories(params.amountOfCategories, params.newCategoriesOnly)
+
+                GlobalScope.launch {
+                    // Using coroutines to parallelize the work
+                    val deferred = categoriesAndStyle.map { pair ->
+                        GlobalScope.async {
+                            val catRequestStarted = Clock.System.now()
+                            val genCatStatus = try {
+                                val imageType = params.type ?: pair.second
+                                val statusCodes = generateMugsFromParams(MugsChatRequestParams(pair.first.name, imageType, params.amountOfVariations))
+                                GenerateCategoryStatus(pair.first, "Success", statusCodes, dateSubmitted = catRequestStarted, dateReturned = Clock.System.now())
+                            } catch (e: OpenAIUnavailable) {
+                                e.printStackTrace()
+                                GenerateCategoryStatus(pair.first, e.message, emptyList(), dateSubmitted = catRequestStarted, dateReturned = Clock.System.now())
+                            }
+
+                            // Update the categories status log
+                            generateCategoriesStatus = CategoriesGenerationResultRepository.updateGenerateCategoriesStatus(generateCategoriesStatus.addStatus(genCatStatus))
+                        }
+                    }
+                    deferred.awaitAll()
+                    // Updating the Category Log to end it
+                    CategoriesGenerationResultRepository.updateGenerateCategoriesStatus(generateCategoriesStatus.finish())
+                }
+
+                // Don't wait for coroutines to finish, start by returning the original object, it will be updated over time
+                generateCategoriesStatus
+            } catch (e: Exception) {
+                e.printStackTrace()
+                generateCategoriesStatus.copy(
+                    message = e.message ?: "Something went wrong, consult logs."
                 )
             } catch (e: OpenAIUnavailable){
                 e.printStackTrace()
-                GenerateCategoriesStatus(
-                    generateCategoriesStatusUuid,
-                    e.message ?: "Something went wrong, consult logs.",
-                    params,
-                    emptyList(),
-                    dateSubmitted = dateSubmitted,
-                    dateReturned = Clock.System.now()
-                )
+                generateCategoriesStatus.copy(message = e.message)
             }
         }
 
@@ -340,7 +341,7 @@ class ImageGeneratorService {
                 nbTries ++
                 imageForUploadReceive = PrintifyService.uploadImage(ImageForUpload(file_name = fileName, url = imageSource), true)
                 if (imageForUploadReceive == null){
-                    delay(1000L) // wait 1 s if image does not upload immediately correctly
+                    delay(5000L) // wait 5 s if image does not upload immediately correctly
                 }
             }
             return imageForUploadReceive

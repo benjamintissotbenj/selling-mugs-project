@@ -2,11 +2,13 @@ package com.benjtissot.sellingmugs.controllers
 
 import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.Const.Companion.HttpStatusCode_OpenAIUnavailable
+import com.benjtissot.sellingmugs.GENERATE_CATEGORIES_STATUS_OBJECT_PATH
 import com.benjtissot.sellingmugs.OPEN_AI_PATH
 import com.benjtissot.sellingmugs.entities.local.Artwork
 import com.benjtissot.sellingmugs.entities.local.Category
 import com.benjtissot.sellingmugs.entities.local.Mug
 import com.benjtissot.sellingmugs.entities.openAI.CategoriesChatRequestParams
+import com.benjtissot.sellingmugs.entities.openAI.GenerateCategoriesStatus
 import com.benjtissot.sellingmugs.entities.openAI.MugsChatRequestParams
 import com.benjtissot.sellingmugs.entities.openAI.OpenAIUnavailable
 import com.benjtissot.sellingmugs.repositories.CategoriesGenerationResultRepository
@@ -79,6 +81,23 @@ fun Route.openAIRouting(){
                         call.respond(HttpStatusCode.InternalServerError)
                     } else if (status.message == OpenAIUnavailable().message){
                         call.respond(HttpStatusCode_OpenAIUnavailable)
+                    } else {
+                        call.respond(status)
+                    }
+                }
+            }
+        }
+
+
+        route(GenerateCategoriesStatus.path){
+            route("/{${Const.id}}") {
+                get {
+                    val id = call.parameters[Const.id] ?: ""
+                    val status = CategoriesGenerationResultRepository.getGenerateCategoriesStatusById(id)
+                    if (id.isEmpty()){
+                        call.respond(HttpStatusCode.BadRequest)
+                    } else if (status == null) {
+                        call.respond(HttpStatusCode.InternalServerError)
                     } else {
                         call.respond(status)
                     }

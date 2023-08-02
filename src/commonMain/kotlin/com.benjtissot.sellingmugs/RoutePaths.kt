@@ -15,6 +15,7 @@ const val CLICK_OBJECT_PATH = "/click"
 const val CART_OBJECT_PATH = "/cart"
 const val ORDER_OBJECT_PATH = "/order"
 const val CATEGORY_OBJECT_PATH = "/category"
+const val GENERATE_CATEGORIES_STATUS_OBJECT_PATH = "/genCatStat"
 
 // Rendering Paths
 

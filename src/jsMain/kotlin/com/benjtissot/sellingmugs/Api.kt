@@ -5,6 +5,7 @@ import com.benjtissot.sellingmugs.Const.Companion.titleDesc
 import com.benjtissot.sellingmugs.Const.Companion.updateType
 import com.benjtissot.sellingmugs.entities.local.*
 import com.benjtissot.sellingmugs.entities.openAI.CategoriesChatRequestParams
+import com.benjtissot.sellingmugs.entities.openAI.GenerateCategoriesStatus
 import com.benjtissot.sellingmugs.entities.openAI.MugsChatRequestParams
 import com.benjtissot.sellingmugs.entities.printify.*
 import com.benjtissot.sellingmugs.entities.printify.order.*
@@ -472,4 +473,9 @@ suspend fun generateDesign(params: MugsChatRequestParams): HttpResponse {
         contentType(ContentType.Application.Json)
         setBody(params)
     }
+}
+
+
+suspend fun getGenerateCategoriesStatus(id: String) : HttpResponse {
+    return jsonClient.get("$OPEN_AI_PATH${GenerateCategoriesStatus.path}/$id")
 }
