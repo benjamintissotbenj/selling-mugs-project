@@ -1,10 +1,7 @@
 package com.benjtissot.sellingmugs.components.createProduct
 
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.entities.openAI.CustomStatusCode
-import com.benjtissot.sellingmugs.entities.openAI.GenerateCategoriesStatus
-import com.benjtissot.sellingmugs.entities.openAI.GenerateCategoryStatus
-import com.benjtissot.sellingmugs.entities.openAI.calculateCompletionPercentage
+import com.benjtissot.sellingmugs.entities.openAI.*
 import csstype.*
 import emotion.react.css
 import io.ktor.util.logging.*
@@ -170,13 +167,13 @@ val DisplayCategoriesGenerationResultComponent = FC<DisplayCategoriesGenerationR
                 }
                 LinearProgress {
                     css {
-                        width = "auto".unsafeCast<Width>()
+                        width = 90.pct
                         marginRight = 5.pct
                         boxSizing = BoxSizing.borderBox
                     }
                     variant = LinearProgressVariant.buffer
-                    valueBuffer = props.status.statuses.size.toFloat() / props.status.requestParams.amountOfCategories.toFloat() * 100f
-                    value = props.status.calculateCompletionPercentage()
+                    valueBuffer = props.status.calculateCompletionPercentage()
+                    value = props.status.calculateSuccessPercentage()
                 }
             }
 

@@ -76,7 +76,7 @@ class ImageGeneratorService {
                             }
                             genCatStatus = try {
                                 val statusCodes = generateMugsFromVariations(variations, pair.first.name, generateCategoriesStatusUuid, generateCategoryStatus = genCatStatus)
-                                val successPercentage = calculateSuccessPercentage(statusCodes)
+                                val successPercentage = calculateSuccessPercentage(statusCodes, params.amountOfVariations)
                                 val message = if (successPercentage >= 80) {"Success"} else if (successPercentage >= 30) {"Partial success"} else {"Unsufficient success"}
                                 GenerateCategoryStatus(pair.first, message, statusCodes, dateSubmitted = catRequestStarted, dateReturned = Clock.System.now())
                             } catch (e: OpenAIUnavailable) {
@@ -222,26 +222,17 @@ class ImageGeneratorService {
         @Throws
         suspend fun generateMugsFromVariations(variations: List<Variation>, categoryName: String, generateCategoriesStatusUuid : String = "", generateCategoryStatus: GenerateCategoryStatus? = null) : List<CustomStatusCode> {
             // Get ChatGPT to create a list of variations
-            var counter = 0
-            val deferred = variations.map { variation ->
-                counter++
-                if (counter >= 5){
+            val deferred = GlobalScope.async {
+                variations.map { variation ->
                     delay(1000) // wait 1 second every 5 requests to fit with Stable Diffusion API
-                    counter = 0
-                }
-                GlobalScope.async {
                     val statusCode = (
                         try {
                             // Use StableDiffusion to create an image for each variation
-                            val stableDiffusionImageSource = withContext(Dispatchers.Default) {
-                                    requestSemaphore.withPermit {
-                                        generateImageFromVariation(variation)
-                                    }
-                                }
+                            val stableDiffusionImageSource = requestSemaphore.withPermit { generateImageFromVariation(variation) }
 
                             // Upload generated image to printify
                             val imageUploadedToPrintify =
-                                uploadImageFromSource(variation.getCleanName(), stableDiffusionImageSource)
+                                uploadImageFromSource(variation.getCleanName(), stableDiffusionImageSource) // TODO update status code inside here
 
                             imageUploadedToPrintify?.let {
                                 publishMugFromImage(it, variation, categoryName)
@@ -251,7 +242,7 @@ class ImageGeneratorService {
                             e.printStackTrace()
                             HttpStatusCode(
                                 90,
-                                "Error in the process for variation ${variation.name}, message: ${e.message ?: "no-message"}"
+                                "Error in the process for variation ${variation.name}, message: ${"${e.message} ; ${e.cause?.message ?: "no further message"}"}"
                             )
                         }
                     ).toCustom()
@@ -273,7 +264,7 @@ class ImageGeneratorService {
 
             return runBlocking {
                 LOG.debug("Awaiting coroutines for category $categoryName:")
-                val listOfStatuses = deferred.awaitAll()
+                val listOfStatuses = deferred.await()
                 LOG.debug("All coroutines done for category $categoryName:")
                 LOG.debug("{")
                 listOfStatuses.forEach { status ->
@@ -340,61 +331,72 @@ class ImageGeneratorService {
         @Throws
         private suspend fun generateImageFromVariation(variation: Variation) : String {
             val requestCreated = Clock.System.now()
+            var totalRequests = 0
             try {
-
-                // 10 tries to generate image
+                // 5 tries to generate image
                 var httpResponse = apiGenerateImage("${variation.parameters} ${variation.narrative}", variation.negativePrompt)
-                lateinit var imageResponse : ImageResponse
+                var imageResponse : ImageResponse? = null
                 do {
                     var counter = 0
-                    while (counter < 5 && httpResponse.status != HttpStatusCode.OK){
+                    while (counter < 5 && (httpResponse.status != HttpStatusCode.OK || imageResponse?.isRateLimitExceeded() == true)){
                         delay(Duration.ofSeconds(3))
                         counter++
-                        httpResponse = apiGenerateImage("${variation.parameters} ${variation.narrative}", variation.negativePrompt)
+                        totalRequests++
+                        httpResponse = apiGenerateImage("${variation.parameters} ${variation.narrative} Slight variation $totalRequests", variation.negativePrompt)
+                        // Resetting the status to not trigger the rate limit exceeded automatically
+                        imageResponse?.let{
+                            imageResponse = it.copy(status = "processing")
+                        }
                     }
                     imageResponse = httpResponse.body<ImageResponse>()
                     // If we tried 5 times and the status is OK, but we exceeded our rate limit, try again
                     // Otherwise, either we're good, or we have a failure
-                } while (httpResponse.status == HttpStatusCode.OK && imageResponse.isRateLimitExceeded())
+                } while (httpResponse.status == HttpStatusCode.OK && (imageResponse?.isRateLimitExceeded() == true || imageResponse?.failed() == true))
 
 
 
-
-                // If image is processing, and we need to wait (5 attempts)
-                var attempts = 0
-                while (imageResponse.status == "processing" && attempts < 5){
-                    val delay = max(imageResponse.eta.toLong(), 5L) // at least 5 seconds
-                    LOG.debug("Variation ${variation.name} is queued, eta $delay seconds")
-                    // If we are still processing, delay for given eta and
-                    delay(Duration.ofSeconds(delay))
-                    LOG.debug("Fetching variation ${variation.name}")
-                    // If imageResponse.id is null, try again without simply trying to fetch the image
-                    imageResponse.id?.let {
-                        val httpResponseFetch = apiFetchImage(imageResponse.id!!)
-                        imageResponse = try {
-                            httpResponseFetch.body()
-                        } catch (e: Exception) {
-                            LOG.error("Could not decode the output, retrying")
-                            imageResponse.copy(eta = 10f) // keep same response but reduce eta to 10s
+                imageResponse?.let {
+                    // If image is processing, and we need to wait (5 attempts)
+                    var attempts = 0
+                    while ((imageResponse?.status == "processing" || imageResponse?.status == "error") && attempts < 5) {
+                        val delay = max(imageResponse?.eta?.toLong() ?: 5L, 5L) // at least 5 seconds
+                        LOG.debug("Variation ${variation.name} is queued, eta $delay seconds")
+                        // If we are still processing, delay for given eta and
+                        delay(Duration.ofSeconds(delay))
+                        LOG.debug("Fetching variation ${variation.name}")
+                        // If imageResponse?.id is null, try again without simply trying to fetch the image
+                        imageResponse?.id?.let {
+                            val httpResponseFetch = apiFetchImage(imageResponse?.id!!)
+                            imageResponse = try {
+                                httpResponseFetch.body()
+                            } catch (e: Exception) {
+                                LOG.error("Could not decode the output, retrying")
+                                imageResponse?.copy(eta = 10f) // keep same response but reduce eta to 10s
+                            }
                         }
+                        attempts++
                     }
-                    attempts++
-                }
 
-                LOG.debug("Received generated image")
+                    LOG.debug("Received generated image")
 
-                return if (imageResponse.output.isNullOrEmpty()){
-                        insertNewImageGeneratedLog(variation, "", "Fetch source is empty, tried to fetch $attempts times", requestCreated)
-                        throw Exception("Fetch source is empty, tried to fetch $attempts times. Rate exceeded: ${imageResponse.isRateLimitExceeded()}")
+                    return if (imageResponse?.output.isNullOrEmpty()) {
+                        insertNewImageGeneratedLog(
+                            variation,
+                            "",
+                            "Fetch source is empty, tried to fetch $attempts times",
+                            requestCreated
+                        )
+                        throw Exception("Fetch source is empty, tried to fetch $attempts times. Rate exceeded: ${imageResponse?.isRateLimitExceeded()}")
                     } else {
-                    insertNewImageGeneratedLog(variation, imageResponse.output!![0], "", requestCreated)
-                        imageResponse.output!![0]
+                        insertNewImageGeneratedLog(variation, imageResponse?.output!![0], "", requestCreated)
+                        imageResponse?.output!![0]
                     }
-
+                }
             } catch (e: Exception) {
                 insertNewImageGeneratedLog(variation, "", "Stable Diffusion server error", requestCreated)
                 throw Exception("Stable Diffusion server error", e)
             }
+            return ""
         }
 
         /**

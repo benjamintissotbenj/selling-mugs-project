@@ -45,7 +45,9 @@ data class GenerateCategoriesStatus (
     }
 
     fun finish() : GenerateCategoriesStatus {
-        return this.copy(message = "Overall Success", dateReturned = Clock.System.now(), pending = false)
+        val successPercentage = calculateSuccessPercentage()
+        val message = if (successPercentage >= 80) {"Overall Success"} else if (successPercentage >= 30) {"Partial success"} else {"Unsufficient success"}
+        return this.copy(message = message, dateReturned = Clock.System.now(), pending = false)
     }
 }
 
@@ -80,9 +82,13 @@ fun HttpStatusCode.toCustom(): CustomStatusCode {
 
 
 
-fun calculateSuccessPercentage(statusCodes : List<CustomStatusCode>) : Int {
+fun calculateSuccessPercentage(statusCodes : List<CustomStatusCode>, expectedSize : Int) : Int {
     if (statusCodes.isEmpty()) return 0
-    return (statusCodes.filter { it.value == 200 }.size.toFloat() / statusCodes.size.toFloat() * 100f).toInt()
+    return (statusCodes.filter { it.value == 200 }.size.toFloat() / expectedSize * 100f).toInt()
+}
+
+fun GenerateCategoriesStatus.calculateSuccessPercentage() : Int {
+    return (this.statuses.sumOf { calculateSuccessPercentage(it.customStatusCodes, this.requestParams.amountOfVariations) }.toFloat() / this.statuses.size.toFloat()).toInt()
 }
 
 fun GenerateCategoriesStatus.calculateCompletionPercentage() : Int {

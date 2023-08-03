@@ -37,7 +37,7 @@ class ChatGPTTests : AbstractDatabaseTests() {
         private val LOG = KtorSimpleLogger("ChatGPTTests.kt")
 
         private fun calculateSuccessPercentage(categoriesStatus : GenerateCategoriesStatus) : Int {
-            return (categoriesStatus.statuses.sumOf { calculateSuccessPercentage(it.customStatusCodes) }.toFloat() / categoriesStatus.statuses.size.toFloat() * 100f).toInt()
+            return (categoriesStatus.statuses.sumOf { calculateSuccessPercentage(it.customStatusCodes) }.toFloat() / categoriesStatus.statuses.size.toFloat()).toInt()
         }
 
         private fun calculateSuccessPercentage(statusCodes : List<CustomStatusCode>) : Int {

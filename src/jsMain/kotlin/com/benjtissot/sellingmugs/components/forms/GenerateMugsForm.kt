@@ -149,7 +149,7 @@ val GenerateCategoriesForm = FC<GenerateCategoriesFormProps> { props ->
                         css {
                             padding = 1.vh
                         }
-                        +"Number of Categories (<15)"
+                        +"Number of Categories (<=5)"
                     }
                     input {
                         css {
@@ -163,7 +163,7 @@ val GenerateCategoriesForm = FC<GenerateCategoriesFormProps> { props ->
                             } catch (e: NumberFormatException) {
                                 0
                             }
-                            if (numberOfCategoriesTemp < 15){
+                            if (numberOfCategoriesTemp <= 5){
                                 numberOfCategories = numberOfCategoriesTemp
                             }
                         }

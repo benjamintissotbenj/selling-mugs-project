@@ -13,4 +13,8 @@ data class ImageResponse(
     fun isRateLimitExceeded() : Boolean {
         return status == "error" && messege == "Rate limit exceeded"
     }
+
+    fun failed() : Boolean {
+        return status == "failed"
+    }
 }

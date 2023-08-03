@@ -6,7 +6,6 @@ import com.benjtissot.sellingmugs.components.createProduct.CreateProductComponen
 import com.benjtissot.sellingmugs.components.createProduct.DisplayCategoriesGenerationResultComponent
 import com.benjtissot.sellingmugs.components.createProduct.DisplayGenerationResultComponent
 import com.benjtissot.sellingmugs.components.lists.ManageUsersComponent
-import com.benjtissot.sellingmugs.entities.local.Category
 import com.benjtissot.sellingmugs.entities.local.User
 import com.benjtissot.sellingmugs.entities.openAI.*
 import csstype.*
@@ -16,8 +15,8 @@ import io.ktor.http.*
 import io.ktor.http.HttpStatusCode.Companion.BadRequest
 import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.util.logging.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import kotlinx.js.timers.Timeout
 import kotlinx.js.timers.clearInterval
 import kotlinx.js.timers.setInterval
@@ -80,18 +79,27 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                     scope.launch {
                         val httpResponse = getGenerateCategoriesStatus(generateCategoriesStatus!!.id)
                         when (httpResponse.status){
+                            // TODO: issue with update here, current percentages not working for some reason
                             OK -> {
-                                // TODO use this to implement a progress bar
                                 val temp = httpResponse.body<GenerateCategoriesStatus>()
-                                when (temp.calculateCompletionPercentage()){
+                                val currentCatStat = generateCategoriesStatus!! // for some reason, percentages optimised out of JS if we don't do this
+                                val newSuccessPercentage =  temp.calculateSuccessPercentage()
+                                val currentSuccessPercentage = currentCatStat.calculateSuccessPercentage()
+                                val currentCompletionPercentage = currentCatStat.calculateCompletionPercentage()
+                                when (val newCompletionPercentage = temp.calculateCompletionPercentage()){
                                     100 -> {
-                                        props.setAlert(successAlert("You have successfully created your mugs!", stayOn = true))
+                                        props.setAlert(successAlert("You have successfully your mugs with $newCompletionPercentage%!", stayOn = true))
                                         generateCategoriesStatus = temp
                                     }
+                                    0 -> generateCategoriesStatus = temp
                                     else -> {
-                                        if (temp.calculateCompletionPercentage() > generateCategoriesStatus!!.calculateCompletionPercentage()){
-                                            props.setAlert(infoAlert("Updated info on the categories : ${temp.calculateCompletionPercentage()}% completion", stayOn = true))
+                                        if (newCompletionPercentage > currentCompletionPercentage ||
+                                            (newCompletionPercentage == currentCompletionPercentage && newSuccessPercentage > currentSuccessPercentage)
+                                        ){
+                                            props.setAlert(infoAlert("Updated info on the categories : $newCompletionPercentage% completion, $newSuccessPercentage% success", stayOn = true))
+                                            LOG.debug("Old compl = $currentCompletionPercentage, new compl = $newCompletionPercentage")
                                             generateCategoriesStatus = temp
+                                            delay(100L)
                                         }
                                     }
                                 }
