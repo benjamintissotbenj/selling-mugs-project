@@ -2,7 +2,6 @@ package com.benjtissot.sellingmugs.controllers
 
 import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.Const.Companion.HttpStatusCode_OpenAIUnavailable
-import com.benjtissot.sellingmugs.GENERATE_CATEGORIES_STATUS_OBJECT_PATH
 import com.benjtissot.sellingmugs.OPEN_AI_PATH
 import com.benjtissot.sellingmugs.entities.local.Artwork
 import com.benjtissot.sellingmugs.entities.local.Category
@@ -19,6 +18,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.util.logging.*
+import java.io.IOException
 
 private val LOG = KtorSimpleLogger("OpenAIController.kt")
 
@@ -49,7 +49,12 @@ fun Route.openAIRouting(){
             post {
                 val params: MugsChatRequestParams = call.receive()
                 try {
-                    call.respond(ImageGeneratorService.generateMugsFromParams(params))
+                    val variations = try {
+                        ImageGeneratorService.generateVariationsFromParams(params)
+                    } catch (e: IOException) {
+                        throw OpenAIUnavailable()
+                    }
+                    call.respond(ImageGeneratorService.generateMugsFromVariations(variations, params.subject))
                 } catch (e: OpenAIUnavailable) {
                     e.printStackTrace()
                     call.respond(Const.HttpStatusCode_OpenAIUnavailable)

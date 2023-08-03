@@ -8,10 +8,7 @@ import com.benjtissot.sellingmugs.components.createProduct.DisplayGenerationResu
 import com.benjtissot.sellingmugs.components.lists.ManageUsersComponent
 import com.benjtissot.sellingmugs.entities.local.Category
 import com.benjtissot.sellingmugs.entities.local.User
-import com.benjtissot.sellingmugs.entities.openAI.CategoriesChatRequestParams
-import com.benjtissot.sellingmugs.entities.openAI.CustomStatusCode
-import com.benjtissot.sellingmugs.entities.openAI.GenerateCategoriesStatus
-import com.benjtissot.sellingmugs.entities.openAI.GenerateCategoryStatus
+import com.benjtissot.sellingmugs.entities.openAI.*
 import csstype.*
 import emotion.react.css
 import io.ktor.client.call.*
@@ -86,8 +83,18 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                             OK -> {
                                 // TODO use this to implement a progress bar
                                 val temp = httpResponse.body<GenerateCategoriesStatus>()
-                                props.setAlert(infoAlert("Updated info on the categories"))
-                                generateCategoriesStatus = temp
+                                when (temp.calculateCompletionPercentage()){
+                                    100 -> {
+                                        props.setAlert(successAlert("You have successfully created your mugs!", stayOn = true))
+                                        generateCategoriesStatus = temp
+                                    }
+                                    else -> {
+                                        if (temp.calculateCompletionPercentage() > generateCategoriesStatus!!.calculateCompletionPercentage()){
+                                            props.setAlert(infoAlert("Updated info on the categories : ${temp.calculateCompletionPercentage()}% completion", stayOn = true))
+                                            generateCategoriesStatus = temp
+                                        }
+                                    }
+                                }
                             }
                             BadRequest -> props.setAlert(errorAlert("Bad request"))
                             else -> props.setAlert(errorAlert("Something went wrong, check the logs"))
@@ -134,7 +141,7 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                     }
                 } else if (generateCategoriesStatus != null) {
                     DisplayCategoriesGenerationResultComponent {
-                        list = generateCategoriesStatus!!.statuses
+                        status = generateCategoriesStatus!!
                         title  = "Advanced category generation results"
                     }
                 } else {

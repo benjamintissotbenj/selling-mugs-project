@@ -32,6 +32,12 @@ class PrintifyService {
             // Upload to printify and save the resulting Artwork
             val httpResponse = apiUploadImage(imageFile)
             if (httpResponse.status != HttpStatusCode.OK){
+                try {
+                    val bodyContent = httpResponse.body<JsonObject>()
+                    println("Failed image upload, response is $bodyContent")
+                } catch (e: Exception){
+                    println("Unable to parse image received")
+                }
                 return null
             }
             val receivedImage = httpResponse.body<ImageForUploadReceive>()

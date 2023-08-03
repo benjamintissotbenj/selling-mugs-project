@@ -158,8 +158,12 @@ fun Application.createRoutes(){
         get("/{${Const.path}}/{${Const.param}...}"){
             val path = call.parameters[Const.path] ?: error("Invalid get request")
             redirectPath = if (path == Const.productInfo) {
-                val mugPrintifyId = call.parameters.getAll(Const.param)?.get(0) ?: error("Invalid get request")
-                "/$path/$mugPrintifyId"
+                val param = call.parameters.getAll(Const.param)?.get(0) ?: error("Invalid get request")
+                if (param == "favicon.ico" || param == "static"){
+                    "/"
+                } else {
+                    "/$path/$param"
+                }
             } else if (call.parameters.getAll(Const.param)?.isEmpty() == false){
                   if (call.parameters.getAll(Const.param)?.get(0) == "favicon.ico"){
                       ""

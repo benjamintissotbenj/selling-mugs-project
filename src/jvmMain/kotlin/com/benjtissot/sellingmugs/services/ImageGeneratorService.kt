@@ -18,6 +18,8 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.time.delay
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -57,24 +59,43 @@ class ImageGeneratorService {
                 GlobalScope.launch {
                     // Using coroutines to parallelize the work
                     val deferred = categoriesAndStyle.map { pair ->
+
+                        // Update the categories status log
+                        val catRequestStarted = Clock.System.now()
+                        var genCatStatus = GenerateCategoryStatus(pair.first, "pending", emptyList(), dateSubmitted = catRequestStarted, dateReturned = Clock.System.now())
+                        generateCategoriesStatus = CategoriesGenerationResultRepository.updateGenerateCategoriesStatus(generateCategoriesStatus.addStatus(genCatStatus))
+
+                        // Launch a coroutine to update the status in real time
                         GlobalScope.async {
-                            val catRequestStarted = Clock.System.now()
-                            val genCatStatus = try {
-                                val imageType = params.type ?: pair.second
-                                val statusCodes = generateMugsFromParams(MugsChatRequestParams(pair.first.name, imageType, params.amountOfVariations))
-                                GenerateCategoryStatus(pair.first, "Success", statusCodes, dateSubmitted = catRequestStarted, dateReturned = Clock.System.now())
+                            // Create variations
+                            val imageType = params.type ?: pair.second
+                            val variations = try {
+                                generateVariationsFromParams(MugsChatRequestParams(pair.first.name, imageType, params.amountOfVariations))
+                            } catch (e: IOException) {
+                                throw OpenAIUnavailable()
+                            }
+                            genCatStatus = try {
+                                val statusCodes = generateMugsFromVariations(variations, pair.first.name, generateCategoriesStatusUuid, generateCategoryStatus = genCatStatus)
+                                val successPercentage = calculateSuccessPercentage(statusCodes)
+                                val message = if (successPercentage >= 80) {"Success"} else if (successPercentage >= 30) {"Partial success"} else {"Unsufficient success"}
+                                GenerateCategoryStatus(pair.first, message, statusCodes, dateSubmitted = catRequestStarted, dateReturned = Clock.System.now())
                             } catch (e: OpenAIUnavailable) {
                                 e.printStackTrace()
                                 GenerateCategoryStatus(pair.first, e.message, emptyList(), dateSubmitted = catRequestStarted, dateReturned = Clock.System.now())
                             }
-
-                            // Update the categories status log
-                            generateCategoriesStatus = CategoriesGenerationResultRepository.updateGenerateCategoriesStatus(generateCategoriesStatus.addStatus(genCatStatus))
+                            // Final update of the CategoryStatus here
+                            generateCategoriesStatus = CategoriesGenerationResultRepository.updateGenerateCategoriesStatus(generateCategoriesStatus.updateStatus(
+                                genCatStatus
+                            ))
+                            LOG.debug("Updated generateCategoriesStatus for category ${pair.first.name} with final state ${genCatStatus.message} :")
+                            genCatStatus.customStatusCodes.forEach {
+                                LOG.debug("Status ${it.value}, ${it.description}")
+                            }
                         }
                     }
                     deferred.awaitAll()
                     // Updating the Category Log to end it
-                    CategoriesGenerationResultRepository.updateGenerateCategoriesStatus(generateCategoriesStatus.finish())
+                    generateCategoriesStatus = CategoriesGenerationResultRepository.updateGenerateCategoriesStatus(generateCategoriesStatus.finish())
                 }
 
                 // Don't wait for coroutines to finish, start by returning the original object, it will be updated over time
@@ -185,53 +206,75 @@ class ImageGeneratorService {
             }
         }
 
+        // Used to limit to 5 the number of concurrent image requests
+        val requestSemaphore = Semaphore(5)
+
         /**
          * Uses OpenAI and Stable Diffusion APIs to create a list of images from a subject
-         * @param params the different [MugsChatRequestParams] needed to create a good OpenAI request
+         * @param variations the different [Variation]s needed to create the mugs
+         * @param categoryName a [String] used to assign the created mug to its category
+         * @param generateCategoriesStatusUuid the uuid of the [GenerateCategoriesStatus] to be updated when there's news
+         * @param generateCategoryStatus the object to be updated
          * @return the list of [CustomStatusCode]s associated with each variation, serializable version of [HttpStatusCode]
          * @throws [OpenAIUnavailable] when the server is unable to connect with OpenAI's API
          */
         @OptIn(DelicateCoroutinesApi::class)
         @Throws
-        suspend fun generateMugsFromParams(params: MugsChatRequestParams) : List<CustomStatusCode> {
+        suspend fun generateMugsFromVariations(variations: List<Variation>, categoryName: String, generateCategoriesStatusUuid : String = "", generateCategoryStatus: GenerateCategoryStatus? = null) : List<CustomStatusCode> {
             // Get ChatGPT to create a list of variations
-            val variations = try {
-                generateVariationsFromParams(params)
-            } catch (e: IOException) {
-                throw OpenAIUnavailable()
-            }
             var counter = 0
             val deferred = variations.map { variation ->
                 counter++
-                if (counter == 5){
+                if (counter >= 5){
                     delay(1000) // wait 1 second every 5 requests to fit with Stable Diffusion API
+                    counter = 0
                 }
                 GlobalScope.async {
-                    try {
-                        // Use StableDiffusion to create an image for each variation
-                        val stableDiffusionImageSource = generateImageFromVariation(variation)
+                    val statusCode = (
+                        try {
+                            // Use StableDiffusion to create an image for each variation
+                            val stableDiffusionImageSource = withContext(Dispatchers.Default) {
+                                    requestSemaphore.withPermit {
+                                        generateImageFromVariation(variation)
+                                    }
+                                }
 
-                        // Upload generated image to printify
-                        val imageUploadedToPrintify =
-                            uploadImageFromSource(variation.getCleanName(), stableDiffusionImageSource)
+                            // Upload generated image to printify
+                            val imageUploadedToPrintify =
+                                uploadImageFromSource(variation.getCleanName(), stableDiffusionImageSource)
 
-                        imageUploadedToPrintify?.let {
-                            publishMugFromImage(it, variation, params.subject)
-                        } ?: Const.HttpStatusCode_ImageUploadFail
+                            imageUploadedToPrintify?.let {
+                                publishMugFromImage(it, variation, categoryName)
+                            } ?: Const.HttpStatusCode_ImageUploadFail
 
-                    } catch (e: Exception) {
-                        HttpStatusCode(
-                            90,
-                            "Error in the process for variation ${variation.name}, message: ${e.message ?: "no-message"}"
-                        )
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            HttpStatusCode(
+                                90,
+                                "Error in the process for variation ${variation.name}, message: ${e.message ?: "no-message"}"
+                            )
+                        }
+                    ).toCustom()
+
+                    // Update the categoryStatus and the CategoriesStatus at the same time
+                    generateCategoryStatus?.let {
+                        CategoriesGenerationResultRepository.getGenerateCategoriesStatusById(generateCategoriesStatusUuid)?.updateStatus(
+                            generateCategoryStatus.addCustomStatusCode(statusCode)
+                        )?.let {
+                            CategoriesGenerationResultRepository.updateGenerateCategoriesStatus(
+                                it
+                            )
+                        }
                     }
+
+                    statusCode
                 }
             }
 
             return runBlocking {
-                LOG.debug("Awaiting coroutines for subject ${params.subject}:")
-                val listOfStatuses = deferred.awaitAll().map { httpStatusCode -> httpStatusCode.toCustom() }
-                LOG.debug("All coroutines done for subject ${params.subject}:")
+                LOG.debug("Awaiting coroutines for category $categoryName:")
+                val listOfStatuses = deferred.awaitAll()
+                LOG.debug("All coroutines done for category $categoryName:")
                 LOG.debug("{")
                 listOfStatuses.forEach { status ->
                     LOG.debug(status.print())
@@ -250,7 +293,7 @@ class ImageGeneratorService {
          * success, or if a chat response had the wrong format
          */
         @Throws
-        private suspend fun generateVariationsFromParams(params: MugsChatRequestParams) : List<Variation> {
+        suspend fun generateVariationsFromParams(params: MugsChatRequestParams) : List<Variation> {
             val requestCreated = Clock.System.now()
             var apiResponse : HttpResponse
             var exception: Exception?
@@ -297,11 +340,28 @@ class ImageGeneratorService {
         @Throws
         private suspend fun generateImageFromVariation(variation: Variation) : String {
             val requestCreated = Clock.System.now()
-            val httpResponse = apiGenerateImage("${variation.parameters} ${variation.narrative}", variation.negativePrompt)
             try {
-                var imageResponse = httpResponse.body<ImageResponse>()
-                var attempts = 0
 
+                // 10 tries to generate image
+                var httpResponse = apiGenerateImage("${variation.parameters} ${variation.narrative}", variation.negativePrompt)
+                lateinit var imageResponse : ImageResponse
+                do {
+                    var counter = 0
+                    while (counter < 5 && httpResponse.status != HttpStatusCode.OK){
+                        delay(Duration.ofSeconds(3))
+                        counter++
+                        httpResponse = apiGenerateImage("${variation.parameters} ${variation.narrative}", variation.negativePrompt)
+                    }
+                    imageResponse = httpResponse.body<ImageResponse>()
+                    // If we tried 5 times and the status is OK, but we exceeded our rate limit, try again
+                    // Otherwise, either we're good, or we have a failure
+                } while (httpResponse.status == HttpStatusCode.OK && imageResponse.isRateLimitExceeded())
+
+
+
+
+                // If image is processing, and we need to wait (5 attempts)
+                var attempts = 0
                 while (imageResponse.status == "processing" && attempts < 5){
                     val delay = max(imageResponse.eta.toLong(), 5L) // at least 5 seconds
                     LOG.debug("Variation ${variation.name} is queued, eta $delay seconds")
@@ -311,23 +371,29 @@ class ImageGeneratorService {
                     // If imageResponse.id is null, try again without simply trying to fetch the image
                     imageResponse.id?.let {
                         val httpResponseFetch = apiFetchImage(imageResponse.id!!)
-                        imageResponse = httpResponseFetch.body()
+                        imageResponse = try {
+                            httpResponseFetch.body()
+                        } catch (e: Exception) {
+                            LOG.error("Could not decode the output, retrying")
+                            imageResponse.copy(eta = 10f) // keep same response but reduce eta to 10s
+                        }
                     }
                     attempts++
                 }
 
+                LOG.debug("Received generated image")
+
                 return if (imageResponse.output.isNullOrEmpty()){
                         insertNewImageGeneratedLog(variation, "", "Fetch source is empty, tried to fetch $attempts times", requestCreated)
-                        throw Exception("Fetch source is empty")
+                        throw Exception("Fetch source is empty, tried to fetch $attempts times. Rate exceeded: ${imageResponse.isRateLimitExceeded()}")
                     } else {
                     insertNewImageGeneratedLog(variation, imageResponse.output!![0], "", requestCreated)
                         imageResponse.output!![0]
                     }
 
             } catch (e: Exception) {
-                e.printStackTrace()
-                insertNewImageGeneratedLog(variation, "", e.message ?: "Unknown error", requestCreated)
-                throw e
+                insertNewImageGeneratedLog(variation, "", "Stable Diffusion server error", requestCreated)
+                throw Exception("Stable Diffusion server error", e)
             }
         }
 
@@ -335,6 +401,7 @@ class ImageGeneratorService {
          * Calls [PrintifyService] to upload an image from a fileName and a source url
          */
         private suspend fun uploadImageFromSource(fileName: String, imageSource: String) : ImageForUploadReceive? {
+            LOG.debug("Uploading image $fileName with source $imageSource")
             var imageForUploadReceive : ImageForUploadReceive? = null
             var nbTries = 0
             while (imageForUploadReceive == null && nbTries < 5){
