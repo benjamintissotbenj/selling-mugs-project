@@ -198,16 +198,14 @@ fun Application.scheduleMugCreation(){
             LOG.debug("Starting daily mug creation")
             GlobalScope.launch {
                 val status = try {
-                    CategoriesGenerationResultRepository.updateGenerateCategoriesStatus (
-                        ImageGeneratorService.generateCategoriesAndMugs(
-                            CategoriesChatRequestParams(
-                                1,
-                                10,
-                                null,
-                                false
-                            )
+                    ImageGeneratorService.generateCategoriesAndMugs(
+                        CategoriesChatRequestParams(
+                            1,
+                            10,
+                            null,
+                            false
                         )
-                    )
+                    )?.let { CategoriesGenerationResultRepository.updateGenerateCategoriesStatus (it) }
                 } catch (e: Exception) {
                     e.printStackTrace()
                     null

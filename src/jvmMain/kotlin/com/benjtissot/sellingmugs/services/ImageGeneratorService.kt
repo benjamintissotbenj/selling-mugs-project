@@ -42,10 +42,10 @@ class ImageGeneratorService {
          * @return the list of status codes to give feedback in the front-end of how well this went
          */
         @OptIn(DelicateCoroutinesApi::class)
-        suspend fun generateCategoriesAndMugs(params: CategoriesChatRequestParams) : GenerateCategoriesStatus {
+        suspend fun generateCategoriesAndMugs(params: CategoriesChatRequestParams) : GenerateCategoriesStatus? {
             val generateCategoriesStatusUuid = genUuid()
             val dateSubmitted = Clock.System.now()
-            var generateCategoriesStatus = GenerateCategoriesStatus(
+            CategoriesGenerationResultRepository.updateGenerateCategoriesStatus(GenerateCategoriesStatus(
                     generateCategoriesStatusUuid,
                     "pending",
                     params,
@@ -53,6 +53,7 @@ class ImageGeneratorService {
                     dateSubmitted = dateSubmitted,
                     dateReturned = Clock.System.now()
                 )
+            )
             return try {
                 val categoriesAndStyle = generateCategories(params.amountOfCategories, params.newCategoriesOnly)
 
@@ -63,7 +64,7 @@ class ImageGeneratorService {
                         // Update the categories status log
                         val catRequestStarted = Clock.System.now()
                         var genCatStatus = GenerateCategoryStatus(pair.first, "pending", emptyList(), dateSubmitted = catRequestStarted, dateReturned = Clock.System.now())
-                        generateCategoriesStatus = CategoriesGenerationResultRepository.updateGenerateCategoriesStatus(generateCategoriesStatus.addStatus(genCatStatus))
+                        CategoriesGenerationResultRepository.addStatusTo(generateCategoriesStatusUuid, genCatStatus)
 
                         // Launch a coroutine to update the status in real time
                         GlobalScope.async {
@@ -84,9 +85,7 @@ class ImageGeneratorService {
                                 GenerateCategoryStatus(pair.first, e.message, emptyList(), dateSubmitted = catRequestStarted, dateReturned = Clock.System.now())
                             }
                             // Final update of the CategoryStatus here
-                            generateCategoriesStatus = CategoriesGenerationResultRepository.updateGenerateCategoriesStatus(generateCategoriesStatus.updateStatus(
-                                genCatStatus
-                            ))
+                            CategoriesGenerationResultRepository.updateStatusOf(generateCategoriesStatusUuid, genCatStatus)
                             LOG.debug("Updated generateCategoriesStatus for category ${pair.first.name} with final state ${genCatStatus.message} :")
                             genCatStatus.customStatusCodes.forEach {
                                 LOG.debug("Status ${it.value}, ${it.description}")
@@ -95,19 +94,19 @@ class ImageGeneratorService {
                     }
                     deferred.awaitAll()
                     // Updating the Category Log to end it
-                    generateCategoriesStatus = CategoriesGenerationResultRepository.updateGenerateCategoriesStatus(generateCategoriesStatus.finish())
+                    CategoriesGenerationResultRepository.finish(generateCategoriesStatusUuid)
                 }
 
                 // Don't wait for coroutines to finish, start by returning the original object, it will be updated over time
-                generateCategoriesStatus
+                CategoriesGenerationResultRepository.getGenerateCategoriesStatusById(generateCategoriesStatusUuid)
             } catch (e: Exception) {
                 e.printStackTrace()
-                generateCategoriesStatus.copy(
+                CategoriesGenerationResultRepository.getGenerateCategoriesStatusById(generateCategoriesStatusUuid)?.copy(
                     message = e.message ?: "Something went wrong, consult logs."
                 )
             } catch (e: OpenAIUnavailable){
                 e.printStackTrace()
-                generateCategoriesStatus.copy(message = e.message)
+                CategoriesGenerationResultRepository.getGenerateCategoriesStatusById(generateCategoriesStatusUuid)?.copy(message = e.message)
             }
         }
 

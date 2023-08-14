@@ -75,9 +75,9 @@ fun Route.openAIRouting(){
                 }
                 if (chatRequestParams != null) {
                     val status = try {
-                        CategoriesGenerationResultRepository.updateGenerateCategoriesStatus (
-                            ImageGeneratorService.generateCategoriesAndMugs(chatRequestParams)
-                        )
+                        ImageGeneratorService.generateCategoriesAndMugs(chatRequestParams)?.let {
+                            CategoriesGenerationResultRepository.updateGenerateCategoriesStatus (it)
+                        }
                     } catch (e: Exception) {
                         e.printStackTrace()
                         null
