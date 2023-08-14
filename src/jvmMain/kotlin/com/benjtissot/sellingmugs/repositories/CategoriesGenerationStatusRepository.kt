@@ -4,6 +4,7 @@ import com.benjtissot.sellingmugs.entities.openAI.GenerateCategoriesStatus
 import com.benjtissot.sellingmugs.entities.openAI.GenerateCategoryStatus
 import com.benjtissot.sellingmugs.entities.stableDiffusion.ImageGeneratedLog
 import database
+import org.litote.kmongo.descending
 import org.litote.kmongo.eq
 import org.litote.kmongo.upsert
 
@@ -12,6 +13,13 @@ val generateCategoriesStatusCollection = database.getCollection<GenerateCategori
 class CategoriesGenerationResultRepository {
     companion object {
 
+
+        /**
+         * Returns a list of all the statuses
+         */
+        suspend fun getAllStatuses(): List<GenerateCategoriesStatus> {
+            return generateCategoriesStatusCollection.find().sort(descending(GenerateCategoriesStatus::dateSubmitted)).toList()
+        }
 
         /**
          * @param id the [GenerateCategoriesStatus.id] to be retrieved

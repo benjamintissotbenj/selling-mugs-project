@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.js.timers.Timeout
 import kotlinx.js.timers.clearInterval
 import kotlinx.js.timers.setInterval
+import mui.icons.material.DataThresholding
 import mui.icons.material.PersonOutline
 import mui.material.IconButton
 import react.FC
@@ -240,11 +241,27 @@ val AdminPanelPage = FC<NavigationProps> { props ->
 
                 IconButton {
                     div {
+                        css {
+                            marginRight = 1.vh
+                        }
                         +"Open User Info"
                     }
                     PersonOutline()
                     onClick = {
                         props.navigate.invoke(USER_INFO_PATH)
+                    }
+                }
+
+                IconButton {
+                    div {
+                        css {
+                            marginRight = 1.vh
+                        }
+                        +"Show generation results"
+                    }
+                    DataThresholding()
+                    onClick = {
+                        props.navigate.invoke(GENERATION_RESULTS_PATH)
                     }
                 }
 

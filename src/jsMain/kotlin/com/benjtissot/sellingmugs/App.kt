@@ -137,6 +137,15 @@ val App = FC<Props> {
                         internalPage = ProductInfoPage
                     }
                 }
+                Route {
+                    path = GENERATION_RESULTS_PATH
+                    element = BasicPage.create{
+                        session = sessionApp!!
+                        updateSession = updateSessionApp
+                        setAlert = {alertState -> setAlert(alertState)}
+                        internalPage = GenerationResultsPage
+                    }
+                }
             }
         }
 

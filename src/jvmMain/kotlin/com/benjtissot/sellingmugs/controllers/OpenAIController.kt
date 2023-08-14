@@ -108,6 +108,10 @@ fun Route.openAIRouting(){
                     }
                 }
             }
+
+            get {
+                call.respond(CategoriesGenerationResultRepository.getAllStatuses())
+            }
         }
     }
 }

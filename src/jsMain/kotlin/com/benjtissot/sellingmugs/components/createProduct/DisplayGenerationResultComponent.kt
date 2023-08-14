@@ -146,34 +146,56 @@ val DisplayCategoriesGenerationResultComponent = FC<DisplayCategoriesGenerationR
                 css {
                     componentTitle()
                     fontWeight = FontWeight.normal
+                    fontSmall()
                 }
-                +props.status.message
+                div {
+                    css {
+                        display = Display.flex
+                        flexDirection = FlexDirection.row
+                        justifyContent = JustifyContent.spaceBetween
+                        alignItems = AlignItems.center
+                    }
+                    +"Success"
+                    div {
+                        css { fontNormal() }
+                        +"State: ${props.status.message}"
+                    }
+                    +"Completion"
+                }
             }
             div {
                 css {
                     width = 100.pct
-                    paddingInline = 5.pct
+                    paddingInline = 3.pct
                     boxSizing = BoxSizing.borderBox
                     display = Display.flex
                     flexDirection = FlexDirection.rowReverse
+                    justifyContent = JustifyContent.spaceEvenly
                     alignItems = AlignItems.center
                     fontNormal()
                 }
                 div {
                     css {
-                        width = "fit-content".unsafeCast<Width>()
+                        width = 10.pct
                     }
                     +"${props.status.calculateCompletionPercentage()}%"
                 }
                 LinearProgress {
                     css {
-                        width = 90.pct
+                        width = 80.pct
                         marginRight = 5.pct
+                        marginLeft = 5.pct
                         boxSizing = BoxSizing.borderBox
                     }
                     variant = LinearProgressVariant.buffer
                     valueBuffer = props.status.calculateCompletionPercentage()
                     value = props.status.calculateSuccessPercentage()
+                }
+                div {
+                    css {
+                        width = 10.pct
+                    }
+                    +"${props.status.calculateSuccessPercentage()}%"
                 }
             }
 

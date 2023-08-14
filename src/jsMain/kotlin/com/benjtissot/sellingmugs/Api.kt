@@ -479,3 +479,7 @@ suspend fun generateDesign(params: MugsChatRequestParams): HttpResponse {
 suspend fun getGenerateCategoriesStatus(id: String) : HttpResponse {
     return jsonClient.get("$OPEN_AI_PATH${GenerateCategoriesStatus.path}/$id")
 }
+
+suspend fun getGenerateCategoriesStatusList() : HttpResponse {
+    return jsonClient.get("$OPEN_AI_PATH${GenerateCategoriesStatus.path}")
+}
