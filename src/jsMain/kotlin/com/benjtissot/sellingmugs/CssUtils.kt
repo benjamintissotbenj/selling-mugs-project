@@ -110,10 +110,10 @@ fun PropertiesBuilder.componentTitle(){
     textAlign = TextAlign.center
     fontNormal()
     fontWeight = FontWeight.bold
-    height = 10.pct
-    minHeight = 8.vh
+    height = 5.pct
+    minHeight = 5.vh
     width = 100.pct
-    marginBottom = 2.pct
+    marginTop = 2.pct
     boxSizing = BoxSizing.borderBox
     display = Display.flex
     flexDirection = FlexDirection.column

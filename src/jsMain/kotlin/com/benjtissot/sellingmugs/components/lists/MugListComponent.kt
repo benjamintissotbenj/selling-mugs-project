@@ -59,124 +59,77 @@ val MugListComponent = FC<MugListProps> {
                 }
                 +it
             }
-            div {
-                css {
-                    width = "fit-content".unsafeCast<Width>()
-                    display = Display.flex
-                    flexDirection = FlexDirection.row
-                    justifyContent = JustifyContent.spaceBetween
-                    alignItems = AlignItems.center
-                    marginRight = 5.pct
-                }
-                SearchBarComponent {
-                    searchString = props.searchString
-                    onSubmit = { searchString ->
-                        props.onSearch(searchString)
+            props.availableCategories?.let {
+                div {
+                    css {
+                        width = "fit-content".unsafeCast<Width>()
+                        display = Display.flex
+                        flexDirection = FlexDirection.row
+                        justifyContent = JustifyContent.spaceBetween
+                        alignItems = AlignItems.center
+                        marginRight = 5.pct
+                    }
+                    SearchBarComponent {
+                        searchString = props.searchString
+                        onSubmit = { searchString ->
+                            props.onSearch(searchString)
+                        }
                     }
                 }
             }
         }
     }
 
-    div {
-        css {
-            display = Display.flex
-            flexDirection = FlexDirection.row
-            justifyContent = JustifyContent.spaceBetween
-            alignItems = AlignItems.center
-            paddingBlock = 2.vh
-            height = 3.vh
-            width = 100.pct
-            color = Color(Const.ColorCode.BLACK.code())
-        }
-        div {
-            css {
-                fontNormal()
-                marginLeft = 5.pct
-                width = 35.pct
-            }
-            +"Modifiers :"
-        }
-        // Order By
+    props.availableCategories?.let {
         div {
             css {
                 display = Display.flex
-                flexDirection = FlexDirection.rowReverse
+                flexDirection = FlexDirection.row
+                justifyContent = JustifyContent.spaceBetween
                 alignItems = AlignItems.center
-                width = 25.pct
-            }
-            Select {
-                // Attributes
-                css {
-                    width = 50.pct
-                    minWidth = 50.pct
-                    height = 3.rem
-                    maxHeight = 5.vh
-                    minHeight = 40.px
-                    fontNormal()
-                    marginRight = 1.vw
-                }
-
-                value = props.orderBy.value
-                onChange = { event, _ ->
-                    props.onChangeOrderBy(Const.OrderBy.valueOf(event.target.value))
-                }
-
-                // Children, in the selector
-                Const.OrderBy.values().forEach { orderByVal ->
-                    MenuItem {
-                        value = orderByVal.value
-                        +orderByVal.cleanName()
-                    }
-                }
+                paddingBlock = 2.vh
+                height = 3.vh
+                width = 100.pct
+                color = Color(Const.ColorCode.BLACK.code())
             }
             div {
                 css {
                     fontNormal()
-                    marginInline = 1.vw
+                    marginLeft = 5.pct
+                    width = 35.pct
                 }
-                +"Order by:"
+                +"Modifiers :"
             }
-        }
-
-        // Filter by category
-        props.availableCategories?.let {
+            // Order By
             div {
                 css {
                     display = Display.flex
                     flexDirection = FlexDirection.rowReverse
                     alignItems = AlignItems.center
-                    width = 40.pct
+                    width = 25.pct
                 }
                 Select {
                     // Attributes
                     css {
-                        width = 70.pct
-                        minWidth = 70.pct
+                        width = 50.pct
+                        minWidth = 50.pct
                         height = 3.rem
                         maxHeight = 5.vh
                         minHeight = 40.px
                         fontNormal()
-                        marginRight = 4.vw
+                        marginRight = 1.vw
                     }
 
-
-                    multiple = true
-                    value = props.selectedCategories.map { cat -> cat.id }.toTypedArray()
+                    value = props.orderBy.value
                     onChange = { event, _ ->
-                        val tempCategoriesId = event.target.value.unsafeCast<Array<String>>()
-                        val tempCategoriesIdList: ArrayList<String> = arrayListOf()
-                        tempCategoriesIdList.addAll(tempCategoriesId)
-                        props.onChangeSelectedCategories(tempCategoriesIdList)
-
+                        props.onChangeOrderBy(Const.OrderBy.valueOf(event.target.value))
                     }
-
 
                     // Children, in the selector
-                    props.availableCategories?.forEach { category ->
+                    Const.OrderBy.values().forEach { orderByVal ->
                         MenuItem {
-                            value = category.id
-                            +category.name
+                            value = orderByVal.value
+                            +orderByVal.cleanName()
                         }
                     }
                 }
@@ -185,11 +138,62 @@ val MugListComponent = FC<MugListProps> {
                         fontNormal()
                         marginInline = 1.vw
                     }
-                    +"Filter by:"
+                    +"Order by:"
+                }
+            }
+
+            // Filter by category
+            props.availableCategories?.let {
+                div {
+                    css {
+                        display = Display.flex
+                        flexDirection = FlexDirection.rowReverse
+                        alignItems = AlignItems.center
+                        width = 40.pct
+                    }
+                    Select {
+                        // Attributes
+                        css {
+                            width = 70.pct
+                            minWidth = 70.pct
+                            height = 3.rem
+                            maxHeight = 5.vh
+                            minHeight = 40.px
+                            fontNormal()
+                            marginRight = 4.vw
+                        }
+
+
+                        multiple = true
+                        value = props.selectedCategories.map { cat -> cat.id }.toTypedArray()
+                        onChange = { event, _ ->
+                            val tempCategoriesId = event.target.value.unsafeCast<Array<String>>()
+                            val tempCategoriesIdList: ArrayList<String> = arrayListOf()
+                            tempCategoriesIdList.addAll(tempCategoriesId)
+                            props.onChangeSelectedCategories(tempCategoriesIdList)
+
+                        }
+
+
+                        // Children, in the selector
+                        props.availableCategories?.forEach { category ->
+                            MenuItem {
+                                value = category.id
+                                +category.name
+                            }
+                        }
+                    }
+                    div {
+                        css {
+                            fontNormal()
+                            marginInline = 1.vw
+                        }
+                        +"Filter by:"
+                    }
                 }
             }
         }
-}
+    }
 
     if (props.displayStyle == Const.mugListDisplayList){
         div {

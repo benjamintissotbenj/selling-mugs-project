@@ -158,8 +158,12 @@ fun Application.createRoutes(){
         get("/{${Const.path}}/{${Const.param}...}"){
             val path = call.parameters[Const.path] ?: error("Invalid get request")
             redirectPath = if (path == Const.productInfo) {
-                val mugPrintifyId = call.parameters.getAll(Const.param)?.get(0) ?: error("Invalid get request")
-                "/$path/$mugPrintifyId"
+                val param = call.parameters.getAll(Const.param)?.get(0) ?: error("Invalid get request")
+                if (param == "favicon.ico" || param == "static"){
+                    "/"
+                } else {
+                    "/$path/$param"
+                }
             } else if (call.parameters.getAll(Const.param)?.isEmpty() == false){
                   if (call.parameters.getAll(Const.param)?.get(0) == "favicon.ico"){
                       ""
@@ -183,7 +187,7 @@ fun Application.createRoutes(){
 fun Application.scheduleMugCreation(){
     // We're setting mug creations every day at 18h00m00
     val today = Calendar.getInstance()
-    today[Calendar.HOUR_OF_DAY] = 18
+    today[Calendar.HOUR_OF_DAY] = 22
     today[Calendar.MINUTE] = 0
     today[Calendar.SECOND] = 0
 
@@ -194,16 +198,14 @@ fun Application.scheduleMugCreation(){
             LOG.debug("Starting daily mug creation")
             GlobalScope.launch {
                 val status = try {
-                    CategoriesGenerationResultRepository.updateGenerateCategoriesStatus (
-                        ImageGeneratorService.generateCategoriesAndMugs(
-                            CategoriesChatRequestParams(
-                                1,
-                                10,
-                                null,
-                                false
-                            )
+                    ImageGeneratorService.generateCategoriesAndMugs(
+                        CategoriesChatRequestParams(
+                            1,
+                            10,
+                            null,
+                            false
                         )
-                    )
+                    )?.let { CategoriesGenerationResultRepository.updateGenerateCategoriesStatus (it) }
                 } catch (e: Exception) {
                     e.printStackTrace()
                     null

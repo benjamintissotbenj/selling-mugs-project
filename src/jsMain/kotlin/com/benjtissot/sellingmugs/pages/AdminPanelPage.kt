@@ -6,23 +6,26 @@ import com.benjtissot.sellingmugs.components.createProduct.CreateProductComponen
 import com.benjtissot.sellingmugs.components.createProduct.DisplayCategoriesGenerationResultComponent
 import com.benjtissot.sellingmugs.components.createProduct.DisplayGenerationResultComponent
 import com.benjtissot.sellingmugs.components.lists.ManageUsersComponent
-import com.benjtissot.sellingmugs.entities.local.Category
 import com.benjtissot.sellingmugs.entities.local.User
-import com.benjtissot.sellingmugs.entities.openAI.CategoriesChatRequestParams
-import com.benjtissot.sellingmugs.entities.openAI.CustomStatusCode
-import com.benjtissot.sellingmugs.entities.openAI.GenerateCategoriesStatus
-import com.benjtissot.sellingmugs.entities.openAI.GenerateCategoryStatus
+import com.benjtissot.sellingmugs.entities.openAI.*
 import csstype.*
 import emotion.react.css
 import io.ktor.client.call.*
 import io.ktor.http.*
+import io.ktor.http.HttpStatusCode.Companion.BadRequest
+import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.util.logging.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
+import kotlinx.js.timers.Timeout
+import kotlinx.js.timers.clearInterval
+import kotlinx.js.timers.setInterval
+import mui.icons.material.DataThresholding
 import mui.icons.material.PersonOutline
 import mui.material.IconButton
 import react.FC
 import react.dom.html.ReactHTML.div
+import react.useEffect
 import react.useEffectOnce
 import react.useState
 
@@ -61,9 +64,55 @@ val AdminPanelPage = FC<NavigationProps> { props ->
     )
     */
     var generateCategoriesStatus : GenerateCategoriesStatus? by useState(null)
+    var getGenerateCategoriesStatusTimeout: Timeout? by useState(null)
 
+    // TODO : every two seconds, query to get an updated object
+    // TODO in backend, return an object when created, update the object at every stage of the process (much better)
     useEffectOnce {
         scope.launch {
+        }
+    }
+
+    useEffect {
+        if (generateCategoriesStatus != null && generateCategoriesStatus!!.pending) {
+            if (getGenerateCategoriesStatusTimeout == null) {
+                getGenerateCategoriesStatusTimeout = setInterval({
+                    scope.launch {
+                        val httpResponse = getGenerateCategoriesStatus(generateCategoriesStatus!!.id)
+                        when (httpResponse.status){
+                            // TODO: issue with update here, current percentages not working for some reason
+                            OK -> {
+                                val temp = httpResponse.body<GenerateCategoriesStatus>()
+                                val currentCatStat = generateCategoriesStatus!! // for some reason, percentages optimised out of JS if we don't do this
+                                val newSuccessPercentage =  temp.calculateSuccessPercentage()
+                                val currentSuccessPercentage = currentCatStat.calculateSuccessPercentage()
+                                val currentCompletionPercentage = currentCatStat.calculateCompletionPercentage()
+                                when (val newCompletionPercentage = temp.calculateCompletionPercentage()){
+                                    100 -> {
+                                        props.setAlert(successAlert("You have successfully your mugs with $newCompletionPercentage%!", stayOn = true))
+                                        generateCategoriesStatus = temp
+                                    }
+                                    0 -> generateCategoriesStatus = temp
+                                    else -> {
+                                        if (newCompletionPercentage > currentCompletionPercentage ||
+                                            (newCompletionPercentage == currentCompletionPercentage && newSuccessPercentage > currentSuccessPercentage)
+                                        ){
+                                            props.setAlert(infoAlert("Updated info on the categories : $newCompletionPercentage% completion, $newSuccessPercentage% success", stayOn = true))
+                                            LOG.debug("Old compl = $currentCompletionPercentage, new compl = $newCompletionPercentage")
+                                            generateCategoriesStatus = temp
+                                            delay(100L)
+                                        }
+                                    }
+                                }
+                            }
+                            BadRequest -> props.setAlert(errorAlert("Bad request"))
+                            else -> props.setAlert(errorAlert("Something went wrong, check the logs"))
+                        }
+                    }
+                }, 2000)
+            }
+        } else {
+            getGenerateCategoriesStatusTimeout?.let { clearInterval(it) }
         }
     }
 
@@ -101,7 +150,7 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                     }
                 } else if (generateCategoriesStatus != null) {
                     DisplayCategoriesGenerationResultComponent {
-                        list = generateCategoriesStatus!!.statuses
+                        status = generateCategoriesStatus!!
                         title  = "Advanced category generation results"
                     }
                 } else {
@@ -149,15 +198,9 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                                 HttpStatusCode.OK -> {
                                     scope.launch {
                                         val status: GenerateCategoriesStatus = httpResponse.body()
-                                        status.statuses.forEach { generateCategoryStatus ->
-                                            println("Category ${generateCategoryStatus.category.name}")
-                                            generateCategoryStatus.customStatusCodes.forEach { statusCode ->
-                                                println(statusCode.print())
-                                            }
-                                        }
                                         generateCategoriesStatus = status
                                     }
-                                    props.setAlert(successAlert("You have successfully created your categories and your mugs"))
+                                    props.setAlert(infoAlert("You are now creating your categories and your mugs. Waiting for an update.", stayOn = true))
                                 }
 
                                 Const.HttpStatusCode_OpenAIUnavailable -> props.setAlert(errorAlert("OpenAI is unavailable, please try later", stayOn = true))
@@ -198,11 +241,27 @@ val AdminPanelPage = FC<NavigationProps> { props ->
 
                 IconButton {
                     div {
+                        css {
+                            marginRight = 1.vh
+                        }
                         +"Open User Info"
                     }
                     PersonOutline()
                     onClick = {
                         props.navigate.invoke(USER_INFO_PATH)
+                    }
+                }
+
+                IconButton {
+                    div {
+                        css {
+                            marginRight = 1.vh
+                        }
+                        +"Show generation results"
+                    }
+                    DataThresholding()
+                    onClick = {
+                        props.navigate.invoke(GENERATION_RESULTS_PATH)
                     }
                 }
 

@@ -1,12 +1,13 @@
 package com.benjtissot.sellingmugs.components.createProduct
 
 import com.benjtissot.sellingmugs.*
-import com.benjtissot.sellingmugs.entities.openAI.CustomStatusCode
-import com.benjtissot.sellingmugs.entities.openAI.GenerateCategoryStatus
+import com.benjtissot.sellingmugs.entities.openAI.*
 import csstype.*
 import emotion.react.css
 import io.ktor.util.logging.*
 import mui.material.Box
+import mui.material.LinearProgress
+import mui.material.LinearProgressVariant
 import mui.material.Popper
 import org.w3c.dom.HTMLDivElement
 import react.FC
@@ -72,7 +73,7 @@ val DisplayGenerationResultComponent = FC<DisplayGenerationResultProps> { props 
             // Components
             CustomStatusCodeListComponent {
                 list = props.list
-                height = 90.pct
+                height = if (props.list.isNotEmpty()) 90.pct else 0.pct
                 onMouseEnterMessage = { div, text ->
                     focusedText = text
                     target = div
@@ -88,8 +89,9 @@ val DisplayGenerationResultComponent = FC<DisplayGenerationResultProps> { props 
 }
 
 external interface DisplayCategoriesGenerationResultProps : NavigationProps {
-    var list : List<GenerateCategoryStatus>
+    var status : GenerateCategoriesStatus
     var title : String
+
 }
 
 
@@ -131,6 +133,7 @@ val DisplayCategoriesGenerationResultComponent = FC<DisplayCategoriesGenerationR
                 width = 100.pct
                 paddingInline = 2.vw
                 paddingBottom = 2.vh
+                boxSizing = BoxSizing.borderBox
             }
 
             // Title
@@ -140,8 +143,64 @@ val DisplayCategoriesGenerationResultComponent = FC<DisplayCategoriesGenerationR
                 }
                 +props.title
             }
+            div {
+                css {
+                    componentTitle()
+                    fontWeight = FontWeight.normal
+                    fontSmall()
+                }
+                div {
+                    css {
+                        display = Display.flex
+                        flexDirection = FlexDirection.row
+                        justifyContent = JustifyContent.spaceBetween
+                        alignItems = AlignItems.center
+                    }
+                    +"Success"
+                    div {
+                        css { fontNormal() }
+                        +"State: ${props.status.message}"
+                    }
+                    +"Completion"
+                }
+            }
+            div {
+                css {
+                    width = 100.pct
+                    paddingInline = 3.pct
+                    boxSizing = BoxSizing.borderBox
+                    display = Display.flex
+                    flexDirection = FlexDirection.rowReverse
+                    justifyContent = JustifyContent.spaceEvenly
+                    alignItems = AlignItems.center
+                    fontNormal()
+                }
+                div {
+                    css {
+                        width = 10.pct
+                    }
+                    +"${props.status.calculateCompletionPercentage()}%"
+                }
+                LinearProgress {
+                    css {
+                        width = 80.pct
+                        marginRight = 5.pct
+                        marginLeft = 5.pct
+                        boxSizing = BoxSizing.borderBox
+                    }
+                    variant = LinearProgressVariant.buffer
+                    valueBuffer = props.status.calculateCompletionPercentage()
+                    value = props.status.calculateSuccessPercentage()
+                }
+                div {
+                    css {
+                        width = 10.pct
+                    }
+                    +"${props.status.calculateSuccessPercentage()}%"
+                }
+            }
 
-            props.list.forEach { categoryStatus ->
+            props.status.statuses.forEach { categoryStatus ->
                 // Title
                 div {
                     css {
@@ -154,7 +213,7 @@ val DisplayCategoriesGenerationResultComponent = FC<DisplayCategoriesGenerationR
                 CustomStatusCodeListComponent {
                     list = categoryStatus.customStatusCodes
                     height = "fit-content".unsafeCast<Height>()
-                    minHeight = 30.vh
+                    minHeight = 20.vh
                     maxHeight = 80.vh
                     onMouseEnterMessage = { div, text ->
                         focusedText = text

@@ -7,6 +7,7 @@ import com.benjtissot.sellingmugs.entities.local.Artwork
 import com.benjtissot.sellingmugs.entities.local.Category
 import com.benjtissot.sellingmugs.entities.local.Mug
 import com.benjtissot.sellingmugs.entities.openAI.CategoriesChatRequestParams
+import com.benjtissot.sellingmugs.entities.openAI.GenerateCategoriesStatus
 import com.benjtissot.sellingmugs.entities.openAI.MugsChatRequestParams
 import com.benjtissot.sellingmugs.entities.openAI.OpenAIUnavailable
 import com.benjtissot.sellingmugs.repositories.CategoriesGenerationResultRepository
@@ -17,6 +18,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.util.logging.*
+import java.io.IOException
 
 private val LOG = KtorSimpleLogger("OpenAIController.kt")
 
@@ -47,7 +49,12 @@ fun Route.openAIRouting(){
             post {
                 val params: MugsChatRequestParams = call.receive()
                 try {
-                    call.respond(ImageGeneratorService.generateMugsFromParams(params))
+                    val variations = try {
+                        ImageGeneratorService.generateVariationsFromParams(params)
+                    } catch (e: IOException) {
+                        throw OpenAIUnavailable()
+                    }
+                    call.respond(ImageGeneratorService.generateMugsFromVariations(variations, params.subject))
                 } catch (e: OpenAIUnavailable) {
                     e.printStackTrace()
                     call.respond(Const.HttpStatusCode_OpenAIUnavailable)
@@ -68,9 +75,9 @@ fun Route.openAIRouting(){
                 }
                 if (chatRequestParams != null) {
                     val status = try {
-                        CategoriesGenerationResultRepository.updateGenerateCategoriesStatus (
-                            ImageGeneratorService.generateCategoriesAndMugs(chatRequestParams)
-                        )
+                        ImageGeneratorService.generateCategoriesAndMugs(chatRequestParams)?.let {
+                            CategoriesGenerationResultRepository.updateGenerateCategoriesStatus (it)
+                        }
                     } catch (e: Exception) {
                         e.printStackTrace()
                         null
@@ -83,6 +90,27 @@ fun Route.openAIRouting(){
                         call.respond(status)
                     }
                 }
+            }
+        }
+
+
+        route(GenerateCategoriesStatus.path){
+            route("/{${Const.id}}") {
+                get {
+                    val id = call.parameters[Const.id] ?: ""
+                    val status = CategoriesGenerationResultRepository.getGenerateCategoriesStatusById(id)
+                    if (id.isEmpty()){
+                        call.respond(HttpStatusCode.BadRequest)
+                    } else if (status == null) {
+                        call.respond(HttpStatusCode.InternalServerError)
+                    } else {
+                        call.respond(status)
+                    }
+                }
+            }
+
+            get {
+                call.respond(CategoriesGenerationResultRepository.getAllStatuses())
             }
         }
     }

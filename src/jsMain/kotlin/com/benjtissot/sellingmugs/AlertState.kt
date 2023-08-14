@@ -31,9 +31,10 @@ fun showAlert(
  */
 fun successAlert(
     message: String,
-    title: String = "Success"
+    title: String = "Success",
+    stayOn: Boolean = false
 ): AlertState {
-    return showAlert(title, message, AlertColor.success)
+    return showAlert(title, message, AlertColor.success, stayOn = stayOn)
 }
 
 /**

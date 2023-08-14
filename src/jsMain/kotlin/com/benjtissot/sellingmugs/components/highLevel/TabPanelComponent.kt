@@ -49,6 +49,9 @@ val CreateTabsComponent = FC <CreateTabsProps> { props ->
                 sx {
                     "{ borderBottom: 1, borderColor: 'divider' }"
                 }
+                css {
+                    height = 5.pct
+                }
                 Tabs {
                     variant = TabsVariant.fullWidth
                     value = tabValue

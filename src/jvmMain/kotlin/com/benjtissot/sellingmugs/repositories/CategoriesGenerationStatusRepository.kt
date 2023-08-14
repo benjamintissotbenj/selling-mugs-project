@@ -1,8 +1,10 @@
 package com.benjtissot.sellingmugs.repositories
 
 import com.benjtissot.sellingmugs.entities.openAI.GenerateCategoriesStatus
+import com.benjtissot.sellingmugs.entities.openAI.GenerateCategoryStatus
 import com.benjtissot.sellingmugs.entities.stableDiffusion.ImageGeneratedLog
 import database
+import org.litote.kmongo.descending
 import org.litote.kmongo.eq
 import org.litote.kmongo.upsert
 
@@ -11,6 +13,13 @@ val generateCategoriesStatusCollection = database.getCollection<GenerateCategori
 class CategoriesGenerationResultRepository {
     companion object {
 
+
+        /**
+         * Returns a list of all the statuses
+         */
+        suspend fun getAllStatuses(): List<GenerateCategoriesStatus> {
+            return generateCategoriesStatusCollection.find().sort(descending(GenerateCategoriesStatus::dateSubmitted)).toList()
+        }
 
         /**
          * @param id the [GenerateCategoriesStatus.id] to be retrieved
@@ -25,6 +34,32 @@ class CategoriesGenerationResultRepository {
         suspend fun updateGenerateCategoriesStatus(generateCategoriesStatus: GenerateCategoriesStatus) : GenerateCategoriesStatus {
             generateCategoriesStatusCollection.updateOneById(generateCategoriesStatus.id, generateCategoriesStatus, upsert())
             return generateCategoriesStatus
+        }
+
+        /**
+         * @param uuid the id of the [GenerateCategoriesStatus] object to be updated
+         * @param generateCategoryStatus the [GenerateCategoryStatus] to be added to the target [GenerateCategoriesStatus]
+         */
+        suspend fun addStatusTo(uuid: String, generateCategoryStatus: GenerateCategoryStatus) {
+            getGenerateCategoriesStatusById(uuid)?.addStatus(generateCategoryStatus)
+                ?.let { updateGenerateCategoriesStatus(it) }
+        }
+
+        /**
+         * @param uuid the id of the [GenerateCategoriesStatus] object to be updated
+         * @param generateCategoryStatus the [GenerateCategoryStatus] to be updated for the target [GenerateCategoriesStatus]
+         */
+        suspend fun updateStatusOf(uuid: String, generateCategoryStatus: GenerateCategoryStatus) {
+            getGenerateCategoriesStatusById(uuid)?.updateStatus(generateCategoryStatus)
+                ?.let { updateGenerateCategoriesStatus(it) }
+        }
+
+        /**
+         * @param uuid the id of the [GenerateCategoriesStatus] object to be terminated
+         */
+        suspend fun finish(uuid: String) {
+            getGenerateCategoriesStatusById(uuid)?.finish()
+                ?.let { updateGenerateCategoriesStatus(it) }
         }
 
 

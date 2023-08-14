@@ -42,4 +42,4 @@ class Message(
 class MugsChatRequestParams(val subject : String, val type: Const.StableDiffusionImageType, val amountOfVariations: Int)
 
 @Serializable
-class CategoriesChatRequestParams(val amountOfCategories: Int, val amountOfVariations: Int, val type: Const.StableDiffusionImageType?, val newCategoriesOnly: Boolean)
+class CategoriesChatRequestParams(val amountOfCategories: Int = 0, val amountOfVariations: Int = 0, val type: Const.StableDiffusionImageType? = null, val newCategoriesOnly: Boolean = false)
