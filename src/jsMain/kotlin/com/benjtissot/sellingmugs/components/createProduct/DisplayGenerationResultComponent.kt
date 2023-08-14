@@ -133,6 +133,7 @@ val DisplayCategoriesGenerationResultComponent = FC<DisplayCategoriesGenerationR
                 width = 100.pct
                 paddingInline = 2.vw
                 paddingBottom = 2.vh
+                boxSizing = BoxSizing.borderBox
             }
 
             // Title

@@ -44,10 +44,15 @@ data class GenerateCategoriesStatus (
         }
     }
 
+    /**
+     * A method to finish a status object
+     */
     fun finish() : GenerateCategoriesStatus {
+        // If some categories are still pending when finishing, there was an error, so category is aborted
+        val newStatuses = statuses.map { if (it.message == "pending") it.copy(message = "Aborted") else it }
         val successPercentage = calculateSuccessPercentage()
         val message = if (successPercentage >= 80) {"Overall Success"} else if (successPercentage >= 30) {"Partial success"} else {"Unsufficient success"}
-        return this.copy(message = message, dateReturned = Clock.System.now(), pending = false)
+        return this.copy(statuses = newStatuses, message = message, dateReturned = Clock.System.now(), pending = false)
     }
 }
 
