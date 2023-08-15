@@ -93,7 +93,7 @@ fun calculateSuccessPercentage(statusCodes : List<CustomStatusCode>, expectedSiz
 }
 
 fun GenerateCategoriesStatus.calculateSuccessPercentage() : Int {
-    return (this.statuses.sumOf { calculateSuccessPercentage(it.customStatusCodes, this.requestParams.amountOfVariations) }.toFloat() / this.statuses.size.toFloat()).toInt()
+    return (this.statuses.sumOf { calculateSuccessPercentage(it.customStatusCodes, this.requestParams.amountOfVariations) }.toFloat() / this.requestParams.amountOfCategories.toFloat()).toInt()
 }
 
 fun GenerateCategoriesStatus.calculateCompletionPercentage() : Int {
