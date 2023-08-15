@@ -24,12 +24,12 @@ private val LOG = KtorSimpleLogger("ProductInfoPage.kt")
 
 val ProductInfoPage = FC<NavigationProps> { props ->
 
-    val mugPrintifyId = useParams()[Const.mugPrintifyId] ?: ""
+    val urlHandle = useParams()[Const.mugShortUrlHandle] ?: ""
     var mug : Mug? by useState(null)
 
     useEffectOnce {
         scope.launch {
-            mug = getMugByPrintifyId(mugPrintifyId)
+            mug = getMugByURLHandle(urlHandle)
         }
     }
     mug?.let {

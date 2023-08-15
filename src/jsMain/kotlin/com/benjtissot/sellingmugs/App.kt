@@ -129,7 +129,7 @@ val App = FC<Props> {
                     }
                 }
                 Route {
-                    path = "$PRODUCT_INFO_PATH/:${Const.mugPrintifyId}"
+                    path = "$PRODUCT_INFO_PATH/:${Const.mugShortUrlHandle}"
                     element = BasicPage.create{
                         session = sessionApp!!
                         updateSession = updateSessionApp

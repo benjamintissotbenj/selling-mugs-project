@@ -5,11 +5,14 @@ import com.benjtissot.sellingmugs.ConfigConst
 import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.HOMEPAGE_PATH
 import com.benjtissot.sellingmugs.controllers.*
+import com.benjtissot.sellingmugs.entities.local.Mug
 import com.benjtissot.sellingmugs.entities.local.Session
 import com.benjtissot.sellingmugs.entities.openAI.CategoriesChatRequestParams
 import com.benjtissot.sellingmugs.entities.openAI.OpenAIUnavailable
 import com.benjtissot.sellingmugs.repositories.CategoriesGenerationResultRepository
+import com.benjtissot.sellingmugs.repositories.MugRepository
 import com.benjtissot.sellingmugs.services.ImageGeneratorService
+import com.benjtissot.sellingmugs.services.MugService
 import com.mongodb.ConnectionString
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*

@@ -36,6 +36,10 @@ class MugRepository {
             return mugCollection.findOne(Mug::printifyId eq printifyId)
         }
 
+        suspend fun getMugByUrlHandle(urlHandle: String) : Mug? {
+            return mugCollection.findOne(Mug::urlHandle eq urlHandle)
+        }
+
         suspend fun getMugById(mugId: String) : Mug? {
             return mugCollection.findOne(Mug::id eq mugId)
         }

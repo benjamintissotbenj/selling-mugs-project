@@ -3,6 +3,7 @@ package com.benjtissot.sellingmugs.entities.local
 import com.benjtissot.sellingmugs.CATEGORY_OBJECT_PATH
 import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.MUG_OBJECT_PATH
+import io.ktor.util.*
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -17,7 +18,8 @@ data class Mug(@SerialName("_id") val id: String,
                var artwork: Artwork,
                var dateCreated: Instant?,
                var fullPrompt: String? = null,
-               var views: Int = 0
+               var views: Int = 0,
+               var urlHandle: String = urlHandle(name, category.name)
 ){
 
     fun getBestPictureSrc() : String {
@@ -33,6 +35,10 @@ data class Mug(@SerialName("_id") val id: String,
         // Idea is that we don't need to define a route and requests in strings. Any changes only need to come from the models
         // then the client and the server are adjusted automatically
         const val path = MUG_OBJECT_PATH
+
+        fun urlHandle(name: String, categoryName: String) : String {
+            return "$name $categoryName".toLowerCasePreservingASCIIRules().replace(" ", "-")
+        }
     }
 }
 

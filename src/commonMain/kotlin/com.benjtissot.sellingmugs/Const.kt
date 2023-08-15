@@ -109,7 +109,7 @@ class Const {
         const val ORDER_FILTER_THREE_MONTHS = "< 3 months"
 
         // Front-end URL params
-        const val mugPrintifyId = "mugPrintifyId"
+        const val mugShortUrlHandle = "mugShortUrlHandle"
 
 
         // Query params
@@ -130,6 +130,7 @@ class Const {
         const val userId = "userId"
         const val public = "public"
         const val printifyId = "printifyId"
+        const val urlHandle = "urlHandle"
         const val mugId = "mugId"
         const val categories = "categories"
         const val count = "count"

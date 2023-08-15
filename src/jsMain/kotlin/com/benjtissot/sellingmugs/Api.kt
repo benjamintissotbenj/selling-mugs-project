@@ -130,6 +130,11 @@ suspend fun getMugByPrintifyId(printifyId: String): Mug? {
     return if (httpResponse.status == HttpStatusCode.OK) httpResponse.body() else null
 }
 
+suspend fun getMugByURLHandle(urlHandle: String): Mug? {
+    val httpResponse = jsonClient.get("${Mug.path}/${Const.productInfo}/$urlHandle")
+    return if (httpResponse.status == HttpStatusCode.OK) httpResponse.body() else null
+}
+
 suspend fun increaseMugViews(printifyId: String) {
     jsonClient.post("${Mug.path}/$printifyId")
 }

@@ -115,6 +115,10 @@ class MugService {
             return MugRepository.getMugByPrintifyId(printifyId)
         }
 
+        suspend fun getMugByUrlHandle(urlHandle: String): Mug? {
+            return MugRepository.getMugByUrlHandle(urlHandle)
+        }
+
         private suspend fun getMugByArtwork(artwork: Artwork): Mug? {
             return MugRepository.getMugByArtwork(artwork)
         }

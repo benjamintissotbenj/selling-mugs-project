@@ -55,7 +55,7 @@ fun Route.mugRouting(){
         }
         route("/{${Const.printifyId}}") {
             get {
-                val printifyId = call.parameters[Const.printifyId] ?: error("Invalid delete request")
+                val printifyId = call.parameters[Const.printifyId] ?: error("Invalid get request")
                 MugService.getMugByPrintifyId(printifyId)?.let {
                     call.respond(it)
                 } ?: let {
@@ -64,8 +64,18 @@ fun Route.mugRouting(){
             }
 
             post {
-                val printifyId = call.parameters[Const.printifyId] ?: error("Invalid delete request")
+                val printifyId = call.parameters[Const.printifyId] ?: error("Invalid post request")
                 MugService.increaseMugViews(printifyId)
+            }
+        }
+        route("/${Const.productInfo}/{${Const.urlHandle}}") {
+            get {
+                val urlHandle = call.parameters[Const.urlHandle] ?: error("Invalid get request")
+                MugService.getMugByUrlHandle(urlHandle)?.let {
+                    call.respond(it)
+                } ?: let {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
             }
         }
 

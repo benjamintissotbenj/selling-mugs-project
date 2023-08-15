@@ -140,7 +140,7 @@ val Homepage = FC<NavigationProps> { props ->
                 scope.launch {
                     increaseMugViews(mug.printifyId)
                 }
-                props.navigate.invoke("$PRODUCT_INFO_PATH/${mug.printifyId}")
+                props.navigate.invoke("$PRODUCT_INFO_PATH/${mug.urlHandle}")
             }
         }
     }
