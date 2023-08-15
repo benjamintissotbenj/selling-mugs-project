@@ -368,7 +368,7 @@ val MugDetailsComplete = FC<MugDetailsCompleteProps> { props ->
                 }
                 div {
                     css {
-                        paddingBottom = 2.pct
+                        paddingBottom = 1.pct
                     }
                     +"Category : "
                 }
@@ -378,11 +378,11 @@ val MugDetailsComplete = FC<MugDetailsCompleteProps> { props ->
             div {
                 css {
                     fontSmall()
-                    paddingTop = 1.pct
+                    paddingTop = 4.pct
                 }
                 div {
                     css {
-                        paddingBottom = 2.pct
+                        paddingBottom = 1.pct
                     }
                     +"Description : "
                 }
@@ -397,7 +397,7 @@ val MugDetailsComplete = FC<MugDetailsCompleteProps> { props ->
                     }
                     div {
                         css {
-                            paddingBottom = 2.pct
+                            paddingBottom = 1.pct
                         }
                         +"Full Prompt given to Stable Diffusion : "
                     }
