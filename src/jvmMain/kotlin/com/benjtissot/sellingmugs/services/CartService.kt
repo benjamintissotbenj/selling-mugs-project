@@ -19,6 +19,12 @@ class CartService {
             return CartRepository.getCart(id)
         }
 
+        suspend fun getCart(session: Session) : Cart {
+            return CartRepository.getCart(session.cartId) ?: CartRepository.createCart().also { SessionRepository.updateSession(
+                session.copy(cartId = it.id)
+            ) }
+        }
+
         @Throws
         suspend fun addMugToCart(mug: Mug, cart: Cart) {
             cart.mugCartItemList.find { it.mug.id == mug.id }?.also {

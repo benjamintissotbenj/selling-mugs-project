@@ -66,6 +66,7 @@ fun Route.mugRouting(){
             post {
                 val printifyId = call.parameters[Const.printifyId] ?: error("Invalid post request")
                 MugService.increaseMugViews(printifyId)
+                call.respond(HttpStatusCode.OK)
             }
         }
         route("/${Const.productInfo}/{${Const.urlHandle}}") {
