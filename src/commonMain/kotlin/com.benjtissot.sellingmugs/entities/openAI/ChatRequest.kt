@@ -18,7 +18,7 @@ class ChatRequest(
                 Const.StableDiffusionImageType.GEOMETRIC -> {Const.getGeometricStructure()}
                 Const.StableDiffusionImageType.CARTOON_ILLUSTRATION -> {Const.getCartoonStructure()}
             }
-             val message = "$promptStructure \n ${Const.getPromptResponseStructure(parameters.amountOfVariations)} ${parameters.subject}"
+             val message = "$promptStructure \n ${Const.getPromptResponseStructure(parameters.amountOfVariations)} ${parameters.subject}. Eradicate any nudity, obscenity or rudeness from the prompt."
 
             return ChatRequest("gpt-3.5-turbo", arrayListOf(Message("user", content = message)), temperature = 0.7f)
         }
