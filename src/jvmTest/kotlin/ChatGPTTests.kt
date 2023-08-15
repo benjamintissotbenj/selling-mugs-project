@@ -22,7 +22,8 @@ class ChatGPTTests : AbstractDatabaseTests() {
                 val categoriesStatus = ImageGeneratorService.generateCategoriesAndMugs(params)
                 // TODO: find a good way to test this
                 delay(100*1000L)
-                assert(calculateSuccessPercentage(categoriesStatus!!) >= 75)
+                LOG.debug("Success percentage was ${calculateSuccessPercentage(categoriesStatus!!)}%")
+                assert(calculateSuccessPercentage(categoriesStatus) >= 75)
             } catch (e: OpenAIUnavailable) {
                 e.printStackTrace()
                 LOG.error("Try again, OpenAI was unavailable")

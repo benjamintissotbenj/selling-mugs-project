@@ -31,7 +31,7 @@ val AuthenticatedPage = FC<AuthenticatedPageProps> { props ->
             val loggedInValue = loggedInResponse.status != HttpStatusCode.Unauthorized && (loggedInResponse.body<String>() == "true")
 
             if (!loggedInValue) {
-                frontEndRedirect = props.internalPagePath ?: HOMEPAGE_PATH
+                frontEndRedirect = props.internalPagePath ?: ""
                 navigateAuthenticated.invoke(LOGIN_PATH)
             }
             loggedIn = loggedInValue

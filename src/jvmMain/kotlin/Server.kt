@@ -160,7 +160,7 @@ fun Application.createRoutes(){
             redirectPath = if (path == Const.productInfo) {
                 val param = call.parameters.getAll(Const.param)?.get(0) ?: error("Invalid get request")
                 if (param == "favicon.ico" || param == "static"){
-                    "/"
+                    ""
                 } else {
                     "/$path/$param"
                 }
