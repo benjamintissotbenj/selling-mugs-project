@@ -44,12 +44,6 @@ val SweepImageComponent = FC<SweepImageProps> { props ->
             props.marginTop?.let { marginTop = it }
             boxSizing = BoxSizing.borderBox
         }
-
-        onClick = {
-            props.onClick?.let {
-                it.invoke()
-            }
-        }
         if (sweep) {
             IconButton {
                 css {
@@ -71,6 +65,13 @@ val SweepImageComponent = FC<SweepImageProps> { props ->
                         cursor = Cursor.pointer
                     }
                 }
+
+                onClick = {
+                    props.onClick?.let {
+                        it.invoke()
+                    }
+                }
+
                 for (i: Int in 0 until props.srcList.size){
                     img {
                         css {
