@@ -73,7 +73,8 @@ class PrintifyService {
                     Category(getUuidFromString(mugProductInfo.categoryName), mugProductInfo.categoryName),
                     artwork,
                     kotlinx.datetime.Clock.System.now(),
-                    fullPrompt = mugProductInfo.fullPrompt
+                    fullPrompt = mugProductInfo.fullPrompt,
+                    urlHandle = Mug.urlHandle(mugProduct.title, mugProductInfo.categoryName)
                 )
                 MugRepository.updateMug(mug)
                 return productId

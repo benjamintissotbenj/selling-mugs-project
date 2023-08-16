@@ -36,7 +36,7 @@ fun Route.cartRouting(){
                     call.respond(HttpStatusCode.InternalServerError)
                 }
             } else {
-                getCart(getSession().cartId)?.let {
+                getCart(getSession())?.let {
                     call.respond(it)
                 } ?: let {
                     call.respond(HttpStatusCode.InternalServerError)
@@ -79,7 +79,7 @@ fun Route.cartRouting(){
         route(Mug.path){
             post {
                 val mug = call.receive<Mug>().copy()
-                getCart(getSession().cartId)?.let {
+                getCart(getSession())?.let {
                     try {
                         CartService.addMugToCart(mug, it)
                     } catch (e: Exception){
@@ -96,7 +96,7 @@ fun Route.cartRouting(){
         route(MugCartItem.path){
             delete{
                 val mugCartItem = call.receive<MugCartItem>().copy()
-                getCart(getSession().cartId)?.let {
+                getCart(getSession())?.let {
                     try {
                         CartService.removeMugCartItemFromCart(mugCartItem, it)
                     } catch (e: Exception){
@@ -115,7 +115,7 @@ fun Route.cartRouting(){
                     call.respond(HttpStatusCode.BadRequest)
                     0
                 }
-                getCart(getSession().cartId)?.let {
+                getCart(getSession())?.let {
                     try {
                         CartService.changeMugCartItemQuantity(it, mugCartItem, deltaQuantity)
                     } catch (e: Exception){

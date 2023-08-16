@@ -19,7 +19,7 @@ data class Mug(@SerialName("_id") val id: String,
                var dateCreated: Instant?,
                var fullPrompt: String? = null,
                var views: Int = 0,
-               var urlHandle: String = urlHandle(name, category.name)
+               var urlHandle: String = ""
 ){
 
     fun getBestPictureSrc() : String {
