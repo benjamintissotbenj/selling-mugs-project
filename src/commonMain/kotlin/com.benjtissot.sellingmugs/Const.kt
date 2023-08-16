@@ -166,7 +166,10 @@ class Const {
         const val disclaimerMessage = "This website is part of a MSc Project for Imperial College. " +
                 "As such, you have the possibility to create a test order to help with the " +
                 "research, or to checkout a real order that will result in a mug being delivered. " +
-                "Please bear in mind that only addresses in England will be accepted for delivery."
+                "Please bear in mind that only addresses in England will be accepted for delivery. " +
+                "Should you place a test order, you must use the fake card number 4242 4242 4242 4242 " +
+                "along with any validity date and cryptogram (any numbers will work) " +
+                "for the payment to go through. The placed test order will be cancelled in an hour."
 
         const val projectDescriptionMessage = "This website is not meant to be used for commercial purposes. " +
                 "This is a project for a Master's Thesis for a MSc Computing at Imperial College London. " +
