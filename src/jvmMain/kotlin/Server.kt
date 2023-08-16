@@ -190,8 +190,8 @@ fun Application.createRoutes(){
 fun Application.scheduleMugCreation(){
     // We're setting mug creations every day at 18h00m00
     val today = Calendar.getInstance()
-    today[Calendar.HOUR_OF_DAY] = 10
-    today[Calendar.MINUTE] = 55
+    today[Calendar.HOUR_OF_DAY] = 22
+    today[Calendar.MINUTE] = 0
     today[Calendar.SECOND] = 0
 
     val timer = Timer()
