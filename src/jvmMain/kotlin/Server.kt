@@ -189,11 +189,14 @@ fun Application.createRoutes(){
 
 @OptIn(DelicateCoroutinesApi::class)
 fun Application.scheduleMugCreation(){
-    // We're setting mug creations every day at 18h00m00
+    // We're setting mug creations every day at 22h00m00
     val today = Calendar.getInstance()
-    today[Calendar.HOUR_OF_DAY] = 10
-    today[Calendar.MINUTE] = 40
+    today[Calendar.HOUR_OF_DAY] = 22
+    today[Calendar.MINUTE] = 0
     today[Calendar.SECOND] = 0
+
+    // Create new categories if we are Sunday
+    val newCategories = today[Calendar.DAY_OF_WEEK] == Calendar.SUNDAY
 
     val timer = Timer()
     val task: TimerTask = object : TimerTask() {
@@ -211,7 +214,7 @@ fun Application.scheduleMugCreation(){
                                 1,
                                 10,
                                 null,
-                                false
+                                newCategories
                             )
                         )?.let { CategoriesGenerationResultRepository.updateGenerateCategoriesStatus (it) }
                     } catch (e: Exception) {
