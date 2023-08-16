@@ -38,7 +38,9 @@ class MugListTests : AbstractDatabaseTests() {
                 categories.add(category)
                 for (i: Int in 1..mugsAmountPerCategory){
                     val artwork = Artwork(genUuid(), imageURL = "", previewURLs = emptyList())
-                    val mug = Mug(genUuid(), "", "Mug ${j*mugsAmountPerCategory + i}", "Description", 7.2f, category, artwork, kotlinx.datetime.Clock.System.now())
+                    val mug = Mug(genUuid(), "", "Mug ${j*mugsAmountPerCategory + i}", "Description", 7.2f, category, artwork, kotlinx.datetime.Clock.System.now(),
+                        Mug.urlHandle("Mug ${j*mugsAmountPerCategory + i}", category.name)
+                    )
                     mugs.add(mug)
                     MugService.insertNewMug(mug)
                 }

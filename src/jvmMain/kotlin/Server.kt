@@ -8,6 +8,7 @@ import com.benjtissot.sellingmugs.controllers.*
 import com.benjtissot.sellingmugs.entities.local.Mug
 import com.benjtissot.sellingmugs.entities.local.Session
 import com.benjtissot.sellingmugs.entities.openAI.CategoriesChatRequestParams
+import com.benjtissot.sellingmugs.entities.openAI.GenerateCategoriesStatus
 import com.benjtissot.sellingmugs.entities.openAI.OpenAIUnavailable
 import com.benjtissot.sellingmugs.repositories.CategoriesGenerationResultRepository
 import com.benjtissot.sellingmugs.repositories.MugRepository
@@ -188,11 +189,14 @@ fun Application.createRoutes(){
 
 @OptIn(DelicateCoroutinesApi::class)
 fun Application.scheduleMugCreation(){
-    // We're setting mug creations every day at 18h00m00
+    // We're setting mug creations every day at 22h00m00
     val today = Calendar.getInstance()
     today[Calendar.HOUR_OF_DAY] = 22
     today[Calendar.MINUTE] = 0
     today[Calendar.SECOND] = 0
+
+    // Create new categories if we are Sunday
+    val newCategories = today[Calendar.DAY_OF_WEEK] == Calendar.SUNDAY
 
     val timer = Timer()
     val task: TimerTask = object : TimerTask() {
@@ -200,25 +204,30 @@ fun Application.scheduleMugCreation(){
             // do your task here
             LOG.debug("Starting daily mug creation")
             GlobalScope.launch {
-                val status = try {
-                    ImageGeneratorService.generateCategoriesAndMugs(
-                        CategoriesChatRequestParams(
-                            1,
-                            10,
-                            null,
-                            false
-                        )
-                    )?.let { CategoriesGenerationResultRepository.updateGenerateCategoriesStatus (it) }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    null
+                var status : GenerateCategoriesStatus? = null
+                var totalLoopAttempts = 20
+                while (totalLoopAttempts > 0 && (status == null || status.message.contains("Exceeded five tries") || status.message == OpenAIUnavailable().message)) {
+                    totalLoopAttempts --
+                    status = try {
+                        ImageGeneratorService.generateCategoriesAndMugs(
+                            CategoriesChatRequestParams(
+                                1,
+                                10,
+                                null,
+                                newCategories
+                            )
+                        )?.let { CategoriesGenerationResultRepository.updateGenerateCategoriesStatus (it) }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        null
+                    }
                 }
                 if (status == null){
                     LOG.error("There was an internal server error")
                 } else if (status.message == OpenAIUnavailable().message){
                     LOG.error("Mug creation failed:")
                     LOG.error(status.message)
-                } else if (status.message.contains("Exceeded five tries")){
+                } else if (status.message.contains("Exceeded 20x five tries")){
                     LOG.error("Mug creation failed:")
                     LOG.error(status.message)
                 } else {
