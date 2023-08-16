@@ -17,6 +17,10 @@ import com.stripe.net.Webhook
 import io.ktor.client.call.*
 import io.ktor.http.*
 import io.ktor.util.logging.*
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private val LOG = KtorSimpleLogger("OrderService.kt")
 class OrderService {
@@ -230,6 +234,18 @@ class OrderService {
             } ?: emptyList()
         }
 
+        /**
+         * Cancels a test order
+         */
+        @OptIn(DelicateCoroutinesApi::class)
+        suspend fun handleTestOrderCancellation(order: Order) {
+            GlobalScope.launch {
+                delay(60*60*1000L)
+                val status = cancelOrder(order.external_id)
+                LOG.debug("Cancelling order ${order.external_id} with result ${status.value} ${status.description}")
+            }
+        }
+
         /****************************************************************
          *
          *                      Webhook handling
@@ -298,6 +314,11 @@ class OrderService {
             LOG.debug("cartId to create order is ${session.cartId}. Test Order ?= $testOrder")
             // Create order
             val order = createOrderFromCart(addressTo, session.cartId, user, testOrder)
+
+            if (testOrder){
+                handleTestOrderCancellation(order)
+            }
+
             // Updates session with a new cart, updated order id and updated user
             val newSession = SessionRepository.updateSession(
                 session.copy(orderId = order.external_id,
