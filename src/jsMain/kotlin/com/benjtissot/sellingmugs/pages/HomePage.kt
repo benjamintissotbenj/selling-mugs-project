@@ -6,14 +6,18 @@ import com.benjtissot.sellingmugs.components.popups.MugDetailsPopup
 import com.benjtissot.sellingmugs.entities.local.Category
 import com.benjtissot.sellingmugs.entities.local.Mug
 import com.benjtissot.sellingmugs.entities.local.Session
-import csstype.*
+import csstype.AlignItems
+import csstype.Display
+import csstype.FlexDirection
+import csstype.pct
 import emotion.react.css
 import kotlinx.coroutines.launch
-import mui.icons.material.ExpandMore
-import mui.material.IconButton
+import kotlinx.coroutines.withContext
 import org.w3c.dom.HTMLDivElement
 import react.FC
 import react.dom.html.ReactHTML.div
+import react.router.dom.useSearchParams
+import react.useEffect
 import react.useEffectOnce
 import react.useState
 
@@ -23,16 +27,27 @@ var checkRedirect: String? = null
 val Homepage = FC<NavigationProps> { props ->
     val navigateFun = props.navigate
     var availableCategories by useState(emptyList<Category>())
-    var selectedCategories by useState(emptyList<Category>())
     var mugList by useState(emptyList<Mug>())
     var currentPage by useState(0)
     var totalNumberOfMugs by useState(0)
 
     var popupTarget : HTMLDivElement? by useState(null)
     var mugShowDetails : Mug? by useState(null)
-    var orderBy by useState(Const.OrderBy.VIEWS)
-    var searchString by useState("")
+    var queryParam by useSearchParams()
+    var orderBy = Const.OrderBy.valueOf(queryParam.get(Const.orderBy) ?: "VIEWS")
+    val searchString = queryParam.get(Const.search) ?: ""
+    var selectedCategories by useState(emptyList<Category>())
 
+    useEffect(listOf(queryParam)){
+        scope.launch {
+            val catIdList = queryParam.getAll(Const.categories).toList()
+            selectedCategories = if (catIdList.isEmpty()){
+                    emptyList()
+                } else {
+                    getCategoriesByIds(catIdList)
+                }
+        }
+    }
 
     // At first initialisation, get the list
     // Alternative is useState when we want to persist something across re-renders
@@ -44,9 +59,16 @@ val Homepage = FC<NavigationProps> { props ->
                 navigateFun.invoke(checkRedirect?:"")
                 checkRedirect = ""
             } else {
+                val catIdList = queryParam.getAll(Const.categories).toList()
+                val tempSelectedCategories = if (catIdList.isEmpty()){
+                    emptyList()
+                } else {
+                    getCategoriesByIds(catIdList)
+                }
                 availableCategories = getAllCategories()
-                mugList = getMugList(selectedCategories, currentPage, orderBy = orderBy, searchString = searchString)
-                totalNumberOfMugs = getTotalMugCount(selectedCategories)
+                mugList = getMugList(tempSelectedCategories, currentPage, orderBy = orderBy, searchString = searchString)
+                totalNumberOfMugs = getTotalMugCount(tempSelectedCategories)
+                selectedCategories = tempSelectedCategories
             }
         }
     }
@@ -103,16 +125,29 @@ val Homepage = FC<NavigationProps> { props ->
                 scope.launch {
                     mugList = getMugList(selectedCategories, currentPage, orderBy = orderByTemp, searchString = searchString)
                 }
-                orderBy = orderByTemp
+
+                val newQueryParam = queryParam
+                if (orderByTemp == Const.OrderBy.VIEWS){
+                    newQueryParam.delete(Const.orderBy)
+                } else {
+                    newQueryParam.set(Const.orderBy, orderByTemp.value)
+                }
+                queryParam = newQueryParam
             }
             onChangeSelectedCategories = { categoryIds ->
-                println("Selected Categories:")
-                categoryIds.forEach {
-                    println("$it,")
-                }
                 scope.launch {
+                    // Used to calculate stuff below
                     val tempSelectedCategories = if (categoryIds.isNotEmpty()) { getCategoriesByIds(categoryIds) } else { emptyList<Category>() }
-                    selectedCategories = tempSelectedCategories
+
+                    val newQueryParam = queryParam
+                    newQueryParam.delete(Const.categories)
+                    if (categoryIds.isNotEmpty()){
+                        categoryIds.forEach {
+                            newQueryParam.append(Const.categories, it)
+                        }
+                    }
+                    queryParam = newQueryParam
+
                     totalNumberOfMugs = getTotalMugCount(tempSelectedCategories)
                     // When changing categories, make sure that you stay on the same page (i.e. if you asked for more mugs to be shown)
                     val tempMugList = ArrayList(emptyList<Mug>())
@@ -127,7 +162,14 @@ val Homepage = FC<NavigationProps> { props ->
                 scope.launch {
                     mugList = getMugList(selectedCategories, currentPage, orderBy = orderBy, searchString = searchStringTemp)
                 }
-                searchString = searchStringTemp
+
+                val newQueryParam = queryParam
+                if (searchStringTemp == ""){
+                    newQueryParam.delete(Const.search)
+                } else {
+                    newQueryParam.set(Const.search, searchStringTemp)
+                }
+                queryParam = newQueryParam
             }
             onMouseEnterItem = { mug, target ->
                 mugShowDetails = mug
