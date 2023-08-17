@@ -111,6 +111,9 @@ class Const {
         // Front-end URL params
         const val mugShortUrlHandle = "mugShortUrlHandle"
 
+        // Front-end query params
+        const val search = "search"
+
 
         // Query params
         const val updateType = "updateType"
