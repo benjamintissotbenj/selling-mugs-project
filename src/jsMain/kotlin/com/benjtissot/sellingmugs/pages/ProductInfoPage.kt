@@ -34,6 +34,7 @@ val ProductInfoPage = FC<NavigationProps> { props ->
     }
     mug?.let {
         MugDetailsComplete {
+            this.showDelete = props.session.user?.userType == Const.UserType.ADMIN
             this.mug = it
             this.onClickAddToCart = {
                 onClickAddToCart(it, props.setAlert, props.session)
