@@ -42,8 +42,12 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
                 color = NamedColor.white
                 fontBig()
                 marginLeft = 4.vw
+                cursor = Cursor.pointer
             }
             +"Selling Mugs Project"
+            onClick = {
+                props.navigate(HOMEPAGE_PATH)
+            }
         }
 
         // End Icons
