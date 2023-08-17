@@ -71,7 +71,7 @@ class ImageGeneratorService {
                             // Create variations
                             val imageType = params.type ?: pair.second
                             val variations = try {
-                                generateVariationsFromParams(MugsChatRequestParams(pair.first.name, imageType, params.amountOfVariations))
+                                generateVariationsFromParams(MugsChatRequestParams(pair.first.name, imageType, params.amountOfVariations), public = true)
                             } catch (e: IOException) {
                                 throw OpenAIUnavailable()
                             }
@@ -183,10 +183,10 @@ class ImageGeneratorService {
          * @throws [OpenAIUnavailable] when the service takes too long to reply
          * @throws [Exception] when there is an unknown error
          */
-        suspend fun generateDesignFromParams(params: MugsChatRequestParams) : ImageForUploadReceive? {
+        suspend fun generateDesignFromParams(params: MugsChatRequestParams, public: Boolean) : ImageForUploadReceive? {
             // Get ChatGPT to create a list of variations
             val variations = try {
-                generateVariationsFromParams(params)
+                generateVariationsFromParams(params, public)
             } catch (e: IOException) {
                 throw OpenAIUnavailable()
             }
@@ -199,7 +199,7 @@ class ImageGeneratorService {
                 val stableDiffusionImageSource = generateImageFromVariation(variation)
 
                 // Upload generated image to printify
-                uploadImageFromSource(variation.getCleanName(), stableDiffusionImageSource)
+                uploadImageFromSource(variation.getCleanName(), stableDiffusionImageSource, public)
             } catch (e: Exception) {
                 throw Exception("Error in the process for variation ${variation.name}, message: ${e.message ?: "no-message"}")
             }
@@ -231,7 +231,7 @@ class ImageGeneratorService {
 
                             // Upload generated image to printify
                             val imageUploadedToPrintify =
-                                uploadImageFromSource(variation.getCleanName(), stableDiffusionImageSource) // TODO update status code inside here
+                                uploadImageFromSource(variation.getCleanName(), stableDiffusionImageSource, true) // TODO update status code inside here
 
                             imageUploadedToPrintify?.let {
                                 publishMugFromImage(it, variation, categoryName)
@@ -283,13 +283,15 @@ class ImageGeneratorService {
          * success, or if a chat response had the wrong format
          */
         @Throws
-        suspend fun generateVariationsFromParams(params: MugsChatRequestParams) : List<Variation> {
+        suspend fun generateVariationsFromParams(params: MugsChatRequestParams, public: Boolean) : List<Variation> {
             val requestCreated = Clock.System.now()
             var apiResponse : HttpResponse
             var exception: Exception?
             var numberOfTries = 0
             val chatRequest = ChatRequest.generateMugRequestFromParams(params)
-            CategoryService.updateCategory(CategoryService.createCategory(params.subject))
+            if (public) {
+                CategoryService.updateCategory(CategoryService.createCategory(params.subject))
+            }
             do {
                 numberOfTries ++
                 LOG.debug("Sending request to API, restarting if Service Unavailable")
@@ -401,13 +403,13 @@ class ImageGeneratorService {
         /**
          * Calls [PrintifyService] to upload an image from a fileName and a source url
          */
-        private suspend fun uploadImageFromSource(fileName: String, imageSource: String) : ImageForUploadReceive? {
+        private suspend fun uploadImageFromSource(fileName: String, imageSource: String, public: Boolean) : ImageForUploadReceive? {
             LOG.debug("Uploading image $fileName with source $imageSource")
             var imageForUploadReceive : ImageForUploadReceive? = null
             var nbTries = 0
             while (imageForUploadReceive == null && nbTries < 5){
                 nbTries ++
-                imageForUploadReceive = PrintifyService.uploadImage(ImageForUpload(file_name = fileName, url = imageSource), true)
+                imageForUploadReceive = PrintifyService.uploadImage(ImageForUpload(file_name = fileName, url = imageSource), public = public)
                 if (imageForUploadReceive == null){
                     delay(5000L) // wait 5 s if image does not upload immediately correctly
                 }

@@ -273,6 +273,7 @@ val CustomMugPage = FC<NavigationProps> { props ->
                             val mug = getMugByPrintifyId(receiveProduct!!.id)
                             mug?.let {
                                 addMugToCart(it)
+                                props.updateSession()
                                 addMugToUserCustomMugList(props.session.user?.id ?: "", it.id)
                                 props.setAlert(successAlert("Mug added to card !"))
                             } ?: let {

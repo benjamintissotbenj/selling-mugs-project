@@ -29,7 +29,7 @@ fun Route.openAIRouting(){
             post {
                 val params: MugsChatRequestParams = call.receive()
                 try {
-                    ImageGeneratorService.generateDesignFromParams(params)?.let {
+                    ImageGeneratorService.generateDesignFromParams(params, public = false)?.let {
                         call.respond(it)
                     } ?: run {
                         // if we ran 5 times, and it didn't manage to upload successfully
@@ -50,7 +50,7 @@ fun Route.openAIRouting(){
                 val params: MugsChatRequestParams = call.receive()
                 try {
                     val variations = try {
-                        ImageGeneratorService.generateVariationsFromParams(params)
+                        ImageGeneratorService.generateVariationsFromParams(params, public = true)
                     } catch (e: IOException) {
                         throw OpenAIUnavailable()
                     }

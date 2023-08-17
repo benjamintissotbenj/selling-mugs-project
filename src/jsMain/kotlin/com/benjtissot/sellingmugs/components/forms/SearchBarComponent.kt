@@ -3,6 +3,7 @@ package com.benjtissot.sellingmugs.components.forms
 import com.benjtissot.sellingmugs.*
 import csstype.*
 import emotion.react.css
+import mui.icons.material.Close
 import mui.icons.material.Search
 import org.w3c.dom.HTMLFormElement
 import react.FC
@@ -68,9 +69,19 @@ val SearchBarComponent = FC<SearchBarProps> { props ->
             Search {
                 css {
                     cursor = Cursor.pointer
+                    marginRight = 1.vh
                 }
                 onClick = {
                     props.onSubmit(searchString)
+                }
+            }
+            Close {
+                css {
+                    cursor = Cursor.pointer
+                }
+                onClick = {
+                    searchString = ""
+                    props.onSubmit("")
                 }
             }
         }
