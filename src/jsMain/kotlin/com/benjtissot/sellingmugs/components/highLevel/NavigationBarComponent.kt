@@ -87,7 +87,18 @@ val NavigationBarComponent = FC<NavigationBarProps> { props ->
                 IconButton {
                     size = Size.small
                     color = IconButtonColor.primary
-                    ShoppingCart()
+
+                    Badge {
+                        color = BadgeColor.primary
+                        overlap = BadgeOverlap.rectangular
+                        variant = BadgeVariant.standard
+                        badgeContent = div.create {
+                            css { fontSmall() }
+                            +"${props.session.nbItemsInCart}"
+                        }
+
+                        ShoppingCart()
+                    }
 
                     onClick = {
                         scope.launch{

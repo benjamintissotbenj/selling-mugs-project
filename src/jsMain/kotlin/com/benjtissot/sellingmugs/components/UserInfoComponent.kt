@@ -8,6 +8,7 @@ import com.benjtissot.sellingmugs.entities.local.User
 import csstype.*
 import emotion.react.css
 import io.ktor.util.logging.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.w3c.dom.HTMLDivElement
 import react.FC
@@ -108,6 +109,8 @@ val UserInfoComponent = FC<UserInfoProps> { props ->
             scope.launch {
                 mug?.let {
                     addMugToCart(it)
+                    delay(50L)
+                    props.updateSession()
                     props.setAlert(successAlert("Mug added to card !"))
                 } ?: let {
                     props.setAlert(errorAlert())

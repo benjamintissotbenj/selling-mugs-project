@@ -7,6 +7,7 @@ import csstype.*
 import emotion.react.css
 import io.ktor.http.*
 import io.ktor.util.logging.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mui.icons.material.Payment
 import mui.icons.material.Save
@@ -44,12 +45,16 @@ val CartPage = FC<NavigationProps> { props ->
                         scope.launch {
                             changeMugCartItemQuantity(mugCartItem, deltaQuantity)
                             cart = getCart()
+                            delay(50L)
+                            props.updateSession()
                         }
                     }
                     onRemoveItem = { mugCartItem ->
                         scope.launch {
                             removeMugCartItemFromCart(mugCartItem)
                             cart = getCart()
+                            delay(50L)
+                            props.updateSession()
                         }
                     }
                 }
@@ -171,6 +176,8 @@ val CartPage = FC<NavigationProps> { props ->
                             recordClick(props.session.clickDataId, Const.ClickType.CART_LOAD_SAVED_CART.type)
                             loadSavedCart()
                             cart = getCart()
+                            delay(100L)
+                            props.updateSession()
                         }
                     }
                 }

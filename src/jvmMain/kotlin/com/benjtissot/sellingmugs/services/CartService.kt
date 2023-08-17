@@ -8,6 +8,11 @@ import com.benjtissot.sellingmugs.genUuid
 import com.benjtissot.sellingmugs.repositories.CartRepository
 import com.benjtissot.sellingmugs.repositories.SessionRepository
 import com.benjtissot.sellingmugs.repositories.UserRepository
+import com.benjtissot.sellingmugs.services.SessionService.Companion.getSession
+import com.benjtissot.sellingmugs.services.SessionService.Companion.removeItemToCartCount
+import com.benjtissot.sellingmugs.services.SessionService.Companion.setItemsCartCount
+import io.ktor.server.application.*
+import io.ktor.server.sessions.*
 import io.ktor.util.logging.*
 
 
@@ -69,8 +74,9 @@ class CartService {
         /**
          * If all the conditions are united, loads the user's saved cart id into the session's active cart id
          */
-        suspend fun loadCartIdIntoSession(session: Session) : Boolean {
+        suspend fun loadCartIdIntoSession(session: Session) : Pair<Boolean, Session> {
             var success = false
+            var returnSession = session
             // Updates the current cart with the saved cart items
             val currentCart = CartRepository.getCart(session.cartId)
             session.user?.savedCartId?.let {
@@ -79,6 +85,7 @@ class CartService {
                     currentCart?.copy(mugCartItemList = savedCart.mugCartItemList)?.let { copiedCart ->
                         LOG.debug("Loading cart : $copiedCart")
                         CartRepository.updateCart(copiedCart)
+                        returnSession = session.setItemsCartCount(copiedCart.getTotalCount())
                         success = true
                     }
                 }?: run {
@@ -87,7 +94,7 @@ class CartService {
             } ?: run {
                 LOG.debug("Can't find the saved cart id")
             }
-            return success
+            return Pair(success, returnSession)
         }
     }
 }

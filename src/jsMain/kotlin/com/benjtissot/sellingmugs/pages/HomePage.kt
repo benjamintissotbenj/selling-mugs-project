@@ -11,6 +11,7 @@ import csstype.Display
 import csstype.FlexDirection
 import csstype.pct
 import emotion.react.css
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.w3c.dom.HTMLDivElement
@@ -84,7 +85,11 @@ val Homepage = FC<NavigationProps> { props ->
         }
         this.mug = mugShowDetails
         this.onClickAddToCart = { mug ->
-            onClickAddToCart(mug, props.setAlert, props.session)
+            scope.launch {
+                onClickAddToCart(mug, props.setAlert, props.session)
+                delay(50L)
+                props.updateSession()
+            }
         }
     }
 
@@ -176,7 +181,11 @@ val Homepage = FC<NavigationProps> { props ->
                 popupTarget = target
             }
             onClickAddToCart = { mug ->
-                onClickAddToCart(mug, props.setAlert, props.session)
+                scope.launch {
+                    onClickAddToCart(mug, props.setAlert, props.session)
+                    delay(50L)
+                    props.updateSession()
+                }
             }
             onClickItem = { mug ->
                 scope.launch {
@@ -188,13 +197,12 @@ val Homepage = FC<NavigationProps> { props ->
     }
 }
 
-fun onClickAddToCart(mug: Mug?, setAlert: (AlertState) -> Unit, session: Session) {
+suspend fun onClickAddToCart(mug: Mug?, setAlert: (AlertState) -> Unit, session: Session) {
     // Add product to cart
-    scope.launch {
-        mug?.let {
-            addMugToCart(it)
-            setAlert(successAlert("Mug added to card !"))
-        } ?: setAlert(errorAlert())
-        recordClick(session.clickDataId, Const.ClickType.ADD_MUG_TO_CART.type)
-    }
+    mug?.let {
+        addMugToCart(it)
+        setAlert(successAlert("Mug added to card !"))
+    } ?: setAlert(errorAlert())
+    recordClick(session.clickDataId, Const.ClickType.ADD_MUG_TO_CART.type)
+
 }

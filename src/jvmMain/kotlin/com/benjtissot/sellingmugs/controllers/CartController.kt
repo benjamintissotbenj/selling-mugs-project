@@ -8,7 +8,10 @@ import com.benjtissot.sellingmugs.repositories.UserRepository
 import com.benjtissot.sellingmugs.services.CartService
 import com.benjtissot.sellingmugs.services.CartService.Companion.getCart
 import com.benjtissot.sellingmugs.services.CartService.Companion.loadCartIdIntoSession
+import com.benjtissot.sellingmugs.services.SessionService
+import com.benjtissot.sellingmugs.services.SessionService.Companion.addItemsToCartCount
 import com.benjtissot.sellingmugs.services.SessionService.Companion.getSession
+import com.benjtissot.sellingmugs.services.SessionService.Companion.removeItemToCartCount
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -36,11 +39,7 @@ fun Route.cartRouting(){
                     call.respond(HttpStatusCode.InternalServerError)
                 }
             } else {
-                getCart(getSession())?.let {
-                    call.respond(it)
-                } ?: let {
-                    call.respond(HttpStatusCode.InternalServerError)
-                }
+                call.respond(getCart(getSession()))
             }
         }
         route("$CART_SAVE_TO_USER_PATH/{${Const.userId}}"){
@@ -64,7 +63,9 @@ fun Route.cartRouting(){
         route(CART_LOAD_FROM_USER_PATH){
             post {
                 // Loads the saved cartId into the session
-                if (loadCartIdIntoSession(getSession())){
+                val loadCartResult = loadCartIdIntoSession(getSession())
+                if (loadCartResult.first){
+                    call.sessions.set(loadCartResult.second)
                     call.respond(HttpStatusCode.OK)
                 } else {
                     call.respond(HttpStatusCode.InternalServerError)
@@ -79,34 +80,28 @@ fun Route.cartRouting(){
         route(Mug.path){
             post {
                 val mug = call.receive<Mug>().copy()
-                getCart(getSession())?.let {
-                    try {
-                        CartService.addMugToCart(mug, it)
-                    } catch (e: Exception){
-                        call.respond(HttpStatusCode.BadGateway)
-                    }
-                    call.respond(HttpStatusCode.OK)
-                } ?: let {
-                    call.respond(HttpStatusCode.InternalServerError)
+                try {
+                    val updatedSession = getSession().addItemsToCartCount(1)
+                    call.sessions.set(updatedSession)
+                    CartService.addMugToCart(mug, getCart(updatedSession))
+                } catch (e: Exception){
+                    call.respond(HttpStatusCode.BadGateway)
                 }
-
+                call.respond(HttpStatusCode.OK)
             }
         }
 
         route(MugCartItem.path){
             delete{
                 val mugCartItem = call.receive<MugCartItem>().copy()
-                getCart(getSession())?.let {
-                    try {
-                        CartService.removeMugCartItemFromCart(mugCartItem, it)
-                    } catch (e: Exception){
-                        call.respond(HttpStatusCode.BadGateway)
-                    }
-                    call.respond(HttpStatusCode.OK)
-                } ?: let {
-                    call.respond(HttpStatusCode.InternalServerError)
+                try {
+                    val updatedSession = getSession().removeItemToCartCount(mugCartItem.amount)
+                    call.sessions.set(updatedSession)
+                    CartService.removeMugCartItemFromCart(mugCartItem, getCart(updatedSession))
+                } catch (e: Exception){
+                    call.respond(HttpStatusCode.BadGateway)
                 }
-
+                call.respond(HttpStatusCode.OK)
             }
 
             post {
@@ -115,16 +110,15 @@ fun Route.cartRouting(){
                     call.respond(HttpStatusCode.BadRequest)
                     0
                 }
-                getCart(getSession())?.let {
-                    try {
-                        CartService.changeMugCartItemQuantity(it, mugCartItem, deltaQuantity)
-                    } catch (e: Exception){
-                        call.respond(HttpStatusCode.BadGateway)
-                    }
-                    call.respond(HttpStatusCode.OK)
-                } ?: let {
-                    call.respond(HttpStatusCode.InternalServerError)
+                try {
+                    val updatedSession = getSession().addItemsToCartCount(deltaQuantity)
+                    call.sessions.set(updatedSession)
+                    CartService.changeMugCartItemQuantity(getCart(getSession()), mugCartItem, deltaQuantity)
+                } catch (e: Exception){
+                    call.respond(HttpStatusCode.BadGateway)
                 }
+                call.respond(HttpStatusCode.OK)
+
             }
         }
     }

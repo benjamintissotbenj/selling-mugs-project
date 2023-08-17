@@ -12,7 +12,8 @@ data class Session(
     var jwtToken: String,
     val clickDataId: String,
     val cartId: String,
-    val orderId: String? // the current order id
+    val orderId: String?, // the current order id
+    var nbItemsInCart: Int = 0
     ){
 
     companion object {
