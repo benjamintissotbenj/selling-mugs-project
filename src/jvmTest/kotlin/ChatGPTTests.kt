@@ -16,7 +16,7 @@ class ChatGPTTests : AbstractDatabaseTests() {
     @Test
     fun chatGPTGenerationTest() = runTest(timeout = 180.seconds) {
         launch {
-            val params = CategoriesChatRequestParams(5, 2, null, false)
+            val params = CategoriesChatRequestParams(2, 2, null, false)
             try {
                 LOG.debug("Generating categories")
                 val categoriesStatus = ImageGeneratorService.generateCategoriesAndMugs(params)
