@@ -12,6 +12,7 @@ import csstype.JustifyContent
 import emotion.react.css
 import io.ktor.http.*
 import io.ktor.util.logging.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import react.FC
 import react.dom.html.ReactHTML.div
@@ -34,9 +35,14 @@ val ProductInfoPage = FC<NavigationProps> { props ->
     }
     mug?.let {
         MugDetailsComplete {
+            this.showDelete = props.session.user?.userType == Const.UserType.ADMIN
             this.mug = it
             this.onClickAddToCart = {
-                onClickAddToCart(it, props.setAlert, props.session)
+                scope.launch {
+                    onClickAddToCart(it, props.setAlert, props.session)
+                    delay(50L)
+                    props.updateSession()
+                }
             }
             this.onDeleteMug = { httpResponse ->
                 when (httpResponse.status) {

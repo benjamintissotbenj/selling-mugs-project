@@ -30,6 +30,10 @@ data class Cart(
         returnString += "\n]\n}"
         return returnString
     }
+
+    fun getTotalCount() : Int {
+        return mugCartItemList.sumOf { it.amount }
+    }
     companion object {
         // Idea is that we don't need to define a route and requests in strings. Any changes only need to come from the models
         // then the client and the server are adjusted automatically

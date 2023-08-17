@@ -292,6 +292,7 @@ val MugDetailsHover = FC<MugItemGridProps> { props ->
 
 external interface MugDetailsCompleteProps: MugItemGridProps {
     var onDeleteMug: (HttpResponse) -> Unit
+    var showDelete: Boolean
 }
 
 val MugDetailsComplete = FC<MugDetailsCompleteProps> { props ->
@@ -437,42 +438,44 @@ val MugDetailsComplete = FC<MugDetailsCompleteProps> { props ->
                 }
             }
 
-            // Delete mug
-            div {
-                css {
-                    width = 100.pct
-                    display = Display.flex
-                    flexDirection = FlexDirection.column
-                    justifyContent = JustifyContent.center
-                    alignItems = AlignItems.center
-                }
-                button {
+            if (props.showDelete) {
+                // Delete mug
+                div {
                     css {
-                        height = 5.pct
-                        width = "fit-content".unsafeCast<Width>()
-                        padding = 5.pct
-                        marginTop = 5.pct
+                        width = 100.pct
                         display = Display.flex
-                        flexDirection = FlexDirection.row
+                        flexDirection = FlexDirection.column
                         justifyContent = JustifyContent.center
                         alignItems = AlignItems.center
-                        overflow = Overflow.hidden
                     }
-                    Delete {
-                        color = SvgIconColor.error
-                    }
-                    div {
+                    button {
                         css {
-                            fontNormal()
-                            marginInline = 2.vw
-                            color = Color(Const.ColorCode.RED.code())
+                            height = 5.pct
+                            width = "fit-content".unsafeCast<Width>()
+                            padding = 5.pct
+                            marginTop = 5.pct
+                            display = Display.flex
+                            flexDirection = FlexDirection.row
+                            justifyContent = JustifyContent.center
+                            alignItems = AlignItems.center
+                            overflow = Overflow.hidden
                         }
-                        +"Delete mug"
-                    }
-                    onClick = { event ->
-                        popupTarget = event.currentTarget
-                    }
+                        Delete {
+                            color = SvgIconColor.error
+                        }
+                        div {
+                            css {
+                                fontNormal()
+                                marginInline = 2.vw
+                                color = Color(Const.ColorCode.RED.code())
+                            }
+                            +"Delete mug"
+                        }
+                        onClick = { event ->
+                            popupTarget = event.currentTarget
+                        }
 
+                    }
                 }
             }
         }
