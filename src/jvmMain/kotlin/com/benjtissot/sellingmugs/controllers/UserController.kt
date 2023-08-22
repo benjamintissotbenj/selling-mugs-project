@@ -19,16 +19,19 @@ fun Route.userRouting(){
     // val LOG = Logger.getLogger(this.javaClass.name)
 
     route(USER_OBJECT_PATH) {
-        get {
-            call.respond(getUserList())
-        }
-        post {
-            updateUser(call.receive())
-            call.respond(HttpStatusCode.OK)
-        }
-        delete() {
-            deleteUser(call.receive())
-            call.respond(HttpStatusCode.OK)
+
+        authenticate("auth-jwt") {
+            get {
+                call.respond(getUserList())
+            }
+            post {
+                updateUser(call.receive())
+                call.respond(HttpStatusCode.OK)
+            }
+            delete() {
+                deleteUser(call.receive())
+                call.respond(HttpStatusCode.OK)
+            }
         }
     }
 }

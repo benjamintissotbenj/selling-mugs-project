@@ -189,13 +189,6 @@ suspend fun changeMugCartItemQuantity(mugCartItem: MugCartItem, deltaQuantity : 
 }
 
 
-// get User Info
-
-suspend fun getUserInfo() : String {
-    val httpResponse = jsonClient.get(USER_INFO_MESSAGE_PATH)
-    return httpResponse.body()
-}
-
 suspend fun updateUser(user: User) : HttpResponse {
     return jsonClient.post(USER_OBJECT_PATH){
         contentType(ContentType.Application.Json)
