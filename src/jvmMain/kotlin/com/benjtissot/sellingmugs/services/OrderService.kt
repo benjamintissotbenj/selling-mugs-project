@@ -66,7 +66,7 @@ class OrderService {
         suspend fun createOrderFromCart(addressTo: AddressTo, cartId: String, user: User, testOrder: Boolean) : Order {
             val cart = CartService.getCart(cartId)
             val lineItems: ArrayList<LineItem> = ArrayList(emptyList())
-            cart?.let {lineItems.addAll(cart.mugCartItemList.map {LineItem(it.mug.printifyId, it.amount, 69010)})}
+            cart?.let {lineItems.addAll(cart.mugCartItemList.map {LineItem(it.mug.printifyId, it.amount, Const.variantId)})}
             val newOrder = Order.create(
                 getUuidFromString(cartId), // allows us to recognise an order by the cart it is linked to
                 getOrderNextLabel(user.id, testOrder), // counts the number of orders of a given user
