@@ -25,11 +25,11 @@ private val LOG = KtorSimpleLogger("OrderController.kt")
 
 fun Route.orderRouting(){
 
-    authenticate("auth-jwt") {
         val endpointSecretTest = System.getenv(Const.STRIPE_WEBHOOK_SECRET_TEST_STRING)
         val endpointSecretReal = System.getenv(Const.STRIPE_WEBHOOK_SECRET_REAL_STRING)
 
-        route(Order.path) {
+        authenticate("auth-jwt") {
+            route(Order.path) {
             get {
                 if (!call.request.queryParameters[Const.cartId].isNullOrBlank()) {
                     // If we have a cartId, retrieve via cartId
@@ -141,6 +141,7 @@ fun Route.orderRouting(){
                 }
             }
         }
+        }
 
         route(STRIPE_WEBHOOK_PATH) {
             post {
@@ -169,5 +170,4 @@ fun Route.orderRouting(){
 
             }
         }
-    }
 }

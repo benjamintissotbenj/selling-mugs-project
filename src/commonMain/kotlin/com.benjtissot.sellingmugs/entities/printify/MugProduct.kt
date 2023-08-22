@@ -1,5 +1,6 @@
 package com.benjtissot.sellingmugs.entities.printify
 
+import com.benjtissot.sellingmugs.Const
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -42,8 +43,8 @@ class MugProductInfo(
             description = description,
             variants = variants,
             print_areas = print_areas,
-            blueprint_id = 478, // original 535
-            print_provider_id = 94 // original 6
+            blueprint_id = Const.blueprintId,
+            print_provider_id = Const.printProviderId
         )
     }
 }

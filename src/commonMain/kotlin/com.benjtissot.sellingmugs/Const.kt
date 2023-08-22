@@ -114,6 +114,10 @@ class Const {
         // Front-end query params
         const val search = "search"
 
+        // Product constants
+        const val variantId = 65216 // original 69010
+        const val printProviderId = 28 // original 6
+        const val blueprintId = 478 // original 535
 
         // Query params
         const val updateType = "updateType"

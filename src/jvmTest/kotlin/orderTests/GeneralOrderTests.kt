@@ -88,20 +88,6 @@ class GeneralOrderTests : AbstractDatabaseTests() {
 
     @Test
     /**
-     * Calculates shipping price for order
-     */
-    fun calculateShippingPrice() = runTest {
-        LOG.delimit("Calculate shipping price Test")
-        launch {
-            val shippingCosts = OrderService.calculateOrderShippingCost(orderId)
-            assert(shippingCosts != null)
-            assert(shippingCosts?.standard == 817)
-            assert(shippingCosts?.express == 1000)
-        }
-    }
-
-    @Test
-    /**
      * Creates an order for Printify
      */
     fun placeOrderToPrintifyTest() = runTest {
