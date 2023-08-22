@@ -240,7 +240,9 @@ class OrderService {
         @OptIn(DelicateCoroutinesApi::class)
         suspend fun handleTestOrderCancellation(order: Order) {
             GlobalScope.launch {
-                delay(60*60*1000L)
+                // Changed this to 20 minutes because after half an hour the heroku hosted web-app takes itself down
+                LOG.debug("Cancelling order ${order.external_id} in 20 minutes.")
+                delay(20*60*1000L)
                 val status = cancelOrder(order.external_id)
                 LOG.debug("Cancelling order ${order.external_id} with result ${status.value} ${status.description}")
             }
@@ -323,6 +325,7 @@ class OrderService {
             val newSession = SessionRepository.updateSession(
                 session.copy(orderId = order.external_id,
                     cartId = CartRepository.createCart().id,
+                    nbItemsInCart = 0,
                     user = UserRepository.getUserById(session.user!!.id)?.copy(savedCartId = "")
                         ?.let { UserRepository.updateUser(it) }
                 )

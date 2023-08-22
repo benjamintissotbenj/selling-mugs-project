@@ -42,8 +42,8 @@ class MugProductInfo(
             description = description,
             variants = variants,
             print_areas = print_areas,
-            blueprint_id = 535,
-            print_provider_id = 6
+            blueprint_id = 478, // original 535
+            print_provider_id = 94 // original 6
         )
     }
 }

@@ -50,7 +50,7 @@ val CreateTabsComponent = FC <CreateTabsProps> { props ->
                     "{ borderBottom: 1, borderColor: 'divider' }"
                 }
                 css {
-                    height = 5.pct
+                    height = 10.pct
                 }
                 Tabs {
                     variant = TabsVariant.fullWidth
@@ -88,7 +88,7 @@ val CreateTabsComponent = FC <CreateTabsProps> { props ->
                     overflow = "auto".unsafeCast<Overflow>()
                     boxSizing = BoxSizing.borderBox
                     width = 100.pct
-                    maxHeight = 95.pct
+                    maxHeight = 90.pct
                 }
                 +props.children
             }

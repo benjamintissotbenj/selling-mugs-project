@@ -139,14 +139,12 @@ fun Application.createRoutes(){
     /*val routing = */routing {
         // Routing to the controllers
         homepageRouting()
-        sessionRouting()
         clickRouting()
         mugRouting()
-        userInfoRouting()
+        sessionRouting()
         loginRouting()
         cartRouting()
         checkoutRouting()
-        paymentRouting()
         userRouting()
         printifyRouting()
         checkRedirectRouting()
