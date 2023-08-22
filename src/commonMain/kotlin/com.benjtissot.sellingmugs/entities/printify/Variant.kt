@@ -18,7 +18,7 @@ class Variant(val id: Int,
     companion object {
         fun default() : Variant {
             return Variant(
-                id = 69010,
+                id = 65216, // original 69010
                 sku = "",
                 cost =  599,
                 price = 720, // 6£ + 20% VAT

@@ -16,11 +16,5 @@ fun Route.sessionRouting(){
         get {
             call.respond(getSession())
         }
-        post {
-            call.respond(HttpStatusCode.OK)
-        }
-        delete() {
-            call.respond(HttpStatusCode.OK)
-        }
     }
 }

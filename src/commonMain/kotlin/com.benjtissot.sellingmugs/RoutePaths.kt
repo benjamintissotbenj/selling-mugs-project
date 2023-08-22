@@ -36,7 +36,6 @@ val ALL_FRONT_END_PATHS = listOf(HOMEPAGE_PATH, USER_INFO_PATH, CART_PATH, CHECK
 
 const val LOGOUT_PATH = "/logout"
 const val CHECKOUT_BACKEND_PATH = "/checkout_backend"
-const val PAYMENT_PATH = "/payment"
 const val USER_INFO_MESSAGE_PATH = "/user_info_message"
 const val LOGIN_BACKEND_PATH = "/login_backend"
 const val CHECK_REDIRECT_PATH = "/check_redirect"

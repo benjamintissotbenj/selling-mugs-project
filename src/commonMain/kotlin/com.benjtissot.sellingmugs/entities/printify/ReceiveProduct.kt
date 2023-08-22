@@ -23,7 +23,7 @@ data class ReceiveProduct(
     var print_areas: ArrayList<PrintArea>,
     val print_details: ArrayList<String>,
     val sales_channel_properties: ArrayList<String>,
-    val twodaydelivery_enabled: Boolean
+    val twodaydelivery_enabled: Boolean = false
 ) {
     fun changeImage(newImage: Image) : UpdateProductImage {
         val placeholder = Placeholder("front", arrayListOf(newImage))

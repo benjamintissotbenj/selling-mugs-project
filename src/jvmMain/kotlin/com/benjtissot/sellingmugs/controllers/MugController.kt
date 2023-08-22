@@ -19,6 +19,7 @@ import com.benjtissot.sellingmugs.services.MugService.Companion.insertNewMug
 import database
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -80,30 +81,31 @@ fun Route.mugRouting(){
             }
         }
 
-        route(USER_CUSTOM_MUG_LIST_PATH){
-            get {
-                val userId = call.request.queryParameters[Const.userId]
-                if (!userId.isNullOrBlank()){
-                    call.respond(MugService.getUserCustomMugList(userId))
-                } else {
-                    call.respond(HttpStatusCode.BadRequest)
-                }
-            }
-
-            route("/{${Const.userId}}/{${Const.mugId}}") {
-                post {
-                    val userId = call.parameters[Const.userId]
-                    val mugId = call.parameters[Const.mugId]
-                    if (mugId == null || userId == null){
-                        call.respond(HttpStatusCode.BadRequest)
+        authenticate("auth-jwt") {
+            route(USER_CUSTOM_MUG_LIST_PATH) {
+                get {
+                    val userId = call.request.queryParameters[Const.userId]
+                    if (!userId.isNullOrBlank()) {
+                        call.respond(MugService.getUserCustomMugList(userId))
                     } else {
-                        MugService.addMugToUserCustomMugList(userId, mugId)
-                        call.respond(HttpStatusCode.OK)
+                        call.respond(HttpStatusCode.BadRequest)
+                    }
+                }
+
+                route("/{${Const.userId}}/{${Const.mugId}}") {
+                    post {
+                        val userId = call.parameters[Const.userId]
+                        val mugId = call.parameters[Const.mugId]
+                        if (mugId == null || userId == null) {
+                            call.respond(HttpStatusCode.BadRequest)
+                        } else {
+                            MugService.addMugToUserCustomMugList(userId, mugId)
+                            call.respond(HttpStatusCode.OK)
+                        }
                     }
                 }
             }
         }
-
 
     }
 

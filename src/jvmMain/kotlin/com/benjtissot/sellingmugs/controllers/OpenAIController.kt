@@ -14,6 +14,7 @@ import com.benjtissot.sellingmugs.repositories.CategoriesGenerationResultReposit
 import com.benjtissot.sellingmugs.services.ImageGeneratorService
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -45,72 +46,74 @@ fun Route.openAIRouting(){
             }
         }
 
-        route(Mug.path){
-            post {
-                val params: MugsChatRequestParams = call.receive()
-                try {
-                    val variations = try {
-                        ImageGeneratorService.generateVariationsFromParams(params, public = true)
-                    } catch (e: IOException) {
-                        throw OpenAIUnavailable()
-                    }
-                    call.respond(ImageGeneratorService.generateMugsFromVariations(variations, params.subject))
-                } catch (e: OpenAIUnavailable) {
-                    e.printStackTrace()
-                    call.respond(Const.HttpStatusCode_OpenAIUnavailable)
-                }catch (e: Exception) {
-                    e.printStackTrace()
-                    call.respond(HttpStatusCode.InternalServerError)
-                }
-            }
-        }
-
-        route(Category.path){
-            post {
-                val chatRequestParams : CategoriesChatRequestParams? = try {
-                    call.receive()
-                } catch (e: Exception){
-                    call.respond(HttpStatusCode.BadRequest)
-                    null
-                }
-                if (chatRequestParams != null) {
-                    val status = try {
-                        ImageGeneratorService.generateCategoriesAndMugs(chatRequestParams)?.let {
-                            CategoriesGenerationResultRepository.updateGenerateCategoriesStatus (it)
+        authenticate("auth-jwt") {
+            route(Mug.path) {
+                post {
+                    val params: MugsChatRequestParams = call.receive()
+                    try {
+                        val variations = try {
+                            ImageGeneratorService.generateVariationsFromParams(params, public = true)
+                        } catch (e: IOException) {
+                            throw OpenAIUnavailable()
                         }
+                        call.respond(ImageGeneratorService.generateMugsFromVariations(variations, params.subject))
+                    } catch (e: OpenAIUnavailable) {
+                        e.printStackTrace()
+                        call.respond(Const.HttpStatusCode_OpenAIUnavailable)
                     } catch (e: Exception) {
                         e.printStackTrace()
+                        call.respond(HttpStatusCode.InternalServerError)
+                    }
+                }
+            }
+
+            route(Category.path) {
+                post {
+                    val chatRequestParams: CategoriesChatRequestParams? = try {
+                        call.receive()
+                    } catch (e: Exception) {
+                        call.respond(HttpStatusCode.BadRequest)
                         null
                     }
-                    if (status == null){
-                        call.respond(HttpStatusCode.InternalServerError)
-                    } else if (status.message == OpenAIUnavailable().message){
-                        call.respond(HttpStatusCode_OpenAIUnavailable)
-                    } else {
-                        call.respond(status)
+                    if (chatRequestParams != null) {
+                        val status = try {
+                            ImageGeneratorService.generateCategoriesAndMugs(chatRequestParams)?.let {
+                                CategoriesGenerationResultRepository.updateGenerateCategoriesStatus(it)
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            null
+                        }
+                        if (status == null) {
+                            call.respond(HttpStatusCode.InternalServerError)
+                        } else if (status.message == OpenAIUnavailable().message) {
+                            call.respond(HttpStatusCode_OpenAIUnavailable)
+                        } else {
+                            call.respond(status)
+                        }
                     }
                 }
             }
-        }
 
 
-        route(GenerateCategoriesStatus.path){
-            route("/{${Const.id}}") {
+            route(GenerateCategoriesStatus.path) {
+                route("/{${Const.id}}") {
+                    get {
+                        val id = call.parameters[Const.id] ?: ""
+                        val status = CategoriesGenerationResultRepository.getGenerateCategoriesStatusById(id)
+                        if (id.isEmpty()) {
+                            call.respond(HttpStatusCode.BadRequest)
+                        } else if (status == null) {
+                            call.respond(HttpStatusCode.InternalServerError)
+                        } else {
+                            call.respond(status)
+                        }
+                    }
+                }
+
                 get {
-                    val id = call.parameters[Const.id] ?: ""
-                    val status = CategoriesGenerationResultRepository.getGenerateCategoriesStatusById(id)
-                    if (id.isEmpty()){
-                        call.respond(HttpStatusCode.BadRequest)
-                    } else if (status == null) {
-                        call.respond(HttpStatusCode.InternalServerError)
-                    } else {
-                        call.respond(status)
-                    }
+                    call.respond(CategoriesGenerationResultRepository.getAllStatuses())
                 }
-            }
-
-            get {
-                call.respond(CategoriesGenerationResultRepository.getAllStatuses())
             }
         }
     }
