@@ -209,6 +209,7 @@ val MugDetailsPopup = FC<MugDetailsPopupProps> { props ->
                         margin = 3.vw
                         height = 5.vh
                     }
+                    disabled = mug.isOutOfStock()
                     AddShoppingCart()
                     div {
                         +"Add to cart"
