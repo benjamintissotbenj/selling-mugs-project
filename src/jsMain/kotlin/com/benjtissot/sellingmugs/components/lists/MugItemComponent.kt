@@ -10,6 +10,7 @@ import emotion.react.css
 import io.ktor.client.statement.*
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.periodUntil
 import mui.icons.material.AddShoppingCart
@@ -182,7 +183,18 @@ val MugDetailsDefault = FC<MugItemDefaultProps> { props ->
             label = div.create { +props.mug.category.name }
         }
         val daysSinceCreation = props.mug.dateCreated?.periodUntil(Clock.System.now(), TimeZone.UTC)?.days
-        if (daysSinceCreation != null && daysSinceCreation < 7){
+        if (props.mug.isOutOfStock()) {
+            Chip {
+                css {
+                    position = Position.absolute
+                    top = 2.pct
+                    left = 60.pct
+                }
+                variant = ChipVariant.outlined
+                label = div.create { +"Out of stock" }
+                color = ChipColor.error
+            }
+        } else if (daysSinceCreation != null && daysSinceCreation < 7){
 
             Chip {
                 css {
@@ -269,6 +281,7 @@ val MugDetailsHover = FC<MugItemGridProps> { props ->
             overflow = Overflow.hidden
         }
         IconButton {
+            disabled = props.mug.isOutOfStock()
             AddShoppingCart()
             div {
                 css {
@@ -418,6 +431,7 @@ val MugDetailsComplete = FC<MugDetailsCompleteProps> { props ->
                     overflow = Overflow.hidden
                 }
                 IconButton {
+                    disabled = props.mug.isOutOfStock()
                     AddShoppingCart()
                     div {
                         css {

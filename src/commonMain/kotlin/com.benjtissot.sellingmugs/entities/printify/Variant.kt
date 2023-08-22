@@ -1,5 +1,6 @@
 package com.benjtissot.sellingmugs.entities.printify
 
+import com.benjtissot.sellingmugs.Const
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -18,7 +19,7 @@ class Variant(val id: Int,
     companion object {
         fun default() : Variant {
             return Variant(
-                id = 65216, // original 69010
+                id = Const.variantId,
                 sku = "",
                 cost =  599,
                 price = 720, // 6£ + 20% VAT
