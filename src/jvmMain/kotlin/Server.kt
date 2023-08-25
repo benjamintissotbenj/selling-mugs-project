@@ -36,6 +36,9 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.periodUntil
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
 import org.slf4j.LoggerFactory
@@ -187,9 +190,9 @@ fun Application.createRoutes(){
 
 @OptIn(DelicateCoroutinesApi::class)
 fun Application.scheduleMugCreation(){
-    // We're setting mug creations every day at 22h00m00
+    // We're setting mug creations every day at 07h00m00 UTC, AKA midnight in US so that ChatGPT is not overloaded
     val today = Calendar.getInstance()
-    today[Calendar.HOUR_OF_DAY] = 22
+    today[Calendar.HOUR_OF_DAY] = 7
     today[Calendar.MINUTE] = 0
     today[Calendar.SECOND] = 0
 
@@ -200,42 +203,50 @@ fun Application.scheduleMugCreation(){
     val task: TimerTask = object : TimerTask() {
         override fun run() {
             // do your task here
-            LOG.debug("Starting daily mug creation")
             GlobalScope.launch {
-                var status : GenerateCategoriesStatus? = null
-                var totalLoopAttempts = 20
-                while (totalLoopAttempts > 0 && (status == null || status.message.contains("Exceeded five tries") || status.message == OpenAIUnavailable().message)) {
-                    totalLoopAttempts --
-                    status = try {
-                        ImageGeneratorService.generateCategoriesAndMugs(
-                            CategoriesChatRequestParams(
-                                1,
-                                10,
-                                null,
-                                newCategories
-                            )
-                        )?.let { CategoriesGenerationResultRepository.updateGenerateCategoriesStatus (it) }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        null
+                val lastMugCreation = CategoriesGenerationResultRepository.getLast()
+                val daysSinceCreation = lastMugCreation?.dateSubmitted?.periodUntil(Clock.System.now(), TimeZone.UTC)?.days ?: 1
+                val hoursSinceCreation = lastMugCreation?.dateSubmitted?.periodUntil(Clock.System.now(), TimeZone.UTC)?.hours ?: 24
+                val minutesSinceCreation = lastMugCreation?.dateSubmitted?.periodUntil(Clock.System.now(), TimeZone.UTC)?.minutes ?: 50
+
+                // Only trigger if last creation started 24 hours ago or more (with a 10 minutes margin to allow for disturbance)
+                if (daysSinceCreation >= 1 || (hoursSinceCreation >= 23 && minutesSinceCreation >= 50)){
+                    LOG.debug("Starting daily mug creation")
+                    var status : GenerateCategoriesStatus? = null
+                    var totalLoopAttempts = 20
+                    while (totalLoopAttempts > 0 && (status == null || status.message.contains("Exceeded five tries") || status.message == OpenAIUnavailable().message)) {
+                        totalLoopAttempts --
+                        status = try {
+                            ImageGeneratorService.generateCategoriesAndMugs(
+                                CategoriesChatRequestParams(
+                                    3,
+                                    2,
+                                    null,
+                                    newCategories
+                                )
+                            )?.let { CategoriesGenerationResultRepository.updateGenerateCategoriesStatus (it) }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            null
+                        }
                     }
-                }
-                if (status == null){
-                    LOG.error("There was an internal server error")
-                } else if (status.message == OpenAIUnavailable().message){
-                    LOG.error("Mug creation failed:")
-                    LOG.error(status.message)
-                } else if (status.message.contains("Exceeded 20x five tries")){
-                    LOG.error("Mug creation failed:")
-                    LOG.error(status.message)
-                } else {
-                    LOG.debug("Mug creation successful:")
-                    LOG.debug(status.message)
+                    if (status == null){
+                        LOG.error("There was an internal server error")
+                    } else if (status.message == OpenAIUnavailable().message){
+                        LOG.error("Mug creation failed:")
+                        LOG.error(status.message)
+                    } else if (status.message.contains("Exceeded 20x five tries")){
+                        LOG.error("Mug creation failed:")
+                        LOG.error(status.message)
+                    } else {
+                        LOG.debug("Mug creation successful:")
+                        LOG.debug(status.message)
+                    }
                 }
             }
         }
     }
-    // Start at 12:00:00, repeat every hour
+    // Start at 7:00:00, repeat every day
     timer.schedule(task, today.time, TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS))
 }
 

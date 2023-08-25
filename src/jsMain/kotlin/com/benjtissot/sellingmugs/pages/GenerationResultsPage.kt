@@ -57,8 +57,6 @@ val GenerationResultsPage = FC<NavigationProps> { props ->
                 maxHeight = 90.pct
                 width = if (selectedCategoriesStatus != null) 45.pct else 100.pct
                 boxSizing = BoxSizing.borderBox
-                paddingLeft = 2.vw
-                paddingRight = 2.vw
                 margin = 2.vw
             }
 
@@ -99,6 +97,7 @@ val GenerationResultsPage = FC<NavigationProps> { props ->
             DisplayCategoriesGenerationResultComponent {
                 status = selectedCategoriesStatus!!
                 title  = "Advanced category generation results"
+                width = 45.pct
             }
         }
     }
