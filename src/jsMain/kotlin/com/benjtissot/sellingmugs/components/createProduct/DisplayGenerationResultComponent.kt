@@ -91,7 +91,7 @@ val DisplayGenerationResultComponent = FC<DisplayGenerationResultProps> { props 
 external interface DisplayCategoriesGenerationResultProps : NavigationProps {
     var status : GenerateCategoriesStatus
     var title : String
-
+    var width : Width
 }
 
 

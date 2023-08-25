@@ -22,6 +22,13 @@ class CategoriesGenerationResultRepository {
         }
 
         /**
+         * Returns the last generated status
+         */
+        suspend fun getLast(): GenerateCategoriesStatus? {
+            return generateCategoriesStatusCollection.find().sort(descending(GenerateCategoriesStatus::dateSubmitted)).first()
+        }
+
+        /**
          * @param id the [GenerateCategoriesStatus.id] to be retrieved
          */
         suspend fun getGenerateCategoriesStatusById(id: String): GenerateCategoriesStatus? {

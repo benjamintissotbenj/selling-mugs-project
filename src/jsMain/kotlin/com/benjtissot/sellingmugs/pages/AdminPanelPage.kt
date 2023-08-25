@@ -152,6 +152,7 @@ val AdminPanelPage = FC<NavigationProps> { props ->
                     DisplayCategoriesGenerationResultComponent {
                         status = generateCategoriesStatus!!
                         title  = "Advanced category generation results"
+                        width = 50.pct
                     }
                 } else {
                     CreateProductComponent {
