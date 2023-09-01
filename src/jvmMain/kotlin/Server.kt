@@ -5,15 +5,12 @@ import com.benjtissot.sellingmugs.ConfigConst
 import com.benjtissot.sellingmugs.Const
 import com.benjtissot.sellingmugs.HOMEPAGE_PATH
 import com.benjtissot.sellingmugs.controllers.*
-import com.benjtissot.sellingmugs.entities.local.Mug
 import com.benjtissot.sellingmugs.entities.local.Session
 import com.benjtissot.sellingmugs.entities.openAI.CategoriesChatRequestParams
 import com.benjtissot.sellingmugs.entities.openAI.GenerateCategoriesStatus
 import com.benjtissot.sellingmugs.entities.openAI.OpenAIUnavailable
-import com.benjtissot.sellingmugs.repositories.CategoriesGenerationResultRepository
-import com.benjtissot.sellingmugs.repositories.MugRepository
+import com.benjtissot.sellingmugs.repositories.*
 import com.benjtissot.sellingmugs.services.ImageGeneratorService
-import com.benjtissot.sellingmugs.services.MugService
 import com.mongodb.ConnectionString
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
@@ -34,9 +31,9 @@ import io.ktor.server.sessions.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.periodUntil
 import org.litote.kmongo.coroutine.coroutine
@@ -134,6 +131,16 @@ fun Application.module() {
 
         // Run mug creation every day
         scheduleMugCreation()
+
+        println("Starting to print statistics")
+        // Used locally to calculate statistics
+        /*
+        GlobalScope.launch {
+            println("Inside the coroutine")
+            calculateMugCreationStats()
+            calculateSessionStats()
+        }
+         */
 
     }.start(wait = true)
 }
@@ -255,6 +262,109 @@ fun deactivateMongoDriverLogs(){
     val rootLogger = loggerContext.getLogger("org.mongodb.driver")
     rootLogger.level = ch.qos.logback.classic.Level.OFF
     LOG.error("MongoDB Driver Logs deactivated")
+}
+
+suspend fun calculateMugCreationStats() {
+    val secondsForOneDesign = StableDiffusionRepository.getImageGeneratedLogList().mapNotNull { log ->
+        val period = log.requestSubmitted.periodUntil(log.responseReceived, TimeZone.UTC)
+        (period.minutes * 60 + period.seconds).let {
+            if (it == 0) {
+                null
+            } else {
+                it
+            }
+        }
+    }.sorted()
+    val averageSecondsOneDesign = secondsForOneDesign.average()
+
+    println("Average seconds for 1 design: $averageSecondsOneDesign")
+    println("List of delays : ")
+    println(secondsForOneDesign)
+
+    val categoriesStatuses = CategoriesGenerationResultRepository.getAllStatuses()
+    val categoryStatuses = categoriesStatuses.flatMap { it.statuses }
+    val secondsOneCategory = categoryStatuses.mapNotNull { status ->
+        val period = status.dateSubmitted.periodUntil(status.dateReturned, TimeZone.UTC)
+        (period.minutes * 60 + period.seconds).let {
+            if (it == 0) {
+                null
+            } else {
+                it
+            }
+        }
+    }.sorted()
+    val averageSecondsOneCategory = secondsOneCategory.average()
+    val averageMugsOneCategory = categoryStatuses.map {
+        it.customStatusCodes.size
+    }.average()
+
+    val averageSecondsPerMugOneCat = averageSecondsOneCategory / averageMugsOneCategory
+
+    println("Average seconds for one category: $averageSecondsOneCategory")
+    println("List of delays : ")
+    println(secondsOneCategory)
+    println("Average mugs for one category: $averageMugsOneCategory")
+    println("Average seconds/mug for one category: $averageSecondsPerMugOneCat")
+
+    val categoryStatusesPerMugs = categoriesStatuses.groupBy { it.requestParams.amountOfVariations }
+    categoryStatusesPerMugs.forEach { entry ->
+        val statuses = entry.value.flatMap { it1 -> it1.statuses }
+        println("Category generations for ${entry.key} mugs")
+        println(statuses.mapNotNull { status ->
+            val period = status.dateSubmitted.periodUntil(status.dateReturned, TimeZone.UTC)
+            (period.minutes * 60 + period.seconds).let {
+                if (it == 0) {
+                    null
+                } else {
+                    it
+                }
+            }
+        }.sorted())
+    }
+
+    val secondsMultipleCategory = categoriesStatuses.mapNotNull { status ->
+        val period = status.dateSubmitted.periodUntil(status.dateReturned, TimeZone.UTC)
+        (period.minutes * 60 + period.seconds).let {
+            if (it == 0) {
+                null
+            } else {
+                it
+            }
+        }
+    }.sorted()
+    val averageSecondsMultipleCategory = secondsMultipleCategory.average()
+
+    val averageCategoriesMultipleCategory = categoriesStatuses.map {
+        it.requestParams.amountOfCategories
+    }.average()
+    val averageMugsMultipleCategory = categoriesStatuses.map {
+        it.requestParams.amountOfCategories * it.requestParams.amountOfVariations
+    }.average()
+
+    val averageOneCatInBulkCreation = averageSecondsMultipleCategory / averageCategoriesMultipleCategory
+    val averageOneMugInBulkCreation = averageSecondsMultipleCategory / averageMugsMultipleCategory
+
+    println("Average seconds for multiple categories: $averageSecondsMultipleCategory")
+    println("List of delays : ")
+    println(secondsMultipleCategory)
+    println("Average categories for multiple categories: $averageCategoriesMultipleCategory")
+    println("Average seconds/category for multiple categories: $averageOneCatInBulkCreation")
+    println("Average mugs for multiple categories: $averageMugsMultipleCategory")
+    println("Average seconds/mug for multiple categories: $averageOneMugInBulkCreation")
+}
+
+suspend fun calculateSessionStats() {
+    val sessionTimes = sessionCollection.find().toList().mapNotNull { session ->
+        ClickDataRepository.getClickDataById(session.clickDataId)?.clicks?.let {
+            if (it.isEmpty()) return@let null
+            val sessionTime = it.first().time.periodUntil(it.lastOrNull()?.time ?: Instant.DISTANT_FUTURE, TimeZone.UTC)
+            (sessionTime.minutes * 60 + sessionTime.seconds).let { duration ->
+                if (duration > 10) duration else null
+            }
+        }
+    }
+    println("Session times that average ${sessionTimes.average()} seconds:")
+    println(sessionTimes)
 }
 
 /**

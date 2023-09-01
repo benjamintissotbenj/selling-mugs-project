@@ -198,7 +198,7 @@ class Const {
                     "Please do not use \"Variation 1\" or similar names for the variation names. Find something original. " +
                     "Based on the above structures, " +
                     "create $numberOfVariations different variations for the subject. Then, write a detailed narrative of about 400 characters " +
-                    "for each variation and store it in the JSON under the name prompt. Write a short summary of the narrative in around 200 characters" +
+                    "for each variation and store it in the JSON under the name prompt. Write a short summary of the narrative in around 200 characters " +
                     "and store it in the JSON under the name description. The response should contain the JSON " +
                     "object and only the JSON object, so that the response can be parsed. Subject of the prompt is: "
         }

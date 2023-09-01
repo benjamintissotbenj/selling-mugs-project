@@ -28,7 +28,7 @@ class ImageRequest(
                 height = "512",
                 samples = "1",
                 num_inference_steps = "20",
-                safety_checker = "no",
+                safety_checker = "yes", // Checker for NSFW images, shouldn\'t happen but never know
                 enhance_prompt = "yes",
                 seed = null,
                 guidance_scale = 7.5f,
